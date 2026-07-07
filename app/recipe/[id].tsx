@@ -12,6 +12,11 @@ import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { estimateRecipeCost, formatAmountAsMl } from "@/lib/bottles/cost";
 import { estimateHomemadeIngredientCost } from "@/lib/homemade/cost";
+import {
+  garnishDisplayText,
+  ingredientDisplayName,
+  stepsDisplayText,
+} from "@/lib/recipes/ingredient-display";
 import { useBottleStore } from "@/lib/bottles/store";
 import { matchPrep } from "@/lib/homemade/match";
 import { useHomemadeStore } from "@/lib/homemade/store";
@@ -272,7 +277,9 @@ export default function RecipeDetailScreen() {
                     }
                   >
                     <View className="flex-1 pr-3">
-                      <Text className="text-base text-foreground">{ing.name}</Text>
+                      <Text className="text-base text-foreground">
+                        {ingredientDisplayName(ing.name, lang as "zh" | "en", bottles, preps)}
+                      </Text>
                       {prep ? (
                         <View className="flex-row items-center mt-1" style={{ gap: 4 }}>
                           <IconSymbol name="sparkles" size={12} color={colors.primary} />
@@ -309,7 +316,9 @@ export default function RecipeDetailScreen() {
           <>
             <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.steps")}</Text>
             <View className="bg-surface rounded-xl p-4">
-              <Text className="text-base text-foreground leading-relaxed">{recipe.steps}</Text>
+              <Text className="text-base text-foreground leading-relaxed">
+                {stepsDisplayText(recipe.steps, lang as "zh" | "en")}
+              </Text>
             </View>
           </>
         ) : null}
@@ -319,7 +328,9 @@ export default function RecipeDetailScreen() {
           <>
             <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.garnish")}</Text>
             <View className="bg-surface rounded-xl p-4">
-              <Text className="text-base text-foreground">{recipe.garnish}</Text>
+              <Text className="text-base text-foreground">
+                {garnishDisplayText(recipe.garnish, lang as "zh" | "en", bottles, preps)}
+              </Text>
             </View>
           </>
         ) : null}
@@ -397,7 +408,7 @@ export default function RecipeDetailScreen() {
                 >
                   <View className="flex-1 pr-3">
                     <Text className="text-sm text-foreground" numberOfLines={1}>
-                      {item.ingredient.name}
+                      {ingredientDisplayName(item.ingredient.name, lang as "zh" | "en", bottles, preps)}
                     </Text>
                     {item.bottle && item.cost !== null ? (
                       <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>

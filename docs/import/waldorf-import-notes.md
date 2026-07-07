@@ -56,3 +56,30 @@
 - store.tsx 启动时一次性合入(按nameEn去重,7个新分类 cat-waldorf-*)
 - tests/waldorf.test.ts 6/6 通过;预览显示"共447份配方"
 - 剩余: 酒款/原料中国参考价填充(待用户确认范围) + 保存检查点
+
+## 沙盒重置事件 (2026-07-08 第三轮)
+- 沙盒被重置,项目恢复到检查点 4be89cea(447配方+冰块字段已交付版本,该部分安全)
+- 丢失未提交改动(需重建):
+  1. lib/bottles/waldorf-ingredients.ts (配料导入模块: buildWaldorfBottles/buildWaldorfPreps/WALDORF_ALIAS_MAP)
+  2. assets/waldorf-ingredients.json (474 bottles + 72 preps + 903 aliasMap)
+  3. lib/bottles/store.tsx + lib/homemade/store.tsx 的 Waldorf 合入逻辑(键: cocktail_waldorf_ingredients_v1 / homemade.waldorf.v1)
+  4. lib/recipes/ingredient-display.ts (双语显示工具: resolveIngredientNames/ingredientDisplayName/garnishDisplayText + 常用词词典)
+  5. app/recipe/[id].tsx 三处接入(配料行/装饰/成本区)
+  6. /home/ubuntu/normalize_waldorf_ingredients.json (map结果,S3 URL已丢失,需重跑 map 或从 CSV 恢复)
+- map 结果 CSV/JSON 在 /home/ubuntu/ 下,已被清除;19块 ing-chunks 输入文件也丢失
+- 重建路径: 重新运行 scripts/collect-ingredients.py(如还在) → 若脚本丢失全部重写 → 重跑 map(19块)
+- 步骤翻译任务(828条 steps+garnish 句子, 4块)尚未执行
+## 双语显示方案(已定)
+- 配料: ingredientDisplayName(raw, lang, bottles, preps) 优先级: Waldorf aliasMap → 酒库双语 → 自制库双语 → 通用词词典 → 原文
+- 装饰: garnishDisplayText 整体解析+分隔符逐段解析
+- 步骤: 触发 map 翻译707句中文步骤+装饰词组 → 生成 zh→en 映射 assets/waldorf-steps-en.json → stepsDisplayText 按行查映射
+
+## 重建完成 (2026-07-08 第三轮续)
+- map 重跑: 23块(19 ing + 4 steps), 21成功; steps_1/steps_2 失败(用户要求跳过,未翻译句子回退中文)
+- 903配料全部规范化; 资产 assets/waldorf-ingredients.json: bottles 481 / preps 63 / alias 903 / stepsEn 388
+- 已重建: lib/bottles/waldorf-ingredients.ts, lib/recipes/ingredient-display.ts
+- store 合入: bottles(键 cocktail.bottles.waldorf.v1), homemade(键 homemade.waldorf.v1)
+- 详情页4处接入双语显示(配料/步骤/装饰/成本区)
+- 测试: 169 passed(waldorf-ingredients.test.ts 10项新测试)
+- 截图验证: 酒单447配方正常; 酒库基酒库179款(伏特加/龙舌兰/朗姆/金酒等,中英名+参考价)
+- 价格覆盖率: 468/481

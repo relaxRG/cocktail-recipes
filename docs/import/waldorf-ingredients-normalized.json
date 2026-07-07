@@ -1,0 +1,9032 @@
+[
+ {
+  "raw": "(Or 5 oz. house-made Bloody Mary Mix)",
+  "nameEn": "House-made Bloody Mary Mix",
+  "nameZh": "自制血腥玛丽预调汁",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": null,
+  "volume": "150ml",
+  "note": "替代品"
+ },
+ {
+  "raw": "1/4英寸厚的黄瓜片",
+  "nameEn": "Cucumber Slice",
+  "nameZh": "黄瓜片",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": "1/4英寸厚"
+ },
+ {
+  "raw": "86 Co. Aylesbury Duck 伏特加",
+  "nameEn": "Aylesbury Duck Vodka",
+  "nameZh": "艾尔斯伯里鸭伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": "86 Co. 出品"
+ },
+ {
+  "raw": "86 Co. Cabeza 银龙舌兰",
+  "nameEn": "Tequila Cabeza Blanco",
+  "nameZh": "卡贝扎银龙舌兰",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": "86 Co. 出品"
+ },
+ {
+  "raw": "86 Co. Caña Brava 白朗姆酒",
+  "nameEn": "Caña Brava Carta Blanca Rum",
+  "nameZh": "卡纳布拉瓦白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "86 Co. 出品"
+ },
+ {
+  "raw": "86 Co. Fords London dry 金酒",
+  "nameEn": "Fords London Dry Gin",
+  "nameZh": "福特伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": "86 Co. 出品"
+ },
+ {
+  "raw": "86 Co. Ford’s London dry 金酒",
+  "nameEn": "Fords London Dry Gin",
+  "nameZh": "福特伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": "86 Co. 出品"
+ },
+ {
+  "raw": "Aalborg 阿夸维特",
+  "nameEn": "Aalborg Akvavit",
+  "nameZh": "奥尔堡阿夸维特",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Abbott's 苦精",
+  "nameEn": "Abbott's Bitters",
+  "nameZh": "雅培苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 120,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Abbott’s 苦精",
+  "nameEn": "Abbott's Bitters",
+  "nameZh": "雅培苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 120,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Abbott’s 苦精（无则用 Regans’ Orange Bitters No. 6）",
+  "nameEn": "Abbott's Bitters",
+  "nameZh": "雅培苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 120,
+  "volume": "100ml",
+  "note": "无则用 Regans' Orange Bitters No. 6"
+ },
+ {
+  "raw": "Absolut Citron 伏特加",
+  "nameEn": "Absolut Citron Vodka",
+  "nameZh": "绝对柠檬伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Agavero 利口酒",
+  "nameEn": "Agavero Liqueur",
+  "nameZh": "阿加维罗利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Allegrini 阿玛罗尼格拉巴酒",
+  "nameEn": "Allegrini Amarone Grappa",
+  "nameZh": "阿莱格里尼阿玛罗尼格拉巴酒",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Amaretto Disaronno 利口酒",
+  "nameEn": "Disaronno Amaretto",
+  "nameZh": "帝萨诺杏仁利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 110,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Amaretto Disaronno 杏仁利口酒",
+  "nameEn": "Disaronno Amaretto",
+  "nameZh": "帝萨诺杏仁利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 110,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Anchor Distilling Co. Junipero 金酒",
+  "nameEn": "Junipero Gin",
+  "nameZh": "朱尼佩罗金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": "Anchor Distilling Co. 出品"
+ },
+ {
+  "raw": "Angostura aromatic or Dale DeGroff’s pimento 苦精",
+  "nameEn": "Angostura Aromatic Bitters",
+  "nameZh": "安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 80,
+  "volume": "100ml",
+  "note": "或 Dale DeGroff's Pimento Bitters"
+ },
+ {
+  "raw": "Angostura bitters (optional)",
+  "nameEn": "Angostura Aromatic Bitters",
+  "nameZh": "安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 80,
+  "volume": "100ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Angostura 苦精",
+  "nameEn": "Angostura Aromatic Bitters",
+  "nameZh": "安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 80,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Angostura 苦精 or Dr. Adam Elmegirab’s Boker’s 苦精",
+  "nameEn": "Angostura Aromatic Bitters",
+  "nameZh": "安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 80,
+  "volume": "100ml",
+  "note": "或 Dr. Adam Elmegirab's Boker's Bitters"
+ },
+ {
+  "raw": "Angostura 苦精（可选）",
+  "nameEn": "Angostura Aromatic Bitters",
+  "nameZh": "安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 80,
+  "volume": "100ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Angostura 苦精（用于装饰）",
+  "nameEn": "Angostura Aromatic Bitters",
+  "nameZh": "安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 80,
+  "volume": "100ml",
+  "note": "用于装饰"
+ },
+ {
+  "raw": "Aperol",
+  "nameEn": "Aperol",
+  "nameZh": "阿佩罗开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 85,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Aperol 苦橙酒",
+  "nameEn": "Aperol",
+  "nameZh": "阿佩罗开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 85,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Apple, Pear, and Orange Peel–Infused Bourbon (Henry McKenna; recipe follows)",
+  "nameEn": "Apple, Pear, and Orange Peel-Infused Bourbon",
+  "nameZh": "苹果梨橙皮浸渍波本威士忌",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "700ml",
+  "note": "基酒推荐 Henry McKenna"
+ },
+ {
+  "raw": "Appleton Estate 12 年朗姆酒",
+  "nameEn": "Appleton Estate 12 Year Old Rare Casks Jamaica Rum",
+  "nameZh": "阿普尔顿庄园12年牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Appleton Estate 12年朗姆酒",
+  "nameEn": "Appleton Estate 12 Year Old Rare Casks Jamaica Rum",
+  "nameZh": "阿普尔顿庄园12年牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Appleton Estate 12年牙买加朗姆酒",
+  "nameEn": "Appleton Estate 12 Year Old Rare Casks Jamaica Rum",
+  "nameZh": "阿普尔顿庄园12年牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Appleton Estate Extra 朗姆酒",
+  "nameEn": "Appleton Estate Extra Old Jamaica Rum",
+  "nameZh": "阿普尔顿庄园特级牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Appleton Estate Reserve Jamaican 朗姆酒",
+  "nameEn": "Appleton Estate Reserve Blend Jamaica Rum",
+  "nameZh": "阿普尔顿庄园珍藏牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Appleton Estate Reserve 朗姆酒",
+  "nameEn": "Appleton Estate Reserve Blend Jamaica Rum",
+  "nameZh": "阿普尔顿庄园珍藏牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Appleton Estate Special white 朗姆酒",
+  "nameEn": "Appleton Estate White Jamaica Rum",
+  "nameZh": "阿普尔顿庄园白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Appleton Estate V/X 朗姆酒",
+  "nameEn": "Appleton Estate Signature Blend Jamaica Rum",
+  "nameZh": "阿普尔顿庄园经典牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "原 V/X"
+ },
+ {
+  "raw": "Appleton Estate V/X 牙买加朗姆酒",
+  "nameEn": "Appleton Estate Signature Blend Jamaica Rum",
+  "nameZh": "阿普尔顿庄园经典牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "原 V/X"
+ },
+ {
+  "raw": "Appleton Estate 白朗姆酒",
+  "nameEn": "Appleton Estate White Jamaica Rum",
+  "nameZh": "阿普尔顿庄园白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Appleton Estate 白朗姆酒或 Don Q 陈年朗姆酒",
+  "nameEn": "Appleton Estate White Jamaica Rum",
+  "nameZh": "阿普尔顿庄园白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": "或 Don Q Añejo Rum"
+ },
+ {
+  "raw": "Appleton Estate 经典朗姆酒",
+  "nameEn": "Appleton Estate Signature Blend Jamaica Rum",
+  "nameZh": "阿普尔顿庄园经典牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "原 V/X"
+ },
+ {
+  "raw": "Appleton V/X Jamaican 朗姆酒",
+  "nameEn": "Appleton Estate Signature Blend Jamaica Rum",
+  "nameZh": "阿普尔顿庄园经典牙买加朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "原 V/X"
+ },
+ {
+  "raw": "Appleton 牙买加白朗姆酒",
+  "nameEn": "Appleton Estate White Jamaica Rum",
+  "nameZh": "阿普尔顿庄园白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Averell 戴姆森金酒",
+  "nameEn": "Averell Damson Gin Liqueur",
+  "nameZh": "阿弗雷尔戴姆森金酒利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Averna 意式苦酒（Amaro）",
+  "nameEn": "Amaro Averna",
+  "nameZh": "阿维娜阿玛罗苦酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Avuá Amburana 卡莎夏",
+  "nameEn": "Avuá Amburana Cachaça",
+  "nameZh": "阿武阿安布拉纳卡莎萨",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Avuá Amburana 卡莎萨",
+  "nameEn": "Avuá Amburana Cachaça",
+  "nameZh": "阿武阿安布拉纳卡莎萨",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "A级枫糖浆",
+  "nameEn": "Grade A Maple Syrup",
+  "nameZh": "A级枫糖浆",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 60,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "Bacardi 8 Year Old rum (or Rhum Clément VSOP agricole rum)",
+  "nameEn": "Bacardi Reserva Ocho Rum",
+  "nameZh": "百加得8年朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 160,
+  "volume": "700ml",
+  "note": "或 Rhum Clément VSOP Agricole Rum"
+ },
+ {
+  "raw": "Bacardi 8年黑朗姆酒",
+  "nameEn": "Bacardi Reserva Ocho Rum",
+  "nameZh": "百加得8年朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 160,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bacardi Superior white 朗姆酒",
+  "nameEn": "Bacardi Superior White Rum",
+  "nameZh": "百加得白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 60,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bacardi Superior 白朗姆酒",
+  "nameEn": "Bacardi Superior White Rum",
+  "nameZh": "百加得白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 60,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bacardi gold 朗姆酒",
+  "nameEn": "Bacardi Gold Rum",
+  "nameZh": "百加得金朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 70,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bacardi y Cia Heritage white 朗姆酒",
+  "nameEn": "Bacardi Heritage White Rum",
+  "nameZh": "百加得传世白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bacardi y Cia Heritage 白朗姆酒",
+  "nameEn": "Bacardi Heritage White Rum",
+  "nameZh": "百加得传世白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bacardi y Cia Heritage 白朗姆酒 或 Appleton Estate Reserve 朗姆酒",
+  "nameEn": "Bacardi Heritage White Rum",
+  "nameZh": "百加得传世白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "可替换为 Appleton Estate Reserve 朗姆酒"
+ },
+ {
+  "raw": "Bacardi 金朗姆酒",
+  "nameEn": "Bacardi Gold Rum",
+  "nameZh": "百加得金朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 60,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Baileys Irish cream",
+  "nameEn": "Baileys Irish Cream",
+  "nameZh": "百利甜酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Baker’s 107 proof 波本威士忌",
+  "nameEn": "Baker's 107 Proof Bourbon Whiskey",
+  "nameZh": "贝克107波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 450,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Baker’s 107 proof 波本威士忌 or other bonded 波本威士忌",
+  "nameEn": "Baker's 107 Proof Bourbon Whiskey",
+  "nameZh": "贝克107波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 450,
+  "volume": "750ml",
+  "note": "可替换为其他保税波本威士忌"
+ },
+ {
+  "raw": "Banks 5 Island 白朗姆酒或 Plantation 3 Stars 白朗姆酒",
+  "nameEn": "Banks 5 Island White Rum",
+  "nameZh": "班克斯5岛白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": "可替换为 Plantation 3 Stars 白朗姆酒"
+ },
+ {
+  "raw": "Banks 7 Golden Age dark 朗姆酒",
+  "nameEn": "Banks 7 Golden Age Dark Rum",
+  "nameZh": "班克斯7黄金时代黑朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Banks 7 Golden Age 黑朗姆酒",
+  "nameEn": "Banks 7 Golden Age Dark Rum",
+  "nameZh": "班克斯7黄金时代黑朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Basil Hayden’s 波本威士忌",
+  "nameEn": "Basil Hayden's Bourbon Whiskey",
+  "nameZh": "巴素海顿波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Beefeater 24 金酒",
+  "nameEn": "Beefeater 24 Gin",
+  "nameZh": "必富达24金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Beefeater London dry 金酒",
+  "nameEn": "Beefeater London Dry Gin",
+  "nameZh": "必富达伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 65,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Beefeater London dry 金酒 or Tanqueray Old Tom 金酒",
+  "nameEn": "Beefeater London Dry Gin",
+  "nameZh": "必富达伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 65,
+  "volume": "700ml",
+  "note": "可替换为 Tanqueray Old Tom 金酒"
+ },
+ {
+  "raw": "Beefeater 伦敦干金酒",
+  "nameEn": "Beefeater London Dry Gin",
+  "nameZh": "必富达伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 65,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Beefeater 伦敦干金酒（或 Hayman's Old Tom 金酒）",
+  "nameEn": "Beefeater London Dry Gin",
+  "nameZh": "必富达伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 65,
+  "volume": "700ml",
+  "note": "可替换为 Hayman's Old Tom 金酒"
+ },
+ {
+  "raw": "Belvedere 伏特加",
+  "nameEn": "Belvedere Vodka",
+  "nameZh": "雪树伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Benedictine 利口酒",
+  "nameEn": "Bénédictine D.O.M. Liqueur",
+  "nameZh": "廊酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Berry Bros. & Rudd No. 3 London Dry 金酒",
+  "nameEn": "Berry Bros. & Rudd No. 3 London Dry Gin",
+  "nameZh": "BBR 3号伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Berry Bros. & Rudd No. 3 伦敦干金酒",
+  "nameEn": "Berry Bros. & Rudd No. 3 London Dry Gin",
+  "nameZh": "BBR 3号伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Berry Bros. & Rudd No. 3 金酒",
+  "nameEn": "Berry Bros. & Rudd No. 3 London Dry Gin",
+  "nameZh": "BBR 3号伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bigallet China-China Amer 利口酒",
+  "nameEn": "Bigallet China-China Amer Liqueur",
+  "nameZh": "比加莱中国阿梅尔利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bigallet China-China Amer 苦味利口酒",
+  "nameEn": "Bigallet China-China Amer Liqueur",
+  "nameZh": "比加莱中国阿梅尔利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bigallet China-China 苦味酒",
+  "nameEn": "Bigallet China-China Amer Liqueur",
+  "nameZh": "比加莱中国阿梅尔利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bittermens 橙子奶油柠檬酸苦精(或 Regans' 6号橙味苦精)",
+  "nameEn": "Bittermens Orange Cream Citrate",
+  "nameZh": "彼得曼橙子奶油柠檬酸苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 180,
+  "volume": "146ml",
+  "note": "可替换为 Regans' No. 6 Orange Bitters"
+ },
+ {
+  "raw": "Black Cherry Infusion Absolut 伏特加 (recipe follows)",
+  "nameEn": "Black Cherry Infused Absolut Vodka",
+  "nameZh": "黑樱桃浸渍绝对伏特加",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "自制浸渍酒"
+ },
+ {
+  "raw": "Blume Marillen 杏子生命之水或 Zwack Pecsetes Barack Palinka 杏子白兰地",
+  "nameEn": "Blume Marillen Apricot Eau-de-Vie",
+  "nameZh": "布鲁姆玛丽莲杏子生命之水",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可替换为 Zwack Pecsetes Barack Palinka 杏子白兰地"
+ },
+ {
+  "raw": "Bols genever",
+  "nameEn": "Bols Genever",
+  "nameZh": "波士荷式金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bols genever or New York Distilling Company Chief Gowanus New Netherland 金酒",
+  "nameEn": "Bols Genever",
+  "nameZh": "波士荷式金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": "可替换为 New York Distilling Company Chief Gowanus New Netherland 金酒"
+ },
+ {
+  "raw": "Bols 杜松子酒（金酒）",
+  "nameEn": "Bols Genever",
+  "nameZh": "波士荷式金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bols 荷式金酒(荷兰)",
+  "nameEn": "Bols Genever",
+  "nameZh": "波士荷式金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bols 金酒(Genever)",
+  "nameEn": "Bols Genever",
+  "nameZh": "波士荷式金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bombay London dry 金酒",
+  "nameEn": "Bombay Dry Gin",
+  "nameZh": "孟买干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 70,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bombay Sapphire London dry gin 金酒",
+  "nameEn": "Bombay Sapphire London Dry Gin",
+  "nameZh": "孟买蓝宝石伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 85,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bombay Sapphire 伦敦干金酒",
+  "nameEn": "Bombay Sapphire London Dry Gin",
+  "nameZh": "孟买蓝宝石伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 85,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bombay 伦敦干金酒",
+  "nameEn": "Bombay Dry Gin",
+  "nameZh": "孟买干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 70,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bonal Quinquina 开胃酒",
+  "nameEn": "Bonal Gentiane-Quina",
+  "nameZh": "波纳尔龙胆奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Bonal Quinquina 开胃酒 或 Dubonnet",
+  "nameEn": "Bonal Gentiane-Quina",
+  "nameZh": "波纳尔龙胆奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": "可替换为 Dubonnet"
+ },
+ {
+  "raw": "Bonal quinquina 开胃酒或 Dubonnet",
+  "nameEn": "Bonal Gentiane-Quina",
+  "nameZh": "波纳尔龙胆奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": "可替换为 Dubonnet"
+ },
+ {
+  "raw": "Bonal 奎宁开胃酒或 Cocchi Barolo Chinato",
+  "nameEn": "Bonal Gentiane-Quina",
+  "nameZh": "波纳尔龙胆奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": "可替换为 Cocchi Barolo Chinato"
+ },
+ {
+  "raw": "Bonal 奎宁开胃酒或Calisaya 利口酒",
+  "nameEn": "Bonal Gentiane-Quina",
+  "nameZh": "波纳尔龙胆奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": "可替换为 Calisaya 利口酒"
+ },
+ {
+  "raw": "Bonne Maman orange marmalade",
+  "nameEn": "Bonne Maman Orange Marmalade",
+  "nameZh": "好妈妈香橙果酱",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 35,
+  "volume": "370g",
+  "note": ""
+ },
+ {
+  "raw": "Bonne Maman 橙子果酱",
+  "nameEn": "Bonne Maman Orange Marmalade",
+  "nameZh": "好妈妈香橙果酱",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 35,
+  "volume": "370g",
+  "note": ""
+ },
+ {
+  "raw": "Bordeaux Supérieur 红葡萄酒",
+  "nameEn": "Bordeaux Supérieur Red Wine",
+  "nameZh": "超级波尔多红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Boulard Grand Solage VSOP 卡尔瓦多斯",
+  "nameEn": "Boulard Grand Solage VSOP Calvados",
+  "nameZh": "布拉德特级VSOP苹果白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Boulard Grand Solage VSOP 卡尔瓦多斯或Laird’s 7.5年苹果白兰地（冷藏）",
+  "nameEn": "Boulard Grand Solage VSOP Calvados",
+  "nameZh": "布拉德特级VSOP苹果白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": "可替换为 Laird's 7.5年苹果白兰地"
+ },
+ {
+  "raw": "Boulard Grand Solage VSOP 苹果白兰地",
+  "nameEn": "Boulard Grand Solage VSOP Calvados",
+  "nameZh": "布拉德特级VSOP苹果白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Boulard Grand Solage VSOP 苹果白兰地 (或 Laird's bonded 苹果白兰地)",
+  "nameEn": "Boulard Grand Solage VSOP Calvados",
+  "nameZh": "布拉德特级VSOP苹果白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": "可替换为 Laird's Bonded 苹果白兰地"
+ },
+ {
+  "raw": "Boylan 干姜水(或 Fever-Tree 姜汁啤酒)或任何蔗糖干姜水",
+  "nameEn": "Boylan Ginger Ale",
+  "nameZh": "博伊兰干姜水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 20,
+  "volume": "355ml",
+  "note": "可替换为 Fever-Tree 姜汁啤酒或其他蔗糖干姜水"
+ },
+ {
+  "raw": "Boylan, Fever-Tree, or other cane-based 金酒姜汁汽水 (冰镇)",
+  "nameEn": "Boylan Ginger Ale",
+  "nameZh": "博伊兰干姜水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 20,
+  "volume": "355ml",
+  "note": "可替换为 Fever-Tree 或其他蔗糖干姜水"
+ },
+ {
+  "raw": "Boylan’s 干姜水 or other sugar cane–based 干姜水 (chilled)",
+  "nameEn": "Boylan's Ginger Ale",
+  "nameZh": "博伊兰干姜水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 15,
+  "volume": "330ml",
+  "note": "或使用其他蔗糖干姜水"
+ },
+ {
+  "raw": "Buchanan’s DeLuxe 12 Year blended Scotch 威士忌",
+  "nameEn": "Buchanan's DeLuxe 12 Year Blended Scotch Whisky",
+  "nameZh": "布坎南12年调和苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Buffalo Trace 波本威士忌",
+  "nameEn": "Buffalo Trace Bourbon Whiskey",
+  "nameZh": "水牛足迹波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bulleit 黑麦威士忌",
+  "nameEn": "Bulleit Rye Whiskey",
+  "nameZh": "布莱特黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bushmills Black Bush Irish whiskey",
+  "nameEn": "Bushmills Black Bush Irish Whiskey",
+  "nameZh": "布什米尔黑布什爱尔兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bushmills Black Bush 爱尔兰威士忌",
+  "nameEn": "Bushmills Black Bush Irish Whiskey",
+  "nameZh": "布什米尔黑布什爱尔兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bushmills Irish 威士忌",
+  "nameEn": "Bushmills Original Irish Whiskey",
+  "nameZh": "布什米尔原味爱尔兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bushmills 爱尔兰威士忌",
+  "nameEn": "Bushmills Original Irish Whiskey",
+  "nameZh": "布什米尔原味爱尔兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Byrrh Grand Quinquina 开胃酒",
+  "nameEn": "Byrrh Grand Quinquina",
+  "nameZh": "比尔大奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Byrrh Grand 奎宁开胃酒（如无可用 Maurin quina 或 Dubonnet 代替）",
+  "nameEn": "Byrrh Grand Quinquina",
+  "nameZh": "比尔大奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "可用 Maurin Quina 或 Dubonnet 代替"
+ },
+ {
+  "raw": "Byrrh Grand 奎宁酒或 Maurin 奎宁酒(冷藏)",
+  "nameEn": "Byrrh Grand Quinquina",
+  "nameZh": "比尔大奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "可用 Maurin Quina 或 Dubonnet 代替"
+ },
+ {
+  "raw": "Bénédictine",
+  "nameEn": "Bénédictine D.O.M. Liqueur",
+  "nameZh": "廊酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bénédictine 利口酒",
+  "nameEn": "Bénédictine D.O.M. Liqueur",
+  "nameZh": "廊酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bénédictine 利口酒 (for float)",
+  "nameEn": "Bénédictine D.O.M. Liqueur",
+  "nameZh": "廊酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bénédictine 廊酒",
+  "nameEn": "Bénédictine D.O.M. Liqueur",
+  "nameZh": "廊酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bénédictine 本尼迪克丁酒",
+  "nameEn": "Bénédictine D.O.M. Liqueur",
+  "nameZh": "廊酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Bénédictine 草本利口酒",
+  "nameEn": "Bénédictine D.O.M. Liqueur",
+  "nameZh": "廊酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Calisaya 利口酒",
+  "nameEn": "Calisaya Liqueur",
+  "nameZh": "卡利萨亚利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Campari",
+  "nameEn": "Campari",
+  "nameZh": "金巴利",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Campari 金巴利",
+  "nameEn": "Campari",
+  "nameZh": "金巴利",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Candolini Ruta 格拉帕",
+  "nameEn": "Candolini Grappa Ruta",
+  "nameZh": "坎多利尼芸香格拉帕",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cardenal Mendoza Solera Gran Reserva 白兰地",
+  "nameEn": "Cardenal Mendoza Solera Gran Reserva Brandy",
+  "nameZh": "门多萨红衣主教索莱拉特级珍藏白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cardenal Mendoza Solera Gran Reserva 西班牙白兰地",
+  "nameEn": "Cardenal Mendoza Solera Gran Reserva Brandy",
+  "nameZh": "门多萨红衣主教索莱拉特级珍藏白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Carpano Antica sweet vermouth (chilled)",
+  "nameEn": "Carpano Antica Formula Sweet Vermouth",
+  "nameZh": "卡帕诺安提卡配方甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Carpano Antica sweet 味美思",
+  "nameEn": "Carpano Antica Formula Sweet Vermouth",
+  "nameZh": "卡帕诺安提卡配方甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Carpano Antica 甜味美思",
+  "nameEn": "Carpano Antica Formula Sweet Vermouth",
+  "nameZh": "卡帕诺安提卡配方甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Carpano Antica 甜味苦艾酒",
+  "nameEn": "Carpano Antica Formula Sweet Vermouth",
+  "nameZh": "卡帕诺安提卡配方甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Carpano Antica 甜苦艾酒",
+  "nameEn": "Carpano Antica Formula Sweet Vermouth",
+  "nameZh": "卡帕诺安提卡配方甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Carpano 干味美思",
+  "nameEn": "Carpano Dry Vermouth",
+  "nameZh": "卡帕诺干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 150,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Carpano 干味美思（可选）",
+  "nameEn": "Carpano Dry Vermouth",
+  "nameZh": "卡帕诺干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 150,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Castarède Selection 雅文邑(或 Pierre Ferrand Ambre 干邑)",
+  "nameEn": "Castarède Sélection Armagnac",
+  "nameZh": "卡斯塔雷德精选雅文邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": "或 Pierre Ferrand Ambre 干邑"
+ },
+ {
+  "raw": "Castarède Sélection 雅文邑",
+  "nameEn": "Castarède Sélection Armagnac",
+  "nameZh": "卡斯塔雷德精选雅文邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cazadores reposado 龙舌兰",
+  "nameEn": "Cazadores Reposado Tequila",
+  "nameZh": "卡萨多雷斯微陈龙舌兰",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Caña Brava 白朗姆酒",
+  "nameEn": "Caña Brava White Rum",
+  "nameZh": "卡纳布拉瓦白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Caña Brava 白朗姆酒 或 Rhum J.M 农业白朗姆酒 (80 proof)",
+  "nameEn": "Caña Brava White Rum",
+  "nameZh": "卡纳布拉瓦白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "或 Rhum J.M 农业白朗姆酒"
+ },
+ {
+  "raw": "Chartreuse 黄夏特利利口酒",
+  "nameEn": "Yellow Chartreuse",
+  "nameZh": "黄夏特酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Chivas Regal 12年混合苏格兰威士忌",
+  "nameEn": "Chivas Regal 12 Year Old Blended Scotch Whisky",
+  "nameZh": "芝华士12年调和苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Chivas Regal 12年调和苏格兰威士忌",
+  "nameEn": "Chivas Regal 12 Year Old Blended Scotch Whisky",
+  "nameZh": "芝华士12年调和苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Château Petit Guiraud 苏特恩甜酒 (Sauternes)",
+  "nameEn": "Château Petit Guiraud Sauternes",
+  "nameZh": "小芝路酒庄苏玳甜白葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 200,
+  "volume": "375ml",
+  "note": ""
+ },
+ {
+  "raw": "Château de Montifaud VSOP 干邑",
+  "nameEn": "Château de Montifaud VSOP Cognac",
+  "nameZh": "蒙蒂福酒庄VSOP干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cinzano Rosso sweet 味美思",
+  "nameEn": "Cinzano Rosso Sweet Vermouth",
+  "nameZh": "仙山露红甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cinzano Rosso 甜味美思",
+  "nameEn": "Cinzano Rosso Sweet Vermouth",
+  "nameZh": "仙山露红甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cinzano Rosso 甜味苦艾酒",
+  "nameEn": "Cinzano Rosso Sweet Vermouth",
+  "nameZh": "仙山露红甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cinzano Rosso 甜苦艾酒",
+  "nameEn": "Cinzano Rosso Sweet Vermouth",
+  "nameZh": "仙山露红甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Ciroc 伏特加或 G'Vine Floraison 金酒",
+  "nameEn": "Cîroc Vodka",
+  "nameZh": "诗珞珂伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "或 G'Vine Floraison 金酒"
+ },
+ {
+  "raw": "Citadelle Réserve 桶陈金酒",
+  "nameEn": "Citadelle Réserve Gin",
+  "nameZh": "西塔德尔珍藏桶陈金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Citadelle 金酒",
+  "nameEn": "Citadelle Gin",
+  "nameZh": "西塔德尔金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cocchi Americano",
+  "nameEn": "Cocchi Americano Bianco",
+  "nameZh": "科奇美洲白开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Cocchi Americano Bianco",
+  "nameEn": "Cocchi Americano Bianco",
+  "nameZh": "科奇美洲白开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Cocchi Americano 利口酒",
+  "nameEn": "Cocchi Americano Bianco",
+  "nameZh": "科奇美洲白开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Cocchi Americano 开胃酒",
+  "nameEn": "Cocchi Americano",
+  "nameZh": "可奇美洲开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Cocchi Americano 白开胃酒",
+  "nameEn": "Cocchi Americano",
+  "nameZh": "可奇美洲开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Cocchi Barolo Chinato 奎宁开胃酒或Calisaya 利口酒",
+  "nameEn": "Cocchi Barolo Chinato or Calisaya Liqueur",
+  "nameZh": "可奇巴罗洛奎宁酒或卡利萨亚利口酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": "可互换使用"
+ },
+ {
+  "raw": "Cocchi Barolo Chinato 奎宁酒或 Bonal 奎宁开胃酒",
+  "nameEn": "Cocchi Barolo Chinato or Bonal Quina",
+  "nameZh": "可奇巴罗洛奎宁酒或波纳尔奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": "可互换使用"
+ },
+ {
+  "raw": "Cocchi Barolo Chinato 或 Bonal quinquina 开胃酒",
+  "nameEn": "Cocchi Barolo Chinato or Bonal Quina",
+  "nameZh": "可奇巴罗洛奎宁酒或波纳尔奎宁开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": "可互换使用"
+ },
+ {
+  "raw": "Cocoa-Infused Whiskey (Stranahan’s Colorado; recipe follows)",
+  "nameEn": "Cocoa-Infused Whiskey (Stranahan's Colorado)",
+  "nameZh": "可可浸渍威士忌（斯特拉纳汉科罗拉多）",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "750ml",
+  "note": "需自制"
+ },
+ {
+  "raw": "Cointreau",
+  "nameEn": "Cointreau",
+  "nameZh": "君度橙酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cointreau 利口酒",
+  "nameEn": "Cointreau",
+  "nameZh": "君度橙酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cointreau 橙味利口酒",
+  "nameEn": "Cointreau",
+  "nameZh": "君度橙酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier Abricot 利口酒",
+  "nameEn": "Combier Abricot Liqueur",
+  "nameZh": "康贝杏子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier Abricot 杏子利口酒",
+  "nameEn": "Combier Abricot Liqueur",
+  "nameZh": "康贝杏子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier Crème de Fruits Rouges 利口酒",
+  "nameEn": "Combier Crème de Fruits Rouges",
+  "nameZh": "康贝红果利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier Kümmel 利口酒",
+  "nameEn": "Combier Kümmel Liqueur",
+  "nameZh": "康贝葛缕子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier Kümmel 茴香利口酒",
+  "nameEn": "Combier Kümmel Liqueur",
+  "nameZh": "康贝葛缕子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier Liqueur d’Orange",
+  "nameEn": "Combier Liqueur d'Orange",
+  "nameZh": "康贝橙味利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier Pêche de Vigne 桃子利口酒",
+  "nameEn": "Combier Pêche de Vigne Liqueur",
+  "nameZh": "康贝桃子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier d’Orange 利口酒 或 Pierre Ferrand dry curaçao 利口酒",
+  "nameEn": "Combier Liqueur d'Orange or Pierre Ferrand Dry Curaçao",
+  "nameZh": "康贝橙味利口酒或皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": "可互换使用"
+ },
+ {
+  "raw": "Combier kümmel 利口酒",
+  "nameEn": "Combier Kümmel Liqueur",
+  "nameZh": "康贝葛缕子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier 桃子利口酒",
+  "nameEn": "Combier Pêche de Vigne Liqueur",
+  "nameZh": "康贝桃子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier 橙味利口酒",
+  "nameEn": "Combier Liqueur d'Orange",
+  "nameZh": "康贝橙味利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier 玫瑰利口酒",
+  "nameEn": "Combier Rose Liqueur",
+  "nameZh": "康贝玫瑰利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier 红果利口酒",
+  "nameEn": "Combier Crème de Fruits Rouges",
+  "nameZh": "康贝红果利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier 红色水果利口酒",
+  "nameEn": "Combier Crème de Fruits Rouges",
+  "nameZh": "康贝红果利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Combier 茴香利口酒",
+  "nameEn": "Combier 茴香利口酒",
+  "nameZh": "Combier 茴香利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Compass Box Great King St. blended Scotch 威士忌",
+  "nameEn": "Compass Box Great King Street Blended Scotch Whisky",
+  "nameZh": "指南针大国王街调和苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Compass Box Great King St. 调和苏格兰威士忌",
+  "nameEn": "Compass Box Great King Street Blended Scotch Whisky",
+  "nameZh": "指南针大国王街调和苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Contratto 白味美思",
+  "nameEn": "Contratto Bianco Vermouth",
+  "nameZh": "孔特拉托白味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Courvoisier VSOP 干邑",
+  "nameEn": "Courvoisier VSOP Cognac",
+  "nameZh": "拿破仑VSOP干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Courvoisier VSOP 干邑白兰地",
+  "nameEn": "Courvoisier VSOP Cognac",
+  "nameZh": "拿破仑VSOP干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Courvoisier VSOP 干邑白兰地（或 Lustau Don Nuño oloroso 雪利酒）",
+  "nameEn": "Courvoisier VSOP Cognac or Lustau Don Nuño Oloroso Sherry",
+  "nameZh": "拿破仑VSOP干邑或卢斯托唐努诺奥罗罗索雪利酒",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可互换使用"
+ },
+ {
+  "raw": "Courvoisier VSOP 干邑（白兰地）",
+  "nameEn": "Courvoisier VSOP Cognac",
+  "nameZh": "拿破仑VSOP干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Courvoisier VSOP 白兰地",
+  "nameEn": "Courvoisier VSOP Cognac",
+  "nameZh": "拿破仑VSOP干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Crop 有机柠檬伏特加",
+  "nameEn": "Crop Organic Meyer Lemon Vodka",
+  "nameZh": "克罗普有机柠檬伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Crown Royal 加拿大威士忌",
+  "nameEn": "Crown Royal Canadian Whisky",
+  "nameZh": "皇冠加拿大威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cruzan Estate Diamond 黑朗姆酒",
+  "nameEn": "Cruzan Estate Diamond Dark Rum",
+  "nameZh": "克鲁赞庄园钻石黑朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cruzan 陈年深色朗姆酒",
+  "nameEn": "Cruzan Aged Dark Rum",
+  "nameZh": "克鲁赞陈年黑朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cruzan 黑朗姆酒",
+  "nameEn": "Cruzan Dark Rum",
+  "nameZh": "克鲁赞黑朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Crème Yvette 紫罗兰利口酒",
+  "nameEn": "Crème Yvette",
+  "nameZh": "伊薇特紫罗兰利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cynar 利口酒",
+  "nameEn": "Cynar",
+  "nameZh": "西娜尔洋蓟苦甜酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Cynar 苦艾酒",
+  "nameEn": "Cynar",
+  "nameZh": "西娜尔洋蓟苦甜酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Dale DeGroff 多香果芳香苦精",
+  "nameEn": "Dale DeGroff's Pimento Aromatic Bitters",
+  "nameZh": "戴尔德格罗夫多香果芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Dale DeGroff's 多香果苦精",
+  "nameEn": "Dale DeGroff's Pimento Aromatic Bitters",
+  "nameZh": "戴尔德格罗夫多香果芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Dale DeGroff's 辣味苦精",
+  "nameEn": "Dale DeGroff's Pimento Aromatic Bitters",
+  "nameZh": "戴尔德格罗夫多香果芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Dale DeGroff's 辣味苦精 或 St. Elizabeth 多香果烈酒",
+  "nameEn": "Dale DeGroff's Pimento Aromatic Bitters or St. Elizabeth Allspice Dram",
+  "nameZh": "戴尔德格罗夫多香果芳香苦精或圣伊丽莎白多香果烈酒",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可互换使用"
+ },
+ {
+  "raw": "Dale DeGroff’s pimento bitters (or St. Elizabeth allspice dram)",
+  "nameEn": "Dale DeGroff's Pimento Aromatic Bitters or St. Elizabeth Allspice Dram",
+  "nameZh": "戴尔德格罗夫多香果芳香苦精或圣伊丽莎白多香果烈酒",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可互换使用"
+ },
+ {
+  "raw": "Dale DeGroff’s pimento 苦精 (or allspice dram)",
+  "nameEn": "Dale DeGroff's Pimento Aromatic Bitters or Allspice Dram",
+  "nameZh": "戴尔德格罗夫多香果芳香苦精或多香果烈酒",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可互换使用"
+ },
+ {
+  "raw": "Dale Degroff 多香果苦精",
+  "nameEn": "Dale DeGroff's Pimento Aromatic Bitters",
+  "nameZh": "戴尔德格罗夫多香果芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Del Maguey Vida 梅斯卡尔",
+  "nameEn": "Del Maguey Vida Mezcal",
+  "nameZh": "德尔马盖维达梅斯卡尔",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Dimmi Liquore di Milano",
+  "nameEn": "Dimmi Liquore di Milano",
+  "nameZh": "迪米米兰利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Dingle 爱尔兰壶蒸金酒",
+  "nameEn": "Dingle Original Gin",
+  "nameZh": "丁格尔爱尔兰壶式蒸馏金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Diplomático Blanco Reserve 朗姆酒",
+  "nameEn": "Diplomático Blanco Reserve Rum",
+  "nameZh": "外交官白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Diplomático Reserve 朗姆酒",
+  "nameEn": "Diplomático Reserva Rum",
+  "nameZh": "外交官珍藏朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Doc's 硬苹果酒 或 其他干苹果酒",
+  "nameEn": "Doc's Hard Apple Cider",
+  "nameZh": "Doc's 硬苹果酒",
+  "kind": "bottle",
+  "category": "苹果酒",
+  "priceCny": 30,
+  "volume": "330ml",
+  "note": "可用其他干苹果酒替代"
+ },
+ {
+  "raw": "Doc’s Draft hard apple cider (NY) or Orchard Hill hard apple cider (NY)",
+  "nameEn": "Doc's Draft Hard Apple Cider",
+  "nameZh": "Doc's 桶装硬苹果酒",
+  "kind": "bottle",
+  "category": "苹果酒",
+  "priceCny": 30,
+  "volume": "330ml",
+  "note": "可用 Orchard Hill 硬苹果酒替代"
+ },
+ {
+  "raw": "Doc’s hard apple cider 苹果酒",
+  "nameEn": "Doc's Hard Apple Cider",
+  "nameZh": "Doc's 硬苹果酒",
+  "kind": "bottle",
+  "category": "苹果酒",
+  "priceCny": 30,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "Dolin de Chambery Blanc 甜味美思",
+  "nameEn": "Dolin Blanc Vermouth de Chambéry",
+  "nameZh": "多林白味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Dolin de Chambery dry 苦艾酒 / Cinzano Rosso 甜苦艾酒",
+  "nameEn": "Dolin Dry Vermouth de Chambéry",
+  "nameZh": "多林干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": "可用仙山露红味美思替代；苦艾酒为味美思的旧译"
+ },
+ {
+  "raw": "Dolin de Chambery 干味美思",
+  "nameEn": "Dolin Dry Vermouth de Chambéry",
+  "nameZh": "多林干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Dolin de Chambery 干味苦艾酒",
+  "nameEn": "Dolin Dry Vermouth de Chambéry",
+  "nameZh": "多林干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": "苦艾酒为味美思的旧译"
+ },
+ {
+  "raw": "Dolin de Chambery 甜味美思",
+  "nameEn": "Dolin Rouge Vermouth de Chambéry",
+  "nameZh": "多林红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Dolin de Chambery 甜味苦艾酒",
+  "nameEn": "Dolin Rouge Vermouth de Chambéry",
+  "nameZh": "多林红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": "苦艾酒为味美思的旧译"
+ },
+ {
+  "raw": "Dolin de Chambéry 甜味苦艾酒",
+  "nameEn": "Dolin Rouge Vermouth de Chambéry",
+  "nameZh": "多林红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": "苦艾酒为味美思的旧译"
+ },
+ {
+  "raw": "Domaine de Canton 姜味利口酒",
+  "nameEn": "Domaine de Canton Ginger Liqueur",
+  "nameZh": "康顿庄园姜味利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Domaine de Canton 生姜利口酒",
+  "nameEn": "Domaine de Canton Ginger Liqueur",
+  "nameZh": "康顿庄园姜味利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Don Q añejo 朗姆酒",
+  "nameEn": "Don Q Añejo Rum",
+  "nameZh": "唐Q陈酿朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Dr. Adam Elmegirab's Boker's 苦精或安戈斯图拉苦精",
+  "nameEn": "Dr. Adam Elmegirab's Boker's Bitters",
+  "nameZh": "亚当医生博克苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可用安高天娜芳香苦精替代"
+ },
+ {
+  "raw": "Dr. Adam Elmegirab’s Boker’s bitters or Angostura 苦精",
+  "nameEn": "Dr. Adam Elmegirab's Boker's Bitters",
+  "nameZh": "亚当医生博克苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可用安高天娜芳香苦精替代"
+ },
+ {
+  "raw": "Dr. Adam Elmegirab’s Boker’s 苦精 or The Bitter Truth Jerry Thomas 苦精",
+  "nameEn": "Dr. Adam Elmegirab's Boker's Bitters",
+  "nameZh": "亚当医生博克苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可用苦精真谛杰瑞托马斯苦精替代"
+ },
+ {
+  "raw": "Dr. Adam Elmegirab’s Boker’s 苦精 或 安格斯图拉 苦精",
+  "nameEn": "Dr. Adam Elmegirab's Boker's Bitters",
+  "nameZh": "亚当医生博克苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可用安高天娜芳香苦精替代"
+ },
+ {
+  "raw": "Drambuie 利口酒",
+  "nameEn": "Drambuie Liqueur",
+  "nameZh": "杜林标利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Drappier Brut 香槟（非年份）",
+  "nameEn": "Drappier Brut Champagne (Non-Vintage)",
+  "nameZh": "德拉皮耶天然香槟（无年份）",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Dubonnet Rouge 开胃酒 or Bonal Quinquina 开胃酒",
+  "nameEn": "Dubonnet Rouge Aperitif",
+  "nameZh": "杜本内红开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": "可用波纳尔金鸡纳开胃酒替代"
+ },
+ {
+  "raw": "Dutch’s Spirits peach 白兰地 (or house-made Peach 白兰地)",
+  "nameEn": "Dutch's Spirits Peach Brandy",
+  "nameZh": "Dutch's Spirits 桃子白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": "可用自制桃子白兰地替代"
+ },
+ {
+  "raw": "Elijah Craig 12 Year Old 单桶波本威士忌",
+  "nameEn": "Elijah Craig 12 Year Old Single Barrel Bourbon Whiskey",
+  "nameZh": "伊莱贾·克雷格12年单桶波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 400,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Elijah Craig 12年波本威士忌",
+  "nameEn": "Elijah Craig 12 Year Old Bourbon Whiskey",
+  "nameZh": "伊莱贾·克雷格12年波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Emile Pernot Vieux Pontarlier 苦艾酒",
+  "nameEn": "Emile Pernot Vieux Pontarlier Absinthe",
+  "nameZh": "埃米尔·佩尔诺老蓬塔利耶苦艾酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 500,
+  "volume": "700ml",
+  "note": "苦艾酒(Absinthe)归为利口酒或烈酒"
+ },
+ {
+  "raw": "Empire Brewing Company Downtown Brown 啤酒（平静）",
+  "nameEn": "Empire Brewing Company Downtown Brown Ale",
+  "nameZh": "帝国酿酒公司市中心棕色艾尔啤酒",
+  "kind": "bottle",
+  "category": "啤酒",
+  "priceCny": 30,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "Espolòn blanco 龙舌兰",
+  "nameEn": "Espolòn Blanco Tequila",
+  "nameZh": "埃斯波伦白龙舌兰",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Espolòn reposado 龙舌兰",
+  "nameEn": "Espolòn Reposado Tequila",
+  "nameZh": "埃斯波伦微陈龙舌兰",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Esprit de June 利口酒",
+  "nameEn": "Esprit de June Liqueur",
+  "nameZh": "六月精灵利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Etter Zuger Kirsch 樱桃白兰地",
+  "nameEn": "Etter Zuger Kirsch",
+  "nameZh": "埃特楚格樱桃白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Etter Zuger framboise 生命之水",
+  "nameEn": "Etter Zuger Framboise Eau-de-Vie",
+  "nameZh": "埃特楚格覆盆子生命之水",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": "生命之水(Eau-de-Vie)属于水果白兰地"
+ },
+ {
+  "raw": "Etter Zuger kirsch 樱桃白兰地",
+  "nameEn": "Etter Zuger Kirsch",
+  "nameZh": "埃特楚格樱桃白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Etter Zuger kirsch 白兰地",
+  "nameEn": "Etter Zuger Kirsch",
+  "nameZh": "埃特楚格樱桃白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Etter Zuger 樱桃白兰地",
+  "nameEn": "Etter Zuger Kirsch",
+  "nameZh": "埃特楚格樱桃白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Etter Zuger 覆盆子白兰地",
+  "nameEn": "Etter Zuger Framboise Eau-de-Vie",
+  "nameZh": "埃特楚格覆盆子生命之水",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Evan Williams 邦德波本威士忌",
+  "nameEn": "Evan Williams Bottled-in-Bond Bourbon Whiskey",
+  "nameZh": "埃文威廉姆斯保税波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Famous Grouse Black Grouse 苏格兰混合威士忌",
+  "nameEn": "The Famous Grouse Black Grouse Blended Scotch Whisky",
+  "nameZh": "威雀黑雀调和苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Faretti 意式脆饼利口酒",
+  "nameEn": "Faretti Biscotti Famosi Liqueur",
+  "nameZh": "法雷蒂意式脆饼利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Farmer's 浸泡冷冻蓝莓的小批量有机金酒",
+  "nameEn": "Farmer's Organic Gin (Infused with Frozen Blueberries)",
+  "nameZh": "Farmer's 有机金酒（冷冻蓝莓浸渍）",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": "需使用Farmer's有机金酒自制浸渍"
+ },
+ {
+  "raw": "Farmer's 浸泡新鲜覆盆子、草莓和蓝莓的小批量有机金酒",
+  "nameEn": "Farmer's Organic Gin (Infused with Fresh Berries)",
+  "nameZh": "Farmer's 有机金酒（新鲜综合莓果浸渍）",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "需使用Farmer's有机金酒自制浸渍"
+ },
+ {
+  "raw": "Fee Brothers 大黄苦精",
+  "nameEn": "Fee Brothers Rhubarb Bitters",
+  "nameZh": "费氏兄弟大黄苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 100,
+  "volume": "150ml",
+  "note": ""
+ },
+ {
+  "raw": "Fee Brothers 樱桃苦精或 Regans 6号橙味苦精",
+  "nameEn": "Fee Brothers Cherry Bitters",
+  "nameZh": "费氏兄弟樱桃苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 100,
+  "volume": "150ml",
+  "note": "可用里根6号橙味苦精替代"
+ },
+ {
+  "raw": "Fernet-Branca 利口酒",
+  "nameEn": "Fernet-Branca",
+  "nameZh": "菲奈特·布兰卡苦味酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Fernet-Branca 菲奈特·布兰卡利口酒(意大利)",
+  "nameEn": "Fernet-Branca",
+  "nameZh": "菲奈特·布兰卡苦味酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Fever-Tree 或 Q 姜汁啤酒",
+  "nameEn": "Fever-Tree Ginger Beer",
+  "nameZh": "芬味树姜汁啤酒",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 15,
+  "volume": "200ml",
+  "note": "可用Q姜汁啤酒替代"
+ },
+ {
+  "raw": "Fidencio Classico Mezcal Vida 梅斯卡尔",
+  "nameEn": "Fidencio Clásico Mezcal",
+  "nameZh": "菲登西奥经典梅斯卡尔",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": "亦可用Del Maguey Vida梅斯卡尔替代"
+ },
+ {
+  "raw": "Foro extra dry 有机苦艾酒",
+  "nameEn": "Foro Extra Dry Vermouth",
+  "nameZh": "弗罗特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": "苦艾酒为味美思的旧译"
+ },
+ {
+  "raw": "Foro 特干有机味美思",
+  "nameEn": "Foro Extra Dry Vermouth",
+  "nameZh": "弗罗特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Four Roses 小批量波本威士忌",
+  "nameEn": "Four Roses Small Batch Bourbon Whiskey",
+  "nameZh": "四玫瑰小批量波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Frapin VSOP 干邑",
+  "nameEn": "Frapin VSOP Cognac",
+  "nameZh": "法拉宾 VSOP 干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "French roast coffee (strongly brewed and cooled to room temperature or chilled)",
+  "nameEn": "French Roast Coffee (Brewed and Chilled)",
+  "nameZh": "法式烘焙咖啡（冲泡并冷藏）",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "强烈冲泡并冷却至室温或冷藏"
+ },
+ {
+  "raw": "G-Vine Floraison 金酒",
+  "nameEn": "G'Vine Floraison Gin",
+  "nameZh": "纪凡花果香金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Galliano",
+  "nameEn": "Galliano L'Autentico",
+  "nameZh": "加林安诺利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "通常指原味加林安诺"
+ },
+ {
+  "raw": "George Dickel 12号田纳西威士忌",
+  "nameEn": "George Dickel No. 12 Tennessee Whisky",
+  "nameZh": "乔治迪科尔12号田纳西威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "George Dickel 黑麦威士忌",
+  "nameEn": "George Dickel Rye Whisky",
+  "nameZh": "乔治迪科尔黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 220,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "German Riesling (trocken or other dry style preferred)",
+  "nameEn": "German Riesling (Dry)",
+  "nameZh": "德国雷司令葡萄酒（干型）",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": "推荐 Trocken 或其他干型风格"
+ },
+ {
+  "raw": "Giffard Banane du Brésil",
+  "nameEn": "Giffard Banane du Brésil Liqueur",
+  "nameZh": "吉发第巴西香蕉利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Giffard Banane du Brésil 香蕉利口酒",
+  "nameEn": "Giffard Banane du Brésil Liqueur",
+  "nameZh": "吉发第巴西香蕉利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Giffard Pamplemousse Rose 葡萄柚玫瑰利口酒",
+  "nameEn": "Giffard Pamplemousse Rose Liqueur",
+  "nameZh": "吉发第粉红葡萄柚利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": "Pamplemousse Rose 指粉红葡萄柚"
+ },
+ {
+  "raw": "Giffard Vanille de Madagascar 香草利口酒",
+  "nameEn": "Giffard Vanille de Madagascar Liqueur",
+  "nameZh": "吉发第马达加斯加香草利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Giffard 巴西香蕉利口酒",
+  "nameEn": "Giffard Banane du Brésil Liqueur",
+  "nameZh": "吉发第巴西香蕉利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Giffard 黑莓利口酒",
+  "nameEn": "Giffard Crème de Mûre",
+  "nameZh": "吉发第黑莓利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 110,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Gosset Brut 香槟（非年份）",
+  "nameEn": "Gosset Brut Excellence Champagne (NV)",
+  "nameZh": "高塞特极干型香槟（无年份）",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Graham's 宝石红波特酒",
+  "nameEn": "Graham's Fine Ruby Port",
+  "nameZh": "葛兰姆宝石红波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Graham’s 10 Year tawny port 桃红波特酒",
+  "nameEn": "Graham's 10 Year Old Tawny Port",
+  "nameZh": "葛兰姆10年茶色波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": "Tawny 译为茶色波特，非桃红"
+ },
+ {
+  "raw": "Graham’s 10 Year tawny 波特酒",
+  "nameEn": "Graham's 10 Year Old Tawny Port",
+  "nameZh": "葛兰姆10年茶色波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Graham’s ruby 波特酒",
+  "nameEn": "Graham's Fine Ruby Port",
+  "nameZh": "葛兰姆宝石红波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Graham’s 红宝石波特酒",
+  "nameEn": "Graham's Fine Ruby Port",
+  "nameZh": "葛兰姆宝石红波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Gran Centenario Rosangel 玫瑰木槿浸泡龙舌兰",
+  "nameEn": "Gran Centenario Rosangel Tequila",
+  "nameZh": "百年纪念玫瑰木槿浸泡龙舌兰",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": "已停产，可用优质雷波萨多龙舌兰浸泡木槿花替代"
+ },
+ {
+  "raw": "Grand Marnier",
+  "nameEn": "Grand Marnier Cordon Rouge",
+  "nameZh": "柑曼怡香橙干邑利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Grand Marnier 君度橙酒",
+  "nameEn": "Grand Marnier Cordon Rouge",
+  "nameZh": "柑曼怡香橙干邑利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "原名写了君度，但 Grand Marnier 是柑曼怡"
+ },
+ {
+  "raw": "Grand Marnier 柑曼怡",
+  "nameEn": "Grand Marnier Cordon Rouge",
+  "nameZh": "柑曼怡香橙干邑利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "GrandTen Distilling Medford 朗姆酒 或 Berkshire Mountain Distillers Ragged Mountain 朗姆酒",
+  "nameEn": "GrandTen Distilling Medford Rum or Berkshire Mountain Distillers Ragged Mountain Rum",
+  "nameZh": "GrandTen Medford 朗姆酒 或 Berkshire Mountain Ragged Mountain 朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": "两款均为美国精酿朗姆酒，国内较难买到，可用其他优质深色朗姆酒替代"
+ },
+ {
+  "raw": "Greenhook Ginsmiths American dry 金酒",
+  "nameEn": "Greenhook Ginsmiths American Dry Gin",
+  "nameZh": "绿钩金匠美式干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 280,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Greenhook Ginsmiths Old Tom gin",
+  "nameEn": "Greenhook Ginsmiths Old Tom Gin",
+  "nameZh": "绿钩金匠老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Greenhook Ginsmiths Old Tom 金酒 or Ransom Old Tom 金酒",
+  "nameEn": "Greenhook Ginsmiths Old Tom Gin or Ransom Old Tom Gin",
+  "nameZh": "绿钩金匠老汤姆金酒 或 兰瑟姆老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Greenhook Ginsmiths Old Tom 金酒 或 Ransom Old Tom 金酒",
+  "nameEn": "Greenhook Ginsmiths Old Tom Gin or Ransom Old Tom Gin",
+  "nameZh": "绿钩金匠老汤姆金酒 或 兰瑟姆老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Greenhook Ginsmiths 美国干金酒",
+  "nameEn": "Greenhook Ginsmiths American Dry Gin",
+  "nameZh": "绿钩金匠美式干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 280,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Greenhook Ginsmiths 美式干金酒",
+  "nameEn": "Greenhook Ginsmiths American Dry Gin",
+  "nameZh": "绿钩金匠美式干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 280,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Grey Goose 伏特加",
+  "nameEn": "Grey Goose Vodka",
+  "nameZh": "灰雁伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Guinness 爱尔兰世涛啤酒",
+  "nameEn": "Guinness Stout",
+  "nameZh": "健力士世涛啤酒",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 15,
+  "volume": "330ml",
+  "note": "啤酒归入软饮或单独分类，此处归入软饮"
+ },
+ {
+  "raw": "Gum 糖浆 (optional)",
+  "nameEn": "Gum Syrup",
+  "nameZh": "阿拉伯胶糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "可选"
+ },
+ {
+  "raw": "G’Vine Floraison 金酒",
+  "nameEn": "G'Vine Floraison Gin",
+  "nameZh": "纪凡花果香金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Haig Dimple Pinch 15年苏格兰威士忌",
+  "nameEn": "Haig Dimple Pinch 15 Year Old Blended Scotch Whisky",
+  "nameZh": "添宝15年苏格兰调和威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hardy VSOP 干邑",
+  "nameEn": "Hardy VSOP Cognac",
+  "nameZh": "哈迪 VSOP 干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hayman 老汤姆金酒或 Etter Zuger 樱桃白兰地(可选)",
+  "nameEn": "Hayman's Old Tom Gin or Etter Zuger Kirsch (optional)",
+  "nameZh": "海曼老汤姆金酒 或 艾特楚格樱桃白兰地（可选）",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "Kirsch 为樱桃白兰地（生命之水）"
+ },
+ {
+  "raw": "Hayman's Old Tom 金酒",
+  "nameEn": "Hayman's Old Tom Gin",
+  "nameZh": "海曼老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hayman's Old Tom 金酒 或 Beefeater London Dry 金酒",
+  "nameEn": "Hayman's Old Tom Gin or Beefeater London Dry Gin",
+  "nameZh": "海曼老汤姆金酒 或 必富达伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hayman's 老汤姆金酒",
+  "nameEn": "Hayman's Old Tom Gin",
+  "nameZh": "海曼老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hayman's 老汤姆金酒 或 Bols 荷式金酒",
+  "nameEn": "Hayman's Old Tom Gin or Bols Genever",
+  "nameZh": "海曼老汤姆金酒 或 波士荷式金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hayman’s Old Tom gin (or Tanqueray No. Ten gin)",
+  "nameEn": "Hayman's Old Tom Gin (or Tanqueray No. Ten Gin)",
+  "nameZh": "海曼老汤姆金酒（或 添加利10号金酒）",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hayman’s Old Tom 金酒",
+  "nameEn": "Hayman's Old Tom Gin",
+  "nameZh": "海曼老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Heering 樱桃利口酒",
+  "nameEn": "Cherry Heering Liqueur",
+  "nameZh": "希林樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 160,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hendricks 亨利爵士金酒",
+  "nameEn": "Hendrick's Gin",
+  "nameZh": "亨利爵士金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hendricks 金酒",
+  "nameEn": "Hendrick's Gin",
+  "nameZh": "亨利爵士金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Henry McKenna 黑樱桃浸泡波本威士忌",
+  "nameEn": "Henry McKenna Bourbon (Black Cherry Infused)",
+  "nameZh": "亨利麦肯纳波本威士忌（黑樱桃浸泡）",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "750ml",
+  "note": "使用亨利麦肯纳波本威士忌自制浸泡"
+ },
+ {
+  "raw": "Herbsaint",
+  "nameEn": "Herbsaint Original",
+  "nameZh": "赫圣茴香酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": "新奥尔良产的茴香酒，可用苦艾酒或帕斯提斯替代"
+ },
+ {
+  "raw": "Hermann J. Wiemer 干型雷司令葡萄酒（Finger Lakes）",
+  "nameEn": "Hermann J. Wiemer Dry Riesling",
+  "nameZh": "赫尔曼·维默干型雷司令葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": "产自美国五指湖区"
+ },
+ {
+  "raw": "High West Campfire 威士忌",
+  "nameEn": "High West Campfire Whiskey",
+  "nameZh": "高西营火威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 550,
+  "volume": "750ml",
+  "note": "混合了波本、黑麦和苏格兰威士忌"
+ },
+ {
+  "raw": "High West Rendezvous rye whiskey 黑麦威士忌",
+  "nameEn": "High West Rendezvous Rye Whiskey",
+  "nameZh": "高西会合黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 600,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "High West Rendezvous 黑麦威士忌",
+  "nameEn": "High West Rendezvous Rye Whiskey",
+  "nameZh": "高西会合黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 600,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hine VSOP 干邑",
+  "nameEn": "Hine Rare VSOP Cognac",
+  "nameZh": "御鹿VSOP干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Hine VSOP 白兰地",
+  "nameEn": "Hine Rare VSOP Cognac",
+  "nameZh": "御鹿VSOP干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Horsford's 酸性磷酸盐",
+  "nameEn": "Horsford's Acid Phosphate",
+  "nameZh": "霍斯福德酸性磷酸盐",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 150,
+  "volume": "250ml",
+  "note": "可用于替代柑橘汁提供酸度"
+ },
+ {
+  "raw": "Horsford’s 酸磷酸盐",
+  "nameEn": "Horsford's Acid Phosphate",
+  "nameZh": "霍斯福德酸性磷酸盐",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 150,
+  "volume": "250ml",
+  "note": "可用于替代柑橘汁提供酸度"
+ },
+ {
+  "raw": "Inniskillin 冰酒(或苏玳，如果没有的话)",
+  "nameEn": "Inniskillin Icewine",
+  "nameZh": "云岭冰酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 500,
+  "volume": "375ml",
+  "note": "可用苏玳甜白葡萄酒替代"
+ },
+ {
+  "raw": "Iris 利口酒(美国)",
+  "nameEn": "Iris Liqueur",
+  "nameZh": "鸢尾花利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": "美国产"
+ },
+ {
+  "raw": "Irish Mist 利口酒",
+  "nameEn": "Irish Mist Liqueur",
+  "nameZh": "爱尔兰之雾利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Jim Beam 波本威士忌",
+  "nameEn": "Jim Beam Bourbon Whiskey",
+  "nameZh": "占边波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 80,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Jim Beam 禁酒令前风格90 proof黑麦威士忌",
+  "nameEn": "Jim Beam Pre-Prohibition Style Rye Whiskey",
+  "nameZh": "占边禁酒令前风格黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": "90 Proof"
+ },
+ {
+  "raw": "Jim Beam 预禁时期风格黑麦威士忌",
+  "nameEn": "Jim Beam Pre-Prohibition Style Rye Whiskey",
+  "nameZh": "占边禁酒令前风格黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Jim Beam 黑麦威士忌",
+  "nameEn": "Jim Beam Rye Whiskey",
+  "nameZh": "占边黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Johnnie Walker Black blended Scotch 威士忌",
+  "nameEn": "Johnnie Walker Black Label Blended Scotch Whisky",
+  "nameZh": "尊尼获加黑牌调和苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Johnnie Walker Black blended 苏格兰威士忌",
+  "nameEn": "Johnnie Walker Black Label Blended Scotch Whisky",
+  "nameZh": "尊尼获加黑牌调和苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Johnny Drum Private Stock 100 proof 波本威士忌",
+  "nameEn": "Johnny Drum Private Stock Bourbon Whiskey",
+  "nameZh": "强尼鼓私藏波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": "101 Proof"
+ },
+ {
+  "raw": "Kelt VSOP 干邑白兰地",
+  "nameEn": "Kelt VSOP Cognac",
+  "nameZh": "凯尔特VSOP干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 500,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Ketel One 伏特加",
+  "nameEn": "Ketel One Vodka",
+  "nameZh": "坎特一号伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Knob Creek straight rye 威士忌",
+  "nameEn": "Knob Creek Straight Rye Whiskey",
+  "nameZh": "诺布溪纯黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Knob Creek straight 黑麦威士忌",
+  "nameEn": "Knob Creek Straight Rye Whiskey",
+  "nameZh": "诺布溪纯黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Knob Creek 黑麦威士忌",
+  "nameEn": "Knob Creek Rye Whiskey",
+  "nameZh": "诺布溪黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Kronan 瑞典潘趣酒",
+  "nameEn": "Kronan Swedish Punsch",
+  "nameZh": "克罗南瑞典潘趣酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Kübler 苦艾酒",
+  "nameEn": "Kübler Absinthe",
+  "nameZh": "库伯勒苦艾酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "La Quintinye Royal 特干味美思",
+  "nameEn": "La Quintinye Vermouth Royal Extra Dry",
+  "nameZh": "昆廷皇家特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "La Quintinye Vermouth Royal Rouge",
+  "nameEn": "La Quintinye Vermouth Royal Rouge",
+  "nameZh": "昆廷皇家红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "La Quintinye Vermouth Royal Rouge 甜苦艾酒",
+  "nameEn": "La Quintinye Vermouth Royal Rouge",
+  "nameZh": "昆廷皇家红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": "原文误译为甜苦艾酒，实为甜味美思"
+ },
+ {
+  "raw": "Laird's 苹果白兰地（可选）",
+  "nameEn": "Laird's Applejack",
+  "nameZh": "莱尔德苹果白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Laird’s 70.5 Year Old 苹果白兰地",
+  "nameEn": "Laird's 7 1/2 Year Old Apple Brandy",
+  "nameZh": "莱尔德7年半苹果白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": "原文70.5应为7.5年"
+ },
+ {
+  "raw": "Laird’s bonded applejack 苹果白兰地",
+  "nameEn": "Laird's Bottled in Bond Straight Apple Brandy",
+  "nameZh": "莱尔德保税苹果白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Laird’s bonded 苹果白兰地",
+  "nameEn": "Laird's Bottled in Bond Straight Apple Brandy",
+  "nameZh": "莱尔德保税苹果白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Larceny 波本威士忌",
+  "nameEn": "Larceny Bourbon Whiskey",
+  "nameZh": "盗窃波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Laurent-Perrier Brut 香槟（非年份）",
+  "nameEn": "Laurent-Perrier La Cuvée Brut Champagne",
+  "nameZh": "罗兰百悦干型香槟",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": "非年份"
+ },
+ {
+  "raw": "Laurent-Perrier 干型香槟",
+  "nameEn": "Laurent-Perrier La Cuvée Brut Champagne",
+  "nameZh": "罗兰百悦干型香槟",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lea & Perrins 伍斯特酱",
+  "nameEn": "Lea & Perrins Worcestershire Sauce",
+  "nameZh": "李派林喼汁",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 30,
+  "volume": "290ml",
+  "note": "伍斯特酱"
+ },
+ {
+  "raw": "Lejay 第戎黑醋栗利口酒",
+  "nameEn": "Lejay Crème de Cassis de Dijon",
+  "nameZh": "乐加第戎黑醋栗利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Les vergers Boiron 梨子果泥",
+  "nameEn": "Les Vergers Boiron Pear Purée",
+  "nameZh": "宝茸梨子果泥",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 100,
+  "volume": "1000g",
+  "note": ""
+ },
+ {
+  "raw": "Lustau Don Nino 奥罗罗索雪莉酒",
+  "nameEn": "Lustau Don Nuño Oloroso Sherry",
+  "nameZh": "卢斯托唐努诺奥罗罗索雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lustau Don Nuño Oloroso 雪利酒",
+  "nameEn": "Lustau Don Nuño Oloroso Sherry",
+  "nameZh": "卢斯托唐努诺奥罗罗索雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lustau Don Nuño oloroso 雪利酒",
+  "nameEn": "Lustau Don Nuño Oloroso Sherry",
+  "nameZh": "卢斯托唐努诺奥罗罗索雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lustau Don Nuño oloroso 雪莉酒",
+  "nameEn": "Lustau Don Nuño Oloroso Sherry",
+  "nameZh": "卢斯托唐努诺奥罗罗索雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lustau Don Nuño 奥罗索雪利酒",
+  "nameEn": "Lustau Don Nuño Oloroso Sherry",
+  "nameZh": "卢斯托唐努诺奥罗罗索雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lustau Don Nuño 奥罗露索雪莉酒",
+  "nameEn": "Lustau Don Nuño Oloroso Sherry",
+  "nameZh": "卢斯托唐努诺奥罗罗索雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lustau La Ina 菲诺雪莉酒",
+  "nameEn": "Lustau La Ina Fino Sherry",
+  "nameZh": "卢斯托拉伊娜菲诺雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lustau Manzanilla or amontillado 雪莉酒",
+  "nameEn": "Lustau Manzanilla or Amontillado Sherry",
+  "nameZh": "卢斯托曼萨尼亚或阿蒙蒂亚雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lustau Puerto Fino Solera Reserva 雪莉酒",
+  "nameEn": "Lustau Puerto Fino Solera Reserva Sherry",
+  "nameZh": "卢斯托波多菲诺索莱拉珍藏雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Lustau Solera Gran Reserva 白兰地",
+  "nameEn": "Lustau Solera Gran Reserva Brandy",
+  "nameZh": "卢斯托索莱拉特级珍藏白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo Triplum 三罗酒",
+  "nameEn": "Luxardo Triplum Triple Sec",
+  "nameZh": "路萨朵三秒利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo Triplum 橙味利口酒",
+  "nameEn": "Luxardo Triplum Triple Sec",
+  "nameZh": "路萨朵三秒利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo Triplum 橙味利口酒（可选，未使用橙味金酒时加入）",
+  "nameEn": "Luxardo Triplum Triple Sec",
+  "nameZh": "路萨朵三秒利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": "可选，未使用橙味金酒时加入"
+ },
+ {
+  "raw": "Luxardo maraschino 利口酒",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo 杏仁甜酒 (amaretto)",
+  "nameEn": "Luxardo Amaretto",
+  "nameZh": "路萨朵杏仁利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo 樱桃利口酒",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo 樱桃利口酒（或 Crème de Noyaux）",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": "或用 Crème de Noyaux 替代"
+ },
+ {
+  "raw": "Luxardo 玛拉斯奇诺利口酒",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo 玛拉斯奇诺樱桃利口酒",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo 马拉斯奇诺利口酒",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo 马拉斯奇诺樱桃利口酒",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo 马拉斯奇诺酒",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo 马拉斯奇诺黑樱桃利口酒",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Luxardo 黑樱桃利口酒或 Grand Marnier（可选）",
+  "nameEn": "Luxardo Maraschino Liqueur",
+  "nameZh": "路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": "或用柑曼怡替代"
+ },
+ {
+  "raw": "Maker’s 46 威士忌 或 Stranahan’s Colorado 威士忌",
+  "nameEn": "Maker's 46 Bourbon",
+  "nameZh": "美格46波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": "或用 Stranahan's Colorado 威士忌替代"
+ },
+ {
+  "raw": "Marie Brizard Apry 杏子利口酒",
+  "nameEn": "Marie Brizard Apry",
+  "nameZh": "玛丽白莎杏子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Marie Brizard Parfait d’Amour",
+  "nameEn": "Marie Brizard Parfait d'Amour",
+  "nameZh": "玛丽白莎紫罗兰利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Marie Brizard Parfait d’Amour 利口酒",
+  "nameEn": "Marie Brizard Parfait d'Amour",
+  "nameZh": "玛丽白莎紫罗兰利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Marie Brizard green crème de menthe",
+  "nameEn": "Marie Brizard Green Crème de Menthe",
+  "nameZh": "玛丽白莎绿薄荷利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Marie Brizard white crème de cacao",
+  "nameEn": "Marie Brizard White Crème de Cacao",
+  "nameZh": "玛丽白莎白可可利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Marie Brizard 白可可利口酒",
+  "nameEn": "Marie Brizard White Crème de Cacao",
+  "nameZh": "玛丽白莎白可可利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Marie Brizard 茴香利口酒",
+  "nameEn": "Marie Brizard Anisette",
+  "nameZh": "玛丽白莎茴香利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Marie Brizard 茴香甜酒",
+  "nameEn": "Marie Brizard Anisette",
+  "nameZh": "玛丽白莎茴香利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Martell VSOP 干邑",
+  "nameEn": "Martell VSOP Cognac",
+  "nameZh": "马爹利VSOP干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Martini & Rossi sweet 味美思",
+  "nameEn": "Martini & Rossi Sweet Vermouth",
+  "nameZh": "马天尼红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Martini & Rossi 甜味美思",
+  "nameEn": "Martini & Rossi Sweet Vermouth",
+  "nameZh": "马天尼红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Martini & Rossi 甜味美思(冷藏)",
+  "nameEn": "Martini & Rossi Sweet Vermouth",
+  "nameZh": "马天尼红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "750ml",
+  "note": "需冷藏"
+ },
+ {
+  "raw": "Martini & Rossi 甜味苦艾酒",
+  "nameEn": "Martini & Rossi Sweet Vermouth",
+  "nameZh": "马天尼红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Martini & Rossi 甜苦艾酒",
+  "nameEn": "Martini & Rossi Sweet Vermouth",
+  "nameZh": "马天尼红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Martini & Rossi甜味苦艾酒",
+  "nameEn": "Martini & Rossi Sweet Vermouth",
+  "nameZh": "马天尼红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Martini Gran Lusso sweet 味美思",
+  "nameEn": "Martini Gran Lusso Vermouth",
+  "nameZh": "马天尼奢华红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Martini Gran Lusso 甜味美思",
+  "nameEn": "Martini Gran Lusso Vermouth",
+  "nameZh": "马天尼奢华红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Martini Gran Lusso 甜味苦艾酒",
+  "nameEn": "Martini Gran Lusso Vermouth",
+  "nameZh": "马天尼奢华红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "Martini and Rossi 甜味美思",
+  "nameEn": "Martini & Rossi Sweet Vermouth",
+  "nameZh": "马天尼红味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Mathilde 黑加仑利口酒",
+  "nameEn": "Mathilde Cassis Liqueur",
+  "nameZh": "玛蒂尔德黑加仑利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Maurin quina 开胃酒",
+  "nameEn": "Maurin Quina",
+  "nameZh": "莫林奎纳开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Meletti amaro",
+  "nameEn": "Amaro Meletti",
+  "nameZh": "梅莱蒂阿玛罗",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Meletti 阿玛罗",
+  "nameEn": "Amaro Meletti",
+  "nameZh": "梅莱蒂阿玛罗",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Michter's US 1 黑麦威士忌",
+  "nameEn": "Michter's US*1 Rye Whiskey",
+  "nameZh": "酩帝诗US*1黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Michter's 黑麦威士忌",
+  "nameEn": "Michter's Rye Whiskey",
+  "nameZh": "酩帝诗黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Michter’s US 1 single-barrel straight rye 威士忌",
+  "nameEn": "Michter's US*1 Single Barrel Straight Rye Whiskey",
+  "nameZh": "酩帝诗US*1单桶纯黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Midori 蜜瓜利口酒",
+  "nameEn": "Midori Melon Liqueur",
+  "nameZh": "蜜多丽蜜瓜利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Moccia Zabov zabaglione 利口酒",
+  "nameEn": "Moccia Zabov Zabaglione Liqueur",
+  "nameZh": "莫恰萨博夫蛋酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Monin gingerbread syrup",
+  "nameEn": "Monin Gingerbread Syrup",
+  "nameZh": "莫林姜饼糖浆",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 60,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Moët & Chandon brut NV 香槟",
+  "nameEn": "Moët & Chandon Brut Impérial NV",
+  "nameZh": "酩悦无年份干型香槟",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Myers 牙买加黑朗姆酒",
+  "nameEn": "Myers's Original Dark Rum",
+  "nameZh": "美雅士黑朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Myers's Original 黑朗姆酒",
+  "nameEn": "Myers's Original Dark Rum",
+  "nameZh": "美雅士黑朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Myers's 朗姆酒 (用于漂浮)",
+  "nameEn": "Myers's Original Dark Rum",
+  "nameZh": "美雅士黑朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": "用于漂浮"
+ },
+ {
+  "raw": "New York Distilling Company Dorothy Parker dry 金酒",
+  "nameEn": "Dorothy Parker American Gin",
+  "nameZh": "多萝西帕克金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "New York Distilling Company Dorothy Parker 干金酒",
+  "nameEn": "Dorothy Parker American Gin",
+  "nameZh": "多萝西帕克金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "New York Distilling Company Dorothy Parker 金酒",
+  "nameEn": "Dorothy Parker American Gin",
+  "nameZh": "多萝西帕克金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "New York Distilling Company Mister Katz’s Rock & Rye 黑麦威士忌",
+  "nameEn": "Mister Katz's Rock & Rye",
+  "nameZh": "卡茨先生冰糖黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "New York Distilling Company Perry's Tot 海军强度金酒",
+  "nameEn": "Perry's Tot Navy Strength Gin",
+  "nameZh": "佩里托特海军强度金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "New York Distilling Company Ragtime 黑麦威士忌",
+  "nameEn": "Ragtime Rye Whiskey",
+  "nameZh": "拉格泰姆黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Nicholson London dry 金酒 or Plymouth 金酒",
+  "nameEn": "Nicholson London Dry Gin",
+  "nameZh": "尼科尔森伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "可用普利茅斯金酒替代"
+ },
+ {
+  "raw": "Nino Franco Rustico 普洛赛克起泡酒",
+  "nameEn": "Nino Franco Rustico Prosecco",
+  "nameZh": "尼诺弗兰科乡村普洛赛克起泡酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Nino Franco Rustico 普罗塞克",
+  "nameEn": "Nino Franco Rustico Prosecco",
+  "nameZh": "尼诺弗兰科乡村普洛赛克起泡酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noel可可碎(法国)",
+  "nameEn": "Noel Cocoa Nibs",
+  "nameZh": "诺爱尔可可碎",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 80,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat Extra Dry 味美思",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat Extra Dry 干味美思",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat extra dry 味美思",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat extra dry 味美思 or dry Riesling (optional)",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": "可用干型雷司令替代"
+ },
+ {
+  "raw": "Noilly Prat extra dry 味美思*",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat extra dry 苦艾酒",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": "原文误译为苦艾酒，实为味美思"
+ },
+ {
+  "raw": "Noilly Prat extra 干味美思",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat sweet 味美思",
+  "nameEn": "Noilly Prat Sweet Vermouth",
+  "nameZh": "诺丽普拉特甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat 干味美思",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat 特干味美思",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat 特干味美思 (或甜味美思)",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": "可用甜味美思替代"
+ },
+ {
+  "raw": "Noilly Prat 特干味美思(法国)",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat 特干苦艾酒",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": "原文误译为苦艾酒，实为味美思"
+ },
+ {
+  "raw": "Noilly Prat 特干苦艾酒 或 Carpano 白苦艾酒",
+  "nameEn": "Noilly Prat Extra Dry Vermouth",
+  "nameZh": "诺丽普拉特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": "可用卡帕诺白味美思替代"
+ },
+ {
+  "raw": "Noilly Prat 甜味味美思",
+  "nameEn": "Noilly Prat Sweet Vermouth",
+  "nameZh": "诺丽普拉特甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Noilly Prat 甜味苦艾酒",
+  "nameEn": "Noilly Prat Sweet Vermouth",
+  "nameZh": "诺丽普拉特甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 90,
+  "volume": "750ml",
+  "note": "原文误译为苦艾酒，实为味美思"
+ },
+ {
+  "raw": "Nolet's Silver 金酒",
+  "nameEn": "Nolet's Silver Dry Gin",
+  "nameZh": "诺莱特银牌干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Nolet’s Silver dry 金酒 or Hendrick’s 金酒",
+  "nameEn": "Nolet's Silver Dry Gin",
+  "nameZh": "诺莱特银牌干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可用亨利爵士金酒替代"
+ },
+ {
+  "raw": "Nolet’s Silver 金酒",
+  "nameEn": "Nolet's Silver Dry Gin",
+  "nameZh": "诺莱特银牌干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Northland 蔓越莓汁",
+  "nameEn": "Northland Cranberry Juice",
+  "nameZh": "诺斯兰蔓越莓汁",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 30,
+  "volume": "1L",
+  "note": ""
+ },
+ {
+  "raw": "Old Forester 86 proof 波本威士忌",
+  "nameEn": "Old Forester 86 Proof Bourbon Whiskey",
+  "nameZh": "老林头86波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Old Grand-Dad 波本威士忌",
+  "nameEn": "Old Grand-Dad Bourbon Whiskey",
+  "nameZh": "老爷爷波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Old Overholt 黑麦威士忌",
+  "nameEn": "Old Overholt Rye Whiskey",
+  "nameZh": "老奥弗霍尔特黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 160,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Orchard Hill hard apple cider 苹果酒",
+  "nameEn": "Orchard Hill Hard Apple Cider",
+  "nameZh": "果园山硬苹果酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Pacifique 苦艾酒",
+  "nameEn": "Pacifique Absinthe",
+  "nameZh": "太平洋苦艾酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 400,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Pama 利口酒",
+  "nameEn": "Pama Pomegranate Liqueur",
+  "nameZh": "帕玛石榴利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Pama 石榴利口酒",
+  "nameEn": "Pama Pomegranate Liqueur",
+  "nameZh": "帕玛石榴利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Pernod Original Recipe 苦艾酒",
+  "nameEn": "Pernod Absinthe Original Recipe",
+  "nameZh": "潘诺苦艾酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pernod Original Recipe 苦艾酒（absinthe）",
+  "nameEn": "Pernod Absinthe Original Recipe",
+  "nameZh": "潘诺苦艾酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pernod 原味苦艾酒或 Granier 或 Pernod 茴香酒",
+  "nameEn": "Pernod Absinthe Original Recipe",
+  "nameZh": "潘诺苦艾酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可用Granier或潘诺茴香酒替代"
+ },
+ {
+  "raw": "Pernod 帕斯提斯酒",
+  "nameEn": "Pernod Pastis",
+  "nameZh": "潘诺茴香酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pernod 茴香酒",
+  "nameEn": "Pernod Pastis",
+  "nameZh": "潘诺茴香酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Peychaud's 苦精",
+  "nameEn": "Peychaud's Bitters",
+  "nameZh": "裴乔氏苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 100,
+  "volume": "148ml",
+  "note": ""
+ },
+ {
+  "raw": "Peychaud's 裴乔氏苦精",
+  "nameEn": "Peychaud's Bitters",
+  "nameZh": "裴乔氏苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 100,
+  "volume": "148ml",
+  "note": ""
+ },
+ {
+  "raw": "Peychaud’s 苦精",
+  "nameEn": "Peychaud's Bitters",
+  "nameZh": "裴乔氏苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 100,
+  "volume": "148ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand 1840 干邑",
+  "nameEn": "Pierre Ferrand 1840 Original Formula Cognac",
+  "nameZh": "皮埃尔费朗1840干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand 1840 干邑或 Royer Force 53 VSOP 干邑",
+  "nameEn": "Pierre Ferrand 1840 Original Formula Cognac",
+  "nameZh": "皮埃尔费朗1840干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可用路易老爷53度VSOP干邑替代"
+ },
+ {
+  "raw": "Pierre Ferrand Ambre 干邑",
+  "nameEn": "Pierre Ferrand Ambre Cognac",
+  "nameZh": "皮埃尔费朗琥珀干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 380,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand Ambre 干邑白兰地",
+  "nameEn": "Pierre Ferrand Ambre Cognac",
+  "nameZh": "皮埃尔费朗琥珀干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 380,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand Ambre 白兰地",
+  "nameEn": "Pierre Ferrand Ambre Cognac",
+  "nameZh": "皮埃尔费朗琥珀干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 380,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand Pineau des Charentes 加强葡萄酒",
+  "nameEn": "Pierre Ferrand Pineau des Charentes",
+  "nameZh": "皮埃尔费朗夏朗德皮诺酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand dry curaçao",
+  "nameEn": "Pierre Ferrand Dry Curaçao",
+  "nameZh": "皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand dry curaçao 利口酒",
+  "nameEn": "Pierre Ferrand Dry Curaçao",
+  "nameZh": "皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand dry curaçao 橙皮利口酒 或 Marie Brizard orange curaçao 橙皮利口酒",
+  "nameEn": "Pierre Ferrand Dry Curaçao",
+  "nameZh": "皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": "可用玛丽莎橙皮利口酒替代"
+ },
+ {
+  "raw": "Pierre Ferrand 干型库拉索",
+  "nameEn": "Pierre Ferrand Dry Curaçao",
+  "nameZh": "皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand 干型库拉索(或柑曼怡)",
+  "nameEn": "Pierre Ferrand Dry Curaçao",
+  "nameZh": "皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": "可用柑曼怡替代"
+ },
+ {
+  "raw": "Pierre Ferrand 干型库拉索或柑曼怡",
+  "nameEn": "Pierre Ferrand Dry Curaçao or Grand Marnier",
+  "nameZh": "皮埃尔费朗干型库拉索或柑曼怡",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": "可选柑曼怡替代"
+ },
+ {
+  "raw": "Pierre Ferrand 干型库拉索（可选）",
+  "nameEn": "Pierre Ferrand Dry Curaçao",
+  "nameZh": "皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Pierre Ferrand 干型柑香利口酒（Dry Curaçao）",
+  "nameEn": "Pierre Ferrand Dry Curaçao",
+  "nameZh": "皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand 干型橙皮力娇酒 (或 Luxardo 玛拉斯奇诺利口酒)",
+  "nameEn": "Pierre Ferrand Dry Curaçao or Luxardo Maraschino Liqueur",
+  "nameZh": "皮埃尔费朗干型库拉索或路萨朵黑樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": "可选路萨朵黑樱桃利口酒替代"
+ },
+ {
+  "raw": "Pierre Ferrand 干橙皮甜酒",
+  "nameEn": "Pierre Ferrand Dry Curaçao",
+  "nameZh": "皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand 干橙酒",
+  "nameEn": "Pierre Ferrand Dry Curaçao",
+  "nameZh": "皮埃尔费朗干型库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pierre Ferrand 干橙酒或 Combier l'Original 橙味利口酒",
+  "nameEn": "Pierre Ferrand Dry Curaçao or Combier L'Original Liqueur d'Orange",
+  "nameZh": "皮埃尔费朗干型库拉索或康贝原味橙味利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": "可选康贝橙味利口酒替代"
+ },
+ {
+  "raw": "Pierre Ferrand 干橙酒（或Grand Marnier 利口酒）",
+  "nameEn": "Pierre Ferrand Dry Curaçao or Grand Marnier",
+  "nameZh": "皮埃尔费朗干型库拉索或柑曼怡",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "700ml",
+  "note": "可选柑曼怡替代"
+ },
+ {
+  "raw": "Pisco 100 Acholado 皮斯可",
+  "nameEn": "Pisco 100 Acholado",
+  "nameZh": "100阿乔拉多皮斯科",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pisco 100 Acholado 皮斯科（秘鲁）",
+  "nameEn": "Pisco 100 Acholado",
+  "nameZh": "100阿乔拉多皮斯科",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "秘鲁皮斯科"
+ },
+ {
+  "raw": "Plantation 3 Stars 白朗姆酒",
+  "nameEn": "Plantation 3 Stars White Rum",
+  "nameZh": "普兰爵三星白朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Plantation Original Dark 朗姆酒",
+  "nameEn": "Plantation Original Dark Rum",
+  "nameZh": "普兰爵原味黑朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 130,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Plantation 黑糖蜜",
+  "nameEn": "Plantation Blackstrap Molasses",
+  "nameZh": "普兰爵黑糖蜜",
+  "kind": "bottle",
+  "category": "糖浆",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": "或指黑糖蜜，此处按品牌糖蜜处理"
+ },
+ {
+  "raw": "Plymouth London dry 金酒",
+  "nameEn": "Plymouth London Dry Gin",
+  "nameZh": "普利茅斯伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Plymouth 金酒",
+  "nameEn": "Plymouth Gin",
+  "nameZh": "普利茅斯金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Plymouth 金酒 或 Nicholson London dry 金酒",
+  "nameEn": "Plymouth Gin or Nicholson London Dry Gin",
+  "nameZh": "普利茅斯金酒或尼科尔森伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "可选尼科尔森伦敦干金酒替代"
+ },
+ {
+  "raw": "Plymouth 金酒或 Spencerfield Spirit Edinburgh 金酒",
+  "nameEn": "Plymouth Gin or Spencerfield Spirit Edinburgh Gin",
+  "nameZh": "普利茅斯金酒或爱丁堡金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "可选爱丁堡金酒替代"
+ },
+ {
+  "raw": "Plymouth 黑刺李金酒",
+  "nameEn": "Plymouth Sloe Gin",
+  "nameZh": "普利茅斯黑刺李金酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Plymouth 黑刺李金酒 或 Greenhook Ginsmiths 沙滩李子金酒利口酒",
+  "nameEn": "Plymouth Sloe Gin or Greenhook Ginsmiths Beach Plum Gin Liqueur",
+  "nameZh": "普利茅斯黑刺李金酒或绿钩沙滩李子金酒利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "可选绿钩沙滩李子金酒利口酒替代"
+ },
+ {
+  "raw": "Plymouth 黑刺李金酒 或 Greenhook Ginsmiths 海滩李利口酒",
+  "nameEn": "Plymouth Sloe Gin or Greenhook Ginsmiths Beach Plum Gin Liqueur",
+  "nameZh": "普利茅斯黑刺李金酒或绿钩沙滩李子金酒利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "可选绿钩沙滩李子金酒利口酒替代"
+ },
+ {
+  "raw": "Plymouth金酒",
+  "nameEn": "Plymouth Gin",
+  "nameZh": "普利茅斯金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Portobello Road No. 171 London dry 金酒",
+  "nameEn": "Portobello Road No. 171 London Dry Gin",
+  "nameZh": "波多贝罗路171号伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Portobello Road No. 171 伦敦干金酒",
+  "nameEn": "Portobello Road No. 171 London Dry Gin",
+  "nameZh": "波多贝罗路171号伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Punt e Mes 味美思",
+  "nameEn": "Punt e Mes",
+  "nameZh": "朋特梅斯味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Punt e Mes 甜味美思",
+  "nameEn": "Punt e Mes",
+  "nameZh": "朋特梅斯味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Pusser's 英国海军朗姆酒",
+  "nameEn": "Pusser's British Navy Rum",
+  "nameZh": "普赛斯英国海军朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Pyrat XO 朗姆酒",
+  "nameEn": "Pyrat XO Reserve Rum",
+  "nameZh": "海盗XO珍藏朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Père Magloire Fine VS calvados",
+  "nameEn": "Père Magloire Fine VS Calvados",
+  "nameZh": "马格洛瓦神父VS苹果白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Q 柠檬苏打水(或其他甘蔗糖浆基底品种)",
+  "nameEn": "Q Lemon Soda (or other cane sugar based soda)",
+  "nameZh": "Q柠檬苏打水(或其他蔗糖基底苏打水)",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 15,
+  "volume": "330ml",
+  "note": "可选其他蔗糖基底苏打水替代"
+ },
+ {
+  "raw": "Quinta de Noval 10年茶色波特酒",
+  "nameEn": "Quinta do Noval 10 Year Old Tawny Port",
+  "nameZh": "飞鸟园10年茶色波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Quinta de Noval 10年陈棕色波特酒",
+  "nameEn": "Quinta do Noval 10 Year Old Tawny Port",
+  "nameZh": "飞鸟园10年茶色波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Quinta do Noval 10 Year Old 桃红波特酒",
+  "nameEn": "Quinta do Noval 10 Year Old Tawny Port",
+  "nameZh": "飞鸟园10年茶色波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": "原名写桃红，可能指Tawny（茶色）"
+ },
+ {
+  "raw": "Quinta do Noval 10年 茶色波特酒",
+  "nameEn": "Quinta do Noval 10 Year Old Tawny Port",
+  "nameZh": "飞鸟园10年茶色波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Quinta do Noval 10年茶色波特酒或 Graham 宝石红波特酒",
+  "nameEn": "Quinta do Noval 10 Year Old Tawny Port or Graham's Ruby Port",
+  "nameZh": "飞鸟园10年茶色波特酒或葛兰姆宝石红波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": "可选葛兰姆宝石红波特酒替代"
+ },
+ {
+  "raw": "Quinta do Noval 10年陈琥珀波特酒",
+  "nameEn": "Quinta do Noval 10 Year Old Tawny Port",
+  "nameZh": "飞鸟园10年茶色波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Ransom Old Tom 金酒 or Greenhook 金酒smiths Old Tom 金酒",
+  "nameEn": "Ransom Old Tom Gin or Greenhook Ginsmiths Old Tom Gin",
+  "nameZh": "兰瑟姆老汤姆金酒或绿钩老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可选绿钩老汤姆金酒替代"
+ },
+ {
+  "raw": "Ransom Old Tom 金酒（或 Hayman’s Old Tom 金酒）",
+  "nameEn": "Ransom Old Tom Gin or Hayman's Old Tom Gin",
+  "nameZh": "兰瑟姆老汤姆金酒或海曼老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可选海曼老汤姆金酒替代"
+ },
+ {
+  "raw": "Ransom 桶陈老汤姆金酒 或 Greenhook Ginsmiths 老汤姆金酒",
+  "nameEn": "Ransom Old Tom Gin or Greenhook Ginsmiths Old Tom Gin",
+  "nameZh": "兰瑟姆老汤姆金酒或绿钩老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可选绿钩老汤姆金酒替代"
+ },
+ {
+  "raw": "Ransom 老汤姆金酒(或 Hayman's 老汤姆金酒)",
+  "nameEn": "Ransom Old Tom Gin or Hayman's Old Tom Gin",
+  "nameZh": "兰瑟姆老汤姆金酒或海曼老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可选海曼老汤姆金酒替代"
+ },
+ {
+  "raw": "Regan's 6号橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regan's 橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans 6号橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans 橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans' 6号橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans' No. 6 橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans' Orange Bitters No. 6 橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans' Orange Bitters No. 6 橙味苦精（可选）",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Regans' Orange Bitters No. 6 橙味苦精（或安戈斯图拉苦精）",
+  "nameEn": "Regans' Orange Bitters No. 6 or Angostura Aromatic Bitters",
+  "nameZh": "里根6号橙味苦精或安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": "可选安高天娜芳香苦精替代"
+ },
+ {
+  "raw": "Regans’ No. 6 橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans’ Orange Bitters No. 6",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "里根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans’ Orange Bitters No. 6 (optional)",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Regans’ Orange Bitters No. 6 橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans’ Orange Bitters No. 6 橙味苦精（可选）",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Regans’ Orange Bitters No. 6 苦味剂",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans’ Orange Bitters No. 6 苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans’ Orange Bitters No. 6橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans’ Orange 苦精 No. 6",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans’ Orange 苦精 No. 6 (optional)",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Regans’ 橙味苦精 No. 6",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regans’ 橙苦精 No.6",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regan’s Orange Bitters (optional)",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Regan’s Orange Bitters No. 6",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regan’s Orange Bitters No. 6 橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regan’s Orange 苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Regan’s 橙味苦精",
+  "nameEn": "Regans' Orange Bitters No. 6",
+  "nameZh": "雷根6号橙味苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "Rhum J.M VSOP agricole 朗姆酒",
+  "nameEn": "Rhum J.M VSOP Agricole Rum",
+  "nameZh": "J.M VSOP 农业朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Rhum J.M 农业朗姆酒（100 proof）",
+  "nameEn": "Rhum J.M Agricole Rum (100 Proof)",
+  "nameZh": "J.M 农业朗姆酒 (100 Proof)",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Rittenhouse Bonded 黑麦威士忌",
+  "nameEn": "Rittenhouse Straight Rye Whisky Bottled in Bond",
+  "nameZh": "瑞顿豪斯保税黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rittenhouse bonded rye 威士忌",
+  "nameEn": "Rittenhouse Straight Rye Whisky Bottled in Bond",
+  "nameZh": "瑞顿豪斯保税黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rittenhouse bonded 黑麦威士忌",
+  "nameEn": "Rittenhouse Straight Rye Whisky Bottled in Bond",
+  "nameZh": "瑞顿豪斯保税黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rittenhouse 邦德黑麦威士忌",
+  "nameEn": "Rittenhouse Straight Rye Whisky Bottled in Bond",
+  "nameZh": "瑞顿豪斯保税黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rose’s 青柠汁甜味浓缩液",
+  "nameEn": "Rose's Lime Juice Cordial",
+  "nameZh": "劳斯青柠汁",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 60,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rothman & Winter Orchard Apricot 杏子利口酒",
+  "nameEn": "Rothman & Winter Orchard Apricot Liqueur",
+  "nameZh": "罗斯曼与温特果园杏子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rothman & Winter crème de violette 利口酒",
+  "nameEn": "Rothman & Winter Crème de Violette",
+  "nameZh": "罗斯曼与温特紫罗兰利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rothman & Winter orchard cherry 利口酒",
+  "nameEn": "Rothman & Winter Orchard Cherry Liqueur",
+  "nameZh": "罗斯曼与温特果园樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rothman & Winter 杏子利口酒",
+  "nameEn": "Rothman & Winter Orchard Apricot Liqueur",
+  "nameZh": "罗斯曼与温特果园杏子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rothman & Winter 果园杏子利口酒",
+  "nameEn": "Rothman & Winter Orchard Apricot Liqueur",
+  "nameZh": "罗斯曼与温特果园杏子利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Rothman & Winter 果园樱桃利口酒或 Heering 樱桃利口酒",
+  "nameEn": "Rothman & Winter Orchard Cherry Liqueur",
+  "nameZh": "罗斯曼与温特果园樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": "可用 Heering 樱桃利口酒替代"
+ },
+ {
+  "raw": "Rothman & Winter 樱桃园利口酒或 Heering 樱桃利口酒",
+  "nameEn": "Rothman & Winter Orchard Cherry Liqueur",
+  "nameZh": "罗斯曼与温特果园樱桃利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": "可用 Heering 樱桃利口酒替代"
+ },
+ {
+  "raw": "Royer Force 53 VSOP 干邑",
+  "nameEn": "Louis Royer Force 53 VSOP Cognac",
+  "nameZh": "路易老爷 Force 53 VSOP 干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Royer Force 53 干邑白兰地",
+  "nameEn": "Louis Royer Force 53 VSOP Cognac",
+  "nameZh": "路易老爷 Force 53 VSOP 干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Royer Force 53 干邑白兰地 或 Boulard Grand Solage VSOP 苹果白兰地",
+  "nameEn": "Louis Royer Force 53 VSOP Cognac",
+  "nameZh": "路易老爷 Force 53 VSOP 干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": "可用 Boulard Grand Solage VSOP 苹果白兰地替代"
+ },
+ {
+  "raw": "Royer Force 53 白兰地",
+  "nameEn": "Louis Royer Force 53 VSOP Cognac",
+  "nameZh": "路易老爷 Force 53 VSOP 干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Royer Force 53 白兰地 或 Pierre Ferrand 1840 白兰地 或 Brugal 1888 Gran Reserva 朗姆酒 或 Ron Zacapa Gran Reserva Solera 23 朗姆酒 或 Baker’s 107 proof 波本威士忌 或 Henry McKenna 10年波本威士忌",
+  "nameEn": "Louis Royer Force 53 VSOP Cognac",
+  "nameZh": "路易老爷 Force 53 VSOP 干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 400,
+  "volume": "700ml",
+  "note": "可用 Pierre Ferrand 1840, Brugal 1888, Ron Zacapa 23, Baker's 107, Henry McKenna 10年替代"
+ },
+ {
+  "raw": "Royer VSOP cognac 白兰地",
+  "nameEn": "Louis Royer VSOP Cognac",
+  "nameZh": "路易老爷 VSOP 干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Royer VSOP 干邑",
+  "nameEn": "Louis Royer VSOP Cognac",
+  "nameZh": "路易老爷 VSOP 干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Royer VSOP 干邑白兰地",
+  "nameEn": "Louis Royer VSOP Cognac",
+  "nameZh": "路易老爷 VSOP 干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Russell Henry 马来西亚青柠金酒 或 添加利 Rangpur 青柠金酒",
+  "nameEn": "Russell Henry Malaysian Lime Gin",
+  "nameZh": "罗素亨利马来西亚青柠金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": "可用添加利 Rangpur 青柠金酒替代"
+ },
+ {
+  "raw": "Russell’s Reserve 6 Year Old 黑麦威士忌（或 Maker’s Mark 波本威士忌）",
+  "nameEn": "Russell's Reserve 6 Year Old Rye Whiskey",
+  "nameZh": "罗素珍藏6年黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": "可用 Maker's Mark 波本威士忌替代"
+ },
+ {
+  "raw": "Russian Standard vodka or Martell VSOP 干邑",
+  "nameEn": "Russian Standard Vodka",
+  "nameZh": "俄罗斯斯丹达伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": "可用 Martell VSOP 干邑替代"
+ },
+ {
+  "raw": "Russian Standard 伏特加",
+  "nameEn": "Russian Standard Vodka",
+  "nameZh": "俄罗斯斯丹达伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Rémy Martin 1738 Accord Royal 干邑",
+  "nameEn": "Rémy Martin 1738 Accord Royal Cognac",
+  "nameZh": "人头马 1738 皇家干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Rémy Martin 1738 Accord Royal 白兰地",
+  "nameEn": "Rémy Martin 1738 Accord Royal Cognac",
+  "nameZh": "人头马 1738 皇家干邑白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Sacred 特干味美思",
+  "nameEn": "Sacred Extra Dry Vermouth",
+  "nameZh": "神圣特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Sacred 特干苦艾酒",
+  "nameEn": "Sacred Extra Dry Vermouth",
+  "nameZh": "神圣特干味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Sailor Jerry Spiced 朗姆酒",
+  "nameEn": "Sailor Jerry Spiced Rum",
+  "nameZh": "水手杰瑞香料朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Sailor Jerry 香料朗姆酒或自制香料朗姆酒浸泡液",
+  "nameEn": "Sailor Jerry Spiced Rum",
+  "nameZh": "水手杰瑞香料朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": "可用自制香料朗姆酒浸泡液替代"
+ },
+ {
+  "raw": "Salers Gentiane 开胃酒",
+  "nameEn": "Salers Gentiane Liqueur",
+  "nameZh": "萨莱尔龙胆开胃酒",
+  "kind": "bottle",
+  "category": "开胃酒",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "San Pellegrino Pompelmo 葡萄柚汽水",
+  "nameEn": "San Pellegrino Pompelmo",
+  "nameZh": "圣培露西柚汽水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 10,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "San Pellegrino 矿泉水",
+  "nameEn": "San Pellegrino Sparkling Natural Mineral Water",
+  "nameZh": "圣培露充气天然矿泉水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 15,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Sandeman Fine Rich 马德拉酒",
+  "nameEn": "Sandeman Fine Rich Madeira",
+  "nameZh": "桑地曼优质浓郁马德拉酒",
+  "kind": "bottle",
+  "category": "葡萄酒",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Sandeman Fine Rich 马德拉酒 或 Lustau Don Nuño 奥罗露索雪莉酒",
+  "nameEn": "Sandeman Fine Rich Madeira or Lustau Don Nuño Oloroso Sherry",
+  "nameZh": "桑地曼优质浓郁马德拉酒 或 卢斯托唐努诺奥罗露索雪莉酒",
+  "kind": "bottle",
+  "category": "葡萄酒",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": "可替换为Lustau Don Nuño Oloroso Sherry"
+ },
+ {
+  "raw": "Sandeman 优质浓郁马德拉酒",
+  "nameEn": "Sandeman Fine Rich Madeira",
+  "nameZh": "桑地曼优质浓郁马德拉酒",
+  "kind": "bottle",
+  "category": "葡萄酒",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Santa Teresa 1796 Ron Antiguo de Solera 朗姆酒",
+  "nameEn": "Santa Teresa 1796 Ron Antiguo de Solera Rum",
+  "nameZh": "圣特雷莎1796索莱拉陈年朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Santa Teresa 1796 索莱拉陈年朗姆酒",
+  "nameEn": "Santa Teresa 1796 Ron Antiguo de Solera Rum",
+  "nameZh": "圣特雷莎1796索莱拉陈年朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Schönauer 苹果利口酒",
+  "nameEn": "Schönauer Apfel Schnapps",
+  "nameZh": "舍瑙尔苹果利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 180,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Siembra Azul blanco 龙舌兰",
+  "nameEn": "Siembra Azul Blanco Tequila",
+  "nameZh": "蓝种布兰可龙舌兰",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Siete Leguas Blanco 龙舌兰",
+  "nameEn": "Siete Leguas Blanco Tequila",
+  "nameZh": "七里格布兰可龙舌兰",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 400,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Smith & Cross 海军强度朗姆酒",
+  "nameEn": "Smith & Cross Navy Strength Rum",
+  "nameZh": "史密斯十字海军强度朗姆酒",
+  "kind": "bottle",
+  "category": "朗姆",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Sombra 梅斯卡尔（或 Astral 龙舌兰）",
+  "nameEn": "Sombra Mezcal (or Astral Tequila)",
+  "nameZh": "桑布拉梅斯卡尔（或 星界龙舌兰）",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": "可替换为Astral Tequila"
+ },
+ {
+  "raw": "Sparkling Pointe Méthode Champenoise 起泡酒（North Fork）",
+  "nameEn": "Sparkling Pointe Méthode Champenoise Sparkling Wine",
+  "nameZh": "闪耀角传统法起泡酒",
+  "kind": "bottle",
+  "category": "葡萄酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": "产自纽约长岛North Fork"
+ },
+ {
+  "raw": "Sparkling Pointe 起泡酒",
+  "nameEn": "Sparkling Pointe Sparkling Wine",
+  "nameZh": "闪耀角起泡酒",
+  "kind": "bottle",
+  "category": "葡萄酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Spencerfield Spirit Edinburgh 金酒",
+  "nameEn": "Edinburgh Gin",
+  "nameZh": "爱丁堡金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "Spencerfield Spirit出品"
+ },
+ {
+  "raw": "Spencerfield Spirit Sheep Dip 威士忌",
+  "nameEn": "Sheep Dip Blended Malt Scotch Whisky",
+  "nameZh": "羊浸调和麦芽苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": "Spencerfield Spirit出品"
+ },
+ {
+  "raw": "Spencerfield Spirit Sheep Dip 苏格兰威士忌",
+  "nameEn": "Sheep Dip Blended Malt Scotch Whisky",
+  "nameZh": "羊浸调和麦芽苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": "Spencerfield Spirit出品"
+ },
+ {
+  "raw": "Spencerfield Spirit Sheep Dip 苏格兰威士忌或 Johnnie Walker Black blended Scotch whisky",
+  "nameEn": "Sheep Dip Blended Malt Scotch Whisky or Johnnie Walker Black Label Blended Scotch Whisky",
+  "nameZh": "羊浸调和麦芽苏格兰威士忌 或 尊尼获加黑牌调和苏格兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": "可替换为尊尼获加黑牌"
+ },
+ {
+  "raw": "Spencerfield Spirit 爱丁堡干金酒",
+  "nameEn": "Edinburgh Dry Gin",
+  "nameZh": "爱丁堡干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "Spencerfield Spirit出品"
+ },
+ {
+  "raw": "St. Elizabeth allspice dram (or The Bitter Truth pimento dram)",
+  "nameEn": "St. Elizabeth Allspice Dram (or The Bitter Truth Pimento Dram)",
+  "nameZh": "圣伊丽莎白多香果利口酒（或 苦精真谛多香果利口酒）",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": "可替换为The Bitter Truth Pimento Dram"
+ },
+ {
+  "raw": "St. Elizabeth allspice dram or The Bitter Truth pimento dram",
+  "nameEn": "St. Elizabeth Allspice Dram or The Bitter Truth Pimento Dram",
+  "nameZh": "圣伊丽莎白多香果利口酒 或 苦精真谛多香果利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": "可替换为The Bitter Truth Pimento Dram"
+ },
+ {
+  "raw": "St. George Absinthe Verte",
+  "nameEn": "St. George Absinthe Verte",
+  "nameZh": "圣乔治绿苦艾酒",
+  "kind": "bottle",
+  "category": "苦艾酒",
+  "priceCny": 450,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "St. George Absinthe Verte 苦艾酒",
+  "nameEn": "St. George Absinthe Verte",
+  "nameZh": "圣乔治绿苦艾酒",
+  "kind": "bottle",
+  "category": "苦艾酒",
+  "priceCny": 450,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "St. George 苦艾酒(绿色)",
+  "nameEn": "St. George Absinthe Verte",
+  "nameZh": "圣乔治绿苦艾酒",
+  "kind": "bottle",
+  "category": "苦艾酒",
+  "priceCny": 450,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "St. Germain 利口酒",
+  "nameEn": "St. Germain Elderflower Liqueur",
+  "nameZh": "圣日耳曼接骨木花利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "St. Germain 圣日耳曼接骨木花利口酒",
+  "nameEn": "St. Germain Elderflower Liqueur",
+  "nameZh": "圣日耳曼接骨木花利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "St. Germain 接骨木花利口酒",
+  "nameEn": "St. Germain Elderflower Liqueur",
+  "nameZh": "圣日耳曼接骨木花利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 220,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Stolichnaya 香草伏特加",
+  "nameEn": "Stolichnaya Vanil Vodka",
+  "nameZh": "苏红香草伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Stonewall Kitchen cinnamon apple jelly or Sarabeth’s chunky apple preserves",
+  "nameEn": "Stonewall Kitchen Cinnamon Apple Jelly or Sarabeth's Chunky Apple Preserves",
+  "nameZh": "石墙厨房肉桂苹果果冻 或 莎拉贝斯大块苹果果酱",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 80,
+  "volume": "300g",
+  "note": "果酱类"
+ },
+ {
+  "raw": "Tabasco 辣椒酱",
+  "nameEn": "Tabasco Pepper Sauce",
+  "nameZh": "塔巴斯科辣椒酱",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 20,
+  "volume": "60ml",
+  "note": "调味品"
+ },
+ {
+  "raw": "Tanqueray London dry 金酒",
+  "nameEn": "Tanqueray London Dry Gin",
+  "nameZh": "添加利伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Tanqueray Malacca 金酒 or Tanqueray No. Ten 金酒",
+  "nameEn": "Tanqueray Malacca Gin or Tanqueray No. Ten Gin",
+  "nameZh": "添加利马六甲金酒 或 添加利十号金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": "可替换为添加利十号"
+ },
+ {
+  "raw": "Tanqueray No. Ten 金酒",
+  "nameEn": "Tanqueray No. Ten Gin",
+  "nameZh": "添加利十号金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 220,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Tanqueray Old Tom or London dry 金酒",
+  "nameEn": "Tanqueray Old Tom Gin or Tanqueray London Dry Gin",
+  "nameZh": "添加利老汤姆金酒 或 添加利伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": "可替换为添加利伦敦干金酒"
+ },
+ {
+  "raw": "Tanqueray Old Tom 金酒",
+  "nameEn": "Tanqueray Old Tom Gin",
+  "nameZh": "添加利老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Tanqueray Rangpur 金酒 (Tanqueray No. Ten, if unavailable)",
+  "nameEn": "Tanqueray Rangpur Gin (or Tanqueray No. Ten Gin)",
+  "nameZh": "添加利青柠金酒（或 添加利十号金酒）",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": "若无可用添加利十号替代"
+ },
+ {
+  "raw": "Tanqueray 伦敦干金酒",
+  "nameEn": "Tanqueray London Dry Gin",
+  "nameZh": "添加利伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Tanqueray 老汤姆金酒 或 Hayman's 老汤姆金酒",
+  "nameEn": "Tanqueray Old Tom Gin or Hayman's Old Tom Gin",
+  "nameZh": "添加利老汤姆金酒 或 海曼老汤姆金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": "可替换为海曼老汤姆金酒"
+ },
+ {
+  "raw": "Tanqueray 金酒",
+  "nameEn": "Tanqueray London Dry Gin",
+  "nameZh": "添加利伦敦干金酒",
+  "kind": "bottle",
+  "category": "金酒",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Tapatio añejo 龙舌兰",
+  "nameEn": "Tapatio Añejo Tequila",
+  "nameZh": "塔帕蒂奥阿涅霍龙舌兰",
+  "kind": "bottle",
+  "category": "龙舌兰",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Tempus Fugit crème de cacao",
+  "nameEn": "Tempus Fugit Crème de Cacao",
+  "nameZh": "坦普斯富吉特可可利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Tempus Fugit crème de cacao 利口酒",
+  "nameEn": "Tempus Fugit Crème de Cacao",
+  "nameZh": "坦普斯富吉特可可利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Tempus Fugit crème de menthe 薄荷利口酒",
+  "nameEn": "Tempus Fugit Crème de Menthe",
+  "nameZh": "坦普斯富吉特薄荷利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Tempus Fugit 可可利口酒",
+  "nameEn": "Tempus Fugit Crème de Cacao",
+  "nameZh": "坦普斯富吉特可可利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Tempus Fugit 白可可利口酒",
+  "nameEn": "Tempus Fugit Crème de Cacao à la Vanille",
+  "nameZh": "坦普斯富吉特白可可利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Tempus Fugit 薄荷利口酒",
+  "nameEn": "Tempus Fugit Crème de Menthe",
+  "nameZh": "坦普斯富吉特薄荷利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Tempus Fugit 黑可可利口酒",
+  "nameEn": "Tempus Fugit Crème de Cacao",
+  "nameZh": "坦普斯富吉特黑可可利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 280,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "The Bitter Truth 多香果利口酒或 St. Elizabeth 多香果利口酒",
+  "nameEn": "The Bitter Truth Pimento Dram or St. Elizabeth Allspice Dram",
+  "nameZh": "苦精真谛多香果利口酒 或 圣伊丽莎白多香果利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 250,
+  "volume": "750ml",
+  "note": "可替换为St. Elizabeth Allspice Dram"
+ },
+ {
+  "raw": "The Bitter Truth 柠檬苦精 或 Regans’ 橙苦精 No.6",
+  "nameEn": "The Bitter Truth Lemon Bitters or Regans' Orange Bitters No. 6",
+  "nameZh": "苦精真谛柠檬苦精 或 瑞根6号橙苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "200ml",
+  "note": "可替换为Regans' Orange Bitters No. 6"
+ },
+ {
+  "raw": "The Bitter Truth 葡萄柚苦精",
+  "nameEn": "The Bitter Truth Grapefruit Bitters",
+  "nameZh": "苦精真谛葡萄柚苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 150,
+  "volume": "200ml",
+  "note": ""
+ },
+ {
+  "raw": "Tito's 手工伏特加",
+  "nameEn": "Tito's Handmade Vodka",
+  "nameZh": "铁托手工伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Tito’s Handmade 伏特加",
+  "nameEn": "Tito's Handmade Vodka",
+  "nameZh": "铁托手工伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 120,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Torani or Giffard orgeat syrup",
+  "nameEn": "Torani or Giffard Orgeat Syrup",
+  "nameZh": "特朗尼或吉发第杏仁糖浆",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 80,
+  "volume": "750ml",
+  "note": "可任选其一"
+ },
+ {
+  "raw": "Torani or Giffard orgeat 糖浆",
+  "nameEn": "Torani or Giffard Orgeat Syrup",
+  "nameZh": "特朗尼或吉发第杏仁糖浆",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 80,
+  "volume": "750ml",
+  "note": "可任选其一"
+ },
+ {
+  "raw": "Torani 或 Giffard orgeat syrup 杏仁糖浆",
+  "nameEn": "Torani or Giffard Orgeat Syrup",
+  "nameZh": "特朗尼或吉发第杏仁糖浆",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 80,
+  "volume": "750ml",
+  "note": "可任选其一"
+ },
+ {
+  "raw": "Torani 或 Giffard 杏仁糖浆",
+  "nameEn": "Torani or Giffard Orgeat Syrup",
+  "nameZh": "特朗尼或吉发第杏仁糖浆",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 80,
+  "volume": "750ml",
+  "note": "可任选其一"
+ },
+ {
+  "raw": "Toschi 柠檬甜酒",
+  "nameEn": "Toschi Limoncello",
+  "nameZh": "托斯基柠檬酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Toschi 柠檬酒",
+  "nameEn": "Toschi Limoncello",
+  "nameZh": "托斯基柠檬酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Trimbach Framboise Grande Reserve 覆盆子白兰地",
+  "nameEn": "Trimbach Framboise Grande Reserve",
+  "nameZh": "婷巴克珍藏覆盆子白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": "水果白兰地（生命之水）"
+ },
+ {
+  "raw": "Trimbach Grande Reserve 樱桃白兰地",
+  "nameEn": "Trimbach Kirsch Grande Reserve",
+  "nameZh": "婷巴克珍藏樱桃白兰地",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": "水果白兰地（生命之水）"
+ },
+ {
+  "raw": "Tuaca 利口酒",
+  "nameEn": "Tuaca Liqueur",
+  "nameZh": "图阿卡利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "意大利香草柑橘利口酒"
+ },
+ {
+  "raw": "Tuthilltown Hudson 纽约玉米威士忌",
+  "nameEn": "Hudson New York Corn Whiskey",
+  "nameZh": "哈德逊纽约玉米威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 400,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Van Gogh 荷兰巧克力伏特加",
+  "nameEn": "Van Gogh Dutch Chocolate Vodka",
+  "nameZh": "梵高荷兰巧克力伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 180,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Vanilla Bean–Infused Plantation Original Dark 朗姆酒 (recipe follows)",
+  "nameEn": "Vanilla Bean-Infused Plantation Original Dark Rum",
+  "nameZh": "香草荚浸渍普兰爵黑朗姆酒",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "使用普兰爵黑朗姆酒自制"
+ },
+ {
+  "raw": "Varnelli Punch alla Fiamma 利口酒",
+  "nameEn": "Varnelli Punch alla Fiamma",
+  "nameZh": "瓦内利火焰潘趣利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 300,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Varnelli l’Anice Secco Speciale anisette 利口酒",
+  "nameEn": "Varnelli L'Anice Secco Speciale",
+  "nameZh": "瓦内利特干茴香酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Varnelli l’Anice Secco Speciale 茴香甜酒（可选）",
+  "nameEn": "Varnelli L'Anice Secco Speciale",
+  "nameZh": "瓦内利特干茴香酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "可选"
+ },
+ {
+  "raw": "Varnelli l’Anice Secco Speciale 茴香酒",
+  "nameEn": "Varnelli L'Anice Secco Speciale",
+  "nameZh": "瓦内利特干茴香酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Veuve Clicquot Brut 香槟（非年份）",
+  "nameEn": "Veuve Clicquot Yellow Label Brut Champagne",
+  "nameZh": "凯歌皇牌香槟",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 400,
+  "volume": "750ml",
+  "note": "非年份"
+ },
+ {
+  "raw": "Vieux Carré 苦艾酒",
+  "nameEn": "Vieux Carré Absinthe",
+  "nameZh": "老广场苦艾酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 500,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Vranken Demoiselle 桃红香槟",
+  "nameEn": "Vranken Demoiselle Rosé Champagne",
+  "nameZh": "弗兰肯少女桃红香槟",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 350,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "WhistlePig 10 Year 黑麦威士忌",
+  "nameEn": "WhistlePig 10 Year Old Rye Whiskey",
+  "nameZh": "口哨猪10年黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 600,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Wild Turkey 101 黑麦威士忌",
+  "nameEn": "Wild Turkey 101 Rye Whiskey",
+  "nameZh": "威凤凰101黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 200,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Willett Family Estate 黑麦威士忌",
+  "nameEn": "Willett Family Estate Rye Whiskey",
+  "nameZh": "威利特家族珍藏黑麦威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 600,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "Wölffer 桃红葡萄酒 或 普罗旺斯风格桃红葡萄酒",
+  "nameEn": "Wölffer Rosé or Provence-Style Rosé",
+  "nameZh": "沃尔弗桃红葡萄酒或普罗旺斯风格桃红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": "可任选其一"
+ },
+ {
+  "raw": "Wölffer 桃红葡萄酒(长岛)或任何普罗旺斯风格",
+  "nameEn": "Wölffer Rosé or Provence-Style Rosé",
+  "nameZh": "沃尔弗桃红葡萄酒或普罗旺斯风格桃红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": "可任选其一"
+ },
+ {
+  "raw": "Wölffer 桃红葡萄酒或任何普罗旺斯风格桃红葡萄酒",
+  "nameEn": "Wölffer Rosé or Provence-Style Rosé",
+  "nameZh": "沃尔弗桃红葡萄酒或普罗旺斯风格桃红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": "可任选其一"
+ },
+ {
+  "raw": "Zubrowka 野牛草伏特加",
+  "nameEn": "Zubrowka Bison Grass Vodka",
+  "nameZh": "野牛草伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "blood orange juice (Valencia or Naval orange can be substituted)",
+  "nameEn": "Blood Orange Juice",
+  "nameZh": "血橙汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 20,
+  "volume": "500ml",
+  "note": "可用瓦伦西亚橙或脐橙代替"
+ },
+ {
+  "raw": "chilled Sacramento tomato juice",
+  "nameEn": "Chilled Sacramento Tomato Juice",
+  "nameZh": "冰镇萨克拉门托番茄汁",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 30,
+  "volume": "1L",
+  "note": ""
+ },
+ {
+  "raw": "chilled club soda",
+  "nameEn": "Chilled Club Soda",
+  "nameZh": "冰镇苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "chilled club soda (or Champagne, preferred)",
+  "nameEn": "Chilled Club Soda or Champagne",
+  "nameZh": "冰镇苏打水或香槟",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": "推荐使用香槟"
+ },
+ {
+  "raw": "chilled 苏打水",
+  "nameEn": "Chilled Club Soda",
+  "nameZh": "冰镇苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "coriander powder",
+  "nameEn": "Coriander Powder",
+  "nameZh": "芫荽粉",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "coriander powder, pink peppercorn, and 粗盐 rim",
+  "nameEn": "Coriander Powder, Pink Peppercorn, and Kosher Salt Rim",
+  "nameZh": "芫荽粉、粉红胡椒与粗盐边",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 20,
+  "volume": "50g",
+  "note": "用于制作盐边"
+ },
+ {
+  "raw": "crème Yvette",
+  "nameEn": "Crème Yvette",
+  "nameZh": "伊薇特紫罗兰利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 300,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "fine-ground pink peppercorns",
+  "nameEn": "Fine-Ground Pink Peppercorns",
+  "nameZh": "细磨粉红胡椒",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 20,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "fresh carrot juice (Bolthouse Farms or other commercially available, if necessary)",
+  "nameEn": "Fresh Carrot Juice",
+  "nameZh": "新鲜胡萝卜汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 15,
+  "volume": "500ml",
+  "note": "必要时可使用市售品牌如Bolthouse Farms"
+ },
+ {
+  "raw": "fresh lemon juice or 3 dashes Horsford’s acid phosphate",
+  "nameEn": "Fresh Lemon Juice or Horsford's Acid Phosphate",
+  "nameZh": "新鲜柠檬汁或霍斯福德酸性磷酸盐",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 10,
+  "volume": "500ml",
+  "note": "可任选其一"
+ },
+ {
+  "raw": "fresh 鼠尾草叶",
+  "nameEn": "Fresh Sage Leaves",
+  "nameZh": "新鲜鼠尾草叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 10,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "grade A maple syrup",
+  "nameEn": "Grade A Maple Syrup",
+  "nameZh": "A级枫糖浆",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 80,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "half and half (or milk)",
+  "nameEn": "Half and Half or Milk",
+  "nameZh": "半对半奶油或牛奶",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 20,
+  "volume": "1L",
+  "note": ""
+ },
+ {
+  "raw": "house-made Aromatic 苦精",
+  "nameEn": "House-Made Aromatic Bitters",
+  "nameZh": "自制芳香苦精",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": 50,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "house-made Cinnamon 伏特加",
+  "nameEn": "House-Made Cinnamon Vodka",
+  "nameZh": "自制肉桂伏特加",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "house-made Cocoa 苦精",
+  "nameEn": "House-Made Cocoa Bitters",
+  "nameZh": "自制可可苦精",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": 50,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "house-made Cocoa 苦精 (or Fee Brothers Aztec chocolate 苦精)",
+  "nameEn": "House-Made Cocoa Bitters or Fee Brothers Aztec Chocolate Bitters",
+  "nameZh": "自制可可苦精或费氏兄弟阿兹特克巧克力苦精",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": 50,
+  "volume": "100ml",
+  "note": "可用费氏兄弟巧克力苦精代替"
+ },
+ {
+  "raw": "house-made Demerara Syrup",
+  "nameEn": "House-Made Demerara Syrup",
+  "nameZh": "自制德麦拉拉糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": 20,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "house-made Grenadine (for float)",
+  "nameEn": "House-Made Grenadine",
+  "nameZh": "自制红石榴糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": 30,
+  "volume": "500ml",
+  "note": "用于漂浮"
+ },
+ {
+  "raw": "house-made Raspberry Syrup",
+  "nameEn": "House-Made Raspberry Syrup",
+  "nameZh": "自制覆盆子糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": 40,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "house-made Vanilla 伏特加 or Stolichnaya vanilla 伏特加",
+  "nameEn": "House-Made Vanilla Vodka or Stolichnaya Vanilla Vodka",
+  "nameZh": "自制香草伏特加或苏连红香草伏特加",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "可用苏连红香草伏特加代替"
+ },
+ {
+  "raw": "leaves and one large sprig saved for garnish",
+  "nameEn": "Leaves and One Large Sprig",
+  "nameZh": "叶子与一大枝",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "1份",
+  "note": "用于装饰"
+ },
+ {
+  "raw": "leaves and one sprig saved for garnish",
+  "nameEn": "Leaves and One Sprig",
+  "nameZh": "叶子与一枝",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "1份",
+  "note": "用于装饰"
+ },
+ {
+  "raw": "leaves plus a 薄荷枝 for garnish",
+  "nameEn": "Mint Leaves and Sprig",
+  "nameZh": "薄荷叶及薄荷枝",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "1把",
+  "note": "装饰用"
+ },
+ {
+  "raw": "lemon",
+  "nameEn": "Lemon",
+  "nameZh": "柠檬",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 3,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "lemon juice",
+  "nameEn": "Lemon Juice",
+  "nameZh": "柠檬汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 15,
+  "volume": "500ml",
+  "note": "建议鲜榨"
+ },
+ {
+  "raw": "ml. bottle Henry McKenna bonded 波本威士忌",
+  "nameEn": "Henry McKenna Bottled-in-Bond Bourbon Whiskey",
+  "nameZh": "亨利麦肯纳保税波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 450,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "ml. bottle Stranahan’s Colorado 威士忌",
+  "nameEn": "Stranahan's Colorado Whiskey",
+  "nameZh": "斯特拉纳汉科罗拉多威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 500,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "of Ginger and Lemongrass–Infused G’Vine Floraison 金酒 (recipe follows)",
+  "nameEn": "Ginger and Lemongrass-Infused G'Vine Floraison Gin",
+  "nameZh": "生姜香茅浸渍纪凡花果香金酒",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": "自制浸渍酒"
+ },
+ {
+  "raw": "of freshly grated horseradish (jarred works, if fresh is unavailable)",
+  "nameEn": "Freshly Grated Horseradish",
+  "nameZh": "新鲜现磨辣根",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 20,
+  "volume": "100g",
+  "note": "可用瓶装代替"
+ },
+ {
+  "raw": "small pinch 肉桂粉",
+  "nameEn": "Ground Cinnamon",
+  "nameZh": "肉桂粉",
+  "kind": "bottle",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "spirit of choice (brandy, 金酒, rum, whiskey, etc.)",
+  "nameEn": "Spirit of Choice",
+  "nameZh": "任选基酒",
+  "kind": "bottle",
+  "category": "其他",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "白兰地、金酒、朗姆酒、威士忌等"
+ },
+ {
+  "raw": "spirit or fortified wine of choice",
+  "nameEn": "Spirit or Fortified Wine of Choice",
+  "nameZh": "任选基酒或加强葡萄酒",
+  "kind": "bottle",
+  "category": "其他",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "sprig 薄荷",
+  "nameEn": "Mint Sprig",
+  "nameZh": "薄荷枝",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "1把",
+  "note": "装饰用"
+ },
+ {
+  "raw": "Émile Pernot Vieux Pontarlier 苦艾酒",
+  "nameEn": "Émile Pernot Vieux Pontarlier Absinthe",
+  "nameZh": "埃米尔佩尔诺老蓬塔利耶苦艾酒",
+  "kind": "bottle",
+  "category": "苦艾酒",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Żubrówka bison grass 伏特加",
+  "nameEn": "Żubrówka Bison Grass Vodka",
+  "nameZh": "野牛草伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Żubrówka 野牛草伏特加",
+  "nameEn": "Żubrówka Bison Grass Vodka",
+  "nameZh": "野牛草伏特加",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "Żubrówka 野牛草伏特加（冷藏）",
+  "nameEn": "Żubrówka Bison Grass Vodka (Chilled)",
+  "nameZh": "野牛草伏特加（冷藏）",
+  "kind": "bottle",
+  "category": "伏特加",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "丁香浸泡 Monkey Shoulder 调和苏格兰威士忌",
+  "nameEn": "Clove-Infused Monkey Shoulder Blended Malt Scotch Whisky",
+  "nameZh": "丁香浸渍三只猴子调和麦芽苏格兰威士忌",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "自制浸渍酒"
+ },
+ {
+  "raw": "丁香浸渍 Monkey Shoulder blended Scotch 威士忌",
+  "nameEn": "Clove-Infused Monkey Shoulder Blended Malt Scotch Whisky",
+  "nameZh": "丁香浸渍三只猴子调和麦芽苏格兰威士忌",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": "自制浸渍酒"
+ },
+ {
+  "raw": "丁香（装饰/调味）",
+  "nameEn": "Cloves",
+  "nameZh": "丁香",
+  "kind": "bottle",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "50g",
+  "note": "装饰或调味用"
+ },
+ {
+  "raw": "中国五香粉",
+  "nameEn": "Chinese Five-Spice Powder",
+  "nameZh": "五香粉",
+  "kind": "bottle",
+  "category": "香草香料",
+  "priceCny": 10,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "任选基酒（波本威士忌、白兰地、金酒［荷兰陈酿，Old Tom］、朗姆酒、黑麦威士忌、苏格兰威士忌等）",
+  "nameEn": "Spirit of Choice",
+  "nameZh": "任选基酒",
+  "kind": "bottle",
+  "category": "其他",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "波本、白兰地、金酒、朗姆、黑麦、苏格兰威士忌等"
+ },
+ {
+  "raw": "任选基酒（白兰地、波本、金酒、朗姆酒、黑麦威士忌、苏格兰威士忌、龙舌兰等）",
+  "nameEn": "Spirit of Choice",
+  "nameZh": "任选基酒",
+  "kind": "bottle",
+  "category": "其他",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "白兰地、波本、金酒、朗姆、黑麦、苏格兰威士忌、龙舌兰等"
+ },
+ {
+  "raw": "任选基酒（白兰地、波本威士忌、金酒、朗姆酒、黑麦威士忌、苏格兰威士忌、龙舌兰等）",
+  "nameEn": "Spirit of Choice",
+  "nameZh": "任选基酒",
+  "kind": "bottle",
+  "category": "其他",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "白兰地、波本、金酒、朗姆、黑麦、苏格兰威士忌、龙舌兰等"
+ },
+ {
+  "raw": "任选基酒（白兰地、荷兰杜松子酒、朗姆酒、威士忌等）",
+  "nameEn": "Spirit of Choice",
+  "nameZh": "任选基酒",
+  "kind": "bottle",
+  "category": "其他",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "白兰地、荷兰金酒、朗姆、威士忌等"
+ },
+ {
+  "raw": "任选基酒（白兰地、荷兰杜松子酒、金酒、朗姆酒、威士忌等）",
+  "nameEn": "Spirit of Choice",
+  "nameZh": "任选基酒",
+  "kind": "bottle",
+  "category": "其他",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "白兰地、荷兰金酒、金酒、朗姆、威士忌等"
+ },
+ {
+  "raw": "任选基酒（金酒、白兰地、朗姆酒、威士忌等）",
+  "nameEn": "Spirit of Choice",
+  "nameZh": "任选基酒",
+  "kind": "bottle",
+  "category": "其他",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "金酒、白兰地、朗姆、威士忌等"
+ },
+ {
+  "raw": "任选苦味酒",
+  "nameEn": "Bitters of Choice",
+  "nameZh": "任选苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 100,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "全脂牛奶",
+  "nameEn": "Whole Milk",
+  "nameZh": "全脂牛奶",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 15,
+  "volume": "1L",
+  "note": ""
+ },
+ {
+  "raw": "全蛋",
+  "nameEn": "Whole Egg",
+  "nameZh": "全蛋",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "全蛋(小)",
+  "nameEn": "Small Whole Egg",
+  "nameZh": "全蛋（小）",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "冰水",
+  "nameEn": "Ice Water",
+  "nameZh": "冰水",
+  "kind": "other",
+  "category": "其他",
+  "priceCny": null,
+  "volume": "适量",
+  "note": ""
+ },
+ {
+  "raw": "冰苏打水",
+  "nameEn": "Iced Club Soda",
+  "nameZh": "冰苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "冰镇自制冷热可可粉混合物",
+  "nameEn": "Chilled Homemade Hot/Cold Cocoa Mix",
+  "nameZh": "冰镇自制可可粉混合物",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": 30,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "冰镇苏打水",
+  "nameEn": "Chilled Club Soda",
+  "nameZh": "冰镇苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "冰镇苏打水或香槟",
+  "nameEn": "Chilled Club Soda or Champagne",
+  "nameZh": "冰镇苏打水或香槟",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": "苏打水或香槟"
+ },
+ {
+  "raw": "冰镇苏打水（可选）",
+  "nameEn": "Chilled Club Soda (Optional)",
+  "nameZh": "冰镇苏打水（可选）",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "冷却苏打水",
+  "nameEn": "Chilled Club Soda",
+  "nameZh": "冰镇苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "冷水",
+  "nameEn": "Cold Water",
+  "nameZh": "冷水",
+  "kind": "other",
+  "category": "其他",
+  "priceCny": null,
+  "volume": "适量",
+  "note": ""
+ },
+ {
+  "raw": "冷藏苏打水",
+  "nameEn": "Chilled Club Soda",
+  "nameZh": "冰镇苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "冷藏草莓和粉红胡椒浸泡Galliano利口酒",
+  "nameEn": "Chilled Strawberry and Pink Peppercorn-Infused Galliano L'Autentico",
+  "nameZh": "冷藏草莓粉红胡椒浸渍加林安诺利口酒",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "自制浸渍酒"
+ },
+ {
+  "raw": "切薄片的萝卜",
+  "nameEn": "Thinly Sliced Radish",
+  "nameZh": "萝卜薄片",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "1个",
+  "note": "装饰用"
+ },
+ {
+  "raw": "半奶半奶油",
+  "nameEn": "Half-and-Half",
+  "nameZh": "半对半奶油",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 25,
+  "volume": "1L",
+  "note": ""
+ },
+ {
+  "raw": "半对半奶油",
+  "nameEn": "Half-and-Half",
+  "nameZh": "半对半奶油",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 25,
+  "volume": "1L",
+  "note": ""
+ },
+ {
+  "raw": "半对半奶油 (或重奶油，取决于变体)",
+  "nameEn": "Half-and-Half (or Heavy Cream)",
+  "nameZh": "半对半奶油（或重奶油）",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 25,
+  "volume": "1L",
+  "note": ""
+ },
+ {
+  "raw": "博斯克梨",
+  "nameEn": "Bosc Pear",
+  "nameZh": "博斯克梨",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 10,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "可口可乐或其他蔗糖可乐",
+  "nameEn": "Coca-Cola or Other Cane Sugar Cola",
+  "nameZh": "可口可乐或其他蔗糖可乐",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 3,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "君度",
+  "nameEn": "Cointreau",
+  "nameZh": "君度橙酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 110,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "君度橙酒",
+  "nameEn": "Cointreau",
+  "nameZh": "君度橙酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 110,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "君度橙酒（直调版） / Grand Marnier（卷曲版） / Pierre Ferrand 干库拉索（铅笔版）",
+  "nameEn": "Cointreau / Grand Marnier / Pierre Ferrand Dry Curaçao",
+  "nameZh": "君度橙酒 / 柑曼怡 / 皮埃尔费朗干库拉索",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "根据版本选择"
+ },
+ {
+  "raw": "咖啡豆浸泡伏特加",
+  "nameEn": "Coffee Bean-Infused Vodka",
+  "nameZh": "咖啡豆浸渍伏特加",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": "自制浸渍酒"
+ },
+ {
+  "raw": "喜马拉雅细粉盐",
+  "nameEn": "Fine Himalayan Pink Salt",
+  "nameZh": "喜马拉雅细盐",
+  "kind": "bottle",
+  "category": "香草香料",
+  "priceCny": 20,
+  "volume": "100g",
+  "note": ""
+ },
+ {
+  "raw": "墨西哥辣椒果冻（Braswell’s 或 Stonewall Kitchen）",
+  "nameEn": "Jalapeño Pepper Jelly",
+  "nameZh": "墨西哥辣椒果冻",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 60,
+  "volume": "300g",
+  "note": ""
+ },
+ {
+  "raw": "大块柠檬皮",
+  "nameEn": "Large Lemon Peel",
+  "nameZh": "大块柠檬皮",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 3,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "大方冰",
+  "nameEn": "Large Ice Cube",
+  "nameZh": "大方冰",
+  "kind": "other",
+  "category": "冰",
+  "priceCny": null,
+  "volume": "1块",
+  "note": ""
+ },
+ {
+  "raw": "安哥斯图拉苦精",
+  "nameEn": "Angostura Aromatic Bitters",
+  "nameZh": "安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "安戈斯图拉苦精",
+  "nameEn": "Angostura Aromatic Bitters",
+  "nameZh": "安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "安高天娜苦精",
+  "nameEn": "Angostura Aromatic Bitters",
+  "nameZh": "安高天娜芳香苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 90,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "家制德梅拉拉糖浆",
+  "nameEn": "Homemade Demerara Syrup",
+  "nameZh": "自制德梅拉拉糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": 10,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "家制石榴糖浆",
+  "nameEn": "Homemade Grenadine",
+  "nameZh": "自制石榴糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": 15,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "富士苹果",
+  "nameEn": "Fuji Apple",
+  "nameZh": "富士苹果",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 5,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "小熟黄桃（切块）",
+  "nameEn": "Small Ripe Yellow Peach",
+  "nameZh": "小熟黄桃",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 5,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "小芝路酒庄苏玳甜白葡萄酒",
+  "nameEn": "Petit Guiraud Sauternes",
+  "nameZh": "小芝路酒庄苏玳甜白葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 150,
+  "volume": "375ml",
+  "note": ""
+ },
+ {
+  "raw": "少许红甜椒粉",
+  "nameEn": "Paprika",
+  "nameZh": "红甜椒粉",
+  "kind": "bottle",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "巧克力混合液（见下）",
+  "nameEn": "Chocolate Mix",
+  "nameZh": "巧克力混合液",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": 20,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "布什米尔 爱尔兰威士忌",
+  "nameEn": "Bushmills Irish Whiskey",
+  "nameZh": "布什米尔爱尔兰威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "干果浸泡 Alexander 赤霞珠格拉帕",
+  "nameEn": "Dried Fruit Infused Alexander Cabernet Grappa",
+  "nameZh": "干果浸泡亚历山大赤霞珠格拉帕",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 200,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "干红葡萄酒(波尔多优级即可)",
+  "nameEn": "Bordeaux Supérieur Dry Red Wine",
+  "nameZh": "波尔多超级干红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 80,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "干红葡萄酒（中至全身型赤霞珠）",
+  "nameEn": "Cabernet Sauvignon Dry Red Wine",
+  "nameZh": "赤霞珠干红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 80,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "干红葡萄酒（推荐波尔多超级级）",
+  "nameEn": "Bordeaux Supérieur Dry Red Wine",
+  "nameZh": "波尔多超级干红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 80,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "库拉索、马拉斯奇诺或其他利口酒",
+  "nameEn": "Curaçao, Maraschino or Other Liqueur",
+  "nameZh": "库拉索、马拉斯奇诺或其他利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "廊酒(Bénédictine)",
+  "nameEn": "Bénédictine D.O.M. Liqueur",
+  "nameZh": "廊酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "德梅拉拉糖",
+  "nameEn": "Demerara Sugar",
+  "nameZh": "德梅拉拉糖",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 30,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "德梅拉拉糖块",
+  "nameEn": "Demerara Sugar Cube",
+  "nameZh": "德梅拉拉方糖",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 30,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "德梅拉拉糖或糖块",
+  "nameEn": "Demerara Sugar Cube",
+  "nameZh": "德梅拉拉方糖",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 30,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "德麦拉拉方糖",
+  "nameEn": "Demerara Sugar Cube",
+  "nameZh": "德梅拉拉方糖",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 30,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "德麦拉拉糖浆",
+  "nameEn": "Demerara Syrup",
+  "nameZh": "德梅拉拉糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": 10,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "整颗橙子皮(去白筋)",
+  "nameEn": "Whole Orange Peel",
+  "nameZh": "整颗橙子皮",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 4,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "整鸡蛋",
+  "nameEn": "Whole Egg",
+  "nameZh": "整鸡蛋",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "斯林",
+  "nameEn": "Sling",
+  "nameZh": "斯林",
+  "kind": "other",
+  "category": "其他",
+  "priceCny": null,
+  "volume": "",
+  "note": ""
+ },
+ {
+  "raw": "新鲜百里香(另加一枝作装饰)",
+  "nameEn": "Fresh Thyme",
+  "nameZh": "新鲜百里香",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 10,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "新鲜磨碎的肉豆蔻",
+  "nameEn": "Freshly Grated Nutmeg",
+  "nameZh": "新鲜磨碎的肉豆蔻",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 20,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "新鲜罗勒叶",
+  "nameEn": "Fresh Basil Leaves",
+  "nameZh": "新鲜罗勒叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 10,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "新鲜罗勒叶（洗净去茎）",
+  "nameEn": "Fresh Basil Leaves",
+  "nameZh": "新鲜罗勒叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 10,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "新鲜菠萝块（若无，新鲜菠萝汁代替，0.5 oz.）",
+  "nameEn": "Fresh Pineapple Chunks",
+  "nameZh": "新鲜菠萝块",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 15,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "新鲜薄荷叶",
+  "nameEn": "Fresh Mint Leaves",
+  "nameZh": "新鲜薄荷叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "新鲜薄荷叶（另留一枝作装饰）",
+  "nameEn": "Fresh Mint Leaves",
+  "nameZh": "新鲜薄荷叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "新鲜香菜叶",
+  "nameEn": "Fresh Cilantro Leaves",
+  "nameZh": "新鲜香菜叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 3,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "新鲜黑樱桃（对半切）",
+  "nameEn": "Fresh Black Cherries",
+  "nameZh": "新鲜黑樱桃",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 30,
+  "volume": "250g",
+  "note": ""
+ },
+ {
+  "raw": "新鲜龙蒿叶",
+  "nameEn": "Fresh Tarragon Leaves",
+  "nameZh": "新鲜龙蒿叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "方糖",
+  "nameEn": "Sugar Cube",
+  "nameZh": "方糖",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 10,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "无花果干(对半切开，约5个)",
+  "nameEn": "Dried Figs",
+  "nameZh": "无花果干",
+  "kind": "bottle",
+  "category": "水果",
+  "priceCny": 30,
+  "volume": "250g",
+  "note": ""
+ },
+ {
+  "raw": "有机淡龙舌兰糖浆（龙舌兰与水1:1比例）",
+  "nameEn": "Organic Light Agave Nectar",
+  "nameZh": "有机淡龙舌兰糖浆",
+  "kind": "bottle",
+  "category": "糖浆",
+  "priceCny": 60,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "本尼迪克丁利口酒",
+  "nameEn": "Bénédictine D.O.M. Liqueur",
+  "nameZh": "廊酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 150,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "杏仁糖浆",
+  "nameEn": "Orgeat Syrup",
+  "nameZh": "杏仁糖浆",
+  "kind": "bottle",
+  "category": "糖浆",
+  "priceCny": 80,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "杏子(去核切块)",
+  "nameEn": "Apricot",
+  "nameZh": "杏子",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 15,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "杰克丹尼 田纳西威士忌",
+  "nameEn": "Jack Daniel's Tennessee Whiskey",
+  "nameZh": "杰克丹尼田纳西威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 130,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "枫糖浆",
+  "nameEn": "Maple Syrup",
+  "nameZh": "枫糖浆",
+  "kind": "bottle",
+  "category": "糖浆",
+  "priceCny": 60,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "柠檬汁",
+  "nameEn": "Lemon Juice",
+  "nameZh": "柠檬汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 15,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "柠檬皮(约1英寸乘3英寸)",
+  "nameEn": "Lemon Peel",
+  "nameZh": "柠檬皮",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 3,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "桃子",
+  "nameEn": "Peach",
+  "nameZh": "桃子",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 10,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "桃子果泥",
+  "nameEn": "Peach Purée",
+  "nameZh": "桃子果泥",
+  "kind": "bottle",
+  "category": "果汁",
+  "priceCny": 50,
+  "volume": "1000ml",
+  "note": ""
+ },
+ {
+  "raw": "桃子浸泡 Larceny 波本威士忌",
+  "nameEn": "Peach-Infused Larceny Bourbon",
+  "nameZh": "桃子浸渍 Larceny 波本威士忌",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "桃子片",
+  "nameEn": "Peach Slice",
+  "nameZh": "桃子片",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "桃子（半切块，半切片）",
+  "nameEn": "Peach (Half Cubed, Half Sliced)",
+  "nameZh": "桃子（半切块，半切片）",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "橙汁",
+  "nameEn": "Orange Juice",
+  "nameZh": "橙汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": null,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "橙片和柠檬片",
+  "nameEn": "Orange and Lemon Slices",
+  "nameZh": "橙片和柠檬片",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "橙瓣（对半切）",
+  "nameEn": "Orange Segments (Halved)",
+  "nameZh": "橙瓣（对半切）",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "橙皮(约1英寸乘3英寸)",
+  "nameEn": "Orange Peel (1x3 inches)",
+  "nameZh": "橙皮",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1个",
+  "note": "约1英寸乘3英寸"
+ },
+ {
+  "raw": "橙皮(约3英寸长)",
+  "nameEn": "Orange Peel (3 inches long)",
+  "nameZh": "橙皮",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1个",
+  "note": "约3英寸长"
+ },
+ {
+  "raw": "橙皮两大片",
+  "nameEn": "Orange Peel (2 large pieces)",
+  "nameZh": "橙皮",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1个",
+  "note": "两大片"
+ },
+ {
+  "raw": "橙皮（两片，约1×2英寸，折叠释放油脂后加入调酒杯）",
+  "nameEn": "Orange Peel (2 pieces, 1x2 inches)",
+  "nameZh": "橙皮",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1个",
+  "note": "两片，约1×2英寸，折叠释放油脂后加入调酒杯"
+ },
+ {
+  "raw": "橙花水",
+  "nameEn": "Orange Flower Water",
+  "nameZh": "橙花水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 50,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "橙角",
+  "nameEn": "Orange Wedge",
+  "nameZh": "橙角",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "法式烘焙咖啡（冰镇）",
+  "nameEn": "French Roast Coffee (Chilled)",
+  "nameZh": "法式烘焙咖啡",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "冰镇"
+ },
+ {
+  "raw": "法式烘焙咖啡（冷却）",
+  "nameEn": "French Roast Coffee (Cooled)",
+  "nameZh": "法式烘焙咖啡",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "冷却"
+ },
+ {
+  "raw": "波尔多上等干红葡萄酒（浮酒）",
+  "nameEn": "Fine Bordeaux Dry Red Wine",
+  "nameZh": "波尔多干红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": "用于浮酒"
+ },
+ {
+  "raw": "波尔多优级红葡萄酒或自选干红葡萄酒",
+  "nameEn": "Bordeaux Supérieur or Dry Red Wine of Choice",
+  "nameZh": "波尔多优级红葡萄酒或自选干红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "波本威士忌",
+  "nameEn": "Bourbon Whiskey",
+  "nameZh": "波本威士忌",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 120,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "波特酒",
+  "nameEn": "Port Wine",
+  "nameZh": "波特酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "浅红糖",
+  "nameEn": "Light Brown Sugar",
+  "nameZh": "浅红糖",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "浅色龙舌兰糖浆(1:1龙舌兰与水)",
+  "nameEn": "Light Agave Syrup (1:1)",
+  "nameZh": "浅色龙舌兰糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "1:1龙舌兰与水"
+ },
+ {
+  "raw": "浓奶油",
+  "nameEn": "Heavy Cream",
+  "nameZh": "浓奶油",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 25,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "浓奶油（或半奶半奶油）",
+  "nameEn": "Heavy Cream",
+  "nameZh": "浓奶油",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 25,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "淡奶油",
+  "nameEn": "Light Cream",
+  "nameZh": "淡奶油",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 20,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "淡奶油(可选)",
+  "nameEn": "Light Cream",
+  "nameZh": "淡奶油",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 20,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "淡奶油(用于漂浮)",
+  "nameEn": "Light Cream",
+  "nameZh": "淡奶油",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 20,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "满勺自制苹果酱（配方见下）",
+  "nameEn": "Homemade Applesauce",
+  "nameZh": "自制苹果酱",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": null,
+  "volume": "500g",
+  "note": "满勺"
+ },
+ {
+  "raw": "满吧匙 Medford Farms 苹果黄油",
+  "nameEn": "Medford Farms Apple Butter",
+  "nameZh": "Medford Farms 苹果黄油",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 40,
+  "volume": "300g",
+  "note": "满吧匙"
+ },
+ {
+  "raw": "烟熏辣椒糖浆",
+  "nameEn": "Smoked Chili Syrup",
+  "nameZh": "烟熏辣椒糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "烤制去籽新鲜墨西哥辣椒",
+  "nameEn": "Roasted Seeded Fresh Jalapeño",
+  "nameZh": "烤制去籽新鲜墨西哥辣椒",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": null,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "熟草莓",
+  "nameEn": "Ripe Strawberry",
+  "nameZh": "熟草莓",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": null,
+  "volume": "1盒",
+  "note": ""
+ },
+ {
+  "raw": "犹太盐",
+  "nameEn": "Kosher Salt",
+  "nameZh": "犹太盐",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 20,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "甘蔗姜汁汽水或姜汁啤酒（Boylan、Fever-Tree或Q品牌）或苏打水",
+  "nameEn": "Cane Ginger Ale or Ginger Beer (Boylan, Fever-Tree, or Q) or Club Soda",
+  "nameZh": "甘蔗姜汁汽水或姜汁啤酒或苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 15,
+  "volume": "330ml",
+  "note": "Boylan、Fever-Tree或Q品牌"
+ },
+ {
+  "raw": "白葡萄干",
+  "nameEn": "White Raisins",
+  "nameZh": "白葡萄干",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 20,
+  "volume": "200g",
+  "note": ""
+ },
+ {
+  "raw": "稠奶油（或 半奶油）",
+  "nameEn": "Heavy Cream (or Half-and-Half)",
+  "nameZh": "稠奶油",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 25,
+  "volume": "250ml",
+  "note": "或半奶油"
+ },
+ {
+  "raw": "简单糖浆",
+  "nameEn": "Simple Syrup",
+  "nameZh": "简单糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "简单糖浆(或胶糖浆，优选)",
+  "nameEn": "Simple Syrup (or Gomme Syrup, preferred)",
+  "nameZh": "简单糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "或胶糖浆，优选"
+ },
+ {
+  "raw": "简单糖浆或古姆糖浆",
+  "nameEn": "Simple Syrup or Gomme Syrup",
+  "nameZh": "简单糖浆或古姆糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "简单糖浆或胶质糖浆",
+  "nameEn": "Simple Syrup or Gomme Syrup",
+  "nameZh": "简单糖浆或胶质糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "简单糖浆（可选，家制覆盆子糖浆）",
+  "nameEn": "Simple Syrup (or Homemade Raspberry Syrup)",
+  "nameZh": "简单糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "可选，家制覆盆子糖浆"
+ },
+ {
+  "raw": "简单糖浆（或传统做法用 1 茶匙超细糖）",
+  "nameEn": "Simple Syrup (or 1 tsp Superfine Sugar)",
+  "nameZh": "简单糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "或传统做法用 1 茶匙超细糖"
+ },
+ {
+  "raw": "粉红胡椒",
+  "nameEn": "Pink Peppercorn",
+  "nameZh": "粉红胡椒",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 30,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "粗盐",
+  "nameEn": "Coarse Salt",
+  "nameZh": "粗盐",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 10,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "粗黑胡椒",
+  "nameEn": "Coarse Black Pepper",
+  "nameZh": "粗黑胡椒",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 20,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "糖块",
+  "nameEn": "Sugar Cube",
+  "nameZh": "糖块",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "红茶(冷藏)",
+  "nameEn": "Black Tea (Chilled)",
+  "nameZh": "红茶",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "冷藏"
+ },
+ {
+  "raw": "纯香草提取物",
+  "nameEn": "Pure Vanilla Extract",
+  "nameZh": "纯香草提取物",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 60,
+  "volume": "50ml",
+  "note": ""
+ },
+ {
+  "raw": "纯香草提取物（可选）",
+  "nameEn": "Pure Vanilla Extract",
+  "nameZh": "纯香草提取物",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 60,
+  "volume": "50ml",
+  "note": "可选"
+ },
+ {
+  "raw": "纯香草精",
+  "nameEn": "Pure Vanilla Extract",
+  "nameZh": "纯香草精",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 60,
+  "volume": "50ml",
+  "note": ""
+ },
+ {
+  "raw": "纯香草精（可选）",
+  "nameEn": "Pure Vanilla Extract",
+  "nameZh": "纯香草精",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 60,
+  "volume": "50ml",
+  "note": "可选"
+ },
+ {
+  "raw": "细砂糖",
+  "nameEn": "Caster Sugar",
+  "nameZh": "细砂糖",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "绿查特酒",
+  "nameEn": "Green Chartreuse",
+  "nameZh": "绿查特酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "绿色夏特酒",
+  "nameEn": "Green Chartreuse",
+  "nameZh": "绿查特酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "绿色查特酒",
+  "nameEn": "Green Chartreuse",
+  "nameZh": "绿查特酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "罗勒叶",
+  "nameEn": "Basil Leaves",
+  "nameZh": "罗勒叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 10,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "自制 Pepsin 苦精或 Cinzano Rosso 甜味苦艾酒",
+  "nameEn": "Homemade Pepsin Bitters",
+  "nameZh": "自制胃蛋白酶苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": "可用 Cinzano Rosso 甜味味美思替代"
+ },
+ {
+  "raw": "自制Bacardi Elixir 甜酒",
+  "nameEn": "Homemade Bacardi Elixir",
+  "nameZh": "自制百加得长生不老药甜酒",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "自制Demerara 糖浆",
+  "nameEn": "Homemade Demerara Syrup",
+  "nameZh": "自制德麦拉拉糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制Demerara糖浆",
+  "nameEn": "Homemade Demerara Syrup",
+  "nameZh": "自制德麦拉拉糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制可可苦精 或 Fee Brothers 阿兹特克巧克力苦精",
+  "nameEn": "Homemade Cacao Bitters",
+  "nameZh": "自制可可苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": "可用 Fee Brothers Aztec 巧克力苦精替代"
+ },
+ {
+  "raw": "自制可可苦精或 Fee Brothers Aztec 巧克力苦精",
+  "nameEn": "Homemade Cacao Bitters",
+  "nameZh": "自制可可苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": "可用 Fee Brothers Aztec 巧克力苦精替代"
+ },
+ {
+  "raw": "自制可可苦精（如果没有，可用 Fee Brothers Aztec 巧克力苦精）",
+  "nameEn": "Homemade Cacao Bitters",
+  "nameZh": "自制可可苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": "可用 Fee Brothers Aztec 巧克力苦精替代"
+ },
+ {
+  "raw": "自制巧克力苦味酒或 Fee Brothers Aztec 巧克力苦味酒",
+  "nameEn": "Homemade Chocolate Bitters",
+  "nameZh": "自制巧克力苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": "可用 Fee Brothers Aztec 巧克力苦精替代"
+ },
+ {
+  "raw": "自制德梅拉拉糖浆",
+  "nameEn": "Homemade Demerara Syrup",
+  "nameZh": "自制德麦拉拉糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制德麦拉拉糖浆",
+  "nameEn": "Homemade Demerara Syrup",
+  "nameZh": "自制德麦拉拉糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制桃子苦味酒或 The Bitter Truth 桃子苦味酒",
+  "nameEn": "Homemade Peach Bitters",
+  "nameZh": "自制桃子苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": "可用 The Bitter Truth 桃子苦精替代"
+ },
+ {
+  "raw": "自制桃子苦精或 The Bitter Truth 桃子苦精",
+  "nameEn": "Homemade Peach Bitters",
+  "nameZh": "自制桃子苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": "可用 The Bitter Truth 桃子苦精替代"
+ },
+ {
+  "raw": "自制桃子苦精（或 The Bitter Truth 桃子苦精）",
+  "nameEn": "Homemade Peach Bitters",
+  "nameZh": "自制桃子苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": "可用 The Bitter Truth 桃子苦精替代"
+ },
+ {
+  "raw": "自制梨子浸泡烈酒",
+  "nameEn": "Homemade Pear Infused Spirit",
+  "nameZh": "自制梨子浸渍烈酒",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "自制橙味金酒（或 Hayman’s Old Tom 金酒）",
+  "nameEn": "Homemade Orange Gin",
+  "nameZh": "自制橙味金酒",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "700ml",
+  "note": "可用 Hayman's Old Tom 金酒替代"
+ },
+ {
+  "raw": "自制法勒南糖浆",
+  "nameEn": "Homemade Falernum",
+  "nameZh": "自制法勒南糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制白可可混合液",
+  "nameEn": "Homemade White Cacao Mix",
+  "nameZh": "自制白可可混合液",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制石榴糖浆",
+  "nameEn": "Homemade Grenadine",
+  "nameZh": "自制红石榴糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制石榴糖浆（或 简单糖浆）",
+  "nameEn": "Homemade Grenadine",
+  "nameZh": "自制红石榴糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "可用简单糖浆替代"
+ },
+ {
+  "raw": "自制红石榴糖浆",
+  "nameEn": "Homemade Grenadine",
+  "nameZh": "自制红石榴糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制红石榴糖浆(或覆盆子糖浆)",
+  "nameEn": "Homemade Grenadine",
+  "nameZh": "自制红石榴糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "可用覆盆子糖浆替代"
+ },
+ {
+  "raw": "自制红石榴糖浆、阿拉伯胶糖浆或简单糖浆（可选）",
+  "nameEn": "Homemade Grenadine",
+  "nameZh": "自制红石榴糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "可选；可用阿拉伯胶糖浆或简单糖浆替代"
+ },
+ {
+  "raw": "自制红石榴糖浆（可选）",
+  "nameEn": "Homemade Grenadine",
+  "nameZh": "自制红石榴糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "可选"
+ },
+ {
+  "raw": "自制肉桂伏特加",
+  "nameEn": "Homemade Cinnamon Vodka",
+  "nameZh": "自制肉桂伏特加",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "自制肉桂苦精",
+  "nameEn": "Homemade Cinnamon Bitters",
+  "nameZh": "自制肉桂苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "自制草莓糖浆",
+  "nameEn": "Homemade Strawberry Syrup",
+  "nameZh": "自制草莓糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制菠萝糖浆(或君度)",
+  "nameEn": "Homemade Pineapple Syrup",
+  "nameZh": "自制菠萝糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "可用君度替代"
+ },
+ {
+  "raw": "自制蔓越莓苦精",
+  "nameEn": "Homemade Cranberry Bitters",
+  "nameZh": "自制蔓越莓苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": ""
+ },
+ {
+  "raw": "自制蔓越莓苦精(或Bittermens蔓越莓苦精)",
+  "nameEn": "Homemade Cranberry Bitters",
+  "nameZh": "自制蔓越莓苦精",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "100ml",
+  "note": "可用 Bittermens 蔓越莓苦精替代"
+ },
+ {
+  "raw": "自制蜂蜜生姜糖浆",
+  "nameEn": "Homemade Honey Ginger Syrup",
+  "nameZh": "自制蜂蜜生姜糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制蜂蜜糖浆",
+  "nameEn": "Homemade Honey Syrup",
+  "nameZh": "自制蜂蜜糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制覆盆子糖浆",
+  "nameEn": "Homemade Raspberry Syrup",
+  "nameZh": "自制覆盆子糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "自制覆盆子酸甜酒（冷藏）",
+  "nameEn": "Homemade Raspberry Shrub",
+  "nameZh": "自制覆盆子果醋糖浆",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": null,
+  "volume": "500ml",
+  "note": "需冷藏"
+ },
+ {
+  "raw": "自选烈酒（白兰地、金酒、朗姆酒、龙舌兰、威士忌等）",
+  "nameEn": "Spirit of Choice",
+  "nameZh": "自选烈酒",
+  "kind": "bottle",
+  "category": "威士忌",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "白兰地、金酒、朗姆酒、龙舌兰、威士忌等均可"
+ },
+ {
+  "raw": "芹菜籽",
+  "nameEn": "Celery Seeds",
+  "nameZh": "芹菜籽",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "芹菜籽 (omit 粗盐 if using celery salt)",
+  "nameEn": "Celery Seeds",
+  "nameZh": "芹菜籽",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "50g",
+  "note": "若使用芹菜盐则省略粗盐"
+ },
+ {
+  "raw": "苏打水",
+  "nameEn": "Club Soda",
+  "nameZh": "苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": ""
+ },
+ {
+  "raw": "苏打水(冷藏)",
+  "nameEn": "Club Soda",
+  "nameZh": "苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": "需冷藏"
+ },
+ {
+  "raw": "苏打水、姜汁汽水或姜汁啤酒、奎宁水等",
+  "nameEn": "Club Soda, Ginger Ale, Ginger Beer, or Tonic Water",
+  "nameZh": "苏打水、姜汁汽水、姜汁啤酒或汤力水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": "任选其一"
+ },
+ {
+  "raw": "苏打水（冷却）",
+  "nameEn": "Club Soda",
+  "nameZh": "苏打水",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 5,
+  "volume": "330ml",
+  "note": "需冷藏"
+ },
+ {
+  "raw": "菠萝汁",
+  "nameEn": "Pineapple Juice",
+  "nameZh": "菠萝汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 15,
+  "volume": "1L",
+  "note": ""
+ },
+ {
+  "raw": "菠萝角(小块，约两英寸)",
+  "nameEn": "Pineapple Wedge",
+  "nameZh": "菠萝角",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 20,
+  "volume": "1个",
+  "note": "小块，约两英寸"
+ },
+ {
+  "raw": "葡萄柚汁",
+  "nameEn": "Grapefruit Juice",
+  "nameZh": "葡萄柚汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 15,
+  "volume": "1L",
+  "note": ""
+ },
+ {
+  "raw": "蔓越莓浸泡伏特加",
+  "nameEn": "Cranberry Infused Vodka",
+  "nameZh": "蔓越莓浸渍伏特加",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": null,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "薄荷叶",
+  "nameEn": "Mint Leaves",
+  "nameZh": "薄荷叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "薄荷叶(约2枝)",
+  "nameEn": "Mint Sprigs",
+  "nameZh": "薄荷枝",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "50g",
+  "note": "约2枝"
+ },
+ {
+  "raw": "蛋",
+  "nameEn": "Egg",
+  "nameZh": "鸡蛋",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 1,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "蛋清",
+  "nameEn": "Egg White",
+  "nameZh": "蛋清",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 1,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "蛋清 (可选)",
+  "nameEn": "Egg White",
+  "nameZh": "蛋清",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 1,
+  "volume": "1个",
+  "note": "可选"
+ },
+ {
+  "raw": "蛋清（可选）",
+  "nameEn": "Egg White",
+  "nameZh": "蛋清",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 1,
+  "volume": "1个",
+  "note": "可选"
+ },
+ {
+  "raw": "蛋白",
+  "nameEn": "Egg White",
+  "nameZh": "蛋清",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 1,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "蛋黄",
+  "nameEn": "Egg Yolk",
+  "nameZh": "蛋黄",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 1,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "裴乔氏苦精",
+  "nameEn": "Peychaud's Bitters",
+  "nameZh": "裴乔氏苦精",
+  "kind": "bottle",
+  "category": "苦精",
+  "priceCny": 80,
+  "volume": "148ml",
+  "note": ""
+ },
+ {
+  "raw": "西梅糖浆(或自制德麦拉拉糖浆)",
+  "nameEn": "Prune Syrup",
+  "nameZh": "西梅糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": 30,
+  "volume": "500ml",
+  "note": "可用自制德麦拉拉糖浆替代"
+ },
+ {
+  "raw": "超细白糖",
+  "nameEn": "Superfine Sugar",
+  "nameZh": "超细白糖",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 15,
+  "volume": "500g",
+  "note": ""
+ },
+ {
+  "raw": "轩尼诗 VS 干邑",
+  "nameEn": "Hennessy VS Cognac",
+  "nameZh": "轩尼诗 VS 干邑",
+  "kind": "bottle",
+  "category": "白兰地",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "辣椒粉与粗盐镶边(可选，将2份辣椒粉与1份粗盐在碟中混合均匀)",
+  "nameEn": "Chili Powder and Kosher Salt Rim",
+  "nameZh": "辣椒粉与粗盐镶边",
+  "kind": "homemade",
+  "category": "其他自制",
+  "priceCny": 5,
+  "volume": "1份",
+  "note": "可选，将2份辣椒粉与1份粗盐在碟中混合均匀"
+ },
+ {
+  "raw": "选用烈酒",
+  "nameEn": "Spirit of Choice",
+  "nameZh": "选用烈酒",
+  "kind": "bottle",
+  "category": "其他",
+  "priceCny": 100,
+  "volume": "700ml",
+  "note": "根据配方或个人喜好选择"
+ },
+ {
+  "raw": "选用葡萄酒或雪利酒",
+  "nameEn": "Wine or Sherry of Choice",
+  "nameZh": "选用葡萄酒或雪利酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 100,
+  "volume": "750ml",
+  "note": "根据配方或个人喜好选择"
+ },
+ {
+  "raw": "酸磷酸盐",
+  "nameEn": "Acid Phosphate",
+  "nameZh": "酸磷酸盐",
+  "kind": "bottle",
+  "category": "软饮",
+  "priceCny": 150,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "重奶油",
+  "nameEn": "Heavy Cream",
+  "nameZh": "重奶油",
+  "kind": "fresh",
+  "category": "乳蛋",
+  "priceCny": 25,
+  "volume": "250ml",
+  "note": ""
+ },
+ {
+  "raw": "阿拉伯树胶糖浆(或简单糖浆)",
+  "nameEn": "Gomme Syrup",
+  "nameZh": "阿拉伯树胶糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": 40,
+  "volume": "500ml",
+  "note": "可用简单糖浆替代"
+ },
+ {
+  "raw": "阿拉伯胶糖浆或简单糖浆",
+  "nameEn": "Gomme Syrup",
+  "nameZh": "阿拉伯树胶糖浆",
+  "kind": "homemade",
+  "category": "糖浆",
+  "priceCny": 40,
+  "volume": "500ml",
+  "note": "可用简单糖浆替代"
+ },
+ {
+  "raw": "青柠",
+  "nameEn": "Lime",
+  "nameZh": "青柠",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "青柠榨后果皮",
+  "nameEn": "Spent Lime Shell",
+  "nameZh": "青柠榨后果皮",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 0,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "青柠汁",
+  "nameEn": "Lime Juice",
+  "nameZh": "青柠汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "青柠角",
+  "nameEn": "Lime Wedge",
+  "nameZh": "青柠角",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "青柠（切四块）",
+  "nameEn": "Lime (Quartered)",
+  "nameZh": "青柠",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": "切四块"
+ },
+ {
+  "raw": "香料朗姆酒浸泡液（Appleton Estate Reserve 或 Sailor Jerry）",
+  "nameEn": "Spiced Rum Infusion",
+  "nameZh": "香料朗姆酒浸泡液",
+  "kind": "homemade",
+  "category": "浸渍",
+  "priceCny": 150,
+  "volume": "700ml",
+  "note": "建议使用 Appleton Estate Reserve 或 Sailor Jerry"
+ },
+ {
+  "raw": "香草荚(剖开)",
+  "nameEn": "Vanilla Bean",
+  "nameZh": "香草荚",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 15,
+  "volume": "1根",
+  "note": "剖开"
+ },
+ {
+  "raw": "马丁尼与罗西 甜味美思",
+  "nameEn": "Martini & Rossi Sweet Vermouth",
+  "nameZh": "马丁尼与罗西甜味美思",
+  "kind": "bottle",
+  "category": "味美思",
+  "priceCny": 60,
+  "volume": "750ml",
+  "note": ""
+ },
+ {
+  "raw": "鲜柠檬汁",
+  "nameEn": "Fresh Lemon Juice",
+  "nameZh": "鲜柠檬汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 3,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "鲜柠檬汁 或 2滴 Horsford’s 酸磷酸盐",
+  "nameEn": "Fresh Lemon Juice",
+  "nameZh": "鲜柠檬汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 3,
+  "volume": "1个",
+  "note": "可用2滴 Horsford’s 酸磷酸盐替代"
+ },
+ {
+  "raw": "鲜柠檬汁或鲜青柠汁",
+  "nameEn": "Fresh Lemon Juice",
+  "nameZh": "鲜柠檬汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 3,
+  "volume": "1个",
+  "note": "可用鲜青柠汁替代"
+ },
+ {
+  "raw": "鲜柠檬（半个，切块）",
+  "nameEn": "Fresh Lemon",
+  "nameZh": "鲜柠檬",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 3,
+  "volume": "1个",
+  "note": "半个，切块"
+ },
+ {
+  "raw": "鲜桃块",
+  "nameEn": "Fresh Peach Chunks",
+  "nameZh": "鲜桃块",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 5,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "鲜橙汁",
+  "nameEn": "Fresh Orange Juice",
+  "nameZh": "鲜橙汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 4,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "鲜橙汁（季节性可用血橙汁）",
+  "nameEn": "Fresh Orange Juice",
+  "nameZh": "鲜橙汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 4,
+  "volume": "1个",
+  "note": "季节性可用血橙汁替代"
+ },
+ {
+  "raw": "鲜胡萝卜汁（如果没有，可用 Bolthouse Farms）",
+  "nameEn": "Fresh Carrot Juice",
+  "nameZh": "鲜胡萝卜汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 15,
+  "volume": "500ml",
+  "note": "如果没有，可用 Bolthouse Farms"
+ },
+ {
+  "raw": "鲜苹果汁（苹果酒，如无可用）",
+  "nameEn": "Fresh Apple Juice",
+  "nameZh": "鲜苹果汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 15,
+  "volume": "500ml",
+  "note": "如无可用苹果酒替代"
+ },
+ {
+  "raw": "鲜苹果酒",
+  "nameEn": "Fresh Apple Cider",
+  "nameZh": "鲜苹果酒",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 25,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "鲜菠萝汁",
+  "nameEn": "Fresh Pineapple Juice",
+  "nameZh": "鲜菠萝汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 20,
+  "volume": "500ml",
+  "note": ""
+ },
+ {
+  "raw": "鲜菠萝汁或菠萝果泥",
+  "nameEn": "Fresh Pineapple Juice",
+  "nameZh": "鲜菠萝汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 20,
+  "volume": "500ml",
+  "note": "可用菠萝果泥替代"
+ },
+ {
+  "raw": "鲜葡萄柚汁",
+  "nameEn": "Fresh Grapefruit Juice",
+  "nameZh": "鲜葡萄柚汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 5,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "鲜薄荷叶",
+  "nameEn": "Fresh Mint Leaves",
+  "nameZh": "鲜薄荷叶",
+  "kind": "fresh",
+  "category": "香草香料",
+  "priceCny": 5,
+  "volume": "50g",
+  "note": ""
+ },
+ {
+  "raw": "鲜血橙汁或2满茶匙血橙雪葩",
+  "nameEn": "Fresh Blood Orange Juice",
+  "nameZh": "鲜血橙汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 6,
+  "volume": "1个",
+  "note": "可用2满茶匙血橙雪葩替代"
+ },
+ {
+  "raw": "鲜血橙汁或果泥",
+  "nameEn": "Fresh Blood Orange Juice",
+  "nameZh": "鲜血橙汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 6,
+  "volume": "1个",
+  "note": "可用血橙果泥替代"
+ },
+ {
+  "raw": "鲜西柚汁",
+  "nameEn": "Fresh Grapefruit Juice",
+  "nameZh": "鲜西柚汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 5,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "鲜覆盆子果泥（或 Les vergers Boiron 或 Ravifruit）",
+  "nameEn": "Fresh Raspberry Puree",
+  "nameZh": "鲜覆盆子果泥",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 60,
+  "volume": "500g",
+  "note": "建议使用 Les vergers Boiron 或 Ravifruit"
+ },
+ {
+  "raw": "鲜覆盆子果泥（或 Les vergers Boiron, Perfect Purée, Ravifruit）",
+  "nameEn": "Fresh Raspberry Puree",
+  "nameZh": "鲜覆盆子果泥",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 60,
+  "volume": "500g",
+  "note": "建议使用 Les vergers Boiron, Perfect Purée, Ravifruit"
+ },
+ {
+  "raw": "鲜青柠汁",
+  "nameEn": "Fresh Lime Juice",
+  "nameZh": "鲜青柠汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": ""
+ },
+ {
+  "raw": "鲜青柠汁或鲜柠檬汁",
+  "nameEn": "Fresh Lime Juice",
+  "nameZh": "鲜青柠汁",
+  "kind": "fresh",
+  "category": "果汁",
+  "priceCny": 2,
+  "volume": "1个",
+  "note": "可用鲜柠檬汁替代"
+ },
+ {
+  "raw": "鲜黄瓜圆片（1/4英寸厚）",
+  "nameEn": "Fresh Cucumber Slice",
+  "nameZh": "鲜黄瓜圆片",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 2,
+  "volume": "1根",
+  "note": "1/4英寸厚"
+ },
+ {
+  "raw": "黄夏特酒",
+  "nameEn": "Yellow Chartreuse",
+  "nameZh": "黄查特酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "黄查特酒",
+  "nameEn": "Yellow Chartreuse",
+  "nameZh": "黄查特酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "黄查特酒（Yellow Chartreuse）",
+  "nameEn": "Yellow Chartreuse",
+  "nameZh": "黄查特酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 350,
+  "volume": "700ml",
+  "note": ""
+ },
+ {
+  "raw": "黄瓜片",
+  "nameEn": "Cucumber Slice",
+  "nameZh": "黄瓜片",
+  "kind": "fresh",
+  "category": "水果",
+  "priceCny": 5,
+  "volume": "1根",
+  "note": "常用于装饰或捣碎出汁"
+ },
+ {
+  "raw": "黄色夏特酒",
+  "nameEn": "Yellow Chartreuse",
+  "nameZh": "黄查特利口酒",
+  "kind": "bottle",
+  "category": "利口酒",
+  "priceCny": 450,
+  "volume": "700ml",
+  "note": "法国草本利口酒，比绿查特酒更甜，酒精度较低"
+ },
+ {
+  "raw": "黑皮诺红葡萄酒",
+  "nameEn": "Pinot Noir Red Wine",
+  "nameZh": "黑皮诺红葡萄酒",
+  "kind": "bottle",
+  "category": "葡萄酒香槟",
+  "priceCny": 80,
+  "volume": "750ml",
+  "note": "酒体较轻、果味丰富的红葡萄酒"
+ }
+]

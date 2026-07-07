@@ -9,6 +9,7 @@ import React, {
 } from "react";
 
 import { buildSamplePreps } from "./seed";
+import { buildWaldorfPreps } from "../bottles/waldorf-ingredients";
 import {
   HomemadePrep,
   PREP_SECTION_MIGRATION,
@@ -28,6 +29,8 @@ const SECTIONS_KEY = "homemade.sections.v1";
 const TYPES_KEY = "homemade.types.v1";
 /** v2 迁移标记:含酒精/无酒精分组体系 */
 const TAXONOMY_V2_KEY = "homemade.taxonomy.v2";
+/** 《Waldorf》自制配料数据集导入标记 */
+const WALDORF_PREPS_FLAG = "homemade.waldorf.v1";
 
 interface HomemadeStore {
   ready: boolean;
@@ -144,6 +147,7 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
         }
         setSections(nextSections);
         setTypes(nextTypes);
+        let finalList: HomemadePrep[] = [];
         if (raw) {
           const list: HomemadePrep[] = JSON.parse(raw).map((p: HomemadePrep) =>
             normalizePrep(p),
@@ -165,11 +169,33 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
                     },
               )
             : list;
-          setPreps(migrated);
+          finalList = migrated;
           if (needMigrate) {
             AsyncStorage.setItem(PREPS_KEY, JSON.stringify(migrated)).catch(() => {});
           }
         }
+        // 《Waldorf》自制配料数据集:首次加载时一次性合入(按中/英名去重,幂等)
+        {
+          const waldorfDone = await AsyncStorage.getItem(WALDORF_PREPS_FLAG);
+          if (!waldorfDone) {
+            const names = new Set<string>();
+            for (const p of finalList) {
+              if (p.name) names.add(p.name.trim().toLowerCase());
+              if (p.nameAlt) names.add(p.nameAlt.trim().toLowerCase());
+            }
+            const fresh = buildWaldorfPreps().filter(
+              (p) =>
+                !names.has(p.name.trim().toLowerCase()) &&
+                !names.has(p.nameAlt.trim().toLowerCase()),
+            );
+            if (fresh.length > 0) {
+              finalList = [...finalList, ...fresh];
+              AsyncStorage.setItem(PREPS_KEY, JSON.stringify(finalList)).catch(() => {});
+            }
+            AsyncStorage.setItem(WALDORF_PREPS_FLAG, "1").catch(() => {});
+          }
+        }
+        setPreps(finalList);
         if (needMigrate) {
           AsyncStorage.setItem(SECTIONS_KEY, JSON.stringify(nextSections)).catch(() => {});
           AsyncStorage.setItem(TYPES_KEY, JSON.stringify(nextTypes)).catch(() => {});
