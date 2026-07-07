@@ -117,7 +117,7 @@ describe("homemade preps", () => {
     expect(bottleGroupOf("威士忌")).toBe("spirits");
     expect(bottleGroupOf("利口酒")).toBe("bottles");
     expect(categoriesOfGroup("materials")).toContain("糖与甜味剂");
-    expect(categoriesOfGroup("materials")).toContain("新鲜果蔬");
+    expect(categoriesOfGroup("materials")).toContain("果蔬");
     expect(categoriesOfGroup("materials")).toContain("花卉");
     expect(categoriesOfGroup("materials")).not.toContain("原材料");
     expect(categoriesOfGroup("bottles")).not.toContain("原材料");

@@ -8,7 +8,7 @@ const mkBottle = (over: Partial<Bottle>): Bottle => ({
   id: Math.random().toString(36).slice(2),
   nameZh: "",
   nameEn: "",
-  category: "新鲜果蔬",
+  category: "果蔬",
   style: "",
   brand: "",
   origin: "",
@@ -149,7 +149,7 @@ describe("splitBottleDraft (library-entry connector split)", () => {
   const base: BottleDraft = {
     nameZh: "",
     nameEn: "",
-    category: "新鲜果蔬",
+    category: "果蔬",
     style: "",
     brand: "",
     origin: "",

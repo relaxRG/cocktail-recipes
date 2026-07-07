@@ -12,8 +12,13 @@ import React, {
 
 import { genId } from "../recipes/types";
 
-import { CATEGORY_MIGRATION_V6, migrateMaterialBottleV8 } from "./taxonomy";
-import { Bottle, migrateBottleCategory, normalizeBottle } from "./types";
+import { CATEGORY_MIGRATION_V6, migrateMaterialBottleV8, V9_PRODUCE_STYLE_RENAME } from "./taxonomy";
+import {
+  Bottle,
+  bottleGroupOf as bottleGroupOfStatic,
+  migrateBottleCategory,
+  normalizeBottle,
+} from "./types";
 import { buildWaldorfBottles } from "./waldorf-ingredients";
 
 const BOTTLES_KEY = "cocktail.bottles";
@@ -22,6 +27,8 @@ const BOTTLES_SEEDED_KEY = "cocktail.bottles.seeded";
 const WALDORF_BOTTLES_FLAG = "cocktail.bottles.waldorf.v1";
 /** v8 原材料分类拆分迁移标记 */
 const MATERIAL_MIGRATED_V8_FLAG = "bottles.material.migrated.v8";
+/** v9 分类更名(果蔬/茶咖与可可)+复合名条目拆分去重迁移标记 */
+const MATERIAL_MIGRATED_V9_FLAG = "bottles.material.migrated.v9";
 
 export type BottleDraft = Omit<
   Bottle,
@@ -202,6 +209,100 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
             }
             await AsyncStorage.setItem(MATERIAL_MIGRATED_V8_FLAG, "1");
             notifySyncChange(MATERIAL_MIGRATED_V8_FLAG);
+          }
+        }
+        // v9:①分类更名(新鲜果蔬→果蔬/茶与咖啡→茶咖与可可)+果蔬旧子风格并入;
+        //    ②存量复合名条目(如"橙皮和柠檬片")连接词拆分为独立条目并与已有条目去重
+        {
+          const v9Done = await AsyncStorage.getItem(MATERIAL_MIGRATED_V9_FLAG);
+          if (!v9Done) {
+            let changed = false;
+            // ① 分类/子风格更名
+            const CAT_RENAME: Record<string, string> = {
+              新鲜果蔬: "果蔬",
+              茶与咖啡: "茶咖与可可",
+            };
+            list = list.map((b) => {
+              let out = b;
+              const ren = CAT_RENAME[b.category];
+              if (ren) {
+                out = { ...out, category: ren };
+                changed = true;
+              }
+              if (out.category === "果蔬") {
+                const styRen = V9_PRODUCE_STYLE_RENAME[out.style];
+                if (styRen) {
+                  out = { ...out, style: styRen.name };
+                  changed = true;
+                }
+              }
+              return out;
+            });
+            // ② 复合名条目拆分去重(仅材料组,避免误拆"杜松子和奶油利口酒"等正式酒名)
+            const normName = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
+            const nameSet = new Set<string>();
+            for (const b of list) {
+              if (b.nameZh) nameSet.add(normName(b.nameZh));
+              if (b.nameEn) nameSet.add(normName(b.nameEn));
+            }
+            const result: Bottle[] = [];
+            for (const b of list) {
+              if (bottleGroupOfStatic(b.category) !== "materials") {
+                result.push(b);
+                continue;
+              }
+              const parts = splitBottleDraft({
+                nameZh: b.nameZh,
+                nameEn: b.nameEn,
+                category: b.category,
+                style: b.style,
+                brand: b.brand,
+                origin: b.origin,
+                volume: b.volume,
+                abv: b.abv,
+                priceCny: b.priceCny,
+                notes: b.notes,
+              });
+              if (parts.length <= 1) {
+                result.push(b);
+                continue;
+              }
+              changed = true;
+              let kept = 0;
+              for (const [i, p] of parts.entries()) {
+                const zhKey = normName(p.nameZh);
+                const enKey = normName(p.nameEn);
+                // 与库内已有独立条目重复 → 丢弃该拆分片段(去重)
+                const dup =
+                  (zhKey && zhKey !== normName(b.nameZh) && nameSet.has(zhKey)) ||
+                  (enKey && enKey !== normName(b.nameEn) && nameSet.has(enKey));
+                if (dup) continue;
+                if (zhKey) nameSet.add(zhKey);
+                if (enKey) nameSet.add(enKey);
+                result.push(
+                  kept === 0
+                    ? { ...b, nameZh: p.nameZh, nameEn: p.nameEn, updatedAt: Date.now() }
+                    : {
+                        ...b,
+                        id: genId(),
+                        nameZh: p.nameZh,
+                        nameEn: p.nameEn,
+                        builtin: false,
+                        createdAt: Date.now() + i,
+                        updatedAt: Date.now() + i,
+                      },
+                );
+                kept++;
+              }
+              // 所有片段都与已有条目重复 → 原复合条目直接移除(内容已有独立卡片)
+            }
+            list = result;
+            if (changed) {
+              await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+              notifySyncChange(BOTTLES_KEY);
+            }
+            await AsyncStorage.setItem(MATERIAL_MIGRATED_V9_FLAG, "1");
+            notifySyncChange(MATERIAL_MIGRATED_V9_FLAG);
           }
         }
         setBottles(list);

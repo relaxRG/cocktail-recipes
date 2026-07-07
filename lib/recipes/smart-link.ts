@@ -54,7 +54,9 @@ export function smartLinkIngredient(
   const name = rawName.trim();
   if (!name || name.length < 2) return null;
 
-  // 1) 双边精确匹配(原文)
+  // 1) 双边精确匹配(原文)——库内若存在同名形态条目(如独立的"柠檬皮"卡片),
+  //    直接精确命中该条目本身,按其自身价格/规格计价;
+  //    只有库内没有该形态条目时,才会走 4.5 的母条目 × 系数换算兜底。
   const eb = exactBottle(name, bottles);
   if (eb) return { kind: "bottle", bottle: eb };
   const ep = exactPrep(name, preps);

@@ -32,6 +32,7 @@ import { usePersistedState } from "@/hooks/use-persisted-state";
 import { useI18n } from "@/lib/i18n";
 import { filterBottles, useBottleStore } from "@/lib/bottles/store";
 import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
+import { groupFormFamilies, type FormFamily } from "@/lib/bottles/form-family";
 import { sortBottles, BOTTLE_SORTS, BottleSort } from "@/lib/recipes/sort";
 import {
   BOTTLE_GROUPS,
@@ -117,6 +118,31 @@ export default function BottlesScreen() {
       }),
     [filtered, sort, lang],
   );
+
+  /** 形态族折叠(仅原材料库分组,默认排序时启用;搜索时平铺以免遮挡结果) */
+  const [expandedFamilies, setExpandedFamilies] = useState<string[]>([]);
+  const familyView = useMemo(() => {
+    if (group !== "materials" || sort === "manual" || query.trim()) return null;
+    const { families, memberOf } = groupFormFamilies(sorted);
+    if (families.length === 0) return null;
+    type Row =
+      | { kind: "bottle"; bottle: Bottle }
+      | { kind: "family"; family: FormFamily };
+    const rows: Row[] = [];
+    const seenFam = new Set<string>();
+    for (const b of sorted) {
+      const famKey = memberOf.get(b.id);
+      if (!famKey) {
+        rows.push({ kind: "bottle", bottle: b });
+        continue;
+      }
+      if (seenFam.has(famKey)) continue;
+      seenFam.add(famKey);
+      const family = families.find((f: FormFamily) => f.key === famKey)!;
+      rows.push({ kind: "family", family });
+    }
+    return rows;
+  }, [group, sort, query, sorted]);
   const groupCategories = useMemo(
     () => taxCategoriesOfGroup(group),
     [group, taxCategoriesOfGroup],
@@ -536,6 +562,40 @@ export default function BottlesScreen() {
         </View>
         )
       ) : selectMode ? null : (
+      familyView ? (
+        <FlatList
+          data={familyView}
+          keyExtractor={(row) => (row.kind === "bottle" ? row.bottle.id : `fam-${row.family.key}`)}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 4,
+            paddingBottom: 90 + insets.bottom,
+          }}
+          renderItem={({ item, index }) =>
+            item.kind === "bottle" ? (
+              <BottleCard
+                bottle={item.bottle}
+                isFirst={index === 0}
+                isLast={index === familyView.length - 1}
+              />
+            ) : (
+              <FamilyCard
+                family={item.family}
+                expanded={expandedFamilies.includes(item.family.key)}
+                onToggle={() =>
+                  setExpandedFamilies((prev) =>
+                    prev.includes(item.family.key)
+                      ? prev.filter((k) => k !== item.family.key)
+                      : [...prev, item.family.key],
+                  )
+                }
+                isFirst={index === 0}
+                isLast={index === familyView.length - 1}
+              />
+            )
+          }
+        />
+      ) : (
         <FlatList
           data={sorted}
           keyExtractor={(item) => item.id}
@@ -552,6 +612,7 @@ export default function BottlesScreen() {
             />
           )}
         />
+      )
       )}
 
       {/* 多选模式:平铺列表 + 勾选行 */}
@@ -671,6 +732,139 @@ function BottleCard({
   isFirst: boolean;
   isLast: boolean;
 }) {
+  return <BottleCardInner bottle={bottle} isFirst={isFirst} isLast={isLast} />;
+}
+
+/** 形态族卡片:母条目 + 可展开的形态子条目(柠檬 → 柠檬汁/柠檬皮/柠檬片) */
+function FamilyCard({
+  family,
+  expanded,
+  onToggle,
+  isFirst,
+  isLast,
+}: {
+  family: FormFamily;
+  expanded: boolean;
+  onToggle: () => void;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
+  const colors = useColors();
+  const router = useRouter();
+  const { lang } = useI18n();
+  const head = family.base ?? family.variants[0];
+  const children = family.base ? family.variants : family.variants.slice(1);
+  const count = children.length;
+  return (
+    <View>
+      <View style={{ position: "relative" }}>
+        <BottleCardInner
+          bottle={head}
+          isFirst={isFirst}
+          isLast={isLast && !expanded}
+          badge={
+            count > 0 ? (
+              <Pressable
+                onPress={onToggle}
+                hitSlop={10}
+                style={({ pressed }) => [
+                  {
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 2,
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderRadius: 10,
+                    backgroundColor: colors.primary + "18",
+                  },
+                  pressed && { opacity: 0.6 },
+                ]}
+              >
+                <IconSymbol
+                  name={expanded ? "chevron.up" : "chevron.down"}
+                  size={11}
+                  color={colors.primary}
+                />
+                <Text style={{ fontSize: 11, fontWeight: "600", lineHeight: 15, color: colors.primary }}>
+                  {count}
+                </Text>
+              </Pressable>
+            ) : null
+          }
+        />
+      </View>
+      {expanded
+        ? children.map((v, i) => (
+            <Pressable
+              key={v.id}
+              onPress={() => router.push({ pathname: "/bottle/[id]", params: { id: v.id } })}
+              style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+            >
+              <View
+                className="bg-surface"
+                style={[
+                  { paddingLeft: 32, paddingRight: 16, paddingVertical: 10 },
+                  isLast && i === children.length - 1 && {
+                    borderBottomLeftRadius: 12,
+                    borderBottomRightRadius: 12,
+                  },
+                ]}
+              >
+                <View className="flex-row items-center">
+                  <View
+                    style={{
+                      width: 5,
+                      height: 5,
+                      borderRadius: 3,
+                      backgroundColor: colors.muted + "88",
+                      marginRight: 10,
+                    }}
+                  />
+                  <View className="flex-1 pr-2">
+                    <Text className="text-sm font-medium text-foreground" numberOfLines={1}>
+                      {lang === "en" && v.nameEn ? v.nameEn : v.nameZh || v.nameEn}
+                    </Text>
+                    {v.volume ? (
+                      <Text className="text-[11px] text-muted mt-0.5">{v.volume}</Text>
+                    ) : null}
+                  </View>
+                  {v.priceCny > 0 ? (
+                    <Text className="text-sm font-semibold text-foreground">¥{v.priceCny}</Text>
+                  ) : null}
+                  <View style={{ marginLeft: 8 }}>
+                    <IconSymbol name="chevron.right" size={14} color={colors.border} />
+                  </View>
+                </View>
+              </View>
+            </Pressable>
+          ))
+        : null}
+      {!isLast ? (
+        <View className="bg-surface" style={{ height: StyleSheet.hairlineWidth }}>
+          <View
+            style={{
+              height: StyleSheet.hairlineWidth,
+              backgroundColor: colors.border,
+              marginLeft: 16,
+            }}
+          />
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function BottleCardInner({
+  bottle,
+  isFirst,
+  isLast,
+  badge,
+}: {
+  bottle: Bottle;
+  isFirst: boolean;
+  isLast: boolean;
+  badge?: React.ReactNode;
+}) {
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
@@ -705,6 +899,7 @@ function BottleCard({
                   {categoryLabel(bottle.category, lang)}
                 </Text>
               </View>
+              {badge}
               {bottle.volume ? (
                 <Text className="text-xs text-muted">{bottle.volume}</Text>
               ) : null}

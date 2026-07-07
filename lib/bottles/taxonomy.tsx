@@ -74,10 +74,10 @@ export const DEFAULT_BOTTLE_CATEGORY_DEFS: Omit<BottleCategoryDef, "id">[] = [
   { zh: "糖浆", en: "Syrups & Cordials", group: "bottles" },
   // Raw materials
   { zh: "糖与甜味剂", en: "Sugars & Sweeteners", group: "materials" },
-  { zh: "新鲜果蔬", en: "Fresh Produce", group: "materials" },
+  { zh: "果蔬", en: "Fruits & Vegetables", group: "materials" },
   { zh: "香料与草本", en: "Spices & Botanicals", group: "materials" },
   { zh: "花卉", en: "Flowers & Florals", group: "materials" },
-  { zh: "茶与咖啡", en: "Tea & Coffee", group: "materials" },
+  { zh: "茶咖与可可", en: "Tea, Coffee & Cacao", group: "materials" },
   { zh: "坚果与谷物", en: "Nuts & Grains", group: "materials" },
   { zh: "乳蛋", en: "Dairy & Egg", group: "materials" },
   { zh: "酸类与添加剂", en: "Acids & Additives", group: "materials" },
@@ -239,12 +239,12 @@ export const DEFAULT_BOTTLE_STYLE_DEFS: Omit<BottleStyleDef, "id">[] = [
   { name: "Sugar Cube", zh: "方糖", category: "糖与甜味剂" },
   { name: "Honey & Nectar", zh: "蜂蜜与花蜜", category: "糖与甜味剂" },
   { name: "Molasses & Concentrate", zh: "糖蜜与浓缩汁(枫糖/龙舌兰蜜)", category: "糖与甜味剂" },
-  // 新鲜果蔬 Fresh Produce
-  { name: "Citrus", zh: "柑橘类", category: "新鲜果蔬" },
-  { name: "Berries", zh: "浆果类", category: "新鲜果蔬" },
-  { name: "Tropical Fruit", zh: "热带水果", category: "新鲜果蔬" },
-  { name: "Stone / Pome Fruit", zh: "核果/仁果", category: "新鲜果蔬" },
-  { name: "Melon & Vegetable", zh: "瓜果蔬菜", category: "新鲜果蔬" },
+  // 果蔬 Fruits & Vegetables
+  { name: "Citrus", zh: "柑橘类", category: "果蔬" },
+  { name: "Fresh Fruit", zh: "新鲜水果", category: "果蔬" },
+  { name: "Fresh Vegetable", zh: "新鲜蔬菜", category: "果蔬" },
+  { name: "Dried Fruit", zh: "干水果", category: "果蔬" },
+  { name: "Dried Vegetable", zh: "干蔬菜", category: "果蔬" },
   // 香料与草本 Spices & Botanicals(干制+新鲜统一为 botanical)
   { name: "Dried Spice", zh: "干制香料", category: "香料与草本" },
   { name: "Fresh Herb", zh: "新鲜草本", category: "香料与草本" },
@@ -253,10 +253,10 @@ export const DEFAULT_BOTTLE_STYLE_DEFS: Omit<BottleStyleDef, "id">[] = [
   { name: "Dried Flowers", zh: "干花", category: "花卉" },
   { name: "Fresh Edible Flowers", zh: "新鲜食用花", category: "花卉" },
   { name: "Floral Water", zh: "花水/花露", category: "花卉" },
-  // 茶与咖啡 Tea & Coffee(浸萃风味源)
-  { name: "Tea", zh: "茶叶", category: "茶与咖啡" },
-  { name: "Coffee", zh: "咖啡", category: "茶与咖啡" },
-  { name: "Cacao", zh: "可可", category: "茶与咖啡" },
+  // 茶咖与可可 Tea, Coffee & Cacao(浸萃风味源)
+  { name: "Tea", zh: "茶叶", category: "茶咖与可可" },
+  { name: "Coffee", zh: "咖啡", category: "茶咖与可可" },
+  { name: "Cacao", zh: "可可", category: "茶咖与可可" },
   // 坚果与谷物 Nuts & Grains(乳化/糖浆基底)
   { name: "Nut", zh: "坚果", category: "坚果与谷物" },
   { name: "Grain / Seed", zh: "谷物/籽实", category: "坚果与谷物" },
@@ -359,6 +359,91 @@ function buildDefaultCategories(): BottleCategoryDef[] {
   return DEFAULT_BOTTLE_CATEGORY_DEFS.map((c, i) => ({ id: `bcat-${i}`, ...c }));
 }
 
+/** v9:分类更名(新鲜果蔬→果蔬 / 茶与咖啡→茶咖与可可)与果蔬子风格重构 */
+const V9_CATEGORY_RENAME: Record<string, { zh: string; en: string }> = {
+  新鲜果蔬: { zh: "果蔬", en: "Fruits & Vegetables" },
+  茶与咖啡: { zh: "茶咖与可可", en: "Tea, Coffee & Cacao" },
+};
+/** 果蔬旧子风格 → 新子风格(用户自定义子风格不受影响) */
+export const V9_PRODUCE_STYLE_RENAME: Record<string, { name: string; zh: string }> = {
+  Berries: { name: "Fresh Fruit", zh: "新鲜水果" },
+  "Tropical Fruit": { name: "Fresh Fruit", zh: "新鲜水果" },
+  "Stone / Pome Fruit": { name: "Fresh Fruit", zh: "新鲜水果" },
+  "Melon & Vegetable": { name: "Fresh Vegetable", zh: "新鲜蔬菜" },
+};
+
+function migrateCategoriesV9(list: BottleCategoryDef[]): {
+  next: BottleCategoryDef[];
+  changed: boolean;
+} {
+  let changed = false;
+  let next = list.map((c) => {
+    const ren = V9_CATEGORY_RENAME[c.zh];
+    if (ren) {
+      changed = true;
+      return { ...c, zh: ren.zh, en: ren.en };
+    }
+    return c;
+  });
+  // 更名可能与已有同名分类重复(用户已手动建"果蔬"),去重保留先出现者
+  const seen = new Set<string>();
+  const deduped = next.filter((c) => {
+    if (seen.has(c.zh)) {
+      changed = true;
+      return false;
+    }
+    seen.add(c.zh);
+    return true;
+  });
+  return { next: deduped, changed };
+}
+
+function migrateStylesV9(list: BottleStyleDef[]): {
+  next: BottleStyleDef[];
+  changed: boolean;
+} {
+  let changed = false;
+  let next = list.map((s) => {
+    let out = s;
+    const catRen = V9_CATEGORY_RENAME[s.category];
+    if (catRen) {
+      out = { ...out, category: catRen.zh };
+      changed = true;
+    }
+    if (out.category === "果蔬") {
+      const styRen = V9_PRODUCE_STYLE_RENAME[out.name];
+      if (styRen) {
+        out = { ...out, name: styRen.name, zh: styRen.zh };
+        changed = true;
+      }
+    }
+    return out;
+  });
+  // 去重(旧多个子风格并入同一新子风格)
+  const seen = new Set<string>();
+  const deduped = next.filter((s) => {
+    const key = `${s.category}::${s.name}`;
+    if (seen.has(key)) {
+      changed = true;
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+  // 补齐果蔬/茶咖与可可默认子风格中缺失项(不动用户自定义)
+  const targetCats = new Set(["果蔬", "茶咖与可可"]);
+  const existing = new Set(deduped.map((s) => `${s.category}::${s.name}`));
+  const missing = DEFAULT_BOTTLE_STYLE_DEFS.filter(
+    (s) => targetCats.has(s.category) && !existing.has(`${s.category}::${s.name}`),
+  );
+  let final = deduped;
+  if (missing.length > 0) {
+    final = [...deduped, ...missing.map((s, i) => ({ id: `bsty-v9-${Date.now()}-${i}`, ...s }))];
+    changed = true;
+  }
+  return { next: final, changed };
+}
+
 function buildDefaultStyles(): BottleStyleDef[] {
   return DEFAULT_BOTTLE_STYLE_DEFS.map((s, i) => ({ id: `bsty-${i}`, ...s }));
 }
@@ -371,7 +456,7 @@ export const MATERIAL_CATEGORY_DEFS_V8 = DEFAULT_BOTTLE_CATEGORY_DEFS.filter(
 /** 旧"原材料"style → 新分类 zh 映射(存量条目迁移) */
 export const V8_STYLE_TO_CATEGORY: Record<string, { category: string; style?: string }> = {
   "Sugar & Sweetener": { category: "糖与甜味剂" },
-  "Fruit & Citrus": { category: "新鲜果蔬" },
+  "Fruit & Citrus": { category: "果蔬" },
   "Spice & Botanical": { category: "香料与草本" },
   "Nut / Tea / Coffee": { category: "坚果与谷物" },
   "Dairy & Egg": { category: "乳蛋" },
@@ -381,14 +466,14 @@ export const V8_STYLE_TO_CATEGORY: Record<string, { category: string; style?: st
 
 /** v8 关键词细分:按条目名重定向到更准确的分类/子风格 */
 const V8_NAME_RULES: { re: RegExp; category: string; style?: string }[] = [
-  { re: /茶|tea|抹茶|matcha/i, category: "茶与咖啡", style: "Tea" },
-  { re: /咖啡|coffee|espresso|浓缩/i, category: "茶与咖啡", style: "Coffee" },
-  { re: /可可|cacao|cocoa|巧克力|chocolate/i, category: "茶与咖啡", style: "Cacao" },
+  { re: /茶|tea|抹茶|matcha/i, category: "茶咖与可可", style: "Tea" },
+  { re: /咖啡|coffee|espresso|浓缩/i, category: "茶咖与可可", style: "Coffee" },
+  { re: /可可|cacao|cocoa|巧克力|chocolate/i, category: "茶咖与可可", style: "Cacao" },
   { re: /杏仁|almond|榛子|hazelnut|核桃|walnut|开心果|pistachio|椰(?!子水)/i, category: "坚果与谷物", style: "Nut" },
   { re: /橙花水|玫瑰水|花水|花露|orange flower water|rose water/i, category: "花卉", style: "Floral Water" },
   { re: /干.*花|洋甘菊|木槿|洛神|接骨木花|桂花|薰衣草|chamomile|hibiscus|elderflower|osmanthus|lavender/i, category: "花卉", style: "Dried Flowers" },
   { re: /食用花|鲜花|edible flower/i, category: "花卉", style: "Fresh Edible Flowers" },
-  { re: /柠檬|青柠|橙|柚|橘|金橘|lemon|lime|orange|grapefruit|yuzu|kumquat/i, category: "新鲜果蔬", style: "Citrus" },
+  { re: /柠檬|青柠|橙|柚|橘|金橘|lemon|lime|orange|grapefruit|yuzu|kumquat/i, category: "果蔬", style: "Citrus" },
   { re: /薄荷|罗勒|迷迭香|百里香|鼠尾草|紫苏|mint|basil|rosemary|thyme|sage|shiso/i, category: "香料与草本", style: "Fresh Herb" },
   { re: /蜂蜜|honey/i, category: "糖与甜味剂", style: "Honey & Nectar" },
   { re: /枫糖|maple|龙舌兰蜜|agave (nectar|syrup)|糖蜜|molasses/i, category: "糖与甜味剂", style: "Molasses & Concentrate" },
@@ -460,17 +545,19 @@ export function BottleTaxonomyProvider({ children }: { children: React.ReactNode
           const parsed: BottleCategoryDef[] = JSON.parse(rawC);
           const v7 = migrateCategoriesV7(parsed);
           const v8 = migrateCategoriesV8(v7.next);
-          setCategories(v8.next);
-          if (v7.changed || v8.changed)
-            AsyncStorage.setItem(CATS_KEY, JSON.stringify(v8.next)).catch(() => {});
+          const v9 = migrateCategoriesV9(v8.next);
+          setCategories(v9.next);
+          if (v7.changed || v8.changed || v9.changed)
+            AsyncStorage.setItem(CATS_KEY, JSON.stringify(v9.next)).catch(() => {});
           notifySyncChange(CATS_KEY);
         }
         if (rawS) {
           const parsedS: BottleStyleDef[] = JSON.parse(rawS);
           const v8s = migrateStylesV8(parsedS);
-          setStyles(v8s.next);
-          if (v8s.changed)
-            AsyncStorage.setItem(STYLES_KEY, JSON.stringify(v8s.next)).catch(() => {});
+          const v9s = migrateStylesV9(v8s.next);
+          setStyles(v9s.next);
+          if (v8s.changed || v9s.changed)
+            AsyncStorage.setItem(STYLES_KEY, JSON.stringify(v9s.next)).catch(() => {});
         }
       } catch (e) {
         console.warn("Failed to load bottle taxonomy", e);

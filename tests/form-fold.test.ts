@@ -12,7 +12,7 @@ const mkBottle = (over: Partial<Bottle>): Bottle => ({
   id: "b1",
   nameZh: "柠檬",
   nameEn: "Fresh Lemons",
-  category: "新鲜果蔬",
+  category: "果蔬",
   style: "Citrus",
   brand: "",
   origin: "",
