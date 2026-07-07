@@ -79,6 +79,49 @@ export function prepSectionLabel(sectionKey: string, lang: "zh" | "en"): string 
   return lang === "en" ? s.en : s.zh;
 }
 
+/** 用户可管理的分区/类型条目(持久化于 homemade store) */
+export interface PrepSection {
+  key: string;
+  en: string;
+  zh: string;
+}
+
+export interface PrepType {
+  key: string;
+  en: string;
+  zh: string;
+  section: string;
+}
+
+export function buildDefaultPrepSections(): PrepSection[] {
+  return PREP_SECTIONS.map((s) => ({ key: s.key, en: s.en, zh: s.zh }));
+}
+
+export function buildDefaultPrepTypes(): PrepType[] {
+  return PREP_TYPES.map((t) => ({ key: t.key, en: t.en, zh: t.zh, section: t.section }));
+}
+
+/** 基于自定义列表的标签函数(回退到默认常量) */
+export function prepTypeLabelIn(types: PrepType[], key: string, lang: "zh" | "en"): string {
+  const t = types.find((p) => p.key === key);
+  if (!t) return prepTypeLabel(key, lang);
+  return lang === "en" ? t.en : t.zh;
+}
+
+export function prepSectionOfIn(types: PrepType[], typeKey: string): string {
+  return types.find((p) => p.key === typeKey)?.section ?? prepSectionOf(typeKey);
+}
+
+export function prepSectionLabelIn(
+  sections: PrepSection[],
+  sectionKey: string,
+  lang: "zh" | "en",
+): string {
+  const s = sections.find((x) => x.key === sectionKey);
+  if (!s) return prepSectionLabel(sectionKey, lang);
+  return lang === "en" ? s.en : s.zh;
+}
+
 export function normalizePrep(p: Partial<HomemadePrep> & { id: string }): HomemadePrep {
   return {
     id: p.id,

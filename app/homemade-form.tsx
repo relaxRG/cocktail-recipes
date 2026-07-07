@@ -18,8 +18,6 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import {
-  PREP_SECTIONS,
-  PREP_TYPES,
   joinPrepIngredient,
   splitPrepIngredientLine,
 } from "@/lib/homemade/types";
@@ -51,14 +49,14 @@ export default function HomemadeFormScreen() {
     prefillNameAlt?: string;
     prefillType?: string;
   }>();
-  const { getPrep, addPrep, updatePrep } = useHomemadeStore();
+  const { getPrep, addPrep, updatePrep, sections, types: typeList } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const editing = getPrep(id);
 
   const [name, setName] = useState(editing?.name ?? prefillName ?? "");
   const [nameAlt, setNameAlt] = useState(editing?.nameAlt ?? prefillNameAlt ?? "");
   const [type, setType] = useState(
-    editing?.type ?? (prefillType && PREP_TYPES.some((p) => p.key === prefillType) ? prefillType : "syrup"),
+    editing?.type ?? (prefillType && typeList.some((p) => p.key === prefillType) ? prefillType : "syrup"),
   );
   const [ingRows, setIngRows] = useState<IngRow[]>(() => toRows(editing?.ingredients ?? []));
   /** Which ingredient row is focused (shows live suggestions) */
@@ -182,8 +180,8 @@ export default function HomemadeFormScreen() {
           />
 
           {fieldLabel(t("hmform.type"))}
-          {PREP_SECTIONS.map((sec) => {
-            const types = PREP_TYPES.filter((pt) => pt.section === sec.key);
+          {sections.map((sec) => {
+            const types = typeList.filter((pt) => pt.section === sec.key);
             if (types.length === 0) return null;
             return (
               <View key={sec.key} style={{ marginBottom: 6 }}>

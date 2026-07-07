@@ -100,6 +100,16 @@ export interface TagItem {
   kind: TagKind;
   name: string;
   color: string;
+  /** 所属分组 id(可选,未分组时为空) */
+  groupId?: string | null;
+  createdAt: number;
+}
+
+/** 标签分组:每个标签种类下可自定义分组并排序 */
+export interface TagGroup {
+  id: string;
+  kind: TagKind;
+  name: string;
   createdAt: number;
 }
 

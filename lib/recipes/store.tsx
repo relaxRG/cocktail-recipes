@@ -13,6 +13,7 @@ import { buildDefaultCategories, buildSampleRecipes } from "./seed";
 import {
   Category,
   Recipe,
+  TagGroup,
   TagItem,
   TagKind,
   buildDefaultTags,
@@ -24,6 +25,7 @@ const RECIPES_KEY = "cocktail.recipes";
 const CATEGORIES_KEY = "cocktail.categories";
 const SEEDED_KEY = "cocktail.seeded";
 const TAGS_KEY = "cocktail.tags";
+const TAG_GROUPS_KEY = "cocktail.tagGroups";
 
 export interface RecipeDraft {
   name: string;
@@ -47,6 +49,7 @@ interface RecipeStore {
   recipes: Recipe[];
   categories: Category[];
   tags: TagItem[];
+  tagGroups: TagGroup[];
   addRecipe: (draft: RecipeDraft) => Recipe;
   updateRecipe: (id: string, draft: RecipeDraft) => void;
   deleteRecipe: (id: string) => void;
@@ -62,6 +65,12 @@ interface RecipeStore {
   deleteTag: (id: string) => void;
   reorderTags: (kind: TagKind, orderedIds: string[]) => void;
   tagsOf: (kind: TagKind) => TagItem[];
+  addTagGroup: (kind: TagKind, name: string) => TagGroup | null;
+  renameTagGroup: (id: string, name: string) => void;
+  deleteTagGroup: (id: string) => void;
+  reorderTagGroups: (kind: TagKind, orderedIds: string[]) => void;
+  setTagGroup: (tagId: string, groupId: string | null) => void;
+  tagGroupsOf: (kind: TagKind) => TagGroup[];
   importSamples: () => void;
   getRecipe: (id: string | undefined) => Recipe | undefined;
   getCategory: (id: string | null | undefined) => Category | undefined;
@@ -74,16 +83,18 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<TagItem[]>([]);
+  const [tagGroups, setTagGroups] = useState<TagGroup[]>([]);
   const loadedRef = useRef(false);
 
   useEffect(() => {
     (async () => {
       try {
-        const [rRaw, cRaw, seeded, tRaw] = await Promise.all([
+        const [rRaw, cRaw, seeded, tRaw, gRaw] = await Promise.all([
           AsyncStorage.getItem(RECIPES_KEY),
           AsyncStorage.getItem(CATEGORIES_KEY),
           AsyncStorage.getItem(SEEDED_KEY),
           AsyncStorage.getItem(TAGS_KEY),
+          AsyncStorage.getItem(TAG_GROUPS_KEY),
         ]);
         let cats: Category[] = cRaw ? JSON.parse(cRaw) : [];
         const parsed: Recipe[] = rRaw ? JSON.parse(rRaw) : [];
@@ -98,6 +109,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           tagList = buildDefaultTags();
           await AsyncStorage.setItem(TAGS_KEY, JSON.stringify(tagList));
         }
+        const groupList: TagGroup[] = gRaw ? JSON.parse(gRaw) : [];
+        setTagGroups(groupList);
         setTags(tagList);
         setCategories(cats);
         setRecipes(recs);
@@ -123,6 +136,13 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
   const persistTags = useCallback((next: TagItem[]) => {
     setTags(next);
     AsyncStorage.setItem(TAGS_KEY, JSON.stringify(next)).catch(() => {});
+  }, []);
+
+  const tagGroupsRef = useRef<TagGroup[]>([]);
+  tagGroupsRef.current = tagGroups;
+  const persistTagGroups = useCallback((next: TagGroup[]) => {
+    setTagGroups(next);
+    AsyncStorage.setItem(TAG_GROUPS_KEY, JSON.stringify(next)).catch(() => {});
   }, []);
 
   const addRecipe = useCallback(
@@ -298,6 +318,73 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     [tags],
   );
 
+  const tagGroupsOf = useCallback(
+    (kind: TagKind) => tagGroups.filter((g) => g.kind === kind),
+    [tagGroups],
+  );
+
+  const addTagGroup = useCallback(
+    (kind: TagKind, name: string): TagGroup | null => {
+      const trimmed = name.trim();
+      if (!trimmed) return null;
+      if (tagGroupsRef.current.some((g) => g.kind === kind && g.name === trimmed)) return null;
+      const group: TagGroup = { id: genId(), kind, name: trimmed, createdAt: Date.now() };
+      persistTagGroups([...tagGroupsRef.current, group]);
+      return group;
+    },
+    [persistTagGroups],
+  );
+
+  const renameTagGroup = useCallback(
+    (id: string, name: string) => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      persistTagGroups(
+        tagGroupsRef.current.map((g) => (g.id === id ? { ...g, name: trimmed } : g)),
+      );
+    },
+    [persistTagGroups],
+  );
+
+  const deleteTagGroup = useCallback(
+    (id: string) => {
+      persistTagGroups(tagGroupsRef.current.filter((g) => g.id !== id));
+      // 组内标签回到未分组,标签本身保留
+      persistTags(
+        tagsRef.current.map((t) => (t.groupId === id ? { ...t, groupId: null } : t)),
+      );
+    },
+    [persistTagGroups, persistTags],
+  );
+
+  const reorderTagGroups = useCallback(
+    (kind: TagKind, orderedIds: string[]) => {
+      const same = tagGroupsRef.current.filter((g) => g.kind === kind);
+      const others = tagGroupsRef.current.filter((g) => g.kind !== kind);
+      const map = new Map(same.map((g) => [g.id, g]));
+      const next: TagGroup[] = [];
+      for (const id of orderedIds) {
+        const item = map.get(id);
+        if (item) {
+          next.push(item);
+          map.delete(id);
+        }
+      }
+      for (const rest of map.values()) next.push(rest);
+      persistTagGroups([...others, ...next]);
+    },
+    [persistTagGroups],
+  );
+
+  const setTagGroup = useCallback(
+    (tagId: string, groupId: string | null) => {
+      persistTags(
+        tagsRef.current.map((t) => (t.id === tagId ? { ...t, groupId } : t)),
+      );
+    },
+    [persistTags],
+  );
+
   const reorderCategories = useCallback(
     (orderedIds: string[]) => {
       const map = new Map(categoriesRef.current.map((c) => [c.id, c]));
@@ -372,6 +459,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       recipes,
       categories,
       tags,
+      tagGroups,
       addRecipe,
       updateRecipe,
       deleteRecipe,
@@ -387,6 +475,12 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       deleteTag,
       reorderTags,
       tagsOf,
+      addTagGroup,
+      renameTagGroup,
+      deleteTagGroup,
+      reorderTagGroups,
+      setTagGroup,
+      tagGroupsOf,
       importSamples,
       getRecipe,
       getCategory,
@@ -396,6 +490,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       recipes,
       categories,
       tags,
+      tagGroups,
       addRecipe,
       updateRecipe,
       deleteRecipe,
@@ -411,6 +506,12 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       deleteTag,
       reorderTags,
       tagsOf,
+      addTagGroup,
+      renameTagGroup,
+      deleteTagGroup,
+      reorderTagGroups,
+      setTagGroup,
+      tagGroupsOf,
       importSamples,
       getRecipe,
       getCategory,

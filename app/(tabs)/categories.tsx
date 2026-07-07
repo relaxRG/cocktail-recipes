@@ -24,7 +24,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { useRecipeStore } from "@/lib/recipes/store";
-import { CATEGORY_COLORS, TagKind } from "@/lib/recipes/types";
+import { CATEGORY_COLORS, TagGroup, TagKind } from "@/lib/recipes/types";
 
 type SectionKey = "category" | TagKind;
 
@@ -41,6 +41,7 @@ interface RowData {
   name: string;
   color: string;
   count: number;
+  groupId?: string | null;
 }
 
 /** 行高(含 mb-2.5 间距),用于拖拽位移换算 */
@@ -111,6 +112,7 @@ export default function CategoriesScreen() {
     categories,
     recipes,
     tags,
+    tagGroups,
     addCategory,
     renameCategory,
     setCategoryColor,
@@ -121,6 +123,12 @@ export default function CategoriesScreen() {
     setTagColor,
     deleteTag,
     reorderTags,
+    addTagGroup,
+    renameTagGroup,
+    deleteTagGroup,
+    reorderTagGroups,
+    setTagGroup,
+    tagGroupsOf,
   } = useRecipeStore();
 
   const [section, setSection] = useState<SectionKey>("category");
@@ -130,6 +138,11 @@ export default function CategoriesScreen() {
   const [editingName, setEditingName] = useState("");
   const [colorPickerId, setColorPickerId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [editingGroupName, setEditingGroupName] = useState("");
+  /** tag id showing the "assign to group" picker */
+  const [groupPickerId, setGroupPickerId] = useState<string | null>(null);
 
   const rows: RowData[] = useMemo(() => {
     if (section === "category") {
@@ -146,6 +159,7 @@ export default function CategoriesScreen() {
         id: t.id,
         name: t.name,
         color: t.color,
+        groupId: t.groupId ?? null,
         count:
           section === "spirit"
             ? recipes.filter((r) => r.baseSpirit === t.name).length
@@ -154,6 +168,26 @@ export default function CategoriesScreen() {
               : recipes.filter((r) => r.flavors.includes(t.name)).length,
       }));
   }, [section, categories, tags, recipes]);
+
+  const groups: TagGroup[] = useMemo(
+    () => (section === "category" ? [] : tagGroupsOf(section)),
+    [section, tagGroupsOf],
+  );
+
+  /** For tag sections: rows arranged as grouped blocks (each group + ungrouped tail) */
+  const groupedBlocks = useMemo(() => {
+    if (section === "category") return null;
+    const blocks: { group: TagGroup | null; items: RowData[] }[] = [];
+    for (const g of groups) {
+      blocks.push({ group: g, items: rows.filter((r) => r.groupId === g.id) });
+    }
+    const grouped = new Set(groups.map((g) => g.id));
+    blocks.push({
+      group: null,
+      items: rows.filter((r) => !r.groupId || !grouped.has(r.groupId)),
+    });
+    return blocks;
+  }, [section, groups, rows]);
 
   const sectionLabel = t(SECTION_LABEL_KEY[section]);
 
@@ -172,6 +206,25 @@ export default function CategoriesScreen() {
       const [moved] = ids.splice(fromIndex, 1);
       ids.splice(toIndex, 0, moved);
       applyOrder(ids);
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    },
+    [rows, applyOrder],
+  );
+
+  /** Reorder within one grouped block: rebuild full kind order preserving block boundaries */
+  const moveRowInBlock = useCallback(
+    (blockItems: RowData[], fromIndex: number, toIndex: number) => {
+      if (toIndex < 0 || toIndex >= blockItems.length || fromIndex === toIndex) return;
+      const blockIds = blockItems.map((r) => r.id);
+      const [moved] = blockIds.splice(fromIndex, 1);
+      blockIds.splice(toIndex, 0, moved);
+      // Rebuild the whole kind order: iterate current rows and replace the block ids in new order
+      const blockSet = new Set(blockIds);
+      let bi = 0;
+      const orderedIds = rows.map((r) => (blockSet.has(r.id) ? blockIds[bi++] : r.id));
+      applyOrder(orderedIds);
       if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
@@ -238,6 +291,50 @@ export default function CategoriesScreen() {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
+  };
+
+  const handleAddGroup = () => {
+    if (section === "category") return;
+    const created = addTagGroup(section, newGroupName);
+    if (created) {
+      setNewGroupName("");
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    }
+  };
+
+  const commitGroupEdit = () => {
+    if (editingGroupId && editingGroupName.trim()) {
+      renameTagGroup(editingGroupId, editingGroupName);
+    }
+    setEditingGroupId(null);
+    setEditingGroupName("");
+  };
+
+  const moveGroup = (index: number, dir: -1 | 1) => {
+    if (section === "category") return;
+    const to = index + dir;
+    if (to < 0 || to >= groups.length) return;
+    const ids = groups.map((g) => g.id);
+    const [moved] = ids.splice(index, 1);
+    ids.splice(to, 0, moved);
+    reorderTagGroups(section, ids);
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+
+  const confirmDeleteGroup = (g: TagGroup) => {
+    const message = t("tg.deleteGroup.confirm", { name: g.name });
+    if (Platform.OS === "web") {
+      if (typeof window !== "undefined" && window.confirm(message)) deleteTagGroup(g.id);
+      return;
+    }
+    Alert.alert(t("tg.deleteGroup"), message, [
+      { text: t("common.cancel"), style: "cancel" },
+      { text: t("common.delete"), style: "destructive", onPress: () => deleteTagGroup(g.id) },
+    ]);
   };
 
   return (
@@ -354,13 +451,102 @@ export default function CategoriesScreen() {
           </View>
         </View>
 
+        {/* Tag group manager (tag sections only) */}
+        {section !== "category" ? (
+          <View className="bg-surface border border-border rounded-2xl p-4 mb-4">
+            <Text className="text-xs text-muted uppercase mb-2" style={{ letterSpacing: 0.4, lineHeight: 16 }}>
+              {t("tg.groups")}
+            </Text>
+            <View className="flex-row items-center" style={{ gap: 8 }}>
+              <TextInput
+                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-[15px] text-foreground"
+                placeholder={t("tg.newGroup")}
+                placeholderTextColor={colors.muted}
+                value={newGroupName}
+                onChangeText={setNewGroupName}
+                returnKeyType="done"
+                onSubmitEditing={handleAddGroup}
+                style={{ lineHeight: 20 }}
+              />
+              <Pressable
+                onPress={handleAddGroup}
+                disabled={!newGroupName.trim()}
+                style={({ pressed }) => [
+                  styles.addBtnSm,
+                  { backgroundColor: newGroupName.trim() ? colors.primary : colors.border },
+                  pressed && newGroupName.trim() && { opacity: 0.85 },
+                ]}
+              >
+                <IconSymbol name="plus" size={18} color={newGroupName.trim() ? "#FFFFFF" : colors.muted} />
+              </Pressable>
+            </View>
+            {groups.map((g, gi) => {
+              const isEditingG = editingGroupId === g.id;
+              const tagCount = rows.filter((r) => r.groupId === g.id).length;
+              return (
+                <View
+                  key={g.id}
+                  className="flex-row items-center mt-2.5"
+                  style={{ gap: 8 }}
+                >
+                  <IconSymbol name="folder.fill" size={16} color={colors.primary} />
+                  {isEditingG ? (
+                    <TextInput
+                      className="flex-1 bg-background border border-border rounded-lg px-2 py-1 text-[15px] text-foreground"
+                      value={editingGroupName}
+                      onChangeText={setEditingGroupName}
+                      autoFocus
+                      returnKeyType="done"
+                      onSubmitEditing={commitGroupEdit}
+                      onBlur={commitGroupEdit}
+                      style={{ lineHeight: 20 }}
+                    />
+                  ) : (
+                    <View className="flex-1">
+                      <Text className="text-[15px] font-medium text-foreground" numberOfLines={1}>
+                        {g.name}
+                        <Text className="text-xs text-muted">  {t("tg.tagCount", { n: tagCount })}</Text>
+                      </Text>
+                    </View>
+                  )}
+                  <Pressable onPress={() => moveGroup(gi, -1)} hitSlop={6} disabled={gi === 0} style={({ pressed }) => [pressed && { opacity: 0.6 }, gi === 0 && { opacity: 0.25 }]}>
+                    <IconSymbol name="chevron.up" size={18} color={colors.muted} />
+                  </Pressable>
+                  <Pressable onPress={() => moveGroup(gi, 1)} hitSlop={6} disabled={gi === groups.length - 1} style={({ pressed }) => [pressed && { opacity: 0.6 }, gi === groups.length - 1 && { opacity: 0.25 }]}>
+                    <IconSymbol name="chevron.down" size={18} color={colors.muted} />
+                  </Pressable>
+                  {isEditingG ? (
+                    <Pressable onPress={commitGroupEdit} hitSlop={6} style={({ pressed }) => [pressed && { opacity: 0.6 }]}>
+                      <IconSymbol name="checkmark" size={18} color={colors.primary} />
+                    </Pressable>
+                  ) : (
+                    <Pressable
+                      onPress={() => {
+                        setEditingGroupId(g.id);
+                        setEditingGroupName(g.name);
+                      }}
+                      hitSlop={6}
+                      style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                    >
+                      <IconSymbol name="pencil" size={17} color={colors.muted} />
+                    </Pressable>
+                  )}
+                  <Pressable onPress={() => confirmDeleteGroup(g)} hitSlop={6} style={({ pressed }) => [pressed && { opacity: 0.6 }]}>
+                    <IconSymbol name="trash.fill" size={17} color={colors.error} />
+                  </Pressable>
+                </View>
+              );
+            })}
+          </View>
+        ) : null}
+
         {rows.length === 0 ? (
           <View className="items-center pt-12 px-8">
             <Text className="text-base text-muted text-center">
               {t("tags.empty", { s: sectionLabel })}
             </Text>
           </View>
-        ) : (
+        ) : section === "category" || !groupedBlocks ? (
           <View className="bg-surface rounded-xl overflow-hidden">
           {rows.map((item, index) => {
             const isEditing = editingId === item.id;
@@ -457,6 +643,186 @@ export default function CategoriesScreen() {
             );
           })}
           </View>
+        ) : (
+          <View>
+            {groupedBlocks.map((block) => {
+              if (block.items.length === 0) return null;
+              return (
+                <View key={block.group?.id ?? "ungrouped"} className="mb-4">
+                  <View className="flex-row items-center mb-1.5 px-1" style={{ gap: 5 }}>
+                    <IconSymbol
+                      name="folder.fill"
+                      size={13}
+                      color={block.group ? colors.primary : colors.muted}
+                    />
+                    <Text
+                      className="text-[13px] text-muted uppercase"
+                      style={{ letterSpacing: 0.4, lineHeight: 17 }}
+                    >
+                      {block.group ? block.group.name : t("tg.ungrouped")} · {block.items.length}
+                    </Text>
+                  </View>
+                  <View className="bg-surface rounded-xl overflow-hidden">
+                    {block.items.map((item, index) => {
+                      const isEditing = editingId === item.id;
+                      const showPicker = colorPickerId === item.id;
+                      const showGroupPicker = groupPickerId === item.id;
+                      return (
+                        <DraggableRow
+                          key={item.id}
+                          index={index}
+                          total={block.items.length}
+                          onMove={(from, to) => moveRowInBlock(block.items, from, to)}
+                          onDragStateChange={(dragging) => setDraggingId(dragging ? item.id : null)}
+                        >
+                          <View
+                            className="bg-surface px-4 py-2.5"
+                            style={draggingId === item.id ? { backgroundColor: colors.primary + "14" } : undefined}
+                          >
+                            <View className="flex-row items-center">
+                              <View style={{ marginRight: 10 }}>
+                                <IconSymbol name="line.3.horizontal" size={18} color={colors.muted} />
+                              </View>
+                              <Pressable
+                                onPress={() => setColorPickerId(showPicker ? null : item.id)}
+                                hitSlop={6}
+                              >
+                                <View
+                                  style={[
+                                    styles.colorDot,
+                                    { backgroundColor: item.color, marginRight: 12 },
+                                  ]}
+                                />
+                              </Pressable>
+                              {isEditing ? (
+                                <TextInput
+                                  className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-base text-foreground"
+                                  value={editingName}
+                                  onChangeText={setEditingName}
+                                  autoFocus
+                                  returnKeyType="done"
+                                  onSubmitEditing={commitEdit}
+                                  onBlur={commitEdit}
+                                  style={{ lineHeight: 20 }}
+                                />
+                              ) : (
+                                <View className="flex-1">
+                                  <Text className="text-base font-medium text-foreground">{item.name}</Text>
+                                  <Text className="text-xs text-muted mt-0.5">{t("tags.count", { n: item.count })}</Text>
+                                </View>
+                              )}
+                              <View className="flex-row items-center" style={{ gap: 14, marginLeft: 8 }}>
+                                <Pressable
+                                  onPress={() => setGroupPickerId(showGroupPicker ? null : item.id)}
+                                  hitSlop={8}
+                                  style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                                >
+                                  <IconSymbol
+                                    name="folder.fill"
+                                    size={19}
+                                    color={showGroupPicker ? colors.primary : colors.muted}
+                                  />
+                                </Pressable>
+                                {isEditing ? (
+                                  <Pressable onPress={commitEdit} hitSlop={8} style={({ pressed }) => [pressed && { opacity: 0.6 }]}>
+                                    <IconSymbol name="checkmark" size={22} color={colors.primary} />
+                                  </Pressable>
+                                ) : (
+                                  <Pressable
+                                    onPress={() => {
+                                      setEditingId(item.id);
+                                      setEditingName(item.name);
+                                    }}
+                                    hitSlop={8}
+                                    style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                                  >
+                                    <IconSymbol name="pencil" size={20} color={colors.muted} />
+                                  </Pressable>
+                                )}
+                                <Pressable onPress={() => confirmDelete(item)} hitSlop={8} style={({ pressed }) => [pressed && { opacity: 0.6 }]}>
+                                  <IconSymbol name="trash.fill" size={20} color={colors.error} />
+                                </Pressable>
+                              </View>
+                            </View>
+                            {showPicker ? (
+                              <View className="flex-row mt-3 pt-3 border-t border-border" style={{ gap: 10 }}>
+                                {CATEGORY_COLORS.map((c) => (
+                                  <Pressable key={c} onPress={() => pickColor(item.id, c)} hitSlop={4}>
+                                    <View
+                                      style={[
+                                        styles.colorDot,
+                                        { backgroundColor: c },
+                                        item.color === c && { borderWidth: 2, borderColor: colors.foreground },
+                                      ]}
+                                    />
+                                  </Pressable>
+                                ))}
+                              </View>
+                            ) : null}
+                            {showGroupPicker ? (
+                              <View className="mt-3 pt-3 border-t border-border">
+                                <Text className="text-xs text-muted mb-2" style={{ lineHeight: 16 }}>
+                                  {t("tg.assignHint")}
+                                </Text>
+                                <View className="flex-row flex-wrap" style={{ gap: 8 }}>
+                                  <Pressable
+                                    onPress={() => {
+                                      setTagGroup(item.id, null);
+                                      setGroupPickerId(null);
+                                    }}
+                                    style={[
+                                      styles.groupChip,
+                                      {
+                                        backgroundColor: !item.groupId ? colors.primary : colors.background,
+                                        borderColor: !item.groupId ? colors.primary : colors.border,
+                                      },
+                                    ]}
+                                  >
+                                    <Text style={[styles.groupChipText, { color: !item.groupId ? "#FFFFFF" : colors.foreground }]}>
+                                      {t("tg.ungrouped")}
+                                    </Text>
+                                  </Pressable>
+                                  {groups.map((g) => {
+                                    const active = item.groupId === g.id;
+                                    return (
+                                      <Pressable
+                                        key={g.id}
+                                        onPress={() => {
+                                          setTagGroup(item.id, g.id);
+                                          setGroupPickerId(null);
+                                        }}
+                                        style={[
+                                          styles.groupChip,
+                                          {
+                                            backgroundColor: active ? colors.primary : colors.background,
+                                            borderColor: active ? colors.primary : colors.border,
+                                          },
+                                        ]}
+                                      >
+                                        <Text style={[styles.groupChipText, { color: active ? "#FFFFFF" : colors.foreground }]}>
+                                          {g.name}
+                                        </Text>
+                                      </Pressable>
+                                    );
+                                  })}
+                                </View>
+                              </View>
+                            ) : null}
+                          </View>
+                          {index < block.items.length - 1 ? (
+                            <View
+                              className="bg-border"
+                              style={{ height: StyleSheet.hairlineWidth, marginLeft: 58 }}
+                            />
+                          ) : null}
+                        </DraggableRow>
+                      );
+                    })}
+                  </View>
+                </View>
+              );
+            })}
+          </View>
         )}
 
         <Text className="text-xs text-muted mt-2 px-1" style={{ lineHeight: 18 }}>
@@ -474,6 +840,24 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
+  },
+  addBtnSm: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  groupChip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  groupChipText: {
+    fontSize: 13,
+    fontWeight: "500",
+    lineHeight: 17,
   },
   colorDot: {
     width: 22,

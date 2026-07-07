@@ -77,7 +77,7 @@ export default function RecipeFormScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
-  const { getRecipe, addRecipe, updateRecipe, categories, tagsOf } = useRecipeStore();
+  const { getRecipe, addRecipe, updateRecipe, categories, tagsOf, tagGroupsOf } = useRecipeStore();
   const { preps } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const editing = getRecipe(id);
@@ -409,28 +409,54 @@ export default function RecipeFormScreen() {
           {/* Flavor tags */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.flavors.multi")}</Text>
           {flavorTags.length > 0 ? (
-            <View style={styles.chipWrap}>
-              {flavorTags.map((tag) => {
-                const active = flavors.includes(tag.name);
-                return (
-                  <Pressable
-                    key={tag.id}
-                    onPress={() => toggleFlavor(tag.name)}
-                    style={[
-                      styles.chip,
-                      {
-                        backgroundColor: active ? tag.color : colors.surface,
-                        borderColor: active ? tag.color : tag.color + "66",
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
-                      {tag.name}
+            (() => {
+              const flavorGroups = tagGroupsOf("flavor");
+              const groupedIds = new Set(flavorGroups.map((g) => g.id));
+              const blocks: { key: string; label: string | null; items: typeof flavorTags }[] = [];
+              for (const g of flavorGroups) {
+                const items = flavorTags.filter((tg) => tg.groupId === g.id);
+                if (items.length > 0) blocks.push({ key: g.id, label: g.name, items });
+              }
+              const ungrouped = flavorTags.filter((tg) => !tg.groupId || !groupedIds.has(tg.groupId));
+              if (ungrouped.length > 0) {
+                blocks.push({
+                  key: "ungrouped",
+                  label: blocks.length > 0 ? t("tg.ungrouped") : null,
+                  items: ungrouped,
+                });
+              }
+              return blocks.map((block) => (
+                <View key={block.key} style={{ marginBottom: 4 }}>
+                  {block.label ? (
+                    <Text className="text-xs text-muted mb-1.5" style={{ lineHeight: 16 }}>
+                      {block.label}
                     </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
+                  ) : null}
+                  <View style={styles.chipWrap}>
+                    {block.items.map((tag) => {
+                      const active = flavors.includes(tag.name);
+                      return (
+                        <Pressable
+                          key={tag.id}
+                          onPress={() => toggleFlavor(tag.name)}
+                          style={[
+                            styles.chip,
+                            {
+                              backgroundColor: active ? tag.color : colors.surface,
+                              borderColor: active ? tag.color : tag.color + "66",
+                            },
+                          ]}
+                        >
+                          <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
+                            {tag.name}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+              ));
+            })()
           ) : (
             <Text className="text-xs text-muted">{t("form.noFlavor")}</Text>
           )}

@@ -38,9 +38,14 @@ import { displayNames } from "../lib/utils";
 import {
   PREP_SECTIONS,
   PREP_TYPES,
+  buildDefaultPrepSections,
+  buildDefaultPrepTypes,
   joinPrepIngredient,
   prepSectionLabel,
   prepSectionOf,
+  prepSectionLabelIn,
+  prepSectionOfIn,
+  prepTypeLabelIn,
   prepTypeLabel,
   splitPrepIngredientLine,
 } from "../lib/homemade/types";
@@ -338,6 +343,43 @@ describe("homemade preps", () => {
     expect(hit!.amountMl).toBe(15);
     // Unknown ingredient yields null
     expect(estimateHomemadeIngredientCost("神秘材料xyz", "15ml", preps, bottles)).toBeNull();
+  });
+
+  it("builds editable default sections/types and resolves labels from custom lists", () => {
+    const sections = buildDefaultPrepSections();
+    const types = buildDefaultPrepTypes();
+    expect(sections.map((s) => s.key)).toEqual(PREP_SECTIONS.map((s) => s.key));
+    expect(types.map((t) => t.key)).toEqual(PREP_TYPES.map((t) => t.key));
+
+    // Custom rename + custom section flow through the *In helpers
+    const customSections = [
+      { key: "my-sec", zh: "我的分区", en: "My Section" },
+      ...sections,
+    ];
+    const customTypes = types.map((t) =>
+      t.key === "syrup" ? { ...t, zh: "改名糖浆", en: "Renamed Syrup", section: "my-sec" } : t,
+    );
+    expect(prepTypeLabelIn(customTypes, "syrup", "zh")).toBe("改名糖浆");
+    expect(prepTypeLabelIn(customTypes, "syrup", "en")).toBe("Renamed Syrup");
+    expect(prepSectionOfIn(customTypes, "syrup")).toBe("my-sec");
+    expect(prepSectionLabelIn(customSections, "my-sec", "zh")).toBe("我的分区");
+    expect(prepSectionLabelIn(customSections, "my-sec", "en")).toBe("My Section");
+    // Unknown keys fall back gracefully
+    expect(prepTypeLabelIn(customTypes, "nope", "en")).toBe("nope");
+    expect(prepSectionOfIn(customTypes, "nope")).toBe("misc");
+
+    // New custom type is filterable
+    const preps = buildSamplePreps().map((p, i) =>
+      i === 0 ? { ...p, type: "my-type" } : p,
+    );
+    const withCustomType = [
+      ...customTypes,
+      { key: "my-type", zh: "自定义类型", en: "Custom Type", section: "my-sec" },
+    ];
+    const hits = filterPreps(preps, "", "my-type", undefined, withCustomType);
+    expect(hits.length).toBe(1);
+    const secHits = filterPreps(preps, "", undefined, "my-sec", withCustomType);
+    expect(secHits.some((p) => p.type === "my-type")).toBe(true);
   });
 });
 

@@ -24,11 +24,9 @@ import { estimatePrepCost } from "@/lib/homemade/cost";
 import { Bottle } from "@/lib/bottles/types";
 import {
   HomemadePrep,
-  PREP_SECTIONS,
-  PREP_TYPES,
-  prepSectionLabel,
-  prepSectionOf,
-  prepTypeLabel,
+  prepSectionLabelIn,
+  prepSectionOfIn,
+  prepTypeLabelIn,
 } from "@/lib/homemade/types";
 
 type ListRow =
@@ -40,36 +38,36 @@ export default function HomemadeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { ready, preps, importSamples } = useHomemadeStore();
+  const { ready, preps, importSamples, sections, types } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const [query, setQuery] = useState("");
   const [section, setSection] = useState<string>("");
   const [type, setType] = useState<string>("");
 
   const filtered = useMemo(
-    () => filterPreps(preps, query, type || undefined, section || undefined),
-    [preps, query, type, section],
+    () => filterPreps(preps, query, type || undefined, section || undefined, types),
+    [preps, query, type, section, types],
   );
 
   // 分区筛选:仅显示库内实际存在的分区
   const usedSections = useMemo(() => {
-    const present = new Set(preps.map((p) => prepSectionOf(p.type)));
-    return PREP_SECTIONS.filter((s) => present.has(s.key));
-  }, [preps]);
+    const present = new Set(preps.map((p) => prepSectionOfIn(types, p.type)));
+    return sections.filter((s) => present.has(s.key));
+  }, [preps, sections, types]);
 
   // 类型子筛选:选中分区后,显示该分区下库内存在的类型
   const usedTypes = useMemo(() => {
     const present = new Set(preps.map((p) => p.type));
-    return PREP_TYPES.filter(
+    return types.filter(
       (pt) => present.has(pt.key) && (!section || pt.section === section),
     );
-  }, [preps, section]);
+  }, [preps, section, types]);
 
   // 按分区分组的行数据(分区标题 + 各分区内的 inset group)
   const rows = useMemo<ListRow[]>(() => {
     const out: ListRow[] = [];
-    for (const s of PREP_SECTIONS) {
-      const items = filtered.filter((p) => prepSectionOf(p.type) === s.key);
+    for (const s of sections) {
+      const items = filtered.filter((p) => prepSectionOfIn(types, p.type) === s.key);
       if (items.length === 0) continue;
       out.push({ kind: "header", key: `h-${s.key}`, sectionKey: s.key, count: items.length });
       items.forEach((p, idx) => {
@@ -83,7 +81,7 @@ export default function HomemadeScreen() {
       });
     }
     return out;
-  }, [filtered]);
+  }, [filtered, sections, types]);
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
@@ -113,9 +111,25 @@ export default function HomemadeScreen() {
 
   return (
     <ScreenContainer>
-      <View className="px-5 pt-2 pb-1">
-        <Text className="text-3xl font-bold text-foreground">{t("hm.title")}</Text>
-        <Text className="text-sm text-muted mt-1">{t("hm.subtitle", { n: preps.length })}</Text>
+      <View className="px-5 pt-2 pb-1 flex-row items-end">
+        <View className="flex-1">
+          <Text className="text-3xl font-bold text-foreground">{t("hm.title")}</Text>
+          <Text className="text-sm text-muted mt-1">{t("hm.subtitle", { n: preps.length })}</Text>
+        </View>
+        <Pressable
+          onPress={() => router.push("/prep-sections")}
+          hitSlop={8}
+          style={({ pressed }) => [
+            styles.manageBtn,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <IconSymbol name="slider.horizontal.3" size={15} color={colors.primary} />
+          <Text className="text-xs font-semibold" style={{ color: colors.primary, lineHeight: 16 }}>
+            {t("psm.manage")}
+          </Text>
+        </Pressable>
       </View>
 
       {/* Search */}
@@ -253,7 +267,7 @@ export default function HomemadeScreen() {
                   className="text-[13px] font-medium text-muted"
                   style={{ textTransform: "uppercase", letterSpacing: 0.4, lineHeight: 18 }}
                 >
-                  {prepSectionLabel(item.sectionKey, lang)} · {item.count}
+                  {prepSectionLabelIn(sections, item.sectionKey, lang)} · {item.count}
                 </Text>
               </View>
             ) : (
@@ -292,6 +306,7 @@ function PrepRow({
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
+  const { types } = useHomemadeStore();
   const names = displayNames(prep.name, prep.nameAlt, lang);
   const cost = useMemo(() => estimatePrepCost(prep, bottles), [prep, bottles]);
   return (
@@ -319,7 +334,7 @@ function PrepRow({
             <View className="flex-row items-center mt-1.5" style={{ gap: 6, flexWrap: "wrap" }}>
               <View style={[styles.badge, { backgroundColor: colors.primary + "22" }]}>
                 <Text style={[styles.badgeText, { color: colors.primary }]}>
-                  {prepTypeLabel(prep.type, lang)}
+                  {prepTypeLabelIn(types, prep.type, lang)}
                 </Text>
               </View>
               {prep.shelfLife ? (
@@ -441,6 +456,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     lineHeight: 20,
+  },
+  manageBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginBottom: 2,
   },
   fab: {
     position: "absolute",

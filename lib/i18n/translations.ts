@@ -246,6 +246,40 @@ const dict = {
   "hmform.shelfLife": { zh: "保存期限", en: "Shelf Life" },
   "hmform.storage": { zh: "储存方式", en: "Storage" },
   "hmform.notes": { zh: "备注", en: "Notes" },
+
+  // Prep sections manager
+  "psm.title": { zh: "分区管理", en: "Manage Sections" },
+  "psm.hint": {
+    zh: "管理自制库的工艺分区与类型:可增删改名、上下移动调整优先级,或将类型移动到其他分区。",
+    en: "Manage homemade sections and types: add, rename, delete, move up/down to change priority, or move a type to another section.",
+  },
+  "psm.newSection": { zh: "新分区名称", en: "New section name" },
+  "psm.newType": { zh: "添加类型…", en: "Add a type…" },
+  "psm.typeCount": { zh: "{n} 个类型", en: "{n} types" },
+  "psm.prepCount": { zh: "{n} 个条目", en: "{n} preps" },
+  "psm.deleteSection": { zh: "删除分区", en: "Delete Section" },
+  "psm.deleteSection.confirm": {
+    zh: "确定删除分区「{name}」?该分区下的类型将移动到“其他自制”。",
+    en: "Delete section \"{name}\"? Its types will move to \"Other Preps\".",
+  },
+  "psm.deleteType": { zh: "删除类型", en: "Delete Type" },
+  "psm.deleteType.confirm": {
+    zh: "确定删除类型「{name}」?使用它的 {n} 个条目将变为“其他”。",
+    en: "Delete type \"{name}\"? {n} preps using it will become \"Other\".",
+  },
+  "psm.manage": { zh: "管理分区", en: "Sections" },
+
+  // Tag groups
+  "tg.newGroup": { zh: "新分组名称", en: "New group name" },
+  "tg.ungrouped": { zh: "未分组", en: "Ungrouped" },
+  "tg.groups": { zh: "分组", en: "Groups" },
+  "tg.deleteGroup": { zh: "删除分组", en: "Delete Group" },
+  "tg.deleteGroup.confirm": {
+    zh: "确定删除分组「{name}」?组内标签将回到未分组。",
+    en: "Delete group \"{name}\"? Its tags will become ungrouped.",
+  },
+  "tg.assignHint": { zh: "移动到分组", en: "Move to group" },
+  "tg.tagCount": { zh: "{n} 个标签", en: "{n} tags" },
 } as const;
 
 export type TranslationKey = keyof typeof dict;

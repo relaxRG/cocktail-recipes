@@ -11,14 +11,14 @@ import { displayNames } from "@/lib/utils";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useBottleStore } from "@/lib/bottles/store";
 import { estimatePrepCost } from "@/lib/homemade/cost";
-import { prepTypeLabel } from "@/lib/homemade/types";
+import { prepTypeLabelIn } from "@/lib/homemade/types";
 
 export default function HomemadeDetailScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getPrep, deletePrep } = useHomemadeStore();
+  const { getPrep, deletePrep, types } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const prep = getPrep(id);
 
@@ -52,7 +52,7 @@ export default function HomemadeDetailScreen() {
   };
 
   const infoRows: { label: string; value: string }[] = [
-    { label: t("hmform.type"), value: prepTypeLabel(prep.type, lang) },
+    { label: t("hmform.type"), value: prepTypeLabelIn(types, prep.type, lang) },
     ...(prep.yield ? [{ label: t("hm.yield"), value: prep.yield }] : []),
     ...(prep.shelfLife ? [{ label: t("hm.shelfLife"), value: prep.shelfLife }] : []),
     ...(prep.storage ? [{ label: t("hm.storage"), value: prep.storage }] : []),
