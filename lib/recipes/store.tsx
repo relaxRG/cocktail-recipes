@@ -12,6 +12,11 @@ import React, {
 import { buildDefaultCategories, buildSampleRecipes } from "./seed";
 import { estimateRecipeAbv } from "./abv";
 import {
+  WALDORF_DATASET_KEY,
+  buildWaldorfCategories,
+  buildWaldorfRecipes,
+} from "./waldorf";
+import {
   Category,
   Recipe,
   TagGroup,
@@ -38,6 +43,8 @@ export interface RecipeDraft {
   baseSpirit: string;
   glass: string;
   method: string;
+  /** 冰块类型(可选,空字符串未选择) */
+  ice?: string;
   strength: Recipe["strength"];
   strengthBand?: Recipe["strengthBand"];
   /** 自动计算的成品酒精度(%),null 表示无法计算 */
@@ -116,12 +123,13 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           AsyncStorage.getItem(TAGS_KEY),
           AsyncStorage.getItem(TAG_GROUPS_KEY),
         ]);
+        const waldorfDone = await AsyncStorage.getItem(WALDORF_DATASET_KEY);
         let cats: Category[] = (cRaw ? (JSON.parse(cRaw) as Category[]) : []).map((c) =>
           migrateTagNameEn(c),
         );
         const parsed: Recipe[] = rRaw ? JSON.parse(rRaw) : [];
         let migrated = false;
-        const recs: Recipe[] = parsed.map((r) => {
+        let recs: Recipe[] = parsed.map((r) => {
           const rec = normalizeRecipe(r);
           // 旧数据迁移:未计算过 ABV 的配方按内置关键词表回填(酒库/自制库
           // 在各自 Provider 中加载,此处用无上下文降级计算,保存时会精确重算)
@@ -136,13 +144,33 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           }
           return rec;
         });
-        if (migrated) {
-          AsyncStorage.setItem(RECIPES_KEY, JSON.stringify(recs)).catch(() => {});
-        }
         if (!seeded && cats.length === 0) {
           cats = buildDefaultCategories();
           await AsyncStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
           await AsyncStorage.setItem(SEEDED_KEY, "1");
+        }
+        // 《The Waldorf Astoria Bar Book》数据集:首次加载时一次性合入(按英文名去重)
+        if (!waldorfDone) {
+          const existingNames = new Set(
+            recs.map((r) => (r.nameEn || r.name).trim().toLowerCase()).filter(Boolean),
+          );
+          const newRecipes = buildWaldorfRecipes().filter(
+            (r) => !existingNames.has((r.nameEn || r.name).trim().toLowerCase()),
+          );
+          if (newRecipes.length > 0) {
+            recs = [...recs, ...newRecipes];
+            migrated = true;
+          }
+          const existingCatIds = new Set(cats.map((c) => c.id));
+          const newCats = buildWaldorfCategories().filter((c) => !existingCatIds.has(c.id));
+          if (newCats.length > 0) {
+            cats = [...cats, ...newCats];
+            await AsyncStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
+          }
+          await AsyncStorage.setItem(WALDORF_DATASET_KEY, "1");
+        }
+        if (migrated) {
+          AsyncStorage.setItem(RECIPES_KEY, JSON.stringify(recs)).catch(() => {});
         }
         let tagList: TagItem[] = (tRaw ? (JSON.parse(tRaw) as TagItem[]) : []).map((t) =>
           migrateTagNameEn(t),
@@ -203,6 +231,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         strengthBand: "",
         abv: null,
         nameEn: "",
+        ice: "",
         ...draft,
         ...(draft.strengthBand === undefined ? { strengthBand: "" as const } : {}),
         ...(draft.abv === undefined ? { abv: null } : {}),

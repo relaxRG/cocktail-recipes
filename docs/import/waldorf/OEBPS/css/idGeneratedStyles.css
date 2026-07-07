@@ -1,0 +1,648 @@
+﻿body, div, dl, dt, dd, h1, h2, h3, h4, h5, h6, p, pre, code, blockquote {
+	widows: 2;
+	orphans: 2;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	font-style: normal;
+	text-align: left;
+	page-break-after: avoid;
+}
+em {
+	font-style: italic;
+}
+strong {
+	font-weight: bold;
+}
+table {
+	width:100%;
+}
+div.w30l {
+	float:left;
+	clear:left;
+	max-height: 100%;
+	width: 50%;
+	padding: .5em .5em .5em 0;
+}
+img.w30l {
+	max-height: 100%;
+	width: 100%;
+}
+div.w30r {
+	float:right;
+	clear:right;
+	max-height: 100%;
+	width: 50%;
+	padding: .5em 0 .5em .5em;
+}
+img.w30r {
+	max-height: 100%;
+	width: 100%;
+}
+div.h100 {
+	text-align: center;
+	height: 97%;
+	max-width: 100%;
+}
+img.h100 {
+	height: 100%;
+	max-width: 100%;
+}
+div.w100 {
+	text-align: center;
+	max-height: 100%;
+	width: 100%;
+}
+div.w80 {
+	text-align: center;
+	max-height: 100%;
+	margin:0 10% 0 10%
+}
+div.w50 {
+	text-align: center;
+	max-height: 100%;
+	margin:0 25% 0 25%
+}
+img.w100 {
+	max-height: 100%;
+	width: 100%;
+}
+img.h1em {
+	height: 1em;
+}
+img.h1emb {
+	height: .5em;
+}
+img.h2em {
+	height: 2em;
+}
+img.h4em {
+	height: 4em;
+}
+
+body {
+	-epub-hyphens:auto;
+}
+
+table.Basic-Table {
+	border-collapse:collapse;
+	border: 1px solid #000000;
+	margin: 1em 0;
+}
+td.Basic-Table {
+	border:  1px solid #000000;
+	padding: 4px;
+	vertical-align:top;
+}
+p.x00HTMLBRK {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x01-FM-Contents-BM-Head {
+	font-family: sans-serif; /*"Avenida Std"*/
+	font-size:1.5em;
+	margin: 0 0 1.33em 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x01-FM-Contents-CT {
+	font-family: sans-serif; /*"Avenida Std"*/
+	font-size:1.5em;
+	margin: 0 0 1.33em 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x01-FM-Contents-FM-Head {
+	font-family: sans-serif; /*"Avenida Std"*/
+	font-size:1.5em;
+	margin: 0 0 1.33em 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x01-FM-Copyright-Imprint {
+	font-family: sans-serif; /*"Avenida Std"*/
+	font-size:0.833em;
+	margin: 0 2.4em;
+	text-align:center;
+	text-indent:0;
+}
+p.x01-FM-Copyright-Text {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.667em;
+	margin: 0 3.0em;
+	text-align:center;
+	text-indent:0;
+}
+p.x01-FM-Copyright-Text-First-Line {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.667em;
+	margin: 0 3.0em;
+	text-align:center;
+	text-indent:0;
+}
+p.x01-FM-Copyright-Text-Space {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.667em;
+	margin: 1em 3.0em 0em 3.0em;
+	text-align:center;
+	text-indent:0;
+}
+/*May want to look at these*/
+
+p.x01-FM-Half-Title {
+	font-family: serif; /*Georgia*/
+	font-size:1.5em;
+	font-weight:bold;
+	margin: 10.0em 0 0 0;
+	text-align:center;
+	text-indent:1.22em;
+}
+h1.x01-FM-Head {
+	font-family: sans-serif; /*"Avenida Std"*/
+	font-size:3em;
+	margin: 10% 0 10% 0;
+	page-break-after:avoid;
+	text-align:center;
+	text-indent:0;
+}
+p.x01-FM-TP-Author {
+	font-family: serif; /*"Century Schoolbook"*/
+	font-size:1em;
+	margin: 5.0em 0 0 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x01-FM-TP-Title {
+	font-family: serif; /*"Century Schoolbook"*/
+	font-size:2em;
+	font-weight:bold;
+	margin: 3.75em 0 0 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x03-CO-Body-Text {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 10% 0 0 0;
+	text-indent:0;
+}
+p.x03-Chapter-Epigraph-FL {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.688em;
+	font-style:italic;
+	margin: 1.2em 0 0 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x03-Chapter-Epigraph-Source {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.583em;
+	margin: 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x03-Chapter-Title {
+	font-family: sans-serif; /*"Avenida Std"*/
+	font-size:2.2em;
+	margin: 15% 0 1em 0;
+	page-break-after:avoid;
+	text-align:center;
+	text-indent:0;
+}
+p.x04-Body-Text {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 0;
+	text-indent:1.4em;
+}
+p.x04-Body-Text-FL {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 0;
+	text-indent:0;
+}
+p.x04-Body-Text-FL-space-above-tight {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 1.2em 0 0 0;
+	text-indent:0;
+}
+p.x04-Body-Text-FL-space-above-tight- {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 1.2em 0 0 0;
+	text-indent:0;
+}
+p.x04-Body-Text-FL-space-above- {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 1.2em 0 0 0;
+	text-indent:0;
+}
+p.x04-Body-Text-loose- {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 0;
+	text-indent:1.4em;
+}
+p.x04-Body-Text-tight- {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 0;
+	text-indent:1.4em;
+}
+p.x04-Space-Break-FL {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 0em 0 0 0;
+	text-indent:0;
+}
+p.x04-Space-Break-Orn {
+	color:#6d6e70;
+	font-family: sans-serif; /*"Zapf Dingbats"*/
+	font-size:0.5em;
+	margin: 2.0em 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x05-Head-A {
+	font-family: serif; /*"Modern MT Std Bold"*/
+	font-size:1.333em;
+	font-weight:bold;
+	margin: 1.88em 0 0.38em 0;
+	page-break-after:avoid;
+	text-align:center;
+	text-indent:0;
+}
+li.x05-Head-B {
+	font-family: serif; /*"Modern MT Std Bold"*/
+	font-size:1em;
+	font-weight:bold;
+	list-style-position:inside;
+	margin: 2em 0 .5em 0;
+	page-break-after:avoid;
+	text-indent:0;
+}
+li.x05-Head-B-No-Space {
+	font-family: serif; /*"Modern MT Std Bold"*/
+	font-size:1em;
+	font-weight:bold;
+	list-style-position:inside;
+	margin: 0 0 0em 0;
+	page-break-after:avoid;
+	text-indent:0;
+}
+p.x05-Head-C {
+	font-family: sans-serif; /*"Modern MT Std Bold"*/
+	font-size:0.833em;
+	font-style:italic;
+	font-weight:bold;
+	margin: 2.1em 0 0.3em 0;
+	page-break-after:avoid;
+	text-indent:0;
+}
+p.x05-Head-C-No-Space {
+	font-family: sans-serif; /*"Modern MT Std Bold"*/
+	font-size:0.833em;
+	font-style:italic;
+	font-weight:bold;
+	margin: 0 0 0.3em 0;
+	page-break-after:avoid;
+	text-indent:0;
+}
+h1.x05-Head-D {
+	font-family: sans-serif; /*"Avenida Std"*/
+	font-size:6em;
+	margin: 10% 0 10% 0;
+	page-break-after:avoid;
+	text-align:center;
+	text-indent:0;
+}
+p.x06-Extract-1P {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.792em;
+	margin: 0.63em 1.47em;
+	text-indent:0;
+}
+p.x07-List-2-column- {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	font-weight:bold;
+	margin: 0 0 0 4.36em;
+	text-indent:-1.45em;
+}
+p.x07-List-2-column-last {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	font-weight:bold;
+	margin: 0 0 1em 4.36em;
+	text-indent:-1.45em;
+}
+p.x07-List-Unnumbered {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 0.6em 1.2em 0 1.2em;
+	text-indent:0;
+}
+p.x07-List-Unnumbered-First {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 1.2em 1.2em 0 1.2em;
+	text-indent:0;
+}
+p.x07-List-Unnumbered-Head {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	font-weight:bold;
+	margin: 1.2em 0 0 0;
+	text-indent:0;
+}
+p.x07-List-Unnumbered-Last {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 0.6em 1.2em 1.2em 1.2em;
+	text-indent:0;
+}
+p.x08-Table-Row-Head {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.667em;
+	font-weight:bold;
+	margin: 0 0 0.75em 0;
+	text-align:center;
+	text-indent:0;
+}
+p.x08-Table-Text {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	margin: 0.36em 0 0 0;
+	text-indent:0;
+}
+p.x11-Recipe-Direction {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	margin: 0 0 0 2.91em;
+	text-indent:1.45em;
+}
+p.x11-Recipe-Direction-2-col {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	margin: 0.73em 0 0 1.45em;
+	text-indent:0;
+}
+p.x11-Recipe-Direction-First {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	margin: 0.73em 0 0 2.91em;
+	text-indent:0;
+}
+p.x11-Recipe-Direction-Subhead {
+	font-family: serif; /*"Modern MT Std Bold"*/
+	font-size:0.688em;
+	font-weight:bold;
+	margin: 0.73em 0 0 2.91em;
+	text-indent:0;
+}
+p.x11-Recipe-Directions-2-col {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.833em;
+	margin: 1.2em 0 0 0;
+	text-indent:0;
+}
+p.x11-Recipe-Ingredients {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	font-weight:bold;
+	margin: 0 0 0 4.36em;
+	text-indent:-1.45em;
+}
+p.x11-Recipe-Ingredients-2-col- {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	font-weight:bold;
+	margin: 0 0 0 4.36em;
+	text-indent:-1.45em;
+}
+p.x11-Recipe-Ingredients-2-colB {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	font-weight:bold;
+	margin: 0 0 0 2.91em;
+	text-indent:-1.45em;
+}
+p.x11-Recipe-Ingredients-First {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	font-weight:bold;
+	margin: 1.45em 0 0 4.36em;
+	page-break-after:avoid;
+	text-indent:-1.45em;
+}
+p.x11-Recipe-Ingredients-Subhead {
+	font-family: sans-serif; /*"Vintage ITC Std"*/
+	font-size:0.917em;
+	margin: 1.09em 0 0.55em 1.09em;
+	text-indent:0;
+	text-decoration:underline;
+}
+h2.x11-Recipe-Title {
+	font-family: sans-serif; /*"Vintage ITC Std"*/
+	font-size:1.25em;
+	margin: 2.0em 0 0.4em 0;
+	page-break-after:avoid;
+	text-indent:0;
+	border-style:double;
+	border-width:0 0 3px 0;
+}
+h2.x11-Recipe-Title-2-col- {
+	font-family: sans-serif; /*"Vintage ITC Std"*/
+	font-size:1em;
+	margin: 2.0em 0 0.5em 0;
+	page-break-after:avoid;
+	text-indent:0;
+	border-style:double;
+	border-width:0 0 3px 0;
+}
+h2.x11-Recipe-Title-MULTI {
+	font-family: sans-serif; /*"Vintage ITC Std"*/
+	font-size:1.25em;
+	margin: 2.4em 0 0.4em 0;
+	page-break-after:avoid;
+	text-indent:0;
+	border-style:double;
+	border-width:0 0 3px 0;
+}
+h2.x11-Recipe-Title-after-head- {
+	font-family: sans-serif; /*"Vintage ITC Std"*/
+	font-size:1.25em;
+	margin: 0.8em 0 0.4em 0;
+	page-break-after:avoid;
+	text-indent:0;
+	border-style:double;
+	border-width:0 0 3px 0;
+}
+h3.x11-Recipe-Variation-Head {
+	font-family: sans-serif; /*"Vintage ITC Std"*/
+	font-size:1.167em;
+	margin: 1.71em 0 0.43em 0.86em;
+	page-break-after:avoid;
+	text-indent:0;
+	}
+p.x11-Recipe-Variation-Subhead {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.75em;
+	font-style:italic;
+	margin: 2.2em 0 0.67em 2.0em;
+	page-break-after:avoid;
+	text-indent:0;
+	text-decoration:underline;
+}
+li.x11-Recipe-Yield {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.688em;
+	font-style:italic;
+	list-style-position:inside;
+	margin: 1.45em 0 0 2.91em;
+	text-indent:0;
+}
+p.x13-BM-Index-1 {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.75em;
+	margin: 0 0 0 2.67em;
+	text-indent:-2.67em;
+}
+p.x13-BM-Index-2 {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.75em;
+	margin: 0 0 0 2.67em;
+	text-indent:-1.33em;
+}
+p.x13-BM-Index-Alpha {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.75em;
+	margin: 1.22em 0 0 2.67em;
+	text-indent:-2.67em;
+}
+p.x13-BM-Index-Alpha-First {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.75em;
+	margin: 10% 0 0 0em;
+	text-indent:0em;
+}
+p.x13-BM-Index-continued-line {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.75em;
+	margin: 0 0 0 2.67em;
+	text-indent:-2.67em;
+}
+p.xFootnote-text {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.688em;
+	font-style:italic;
+	margin: 0;
+	text-indent:0;
+}
+p.xRH {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.542em;
+	margin: 0 0.62em;
+	page-break-after:avoid;
+	text-align:right;
+	text-indent:0;
+}
+p.xanchor {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.083em;
+	margin: 6.02em 14.06em;
+	text-indent:0;
+}
+p.xcenter {
+	font-family: serif; /*"Basilia Com"*/
+	font-size:0.917em;
+	font-weight:bold;
+	margin: 0;
+	text-align:center;
+	text-indent:0;
+}
+span.BOLD_ITAL {
+	font-style:italic;
+	font-weight:bold;
+}
+span.Footnote-reference {
+	font-family: serif; /*"Times New Roman"*/
+	vertical-align:super;
+}
+span.PartLine2 {
+	font-size:5em;
+}
+span.SCAP{
+	font-size: 70%;
+}
+span.SCAPITAL {
+font-size:70%;
+font-style:italic;
+}
+span.bold-ital {
+	font-style:italic;
+	font-weight:bold;
+}
+span.bold-ital-sans {
+	font-style:italic;
+	font-weight:bold;
+	font-family:sans-serif;
+}
+span.dingbat {
+	font-family: sans-serif; /*"Zapf Dingbats"*/
+}
+span.folio {
+	font-family: sans-serif; /*"Vintage ITC Std"*/
+	font-size:0.667em;
+}
+span.ital-within-sans {
+	font-style:italic;
+}
+span.peacock-alley-original {
+	font-family: sans-serif; /*"Campton Book"*/
+	font-size:0.667em;
+	font-style:italic;
+}
+span.roman-sans {
+font-style:normal;
+font-family:sans-serif;
+}
+span.skew {
+font-style:italic;
+}
+span.space-break-initial-cap {
+	font-size:1.167em;
+	line-height:0em;
+}
+
+p._idGenParaOverride-2 {
+	font-size:0.999em;
+	margin-left:0;
+}
+
+._idGenDropcap-1 {
+	font-family: sans-serif; /*"Avenida Std"*/
+		font-size:2.87em;
+	float:left;
+	margin-top:-0.45em;
+	margin-right:0.05em;
+	margin-bottom:-0.45em;
+	line-height:1.5em
+
+}
+table._idGenTablePara-1 {
+	margin-left:auto;
+	margin-right:auto;
+}
+
+div.footnote {
+	margin-top:15%;
+}
+il{margin:0em;}
+ol{margin:0em;}
+ul{margin:0em;}

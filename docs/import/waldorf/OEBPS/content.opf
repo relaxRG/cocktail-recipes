@@ -1,0 +1,206 @@
+<package xmlns="http://www.idpf.org/2007/opf" prefix="ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/" unique-identifier="bookid" version="3.0">
+	<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+		<meta content="Adobe InDesign 10.0" name="generator"/>
+		<meta content="cover.jpg" name="cover"/>
+		<meta property="ibooks:specified-fonts">true</meta>
+		<meta content="Penguin Books" name="imprint"/>
+		<dc:title>The Waldorf Astoria Bar Book</dc:title>
+		<dc:creator>Frank Caiafa</dc:creator>
+		<dc:source id="Source_ISBN">9780143124801</dc:source>
+		<dc:publisher>Penguin Publishing Group</dc:publisher>
+		<meta content="2016-04-20" name="created"/>
+		<dc:date>2016-04-21T16:04:21Z</dc:date>
+		<meta property="dcterms:modified">2016-04-21T16:04:21Z</meta>
+		<dc:identifier id="bookid">9780698136069</dc:identifier>
+		<dc:language>en-US</dc:language>
+	<description xmlns="http://purl.org/dc/elements/1.1/">Frank Caiafa&amp;#8212;master mixologist and manager of the Peacock Alley bar in the Waldorf Astoria&amp;#8212;stirs in recipes, history, and how-to while serving up a heady mix of the world's greatest cocktails. Learn to easily prepare pre-Prohibition classics such as the original Manhattan, or daiquiris just as Hemingway preferred them. Caiafa also introduces his own award-winning creations, including the Cole Porter, an enhanced whiskey sour named for the famous Waldorf resident.&lt;br&gt; &lt;br&gt;Each recipe features tips and variations along with notes on the drink's history, so you can master the basics, then get adventurous&amp;#8212;and impress fellow drinkers with fascinating cocktail trivia. The book also provides advice on setting up your home bar and scaling up your favorite recipe for a party.&lt;br&gt; &lt;br&gt;Since it first opened in 1893, the Waldorf Astoria New York has been one of the world's most iconic hotels, and Peacock Alley its most iconic bar. Whether you're a novice who's never...</description>
+</metadata>
+	<manifest>
+		<item href="xhtml/01_COVER.xhtml" id="CoverImage" media-type="application/xhtml+xml"/>
+		<item href="xhtml/02_HalfTitle.xhtml" id="x9780698136069_EPUB" media-type="application/xhtml+xml"/>
+		<item href="xhtml/03_Title.xhtml" id="x9780698136069_EPUB-1" media-type="application/xhtml+xml"/>
+		<item href="xhtml/04_Copyright.xhtml" id="x9780698136069_EPUB-2" media-type="application/xhtml+xml"/>
+		<item href="xhtml/05_Contents.xhtml" id="x9780698136069_EPUB-3" media-type="application/xhtml+xml"/>
+		<item href="xhtml/06_Chapter_1.xhtml" id="x9780698136069_EPUB-5" media-type="application/xhtml+xml"/>
+		<item href="xhtml/07_Chapter_2.xhtml" id="x9780698136069_EPUB-6" media-type="application/xhtml+xml"/>
+		<item href="xhtml/08_Chapter_3.xhtml" id="x9780698136069_EPUB-7" media-type="application/xhtml+xml"/>
+		<item href="xhtml/09_RECIPES_A_TO_Z.xhtml" id="x9780698136069_EPUB-9" media-type="application/xhtml+xml"/>
+		<item href="xhtml/10_A.xhtml" id="x9780698136069_EPUB-11" media-type="application/xhtml+xml"/>
+		<item href="xhtml/11_B.xhtml" id="x9780698136069_EPUB-12" media-type="application/xhtml+xml"/>
+		<item href="xhtml/12_C.xhtml" id="x9780698136069_EPUB-13" media-type="application/xhtml+xml"/>
+		<item href="xhtml/13_D.xhtml" id="x9780698136069_EPUB-14" media-type="application/xhtml+xml"/>
+		<item href="xhtml/14_E.xhtml" id="x9780698136069_EPUB-15" media-type="application/xhtml+xml"/>
+		<item href="xhtml/15_F.xhtml" id="x9780698136069_EPUB-16" media-type="application/xhtml+xml"/>
+		<item href="xhtml/16_G.xhtml" id="x9780698136069_EPUB-17" media-type="application/xhtml+xml"/>
+		<item href="xhtml/17_H.xhtml" id="x9780698136069_EPUB-18" media-type="application/xhtml+xml"/>
+		<item href="xhtml/18_I.xhtml" id="x9780698136069_EPUB-19" media-type="application/xhtml+xml"/>
+		<item href="xhtml/19_J.xhtml" id="x9780698136069_EPUB-20" media-type="application/xhtml+xml"/>
+		<item href="xhtml/20_K.xhtml" id="x9780698136069_EPUB-21" media-type="application/xhtml+xml"/>
+		<item href="xhtml/21_L.xhtml" id="x9780698136069_EPUB-22" media-type="application/xhtml+xml"/>
+		<item href="xhtml/22_M.xhtml" id="x9780698136069_EPUB-23" media-type="application/xhtml+xml"/>
+		<item href="xhtml/23_N.xhtml" id="x9780698136069_EPUB-24" media-type="application/xhtml+xml"/>
+		<item href="xhtml/24_O.xhtml" id="x9780698136069_EPUB-25" media-type="application/xhtml+xml"/>
+		<item href="xhtml/25_P.xhtml" id="x9780698136069_EPUB-26" media-type="application/xhtml+xml"/>
+		<item href="xhtml/26_Q.xhtml" id="x9780698136069_EPUB-27" media-type="application/xhtml+xml"/>
+		<item href="xhtml/27_R.xhtml" id="x9780698136069_EPUB-28" media-type="application/xhtml+xml"/>
+		<item href="xhtml/28_S.xhtml" id="x9780698136069_EPUB-29" media-type="application/xhtml+xml"/>
+		<item href="xhtml/29_T.xhtml" id="x9780698136069_EPUB-30" media-type="application/xhtml+xml"/>
+		<item href="xhtml/30_U.xhtml" id="x9780698136069_EPUB-31" media-type="application/xhtml+xml"/>
+		<item href="xhtml/31_V.xhtml" id="x9780698136069_EPUB-32" media-type="application/xhtml+xml"/>
+		<item href="xhtml/32_W.xhtml" id="x9780698136069_EPUB-33" media-type="application/xhtml+xml"/>
+		<item href="xhtml/33_X.xhtml" id="x9780698136069_EPUB-34" media-type="application/xhtml+xml"/>
+		<item href="xhtml/34_Y.xhtml" id="x9780698136069_EPUB-35" media-type="application/xhtml+xml"/>
+		<item href="xhtml/35_Z.xhtml" id="x9780698136069_EPUB-36" media-type="application/xhtml+xml"/>
+		<item href="xhtml/36_Numb.xhtml" id="x9780698136069_EPUB-37" media-type="application/xhtml+xml"/>
+		<item href="xhtml/37_Chapter_4.xhtml" id="x9780698136069_EPUB-40" media-type="application/xhtml+xml"/>
+		<item href="xhtml/38_Chapter_5.xhtml" id="x9780698136069_EPUB-41" media-type="application/xhtml+xml"/>
+		<item href="xhtml/39_Chapter_6.xhtml" id="x9780698136069_EPUB-42" media-type="application/xhtml+xml"/>
+		<item href="xhtml/40_Chapter_7.xhtml" id="x9780698136069_EPUB-43" media-type="application/xhtml+xml"/>
+		<item href="xhtml/41_Chapter_8.xhtml" id="x9780698136069_EPUB-45" media-type="application/xhtml+xml"/>
+		<item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+		<item href="navDoc.xhtml" id="toc" media-type="application/xhtml+xml" properties="nav"/>
+		<item href="css/idGeneratedStyles.css" id="idGeneratedStyles.css" media-type="text/css"/>
+		<item href="image/1725.jpg" id="x1725.jpg" media-type="image/jpeg"/>
+		<item href="image/1726.jpg" id="x1726.jpg" media-type="image/jpeg"/>
+		<item href="image/21799.jpg" id="x21799.jpg" media-type="image/jpeg"/>
+		<item href="image/2478.jpg" id="x2478.jpg" media-type="image/jpeg"/>
+		<item href="image/2479.jpg" id="x2479.jpg" media-type="image/jpeg"/>
+		<item href="image/2480.jpg" id="x2480.jpg" media-type="image/jpeg"/>
+		<item href="image/2481.jpg" id="x2481.jpg" media-type="image/jpeg"/>
+		<item href="image/2482.jpg" id="x2482.jpg" media-type="image/jpeg"/>
+		<item href="image/2483.jpg" id="x2483.jpg" media-type="image/jpeg"/>
+		<item href="image/2484.jpg" id="x2484.jpg" media-type="image/jpeg"/>
+		<item href="image/2485.jpg" id="x2485.jpg" media-type="image/jpeg"/>
+		<item href="image/2486.jpg" id="x2486.jpg" media-type="image/jpeg"/>
+		<item href="image/28573.jpg" id="x28573.jpg" media-type="image/jpeg"/>
+		<item href="image/29126.jpg" id="x29126.jpg" media-type="image/jpeg"/>
+		<item href="image/29128.jpg" id="x29128.jpg" media-type="image/jpeg"/>
+		<item href="image/29130.jpg" id="x29130.jpg" media-type="image/jpeg"/>
+		<item href="image/29132.jpg" id="x29132.jpg" media-type="image/jpeg"/>
+		<item href="image/29134.jpg" id="x29134.jpg" media-type="image/jpeg"/>
+		<item href="image/29136.jpg" id="x29136.jpg" media-type="image/jpeg"/>
+		<item href="image/29138.jpg" id="x29138.jpg" media-type="image/jpeg"/>
+		<item href="image/29140.jpg" id="x29140.jpg" media-type="image/jpeg"/>
+		<item href="image/29142.jpg" id="x29142.jpg" media-type="image/jpeg"/>
+		<item href="image/29144.jpg" id="x29144.jpg" media-type="image/jpeg"/>
+		<item href="image/29146.jpg" id="x29146.jpg" media-type="image/jpeg"/>
+		<item href="image/29148.jpg" id="x29148.jpg" media-type="image/jpeg"/>
+		<item href="image/29150.jpg" id="x29150.jpg" media-type="image/jpeg"/>
+		<item href="image/29152.jpg" id="x29152.jpg" media-type="image/jpeg"/>
+		<item href="image/29154.jpg" id="x29154.jpg" media-type="image/jpeg"/>
+		<item href="image/29156.jpg" id="x29156.jpg" media-type="image/jpeg"/>
+		<item href="image/29158.jpg" id="x29158.jpg" media-type="image/jpeg"/>
+		<item href="image/29160.jpg" id="x29160.jpg" media-type="image/jpeg"/>
+		<item href="image/5_Star.jpg" id="x5_Star.jpg" media-type="image/jpeg"/>
+		<item href="image/halftitle.jpg" id="halftitle.jpg" media-type="image/jpeg"/>
+		<item href="image/title.jpg" id="title.jpg" media-type="image/jpeg"/>
+		<item href="image/alleyCat.jpg" id="alleyCat.jpg" media-type="image/jpeg"/>
+		<item href="image/Amalfi_Coastal.jpg" id="Amalfi_Coastal.jpg" media-type="image/jpeg"/>
+		<item href="image/Au_Pear.jpg" id="Au_Pear.jpg" media-type="image/jpeg"/>
+		<item href="image/Bijou.jpg" id="Bijou.jpg" media-type="image/jpeg"/>
+		<item href="image/bitters_Josie.jpg" id="bitters_Josie.jpg" media-type="image/jpeg"/>
+		<item href="image/Bloody_Bunny.jpg" id="Bloody_Bunny.jpg" media-type="image/jpeg"/>
+		<item href="image/Bronx.jpg" id="Bronx.jpg" media-type="image/jpeg"/>
+		<item href="image/Champagne_Cocktail.jpg" id="Champagne_Cocktail.jpg" media-type="image/jpeg"/>
+		<item href="image/Chauncey.jpg" id="Chauncey.jpg" media-type="image/jpeg"/>
+		<item href="image/cover.jpg" id="cover.jpg" media-type="image/jpeg" properties="cover-image"/>
+		<item href="image/Dorflinger.jpg" id="Dorflinger.jpg" media-type="image/jpeg"/>
+		<item href="image/Emerald_Isle.jpg" id="Emerald_Isle.jpg" media-type="image/jpeg"/>
+		<item href="image/Fanciulli.jpg" id="Fanciulli.jpg" media-type="image/jpeg"/>
+		<item href="image/Gingerbread_Man.jpg" id="Gingerbread_Man.jpg" media-type="image/jpeg"/>
+		<item href="image/Groundhog.jpg" id="Groundhog.jpg" media-type="image/jpeg"/>
+		<item href="image/High_Thread_Count.jpg" id="High_Thread_Count.jpg" media-type="image/jpeg"/>
+		<item href="image/Historical_Concoctions.jpg" id="Historical_Concoctions.jpg" media-type="image/jpeg"/>
+		<item href="image/Hot_Drinks.jpg" id="Hot_Drinks.jpg" media-type="image/jpeg"/>
+		<item href="image/HouseMadeRecipes.jpg" id="HouseMadeRecipes.jpg" media-type="image/jpeg"/>
+		<item href="image/Intro.jpg" id="Intro.jpg" media-type="image/jpeg"/>
+		<item href="image/Islands_in_the_Stream.jpg" id="Islands_in_the_Stream.jpg" media-type="image/jpeg"/>
+		<item href="image/Jitney.jpg" id="Jitney.jpg" media-type="image/jpeg"/>
+		<item href="image/Knickerbocker.jpg" id="Knickerbocker.jpg" media-type="image/jpeg"/>
+		<item href="image/Large_Cups_and_Punches.jpg" id="Large_Cups_and_Punches.jpg" media-type="image/jpeg"/>
+		<item href="image/Llama.jpg" id="Llama.jpg" media-type="image/jpeg"/>
+		<item href="image/Merry_Widow.jpg" id="Merry_Widow.jpg" media-type="image/jpeg"/>
+		<item href="image/Natale_Dolce.jpg" id="Natale_Dolce.jpg" media-type="image/jpeg"/>
+		<item href="image/Old-Fashioned.jpg" id="Old-Fashioned.jpg" media-type="image/jpeg"/>
+		<item href="image/Presidente.jpg" id="Presidente.jpg" media-type="image/jpeg"/>
+		<item href="image/Quiet_Man.jpg" id="Quiet_Man.jpg" media-type="image/jpeg"/>
+		<item href="image/RobertBurns_HappyNewYear.jpg" id="RobertBurns_HappyNewYear.jpg" media-type="image/jpeg"/>
+		<item href="image/RooftopGarden.jpg" id="RooftopGarden.jpg" media-type="image/jpeg"/>
+		<item href="image/Satchmo.jpg" id="Satchmo.jpg" media-type="image/jpeg"/>
+		<item href="image/Steinway_Punch.jpg" id="Steinway_Punch.jpg" media-type="image/jpeg"/>
+		<item href="image/Stormy_Manhattan.jpg" id="Stormy_Manhattan.jpg" media-type="image/jpeg"/>
+		<item href="image/Tennis.jpg" id="Tennis.jpg" media-type="image/jpeg"/>
+		<item href="image/Thompson.jpg" id="Thompson.jpg" media-type="image/jpeg"/>
+		<item href="image/Union_Square.jpg" id="Union_Square.jpg" media-type="image/jpeg"/>
+		<item href="image/Vesper.jpg" id="Vesper.jpg" media-type="image/jpeg"/>
+		<item href="image/Waldorf-oldHotel.jpg" id="Waldorf-oldHotel.jpg" media-type="image/jpeg"/>
+		<item href="image/Weekend_At_The_Waldorf.jpg" id="Weekend_At_The_Waldorf.jpg" media-type="image/jpeg"/>
+		<item href="image/World_Traveler.jpg" id="World_Traveler.jpg" media-type="image/jpeg"/>
+		<item href="image/X_Marks-the_Spot.jpg" id="X_Marks-the_Spot.jpg" media-type="image/jpeg"/>
+		<item href="image/yacht_club.jpg" id="yacht_club.jpg" media-type="image/jpeg"/>
+		<item href="image/Zaza.jpg" id="Zaza.jpg" media-type="image/jpeg"/>
+		<item href="image/tablep24.jpg" id="tablep24.jpg" media-type="image/jpeg"/>
+		<item href="xhtml/42_Footnote_1.xhtml" id="x9780698136069_EPUB-23_fn1" media-type="application/xhtml+xml"/>
+		<item href="xhtml/43_Footnote_2.xhtml" id="x9780698136069_EPUB-23_fn2" media-type="application/xhtml+xml"/>
+		<item href="xhtml/44_Footnote_3.xhtml" id="x9780698136069_EPUB-23_fn3" media-type="application/xhtml+xml"/>
+		<item href="xhtml/45_Footnote_4.xhtml" id="x9780698136069_EPUB-23_fn4" media-type="application/xhtml+xml"/>
+		<item href="xhtml/46_Footnote_5.xhtml" id="x9780698136069_EPUB-23_fn5" media-type="application/xhtml+xml"/>
+		<item href="image/imgp51.jpg" id="imgp51.jpg" media-type="image/jpeg"/>
+		<item href="xhtml/GlobalBackad.xhtml" id="GlobalBackad" media-type="application/xhtml+xml"/>
+		<item href="image/GlobalBackad.jpg" id="newGlobalBackad.jpg" media-type="image/jpeg"/>
+	</manifest>
+	<spine toc="ncx">
+		<itemref idref="CoverImage"/>
+		<itemref idref="x9780698136069_EPUB"/>
+		<itemref idref="x9780698136069_EPUB-1"/>
+		<itemref idref="x9780698136069_EPUB-2"/>
+		<itemref idref="x9780698136069_EPUB-3"/>
+		<itemref idref="x9780698136069_EPUB-5"/>
+		<itemref idref="x9780698136069_EPUB-6"/>
+		<itemref idref="x9780698136069_EPUB-7"/>
+		<itemref idref="x9780698136069_EPUB-9"/>
+		<itemref idref="x9780698136069_EPUB-11"/>
+		<itemref idref="x9780698136069_EPUB-12"/>
+		<itemref idref="x9780698136069_EPUB-13"/>
+		<itemref idref="x9780698136069_EPUB-14"/>
+		<itemref idref="x9780698136069_EPUB-15"/>
+		<itemref idref="x9780698136069_EPUB-16"/>
+		<itemref idref="x9780698136069_EPUB-17"/>
+		<itemref idref="x9780698136069_EPUB-18"/>
+		<itemref idref="x9780698136069_EPUB-19"/>
+		<itemref idref="x9780698136069_EPUB-20"/>
+		<itemref idref="x9780698136069_EPUB-21"/>
+		<itemref idref="x9780698136069_EPUB-22"/>
+		<itemref idref="x9780698136069_EPUB-23"/>
+		<itemref idref="x9780698136069_EPUB-24"/>
+		<itemref idref="x9780698136069_EPUB-25"/>
+		<itemref idref="x9780698136069_EPUB-26"/>
+		<itemref idref="x9780698136069_EPUB-27"/>
+		<itemref idref="x9780698136069_EPUB-28"/>
+		<itemref idref="x9780698136069_EPUB-29"/>
+		<itemref idref="x9780698136069_EPUB-30"/>
+		<itemref idref="x9780698136069_EPUB-31"/>
+		<itemref idref="x9780698136069_EPUB-32"/>
+		<itemref idref="x9780698136069_EPUB-33"/>
+		<itemref idref="x9780698136069_EPUB-34"/>
+		<itemref idref="x9780698136069_EPUB-35"/>
+		<itemref idref="x9780698136069_EPUB-36"/>
+		<itemref idref="x9780698136069_EPUB-37"/>
+		<itemref idref="x9780698136069_EPUB-40"/>
+		<itemref idref="x9780698136069_EPUB-41"/>
+		<itemref idref="x9780698136069_EPUB-42"/>
+		<itemref idref="x9780698136069_EPUB-43"/>
+		<itemref idref="x9780698136069_EPUB-45"/>
+		<itemref idref="x9780698136069_EPUB-23_fn1" linear="no"/>
+		<itemref idref="x9780698136069_EPUB-23_fn2" linear="no"/>
+		<itemref idref="x9780698136069_EPUB-23_fn3" linear="no"/>
+		<itemref idref="x9780698136069_EPUB-23_fn4" linear="no"/>
+		<itemref idref="x9780698136069_EPUB-23_fn5" linear="no"/>
+		<itemref idref="GlobalBackad"/>
+	</spine>
+	<guide>
+		<reference href="xhtml/01_COVER.xhtml" title="Cover" type="cover"/>
+		<reference href="xhtml/05_Contents.xhtml" title="Table of Contents" type="toc"/>
+		<reference href="xhtml/06_Chapter_1.xhtml" title="Start" type="text"/>
+	</guide>
+</package>

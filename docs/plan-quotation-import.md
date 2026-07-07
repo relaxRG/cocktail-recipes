@@ -13,11 +13,16 @@
   - 双语强制:nameZh/nameEn 必须都给出(柠檬→Lemon 等)
 - bulkItemSchema type 枚举加 "material"
 
-## 待完成(客户端 app/bulk-import.tsx,539 行)
-1. `type ItemType` 加 "material";`TYPE_LABEL` 加 material: {zh:"原料",en:"Material"};`TYPE_ORDER` 加 "material"
-2. doImport 中 material 分支:调 addBottle 入库,category 用 matchMaterialCategory 匹配到原材料库分组(group=materials)的分类;酒库 taxonomy 中原材料分类需确认现有名称(useBottleTaxonomy().categories 有 group 字段: spirits/bottles/materials)
-3. matchBottleCategory 目前在全部分类中模糊匹配;为 material 单写 matchMaterialCategory:仅在 group==="materials" 的分类中匹配(新鲜果蔬/香草香料等),不命中则回退到 materials 组第一个分类
-4. 预览行徽章颜色可区分(可选)
+## 客户端已完成(app/bulk-import.tsx)
+- ItemType/TYPE_LABEL/TYPE_ORDER 加 material("原料"/"Material")
+- matchMaterialCategory():归入 group=materials 的"原材料"分类
+- doImport material 分支:addBottle 入库,带 style(如 Fruit & Citrus)/volume/priceCny/notes
+
+## 端到端实测(2026-07-08)
+模拟"26年7月份水果报价表.xlsx"(12行含大白菜/土豆干扰项)→ 提取 10 条 material:
+- 全部双语(黄柠檬/Lemon 等),style 归类正确(薄荷→Herb,姜→Spice & Botanical)
+- 无关条目(大白菜/土豆)正确跳过;价格与计价单位备注正确(65元/箱10斤)
+- 测试脚本: scripts/make-test-quotation.mjs
 
 ## 关键 API 备忘
 - useBottleTaxonomy(): { categories: BottleCategoryDef[] } 其中 BottleCategoryDef { key, zh, en, group: "spirits"|"bottles"|"materials", ... }

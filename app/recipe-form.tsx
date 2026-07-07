@@ -32,6 +32,7 @@ import {
   CODEX_FAMILIES,
   Ingredient,
   METHODS,
+  ICE_TYPES,
   STRENGTH_LABELS,
   STRENGTH_BAND_LABELS,
   codexFamilyLabel,
@@ -106,6 +107,7 @@ export default function RecipeFormScreen() {
   const [baseSpirit, setBaseSpirit] = useState(editing?.baseSpirit ?? (spiritNames[0] ?? ""));
   const [glass, setGlass] = useState(editing?.glass ?? "");
   const [method, setMethod] = useState(editing?.method ?? "摇和");
+  const [ice, setIce] = useState(editing?.ice ?? "");
   const [variantOf, setVariantOf] = useState(editing?.variantOf ?? "");
   const [codexFamily, setCodexFamily] = useState(editing?.codexFamily ?? "");
   const [flavors, setFlavors] = useState<string[]>(editing?.flavors ?? []);
@@ -247,6 +249,7 @@ export default function RecipeFormScreen() {
       baseSpirit,
       glass,
       method,
+      ice,
       strength: abvEstimate.strength ?? editing?.strength ?? "medium",
       strengthBand: abvEstimate.band ?? editing?.strengthBand ?? "",
       abv: abvEstimate.abv,
@@ -590,6 +593,15 @@ export default function RecipeFormScreen() {
           ) : (
             <Text className="text-xs text-muted">{t("form.noGlass")}</Text>
           )}
+
+          {/* Ice type */}
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.ice")}</Text>
+          <ChipGroup
+            options={ICE_TYPES}
+            value={ice}
+            onChange={(v) => setIce(v === ice ? "" : v)}
+            labelOf={(v) => localizedTagName(v, "", lang)}
+          />
 
           {/* Ingredients */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.ingredients")}</Text>

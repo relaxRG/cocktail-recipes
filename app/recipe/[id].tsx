@@ -112,6 +112,9 @@ export default function RecipeDetailScreen() {
       label: t("detail.meta.method"),
       value: recipe.method ? localizedTagName(recipe.method, "", lang) : "—",
     },
+    ...(recipe.ice
+      ? [{ label: t("detail.meta.ice"), value: localizedTagName(recipe.ice, "", lang) }]
+      : []),
     {
       label: t("detail.meta.strength"),
       value:

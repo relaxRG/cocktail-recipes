@@ -105,6 +105,8 @@ export interface Recipe {
   baseSpirit: string;
   glass: string;
   method: string;
+  /** 冰块类型:标准方冰/大方冰/球冰/碎冰/长条冰/无冰;空字符串表示未选择 */
+  ice: string;
   strength: Strength;
   /** 细化烈度档位(ABV 区间);空字符串表示未细分,仅有大类 */
   strengthBand: StrengthBand | "";
@@ -153,6 +155,7 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
     baseSpirit: "其他",
     glass: "",
     method: "",
+    ice: "",
     strength: "medium",
     strengthBand: "",
     abv: null,
@@ -183,6 +186,7 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
   base.strengthBand = (r.strengthBand ?? "") as StrengthBand | "";
   base.abv = typeof r.abv === "number" && isFinite(r.abv) ? r.abv : null;
   base.nameEn = r.nameEn ?? "";
+  base.ice = r.ice ?? "";
   base.made = r.made === true;
   base.rating = normalizeRating(r.rating);
   base.sortIndex =
@@ -330,6 +334,13 @@ export const TAG_NAME_DICT: Record<string, string> = {
   直调: "Build",
   分层: "Layer",
   搅打: "Blend",
+  // 冰块类型
+  标准方冰: "Standard Cubes",
+  大方冰: "Large Cube",
+  球冰: "Ice Sphere",
+  碎冰: "Crushed Ice",
+  长条冰: "Collins Spear",
+  无冰: "No Ice (Up)",
 };
 
 /** 反向词典(en 小写 -> zh) */
@@ -444,6 +455,9 @@ export const BASE_SPIRITS = [
 ] as const;
 
 export const METHODS = ["摇和", "搅拌", "直调", "分层", "搅打"] as const;
+
+/** 冰块类型选项(成品用冰) */
+export const ICE_TYPES = ["标准方冰", "大方冰", "球冰", "碎冰", "长条冰", "无冰"] as const;
 
 export const GLASSES = [
   "马天尼杯",

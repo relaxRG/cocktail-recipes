@@ -1,0 +1,4021 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+	<head>
+		<meta name="dtb:uid" content="9780698136069"/>
+		<meta name="dtb:depth" content="10" />
+		<meta name="dtb:totalPageCount" content="0" />
+		<meta name="dtb:maxPageNumber" content="0" />
+	</head>
+	<docTitle>
+		<text>The Waldorf Astoria Bar Book</text>
+	</docTitle>
+	<navMap>
+		<navPoint id="navPoint1" playOrder="1">
+			<navLabel>
+				<text>COVER</text>
+			</navLabel>
+			<content  src="xhtml/01_COVER.xhtml" />
+		</navPoint>
+		<navPoint id="navPoint2" playOrder="2">
+			<navLabel>
+				<text>TITLE PAGE</text>
+			</navLabel>
+			<content  src="xhtml/03_Title.xhtml#_idParaDest-1" />
+		</navPoint>
+		<navPoint id="navPoint3" playOrder="3">
+			<navLabel>
+				<text>COPYRIGHT</text>
+			</navLabel>
+			<content  src="xhtml/04_Copyright.xhtml#_idParaDest-2" />
+		</navPoint>
+		<navPoint id="navPoint4" playOrder="4">
+			<navLabel>
+				<text>CONTENTS</text>
+			</navLabel>
+			<content  src="xhtml/05_Contents.xhtml#_idParaDest-3" />
+		</navPoint>
+		<navPoint id="navPoint5" playOrder="5">
+			<navLabel>
+				<text>INTRODUCTION </text>
+			</navLabel>
+			<content  src="xhtml/06_Chapter_1.xhtml#_idParaDest-4" />
+		</navPoint>
+		<navPoint id="navPoint6" playOrder="6">
+			<navLabel>
+				<text>THE HOME BAR</text>
+			</navLabel>
+			<content  src="xhtml/07_Chapter_2.xhtml#_idParaDest-5" />
+		</navPoint>
+		<navPoint id="navPoint7" playOrder="7">
+			<navLabel>
+				<text>HOUSE-MADE RECIPES </text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-6" />
+		<navPoint id="navPoint8" playOrder="8">
+			<navLabel>
+				<text>ABSINTHE BITTERS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-7" />
+		</navPoint>
+		<navPoint id="navPoint9" playOrder="9">
+			<navLabel>
+				<text>AROMATIC BITTERS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-8" />
+		</navPoint>
+		<navPoint id="navPoint10" playOrder="10">
+			<navLabel>
+				<text>CITRUS BITTERS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-9" />
+		</navPoint>
+		<navPoint id="navPoint11" playOrder="11">
+			<navLabel>
+				<text>GENTIAN ROOT INFUSION</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-10" />
+		</navPoint>
+		<navPoint id="navPoint12" playOrder="12">
+			<navLabel>
+				<text>CINNAMON BITTERS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-11" />
+		</navPoint>
+		<navPoint id="navPoint13" playOrder="13">
+			<navLabel>
+				<text>COCOA BITTERS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-12" />
+		</navPoint>
+		<navPoint id="navPoint14" playOrder="14">
+			<navLabel>
+				<text>COFFEE BITTERS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-13" />
+		</navPoint>
+		<navPoint id="navPoint15" playOrder="15">
+			<navLabel>
+				<text>CRANBERRY BITTERS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-14" />
+		</navPoint>
+		<navPoint id="navPoint16" playOrder="16">
+			<navLabel>
+				<text>PEACH BITTERS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-15" />
+		</navPoint>
+		<navPoint id="navPoint17" playOrder="17">
+			<navLabel>
+				<text>PEPSIN BITTERS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-16" />
+		</navPoint>
+		<navPoint id="navPoint18" playOrder="18">
+			<navLabel>
+				<text>DRIED APPLE CHIPS</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-17" />
+		</navPoint>
+		<navPoint id="navPoint19" playOrder="19">
+			<navLabel>
+				<text>CORIANDER AND PINK PEPPERCORN RIM</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-18" />
+		</navPoint>
+		<navPoint id="navPoint20" playOrder="20">
+			<navLabel>
+				<text>BLOODY MARY MIX</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-19" />
+		</navPoint>
+		<navPoint id="navPoint21" playOrder="21">
+			<navLabel>
+				<text>HOT (COLD) COCOA MIX</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-20" />
+		</navPoint>
+		<navPoint id="navPoint22" playOrder="22">
+			<navLabel>
+				<text>WHITE COCOA MIX</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-21" />
+		</navPoint>
+		<navPoint id="navPoint23" playOrder="23">
+			<navLabel>
+				<text>SOUR MIX </text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-22" />
+		</navPoint>
+		<navPoint id="navPoint24" playOrder="24">
+			<navLabel>
+				<text>RASPBERRY SHRUB (Basic)</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-23" />
+		</navPoint>
+		<navPoint id="navPoint25" playOrder="25">
+			<navLabel>
+				<text>SIMPLE SYRUP (Basic)</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-24" />
+		</navPoint>
+		<navPoint id="navPoint26" playOrder="26">
+			<navLabel>
+				<text>GUM SYRUP</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-25" />
+		</navPoint>
+		<navPoint id="navPoint27" playOrder="27">
+			<navLabel>
+				<text>DEMERARA SYRUP</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-26" />
+		</navPoint>
+		<navPoint id="navPoint28" playOrder="28">
+			<navLabel>
+				<text>AGAVE SYRUP</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-27" />
+		</navPoint>
+		<navPoint id="navPoint29" playOrder="29">
+			<navLabel>
+				<text>BERRY SYRUP (Raspberries, Strawberries, Etc.)</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-28" />
+		</navPoint>
+		<navPoint id="navPoint30" playOrder="30">
+			<navLabel>
+				<text>FALERNUM (Caribbean Simple Syrup)</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-29" />
+		</navPoint>
+		<navPoint id="navPoint31" playOrder="31">
+			<navLabel>
+				<text>GRENADINE</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-30" />
+		</navPoint>
+		<navPoint id="navPoint32" playOrder="32">
+			<navLabel>
+				<text>HONEY SYRUP</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-31" />
+		</navPoint>
+		<navPoint id="navPoint33" playOrder="33">
+			<navLabel>
+				<text>HONEY AND GINGER SYRUP</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-32" />
+		</navPoint>
+		<navPoint id="navPoint34" playOrder="34">
+			<navLabel>
+				<text>MINT OR HERBAL SYRUP</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-33" />
+		</navPoint>
+		<navPoint id="navPoint35" playOrder="35">
+			<navLabel>
+				<text>PINEAPPLE SYRUP</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-34" />
+		</navPoint>
+		<navPoint id="navPoint36" playOrder="36">
+			<navLabel>
+				<text>CINNAMON VODKA (or Spirit of Choice)</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-35" />
+		</navPoint>
+		<navPoint id="navPoint37" playOrder="37">
+			<navLabel>
+				<text>PEACH BRANDY (Homemade Substitute)</text>
+			</navLabel>
+			<content  src="xhtml/08_Chapter_3.xhtml#_idParaDest-36" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint38" playOrder="38">
+			<navLabel>
+				<text>RECIPES: A TO Z</text>
+			</navLabel>
+			<content  src="xhtml/09_RECIPES_A_TO_Z.xhtml" />
+		<navPoint id="navPoint39" playOrder="39">
+			<navLabel>
+				<text>A</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-39" />
+		<navPoint id="navPoint40" playOrder="40">
+			<navLabel>
+				<text>ABSINTHE COCKTAIL</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-40" />
+		</navPoint>
+		<navPoint id="navPoint41" playOrder="41">
+			<navLabel>
+				<text>ABSINTHE DRIP</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-41" />
+		</navPoint>
+		<navPoint id="navPoint42" playOrder="42">
+			<navLabel>
+				<text>ABSINTHE FIZZ (Suissesse Fizz)</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-42" />
+		</navPoint>
+		<navPoint id="navPoint43" playOrder="43">
+			<navLabel>
+				<text>ABSINTHE FRAPPÉ (Blended)</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-43" />
+		</navPoint>
+		<navPoint id="navPoint44" playOrder="44">
+			<navLabel>
+				<text>ABSINTHE FRAPPÉ (California and New York Versions)</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-44" />
+		</navPoint>
+		<navPoint id="navPoint45" playOrder="45">
+			<navLabel>
+				<text>ABSINTHE FRAPPÉ (New Orleans Version)</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-45" />
+		</navPoint>
+		<navPoint id="navPoint46" playOrder="46">
+			<navLabel>
+				<text>ACROSS THE BORDER: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-46" />
+		</navPoint>
+		<navPoint id="navPoint47" playOrder="47">
+			<navLabel>
+				<text>ADMIRAL SCHLEY PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-47" />
+		</navPoint>
+		<navPoint id="navPoint48" playOrder="48">
+			<navLabel>
+				<text>ADONIS</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-48" />
+		<navPoint id="navPoint49" playOrder="49">
+			<navLabel>
+				<text>BAMBOO</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-49" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint50" playOrder="50">
+			<navLabel>
+				<text>ALASKA</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-50" />
+		<navPoint id="navPoint51" playOrder="51">
+			<navLabel>
+				<text>ALLEY CAT: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-51" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint52" playOrder="52">
+			<navLabel>
+				<text>ALEXANDER</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-52" />
+		</navPoint>
+		<navPoint id="navPoint53" playOrder="53">
+			<navLabel>
+				<text>ALL RIGHT</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-53" />
+		<navPoint id="navPoint54" playOrder="54">
+			<navLabel>
+				<text>TOM BULLOCK VERSION: Classic</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-54" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint55" playOrder="55">
+			<navLabel>
+				<text>ALMOST ALL GRAPE  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-55" />
+		</navPoint>
+		<navPoint id="navPoint56" playOrder="56">
+			<navLabel>
+				<text>ALPHONSE</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-56" />
+		</navPoint>
+		<navPoint id="navPoint57" playOrder="57">
+			<navLabel>
+				<text>AMALFI COASTAL  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-57" />
+		</navPoint>
+		<navPoint id="navPoint58" playOrder="58">
+			<navLabel>
+				<text>AMPERSAND</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-58" />
+		</navPoint>
+		<navPoint id="navPoint59" playOrder="59">
+			<navLabel>
+				<text>ARCTIC/ARDSLEY</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-59" />
+		<navPoint id="navPoint60" playOrder="60">
+			<navLabel>
+				<text>ARCTIC/ARDSLEY (IMPROVED)  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-60" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint61" playOrder="61">
+			<navLabel>
+				<text>ARRIVEDERCI  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-61" />
+		</navPoint>
+		<navPoint id="navPoint62" playOrder="62">
+			<navLabel>
+				<text>ASTOR</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-62" />
+		<navPoint id="navPoint63" playOrder="63">
+			<navLabel>
+				<text>DOCTOR  (Peacock Alley Adaptation)</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-63" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint64" playOrder="64">
+			<navLabel>
+				<text>ASTORIA</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-64" />
+		</navPoint>
+		<navPoint id="navPoint65" playOrder="65">
+			<navLabel>
+				<text>AU PEAR  Peacock Alley </text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-65" />
+		</navPoint>
+		<navPoint id="navPoint66" playOrder="66">
+			<navLabel>
+				<text>AUTOMOBILE (Collins Version)</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-66" />
+		<navPoint id="navPoint67" playOrder="67">
+			<navLabel>
+				<text>AUTOMOBILE (Jacques Straub Version)  Classic</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-67" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint68" playOrder="68">
+			<navLabel>
+				<text>AUTUMN SOLSTICE  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-68" />
+		</navPoint>
+		<navPoint id="navPoint69" playOrder="69">
+			<navLabel>
+				<text>AVIATION  Classic</text>
+			</navLabel>
+			<content  src="xhtml/10_A.xhtml#_idParaDest-69" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint70" playOrder="70">
+			<navLabel>
+				<text>B</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-70" />
+		<navPoint id="navPoint71" playOrder="71">
+			<navLabel>
+				<text>BACARDI APERITIF</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-71" />
+		</navPoint>
+		<navPoint id="navPoint72" playOrder="72">
+			<navLabel>
+				<text>BACARDI COCKTAIL</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-72" />
+		<navPoint id="navPoint73" playOrder="73">
+			<navLabel>
+				<text>BACARDI COCKTAIL NO. 2</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-73" />
+		</navPoint>
+		<navPoint id="navPoint74" playOrder="74">
+			<navLabel>
+				<text>(HARRY’S) BACARDI COCKTAIL NO. 3  Classic</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-74" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint75" playOrder="75">
+			<navLabel>
+				<text>BACARDI PLUS</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-75" />
+		</navPoint>
+		<navPoint id="navPoint76" playOrder="76">
+			<navLabel>
+				<text>BACARDI VERMOUTH (Dry or Sweet)</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-76" />
+		</navPoint>
+		<navPoint id="navPoint77" playOrder="77">
+			<navLabel>
+				<text>BACO</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-77" />
+		<navPoint id="navPoint78" playOrder="78">
+			<navLabel>
+				<text>I.D.K.</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-78" />
+		</navPoint>
+		<navPoint id="navPoint79" playOrder="79">
+			<navLabel>
+				<text>MONTAUK</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-79" />
+		</navPoint>
+		<navPoint id="navPoint80" playOrder="80">
+			<navLabel>
+				<text>ST. JOHN</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-80" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint81" playOrder="81">
+			<navLabel>
+				<text>BAGPIPER  Peacock Alley </text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-81" />
+		</navPoint>
+		<navPoint id="navPoint82" playOrder="82">
+			<navLabel>
+				<text>BALLANTINE</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-82" />
+		</navPoint>
+		<navPoint id="navPoint83" playOrder="83">
+			<navLabel>
+				<text>BALTIMORE BRACER FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-83" />
+		</navPoint>
+		<navPoint id="navPoint84" playOrder="84">
+			<navLabel>
+				<text>BAYARD BEAUTY FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-84" />
+		</navPoint>
+		<navPoint id="navPoint85" playOrder="85">
+			<navLabel>
+				<text>BEE’S KNEES  Classic</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-85" />
+		<navPoint id="navPoint86" playOrder="86">
+			<navLabel>
+				<text>LEAVES OF GRASS: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-86" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint87" playOrder="87">
+			<navLabel>
+				<text>BELLINI: Classic</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-87" />
+		</navPoint>
+		<navPoint id="navPoint88" playOrder="88">
+			<navLabel>
+				<text>BERMUDA HIGHBALL</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-88" />
+		</navPoint>
+		<navPoint id="navPoint89" playOrder="89">
+			<navLabel>
+				<text>BERRY</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-89" />
+		</navPoint>
+		<navPoint id="navPoint90" playOrder="90">
+			<navLabel>
+				<text>BERRY BREEZE  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-90" />
+		<navPoint id="navPoint91" playOrder="91">
+			<navLabel>
+				<text>BLUEBERRY AND BASIL SMASH  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-91" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint92" playOrder="92">
+			<navLabel>
+				<text>BIG COUNTRY  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-92" />
+		<navPoint id="navPoint93" playOrder="93">
+			<navLabel>
+				<text>SCOTTISH HIGHLANDS, HERE WE COME  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-93" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint94" playOrder="94">
+			<navLabel>
+				<text>BIJOU (Old Bar Variation)</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-94" />
+		<navPoint id="navPoint95" playOrder="95">
+			<navLabel>
+				<text>ADAPTED WALDORF ASTORIA VARIATION</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-95" />
+		</navPoint>
+		<navPoint id="navPoint96" playOrder="96">
+			<navLabel>
+				<text>SAVOY VARIATION</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-96" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint97" playOrder="97">
+			<navLabel>
+				<text>BIRD</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-97" />
+		</navPoint>
+		<navPoint id="navPoint98" playOrder="98">
+			<navLabel>
+				<text>BISCOTTI AND CREAM  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-98" />
+		</navPoint>
+		<navPoint id="navPoint99" playOrder="99">
+			<navLabel>
+				<text>BISHOP</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-99" />
+		</navPoint>
+		<navPoint id="navPoint100" playOrder="100">
+			<navLabel>
+				<text>BISHOP POKER</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-100" />
+		<navPoint id="navPoint101" playOrder="101">
+			<navLabel>
+				<text>BISHOP POTTER (JACQUES STRAUB VERSION)</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-101" />
+		</navPoint>
+		<navPoint id="navPoint102" playOrder="102">
+			<navLabel>
+				<text>NEWMAN</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-102" />
+		</navPoint>
+		<navPoint id="navPoint103" playOrder="103">
+			<navLabel>
+				<text>LIEUTENANT COLONEL</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-103" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint104" playOrder="104">
+			<navLabel>
+				<text>BISMARCK FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-104" />
+		</navPoint>
+		<navPoint id="navPoint105" playOrder="105">
+			<navLabel>
+				<text>BLACK CHERRY SODA  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-105" />
+		</navPoint>
+		<navPoint id="navPoint106" playOrder="106">
+			<navLabel>
+				<text>BLACKJACK</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-106" />
+		</navPoint>
+		<navPoint id="navPoint107" playOrder="107">
+			<navLabel>
+				<text>BLACK STRIPE (BLACKSTRAP)</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-107" />
+		</navPoint>
+		<navPoint id="navPoint108" playOrder="108">
+			<navLabel>
+				<text>BLOOD AND SAND: Classic</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-108" />
+		</navPoint>
+		<navPoint id="navPoint109" playOrder="109">
+			<navLabel>
+				<text>BLOODY BUNNY: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-109" />
+		</navPoint>
+		<navPoint id="navPoint110" playOrder="110">
+			<navLabel>
+				<text>BLOODY MARY: Classic</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-110" />
+		</navPoint>
+		<navPoint id="navPoint111" playOrder="111">
+			<navLabel>
+				<text>BLUE MOON: Oscar Tschirky’s Variation</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-111" />
+		</navPoint>
+		<navPoint id="navPoint112" playOrder="112">
+			<navLabel>
+				<text>BORDELAISE</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-112" />
+		</navPoint>
+		<navPoint id="navPoint113" playOrder="113">
+			<navLabel>
+				<text>BOWMAN BACARDI</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-113" />
+		</navPoint>
+		<navPoint id="navPoint114" playOrder="114">
+			<navLabel>
+				<text>BRADLEY-MARTIN</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-114" />
+		</navPoint>
+		<navPoint id="navPoint115" playOrder="115">
+			<navLabel>
+				<text>BRAMBLE: Classic</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-115" />
+		<navPoint id="navPoint116" playOrder="116">
+			<navLabel>
+				<text>ROOFTOP RAMBLE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-116" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint117" playOrder="117">
+			<navLabel>
+				<text>BRANDY CHAMPERELLE COCKTAIL</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-117" />
+		<navPoint id="navPoint118" playOrder="118">
+			<navLabel>
+				<text>BRANDY CHAMPERELLE POUSSE-CAFÉ</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-118" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint119" playOrder="119">
+			<navLabel>
+				<text>BRANDY COCKTAIL NO. 2</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-119" />
+		</navPoint>
+		<navPoint id="navPoint120" playOrder="120">
+			<navLabel>
+				<text>BRANDY CRUSTA</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-120" />
+		</navPoint>
+		<navPoint id="navPoint121" playOrder="121">
+			<navLabel>
+				<text>BRANDY FLOAT</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-121" />
+		</navPoint>
+		<navPoint id="navPoint122" playOrder="122">
+			<navLabel>
+				<text>BRANDY PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-122" />
+		</navPoint>
+		<navPoint id="navPoint123" playOrder="123">
+			<navLabel>
+				<text>BRONX: Modern</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-123" />
+		<navPoint id="navPoint124" playOrder="124">
+			<navLabel>
+				<text>BRONX: Old Waldorf Bar Days Variation</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-124" />
+		</navPoint>
+		<navPoint id="navPoint125" playOrder="125">
+			<navLabel>
+				<text>QUEENS</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-125" />
+		</navPoint>
+		<navPoint id="navPoint126" playOrder="126">
+			<navLabel>
+				<text>SATAN’S WHISKERS: Classic</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-126" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint127" playOrder="127">
+			<navLabel>
+				<text>BROOKLYN: Classic</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-127" />
+		</navPoint>
+		<navPoint id="navPoint128" playOrder="128">
+			<navLabel>
+				<text>BRUT</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-128" />
+		<navPoint id="navPoint129" playOrder="129">
+			<navLabel>
+				<text>BRUT (PEACOCK ALLEY VARIATION)</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-129" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint130" playOrder="130">
+			<navLabel>
+				<text>BUCK/RICKEY (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-130" />
+		</navPoint>
+		<navPoint id="navPoint131" playOrder="131">
+			<navLabel>
+				<text>THE BUMBLED BEE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-131" />
+		</navPoint>
+		<navPoint id="navPoint132" playOrder="132">
+			<navLabel>
+				<text>BUNYAN</text>
+			</navLabel>
+			<content  src="xhtml/11_B.xhtml#_idParaDest-132" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint133" playOrder="133">
+			<navLabel>
+				<text>C</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-133" />
+		<navPoint id="navPoint134" playOrder="134">
+			<navLabel>
+				<text>CAFÉ KIRSCH</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-134" />
+		</navPoint>
+		<navPoint id="navPoint135" playOrder="135">
+			<navLabel>
+				<text>CAIPIRINHA: Classic</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-135" />
+		</navPoint>
+		<navPoint id="navPoint136" playOrder="136">
+			<navLabel>
+				<text>CALISAYA</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-136" />
+		<navPoint id="navPoint137" playOrder="137">
+			<navLabel>
+				<text>GEORGE KAPPELER VARIATION</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-137" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint138" playOrder="138">
+			<navLabel>
+				<text>CAMPFIRE STORY: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-138" />
+		</navPoint>
+		<navPoint id="navPoint139" playOrder="139">
+			<navLabel>
+				<text>CHAMPAGNE COCKTAIL (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-139" />
+		<navPoint id="navPoint140" playOrder="140">
+			<navLabel>
+				<text>CHAMPAGNE COCKTAIL: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-140" />
+		</navPoint>
+		<navPoint id="navPoint141" playOrder="141">
+			<navLabel>
+				<text>CHAMPAGNE COCKTAIL BY PHILIPPE OF THE WALDORF: Ted Saucier’s Bottoms Up</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-141" />
+		</navPoint>
+		<navPoint id="navPoint142" playOrder="142">
+			<navLabel>
+				<text>CLEOPATRA CHAMPAGNE COCKTAIL: Classic</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-142" />
+		</navPoint>
+		<navPoint id="navPoint143" playOrder="143">
+			<navLabel>
+				<text>GARDENING AT NIGHT: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-143" />
+		</navPoint>
+		<navPoint id="navPoint144" playOrder="144">
+			<navLabel>
+				<text>ROOFTOP SUNSET: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-144" />
+		</navPoint>
+		<navPoint id="navPoint145" playOrder="145">
+			<navLabel>
+				<text>SPRINGTIME: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-145" />
+		</navPoint>
+		<navPoint id="navPoint146" playOrder="146">
+			<navLabel>
+				<text>TUSCAN TERRACE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-146" />
+		</navPoint>
+		<navPoint id="navPoint147" playOrder="147">
+			<navLabel>
+				<text>VELVET</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-147" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint148" playOrder="148">
+			<navLabel>
+				<text>CHANLER</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-148" />
+		</navPoint>
+		<navPoint id="navPoint149" playOrder="149">
+			<navLabel>
+				<text>CHANTICLEER</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-149" />
+		</navPoint>
+		<navPoint id="navPoint150" playOrder="150">
+			<navLabel>
+				<text>CHARLIE CHAPLIN</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-150" />
+		<navPoint id="navPoint151" playOrder="151">
+			<navLabel>
+				<text>DOUGLAS FAIRBANKS</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-151" />
+		</navPoint>
+		<navPoint id="navPoint152" playOrder="152">
+			<navLabel>
+				<text>THREE-TO-ONE</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-152" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint153" playOrder="153">
+			<navLabel>
+				<text>CHARLIE ROSE</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-153" />
+		</navPoint>
+		<navPoint id="navPoint154" playOrder="154">
+			<navLabel>
+				<text>CHAUNCEY</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-154" />
+		</navPoint>
+		<navPoint id="navPoint155" playOrder="155">
+			<navLabel>
+				<text>CHICAGO: Classic</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-155" />
+		</navPoint>
+		<navPoint id="navPoint156" playOrder="156">
+			<navLabel>
+				<text>CHICAGO FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-156" />
+		</navPoint>
+		<navPoint id="navPoint157" playOrder="157">
+			<navLabel>
+				<text>CHINESE</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-157" />
+		</navPoint>
+		<navPoint id="navPoint158" playOrder="158">
+			<navLabel>
+				<text>CHOCOLATE</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-158" />
+		<navPoint id="navPoint159" playOrder="159">
+			<navLabel>
+				<text>CHOCOLATE (SAVOY ADAPTATION)</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-159" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint160" playOrder="160">
+			<navLabel>
+				<text>CHOCOLATINI: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-160" />
+		</navPoint>
+		<navPoint id="navPoint161" playOrder="161">
+			<navLabel>
+				<text>CHOCOLATE CREAM PHOSPHATE FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-161" />
+		</navPoint>
+		<navPoint id="navPoint162" playOrder="162">
+			<navLabel>
+				<text>CHOCOLATE SOLDIER</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-162" />
+		</navPoint>
+		<navPoint id="navPoint163" playOrder="163">
+			<navLabel>
+				<text>CINFUL: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-163" />
+		<navPoint id="navPoint164" playOrder="164">
+			<navLabel>
+				<text>PIE ON THE SILL: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-164" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint165" playOrder="165">
+			<navLabel>
+				<text>CLARET PUNCH (Claret Cup)</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-165" />
+		</navPoint>
+		<navPoint id="navPoint166" playOrder="166">
+			<navLabel>
+				<text>CLIQUET</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-166" />
+		</navPoint>
+		<navPoint id="navPoint167" playOrder="167">
+			<navLabel>
+				<text>CLOVER CLUB</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-167" />
+		<navPoint id="navPoint168" playOrder="168">
+			<navLabel>
+				<text>GLOOM LIFTER</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-168" />
+		</navPoint>
+		<navPoint id="navPoint169" playOrder="169">
+			<navLabel>
+				<text>CORA MIDDLETON</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-169" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint170" playOrder="170">
+			<navLabel>
+				<text>CLUB COCKTAIL NO. 2: William Schmidt version</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-170" />
+		</navPoint>
+		<navPoint id="navPoint171" playOrder="171">
+			<navLabel>
+				<text>COBBLER (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-171" />
+		</navPoint>
+		<navPoint id="navPoint172" playOrder="172">
+			<navLabel>
+				<text>(WHISKEY) COCKTAIL (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-172" />
+		</navPoint>
+		<navPoint id="navPoint173" playOrder="173">
+			<navLabel>
+				<text>COFFEE COCKTAIL</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-173" />
+		</navPoint>
+		<navPoint id="navPoint174" playOrder="174">
+			<navLabel>
+				<text>COLE PORTER: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-174" />
+		</navPoint>
+		<navPoint id="navPoint175" playOrder="175">
+			<navLabel>
+				<text>COLLINS (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-175" />
+		</navPoint>
+		<navPoint id="navPoint176" playOrder="176">
+			<navLabel>
+				<text>COMMODORE (Cocktail Adaptation): Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-176" />
+		</navPoint>
+		<navPoint id="navPoint177" playOrder="177">
+			<navLabel>
+				<text>COMMODORE NO. 2</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-177" />
+		</navPoint>
+		<navPoint id="navPoint178" playOrder="178">
+			<navLabel>
+				<text>COOLER/HIGHBALL (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-178" />
+		</navPoint>
+		<navPoint id="navPoint179" playOrder="179">
+			<navLabel>
+				<text>COOPERSTOWN (Adapted Waldorf Astoria Version)</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-179" />
+		<navPoint id="navPoint180" playOrder="180">
+			<navLabel>
+				<text>I.D.K. NO. 2 (IMPROVED)</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-180" />
+		</navPoint>
+		<navPoint id="navPoint181" playOrder="181">
+			<navLabel>
+				<text>HUGO ENSSLIN VERSION</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-181" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint182" playOrder="182">
+			<navLabel>
+				<text>CORONATION</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-182" />
+		</navPoint>
+		<navPoint id="navPoint183" playOrder="183">
+			<navLabel>
+				<text>CORPSE REVIVER NO. 1: Classic</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-183" />
+		<navPoint id="navPoint184" playOrder="184">
+			<navLabel>
+				<text>CORPSE REVIVER NO. 2: Classic</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-184" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint185" playOrder="185">
+			<navLabel>
+				<text>COSMOPOLITAN: Classic</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-185" />
+		</navPoint>
+		<navPoint id="navPoint186" playOrder="186">
+			<navLabel>
+				<text>COUNTRY CLUB</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-186" />
+		<navPoint id="navPoint187" playOrder="187">
+			<navLabel>
+				<text>FLAPPER</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-187" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint188" playOrder="188">
+			<navLabel>
+				<text>CREAM PUFF FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-188" />
+		</navPoint>
+		<navPoint id="navPoint189" playOrder="189">
+			<navLabel>
+				<text>CREOLE LADY</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-189" />
+		<navPoint id="navPoint190" playOrder="190">
+			<navLabel>
+				<text>CREOLE LADY: Peacock Alley Cocktail Adaptation</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-190" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint191" playOrder="191">
+			<navLabel>
+				<text>CUBA LIBRE</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-191" />
+		</navPoint>
+		<navPoint id="navPoint192" playOrder="192">
+			<navLabel>
+				<text>CUBAN ROSE</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-192" />
+		</navPoint>
+		<navPoint id="navPoint193" playOrder="193">
+			<navLabel>
+				<text>CUBAN SUNSHINE</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-193" />
+		<navPoint id="navPoint194" playOrder="194">
+			<navLabel>
+				<text>FLAMINGO: Classic</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-194" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint195" playOrder="195">
+			<navLabel>
+				<text>CUCUMBER RHUMBA: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/12_C.xhtml#_idParaDest-195" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint196" playOrder="196">
+			<navLabel>
+				<text>D</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-196" />
+		<navPoint id="navPoint197" playOrder="197">
+			<navLabel>
+				<text>DAIQUIRI: Classic</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-197" />
+		<navPoint id="navPoint198" playOrder="198">
+			<navLabel>
+				<text>HEMINGWAY DAIQUIRI: Classic</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-198" />
+		</navPoint>
+		<navPoint id="navPoint199" playOrder="199">
+			<navLabel>
+				<text>GRAPEFRUIT BLOSSOM</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-199" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint200" playOrder="200">
+			<navLabel>
+				<text>DAISY (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-200" />
+		<navPoint id="navPoint201" playOrder="201">
+			<navLabel>
+				<text>RUM DAISY</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-201" />
+		</navPoint>
+		<navPoint id="navPoint202" playOrder="202">
+			<navLabel>
+				<text>BRANDY DAISY</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-202" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint203" playOrder="203">
+			<navLabel>
+				<text>DOLORES</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-203" />
+		</navPoint>
+		<navPoint id="navPoint204" playOrder="204">
+			<navLabel>
+				<text>DORFLINGER</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-204" />
+		</navPoint>
+		<navPoint id="navPoint205" playOrder="205">
+			<navLabel>
+				<text>DOROTHY GISH</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-205" />
+		<navPoint id="navPoint206" playOrder="206">
+			<navLabel>
+				<text>NACIONAL</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-206" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint207" playOrder="207">
+			<navLabel>
+				<text>DOUBLE-STANDARD SOUR</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-207" />
+		</navPoint>
+		<navPoint id="navPoint208" playOrder="208">
+			<navLabel>
+				<text>DUKE</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-208" />
+		</navPoint>
+		<navPoint id="navPoint209" playOrder="209">
+			<navLabel>
+				<text>DUPLEX</text>
+			</navLabel>
+			<content  src="xhtml/13_D.xhtml#_idParaDest-209" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint210" playOrder="210">
+			<navLabel>
+				<text>E</text>
+			</navLabel>
+			<content  src="xhtml/14_E.xhtml#_idParaDest-210" />
+		<navPoint id="navPoint211" playOrder="211">
+			<navLabel>
+				<text>EGGNOG (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/14_E.xhtml#_idParaDest-211" />
+		<navPoint id="navPoint212" playOrder="212">
+			<navLabel>
+				<text>SABBATH CALM</text>
+			</navLabel>
+			<content  src="xhtml/14_E.xhtml#_idParaDest-212" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint213" playOrder="213">
+			<navLabel>
+				<text>ELIXIR</text>
+			</navLabel>
+			<content  src="xhtml/14_E.xhtml#_idParaDest-213" />
+		</navPoint>
+		<navPoint id="navPoint214" playOrder="214">
+			<navLabel>
+				<text>EMERALD ISLE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/14_E.xhtml#_idParaDest-214" />
+		</navPoint>
+		<navPoint id="navPoint215" playOrder="215">
+			<navLabel>
+				<text>EMERSON</text>
+			</navLabel>
+			<content  src="xhtml/14_E.xhtml#_idParaDest-215" />
+		</navPoint>
+		<navPoint id="navPoint216" playOrder="216">
+			<navLabel>
+				<text>ESPRESSO COCKTAIL: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/14_E.xhtml#_idParaDest-216" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint217" playOrder="217">
+			<navLabel>
+				<text>F</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-217" />
+		<navPoint id="navPoint218" playOrder="218">
+			<navLabel>
+				<text>FASCINATION</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-218" />
+		</navPoint>
+		<navPoint id="navPoint219" playOrder="219">
+			<navLabel>
+				<text>FALL IN A GLASS: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-219" />
+		</navPoint>
+		<navPoint id="navPoint220" playOrder="220">
+			<navLabel>
+				<text>FALLEN APPLES: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-220" />
+		</navPoint>
+		<navPoint id="navPoint221" playOrder="221">
+			<navLabel>
+				<text>FANCIULLI</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-221" />
+		<navPoint id="navPoint222" playOrder="222">
+			<navLabel>
+				<text>LARCENY AND OLD LACE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-222" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint223" playOrder="223">
+			<navLabel>
+				<text>FEZZIWIG’S RECLINE (Holiday Cocktail): Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-223" />
+		</navPoint>
+		<navPoint id="navPoint224" playOrder="224">
+			<navLabel>
+				<text>FIRST CLASS: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-224" />
+		</navPoint>
+		<navPoint id="navPoint225" playOrder="225">
+			<navLabel>
+				<text>FISH HOUSE PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-225" />
+		</navPoint>
+		<navPoint id="navPoint226" playOrder="226">
+			<navLabel>
+				<text>FIX (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-226" />
+		</navPoint>
+		<navPoint id="navPoint227" playOrder="227">
+			<navLabel>
+				<text>FIZZ (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-227" />
+		</navPoint>
+		<navPoint id="navPoint228" playOrder="228">
+			<navLabel>
+				<text>FLIP (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-228" />
+		</navPoint>
+		<navPoint id="navPoint229" playOrder="229">
+			<navLabel>
+				<text>FLOATER</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-229" />
+		<navPoint id="navPoint230" playOrder="230">
+			<navLabel>
+				<text>LUCKY GEORGE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-230" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint231" playOrder="231">
+			<navLabel>
+				<text>FLORADORA</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-231" />
+		</navPoint>
+		<navPoint id="navPoint232" playOrder="232">
+			<navLabel>
+				<text>FLORIDA</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-232" />
+		</navPoint>
+		<navPoint id="navPoint233" playOrder="233">
+			<navLabel>
+				<text>FLYING SHAMROCK: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-233" />
+		</navPoint>
+		<navPoint id="navPoint234" playOrder="234">
+			<navLabel>
+				<text>FOG CUTTER: Classic</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-234" />
+		</navPoint>
+		<navPoint id="navPoint235" playOrder="235">
+			<navLabel>
+				<text>FRAGILE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-235" />
+		</navPoint>
+		<navPoint id="navPoint236" playOrder="236">
+			<navLabel>
+				<text>FREE SILVER FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-236" />
+		</navPoint>
+		<navPoint id="navPoint237" playOrder="237">
+			<navLabel>
+				<text>FRENCH 75: Classic</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-237" />
+		</navPoint>
+		<navPoint id="navPoint238" playOrder="238">
+			<navLabel>
+				<text>FRENCH QUARTER (No. 1, 2, and 3): Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-238" />
+		</navPoint>
+		<navPoint id="navPoint239" playOrder="239">
+			<navLabel>
+				<text>FRIDA: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-239" />
+		</navPoint>
+		<navPoint id="navPoint240" playOrder="240">
+			<navLabel>
+				<text>FRUITS DE ROUGES (Valentine’s Day): Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-240" />
+		</navPoint>
+		<navPoint id="navPoint241" playOrder="241">
+			<navLabel>
+				<text>FULL HOUSE/WIDOW’S KISS</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-241" />
+		<navPoint id="navPoint242" playOrder="242">
+			<navLabel>
+				<text>FULL HOUSE (SAVOY VERSION)</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-242" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint243" playOrder="243">
+			<navLabel>
+				<text>FUTURITY</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-243" />
+		<navPoint id="navPoint244" playOrder="244">
+			<navLabel>
+				<text>BLACKTHORN (IMPROVED)</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-244" />
+		</navPoint>
+		<navPoint id="navPoint245" playOrder="245">
+			<navLabel>
+				<text>VAN WYCK</text>
+			</navLabel>
+			<content  src="xhtml/15_F.xhtml#_idParaDest-245" />
+		</navPoint>
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint246" playOrder="246">
+			<navLabel>
+				<text>G</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-246" />
+		<navPoint id="navPoint247" playOrder="247">
+			<navLabel>
+				<text>GENERAL HENDRICKS</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-247" />
+		</navPoint>
+		<navPoint id="navPoint248" playOrder="248">
+			<navLabel>
+				<text>GIMLET (Cordial): Classic</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-248" />
+		<navPoint id="navPoint249" playOrder="249">
+			<navLabel>
+				<text>GIMLET (Sour): Classic</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-249" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint250" playOrder="250">
+			<navLabel>
+				<text>GINGER COLLINS: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-250" />
+		</navPoint>
+		<navPoint id="navPoint251" playOrder="251">
+			<navLabel>
+				<text>GINGERBREAD MAN: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-251" />
+		</navPoint>
+		<navPoint id="navPoint252" playOrder="252">
+			<navLabel>
+				<text>GLOBETROTTER: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-252" />
+		</navPoint>
+		<navPoint id="navPoint253" playOrder="253">
+			<navLabel>
+				<text>GOAT’S DELIGHT</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-253" />
+		</navPoint>
+		<navPoint id="navPoint254" playOrder="254">
+			<navLabel>
+				<text>GOODWIN PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-254" />
+		</navPoint>
+		<navPoint id="navPoint255" playOrder="255">
+			<navLabel>
+				<text>GRASSHOPPER: Classic</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-255" />
+		<navPoint id="navPoint256" playOrder="256">
+			<navLabel>
+				<text>JADED GRASSHOPPER: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-256" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint257" playOrder="257">
+			<navLabel>
+				<text>GRENADINE FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-257" />
+		</navPoint>
+		<navPoint id="navPoint258" playOrder="258">
+			<navLabel>
+				<text>GROUNDHOG: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-258" />
+		</navPoint>
+		<navPoint id="navPoint259" playOrder="259">
+			<navLabel>
+				<text>GUION</text>
+			</navLabel>
+			<content  src="xhtml/16_G.xhtml#_idParaDest-259" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint260" playOrder="260">
+			<navLabel>
+				<text>H</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-260" />
+		<navPoint id="navPoint261" playOrder="261">
+			<navLabel>
+				<text>HANCOCK SOUR/FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-261" />
+		</navPoint>
+		<navPoint id="navPoint262" playOrder="262">
+			<navLabel>
+				<text>HARVARD</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-262" />
+		</navPoint>
+		<navPoint id="navPoint263" playOrder="263">
+			<navLabel>
+				<text>HARVEY WALLBANGER: Classic</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-263" />
+		</navPoint>
+		<navPoint id="navPoint264" playOrder="264">
+			<navLabel>
+				<text>HERALD PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-264" />
+		</navPoint>
+		<navPoint id="navPoint265" playOrder="265">
+			<navLabel>
+				<text>HIGH THREAD COUNT: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-265" />
+		</navPoint>
+		<navPoint id="navPoint266" playOrder="266">
+			<navLabel>
+				<text>HONEY DEW</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-266" />
+		</navPoint>
+		<navPoint id="navPoint267" playOrder="267">
+			<navLabel>
+				<text>HONOLULU</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-267" />
+		<navPoint id="navPoint268" playOrder="268">
+			<navLabel>
+				<text>HONOLULU NO. 2 (see Manhattan and Thompson for variations)</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-268" />
+		</navPoint>
+		<navPoint id="navPoint269" playOrder="269">
+			<navLabel>
+				<text>HONOLULU NO. 3 (à la Mr. Smith)</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-269" />
+		</navPoint>
+		<navPoint id="navPoint270" playOrder="270">
+			<navLabel>
+				<text>HONOLULU (ENSSLIN VARIATION)</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-270" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint271" playOrder="271">
+			<navLabel>
+				<text>HOP TOAD</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-271" />
+		<navPoint id="navPoint272" playOrder="272">
+			<navLabel>
+				<text>WALDORF SPECIAL</text>
+			</navLabel>
+			<content  src="xhtml/17_H.xhtml#_idParaDest-272" />
+		</navPoint>
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint273" playOrder="273">
+			<navLabel>
+				<text>I</text>
+			</navLabel>
+			<content  src="xhtml/18_I.xhtml#_idParaDest-273" />
+		<navPoint id="navPoint274" playOrder="274">
+			<navLabel>
+				<text>IDEAL </text>
+			</navLabel>
+			<content  src="xhtml/18_I.xhtml#_idParaDest-274" />
+		<navPoint id="navPoint275" playOrder="275">
+			<navLabel>
+				<text>SLOPPY JOE’S CUBAN ADAPTATION</text>
+			</navLabel>
+			<content  src="xhtml/18_I.xhtml#_idParaDest-275" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint276" playOrder="276">
+			<navLabel>
+				<text>ISLANDS IN THE STREAM: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/18_I.xhtml#_idParaDest-276" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint277" playOrder="277">
+			<navLabel>
+				<text>J</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-277" />
+		<navPoint id="navPoint278" playOrder="278">
+			<navLabel>
+				<text>JACK ROSE </text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-278" />
+		<navPoint id="navPoint279" playOrder="279">
+			<navLabel>
+				<text>ROYAL SMILE (Peacock Alley Adapted Version)</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-279" />
+		</navPoint>
+		<navPoint id="navPoint280" playOrder="280">
+			<navLabel>
+				<text>ROYAL SMILE (Jacques Straub version)</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-280" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint281" playOrder="281">
+			<navLabel>
+				<text>JAMAICA ORANGE </text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-281" />
+		</navPoint>
+		<navPoint id="navPoint282" playOrder="282">
+			<navLabel>
+				<text>JAMAICA RUM </text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-282" />
+		<navPoint id="navPoint283" playOrder="283">
+			<navLabel>
+				<text>LANDER’S PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-283" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint284" playOrder="284">
+			<navLabel>
+				<text>JAPALAC</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-284" />
+		</navPoint>
+		<navPoint id="navPoint285" playOrder="285">
+			<navLabel>
+				<text>JAPANESE</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-285" />
+		</navPoint>
+		<navPoint id="navPoint286" playOrder="286">
+			<navLabel>
+				<text>JITNEY</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-286" />
+		</navPoint>
+		<navPoint id="navPoint287" playOrder="287">
+			<navLabel>
+				<text>JULEP/SMASH (Basic Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-287" />
+		<navPoint id="navPoint288" playOrder="288">
+			<navLabel>
+				<text>MINT JULEP</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-288" />
+		</navPoint>
+		<navPoint id="navPoint289" playOrder="289">
+			<navLabel>
+				<text>BRANDY SMASH</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-289" />
+		</navPoint>
+		<navPoint id="navPoint290" playOrder="290">
+			<navLabel>
+				<text>PINEAPPLE SMASH: Classic</text>
+			</navLabel>
+			<content  src="xhtml/19_J.xhtml#_idParaDest-290" />
+		</navPoint>
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint291" playOrder="291">
+			<navLabel>
+				<text>K</text>
+			</navLabel>
+			<content  src="xhtml/20_K.xhtml#_idParaDest-291" />
+		<navPoint id="navPoint292" playOrder="292">
+			<navLabel>
+				<text>KING CHARLES</text>
+			</navLabel>
+			<content  src="xhtml/20_K.xhtml#_idParaDest-292" />
+		</navPoint>
+		<navPoint id="navPoint293" playOrder="293">
+			<navLabel>
+				<text>KINGSTON</text>
+			</navLabel>
+			<content  src="xhtml/20_K.xhtml#_idParaDest-293" />
+		</navPoint>
+		<navPoint id="navPoint294" playOrder="294">
+			<navLabel>
+				<text>KNICKERBOCKER PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/20_K.xhtml#_idParaDest-294" />
+		<navPoint id="navPoint295" playOrder="295">
+			<navLabel>
+				<text>WALDORF-ASTORIA “JAMAICAN” VARIATION</text>
+			</navLabel>
+			<content  src="xhtml/20_K.xhtml#_idParaDest-295" />
+		</navPoint>
+		<navPoint id="navPoint296" playOrder="296">
+			<navLabel>
+				<text>WALDORF-ASTORIA COLLINS VARIATION</text>
+			</navLabel>
+			<content  src="xhtml/20_K.xhtml#_idParaDest-296" />
+		</navPoint>
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint297" playOrder="297">
+			<navLabel>
+				<text>L</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-297" />
+		<navPoint id="navPoint298" playOrder="298">
+			<navLabel>
+				<text>LALLA ROOKH</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-298" />
+		<navPoint id="navPoint299" playOrder="299">
+			<navLabel>
+				<text>FIZZ VARIATION (JACQUES STRAUB)</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-299" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint300" playOrder="300">
+			<navLabel>
+				<text>THE LAST DROP: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-300" />
+		</navPoint>
+		<navPoint id="navPoint301" playOrder="301">
+			<navLabel>
+				<text>LAWYER’S REVENGE</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-301" />
+		</navPoint>
+		<navPoint id="navPoint302" playOrder="302">
+			<navLabel>
+				<text>LE COOKED GOOSE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-302" />
+		<navPoint id="navPoint303" playOrder="303">
+			<navLabel>
+				<text>SMOKED PAPRIKA SYRUP</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-303" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint304" playOrder="304">
+			<navLabel>
+				<text>LEMON MERINGUE PIE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-304" />
+		</navPoint>
+		<navPoint id="navPoint305" playOrder="305">
+			<navLabel>
+				<text>LIBERAL</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-305" />
+		<navPoint id="navPoint306" playOrder="306">
+			<navLabel>
+				<text>TED SAUCIER’S BOTTOMS UP VERSION</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-306" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint307" playOrder="307">
+			<navLabel>
+				<text>LLAMA: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-307" />
+		</navPoint>
+		<navPoint id="navPoint308" playOrder="308">
+			<navLabel>
+				<text>LOENSKY COCKTAIL: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-308" />
+		</navPoint>
+		<navPoint id="navPoint309" playOrder="309">
+			<navLabel>
+				<text>LOVE</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-309" />
+		<navPoint id="navPoint310" playOrder="310">
+			<navLabel>
+				<text>SOUL KISS (WALDORF-ASTORIA VERSION)</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-310" />
+		</navPoint>
+		<navPoint id="navPoint311" playOrder="311">
+			<navLabel>
+				<text>SOUL KISS (JACK GROHUSKO VERSION: 1916)</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-311" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint312" playOrder="312">
+			<navLabel>
+				<text>LUCKY NUMBER: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/21_L.xhtml#_idParaDest-312" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint313" playOrder="313">
+			<navLabel>
+				<text>M</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-313" />
+		<navPoint id="navPoint314" playOrder="314">
+			<navLabel>
+				<text>MACAROON: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-314" />
+		</navPoint>
+		<navPoint id="navPoint315" playOrder="315">
+			<navLabel>
+				<text>MAE WEST: Oscar Tschirky’s 100 Famous Cocktails</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-315" />
+		</navPoint>
+		<navPoint id="navPoint316" playOrder="316">
+			<navLabel>
+				<text>MAI TAI: Classic</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-316" />
+		</navPoint>
+		<navPoint id="navPoint317" playOrder="317">
+			<navLabel>
+				<text>MANHATTAN</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-317" />
+		<navPoint id="navPoint318" playOrder="318">
+			<navLabel>
+				<text>DRY MANHATTAN</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-318" />
+		</navPoint>
+		<navPoint id="navPoint319" playOrder="319">
+			<navLabel>
+				<text>PERFECT MANHATTAN</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-319" />
+		</navPoint>
+		<navPoint id="navPoint320" playOrder="320">
+			<navLabel>
+				<text>MANHATTAN JUNIOR</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-320" />
+		</navPoint>
+		<navPoint id="navPoint321" playOrder="321">
+			<navLabel>
+				<text>1860 MANHATTAN: Peacock Alley Variation</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-321" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint322" playOrder="322">
+			<navLabel>
+				<text>MARBLE HILL</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-322" />
+		</navPoint>
+		<navPoint id="navPoint323" playOrder="323">
+			<navLabel>
+				<text>MARGARITA: Classic</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-323" />
+		<navPoint id="navPoint324" playOrder="324">
+			<navLabel>
+				<text>(ALL-IN) MARGARITA: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-324" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint325" playOrder="325">
+			<navLabel>
+				<text>MARMALADE</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-325" />
+		</navPoint>
+		<navPoint id="navPoint326" playOrder="326">
+			<navLabel>
+				<text>MARTINEZ</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-326" />
+		<navPoint id="navPoint327" playOrder="327">
+			<navLabel>
+				<text>BRIDAL</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-327" />
+		</navPoint>
+		<navPoint id="navPoint328" playOrder="328">
+			<navLabel>
+				<text>SILVER</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-328" />
+		</navPoint>
+		<navPoint id="navPoint329" playOrder="329">
+			<navLabel>
+				<text>PEACOCK ALLEY MARTINEZ</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-329" />
+		</navPoint>
+		<navPoint id="navPoint330" playOrder="330">
+			<navLabel>
+				<text>SOUTH OF THE BORDER MARTINEZ: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-330" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint331" playOrder="331">
+			<navLabel>
+				<text>MARTINI: Modern</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-331" />
+		</navPoint>
+		<navPoint id="navPoint332" playOrder="332">
+			<navLabel>
+				<text>MARTINI: Fifty Fifty/Dry</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-332" />
+		</navPoint>
+		<navPoint id="navPoint333" playOrder="333">
+			<navLabel>
+				<text>MARTINI: Dry</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-333" />
+		</navPoint>
+		<navPoint id="navPoint334" playOrder="334">
+			<navLabel>
+				<text>MARTINI: Fifty Fifty/Sweet</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-334" />
+		</navPoint>
+		<navPoint id="navPoint335" playOrder="335">
+			<navLabel>
+				<text>MARTINI: Sweet</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-335" />
+		</navPoint>
+		<navPoint id="navPoint336" playOrder="336">
+			<navLabel>
+				<text>MARTINI: Perfect</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-336" />
+		</navPoint>
+		<navPoint id="navPoint337" playOrder="337">
+			<navLabel>
+				<text>MARTINI: Equal Parts</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-337" />
+		<navPoint id="navPoint338" playOrder="338">
+			<navLabel>
+				<text>AMSTERDAM: Genever</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-338" />
+		</navPoint>
+		<navPoint id="navPoint339" playOrder="339">
+			<navLabel>
+				<text>EASY: Enhanced</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-339" />
+		</navPoint>
+		<navPoint id="navPoint340" playOrder="340">
+			<navLabel>
+				<text>HAPPY DAYS: Oscar Tschirky’s 100 Famous Cocktails</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-340" />
+		</navPoint>
+		<navPoint id="navPoint341" playOrder="341">
+			<navLabel>
+				<text>NEWPORT: Unique Blend</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-341" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint342" playOrder="342">
+			<navLabel>
+				<text>MCKINLEY’S DELIGHT/ REMEMBER THE MAINE</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-342" />
+		</navPoint>
+		<navPoint id="navPoint343" playOrder="343">
+			<navLabel>
+				<text>MERRY WIDOW (Or Mary Garden): (Waldorf-Astoria Version)</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-343" />
+		<navPoint id="navPoint344" playOrder="344">
+			<navLabel>
+				<text>POET’S DREAM (ADAPTED)</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-344" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint345" playOrder="345">
+			<navLabel>
+				<text>METROPOLE</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-345" />
+		</navPoint>
+		<navPoint id="navPoint346" playOrder="346">
+			<navLabel>
+				<text>MILK PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-346" />
+		<navPoint id="navPoint347" playOrder="347">
+			<navLabel>
+				<text>BOSTON MILK PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-347" />
+		</navPoint>
+		<navPoint id="navPoint348" playOrder="348">
+			<navLabel>
+				<text>CREAM PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-348" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint349" playOrder="349">
+			<navLabel>
+				<text>MILLIONAIRE</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-349" />
+		</navPoint>
+		<navPoint id="navPoint350" playOrder="350">
+			<navLabel>
+				<text>MISSISSIPPI PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-350" />
+		</navPoint>
+		<navPoint id="navPoint351" playOrder="351">
+			<navLabel>
+				<text>MOJITO</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-351" />
+		<navPoint id="navPoint352" playOrder="352">
+			<navLabel>
+				<text>NEW MEXICO MOJITO: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-352" />
+		</navPoint>
+		<navPoint id="navPoint353" playOrder="353">
+			<navLabel>
+				<text>PEACH </text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-353" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint354" playOrder="354">
+			<navLabel>
+				<text>MONKEY GLAND: Classic</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-354" />
+		<navPoint id="navPoint355" playOrder="355">
+			<navLabel>
+				<text>MONKEY MARGARITA: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-355" />
+		</navPoint>
+		<navPoint id="navPoint356" playOrder="356">
+			<navLabel>
+				<text>RUSSIAN GRAND DUKE: Oscar Tschirky’s 100 Famous Cocktails</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-356" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint357" playOrder="357">
+			<navLabel>
+				<text>MONTANA</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-357" />
+		</navPoint>
+		<navPoint id="navPoint358" playOrder="358">
+			<navLabel>
+				<text>MONT BLANC FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-358" />
+		</navPoint>
+		<navPoint id="navPoint359" playOrder="359">
+			<navLabel>
+				<text>MORNING GLORY FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-359" />
+		<navPoint id="navPoint360" playOrder="360">
+			<navLabel>
+				<text>BRANDY MORNING GLORY FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/22_M.xhtml#_idParaDest-360" />
+		</navPoint>
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint361" playOrder="361">
+			<navLabel>
+				<text>N</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-361" />
+		<navPoint id="navPoint362" playOrder="362">
+			<navLabel>
+				<text>NATALE DOLCE (Holiday):  Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-362" />
+		</navPoint>
+		<navPoint id="navPoint363" playOrder="363">
+			<navLabel>
+				<text>NATASHA: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-363" />
+		</navPoint>
+		<navPoint id="navPoint364" playOrder="364">
+			<navLabel>
+				<text>NEGRONI: Classic</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-364" />
+		<navPoint id="navPoint365" playOrder="365">
+			<navLabel>
+				<text>ALLEY NEGRONI: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-365" />
+		</navPoint>
+		<navPoint id="navPoint366" playOrder="366">
+			<navLabel>
+				<text>WINTER’S NAP/SPRING AWAKENING: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-366" />
+		</navPoint>
+		<navPoint id="navPoint367" playOrder="367">
+			<navLabel>
+				<text>NEGRONI BIANCO: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-367" />
+		</navPoint>
+		<navPoint id="navPoint368" playOrder="368">
+			<navLabel>
+				<text>RED SHIPS OF SPAIN: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-368" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint369" playOrder="369">
+			<navLabel>
+				<text>NETHERLAND (or Sherry-Netherland) </text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-369" />
+		</navPoint>
+		<navPoint id="navPoint370" playOrder="370">
+			<navLabel>
+				<text>NEW ORLEANS COCKTAIL</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-370" />
+		</navPoint>
+		<navPoint id="navPoint371" playOrder="371">
+			<navLabel>
+				<text>NIGHTCAP</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-371" />
+		</navPoint>
+		<navPoint id="navPoint372" playOrder="372">
+			<navLabel>
+				<text>NORTHERN LIGHTS: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-372" />
+		</navPoint>
+		<navPoint id="navPoint373" playOrder="373">
+			<navLabel>
+				<text>NUMBER THREE</text>
+			</navLabel>
+			<content  src="xhtml/23_N.xhtml#_idParaDest-373" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint374" playOrder="374">
+			<navLabel>
+				<text>O</text>
+			</navLabel>
+			<content  src="xhtml/24_O.xhtml#_idParaDest-374" />
+		<navPoint id="navPoint375" playOrder="375">
+			<navLabel>
+				<text>OJEN (HERBSAINT) FRAPPÉ</text>
+			</navLabel>
+			<content  src="xhtml/24_O.xhtml#_idParaDest-375" />
+		</navPoint>
+		<navPoint id="navPoint376" playOrder="376">
+			<navLabel>
+				<text>OLD FASHIONED: Pre-Prohibition Version</text>
+			</navLabel>
+			<content  src="xhtml/24_O.xhtml#_idParaDest-376" />
+		<navPoint id="navPoint377" playOrder="377">
+			<navLabel>
+				<text>OLD FASHIONED: Mid-Twentieth-Century Variation</text>
+			</navLabel>
+			<content  src="xhtml/24_O.xhtml#_idParaDest-377" />
+		</navPoint>
+		<navPoint id="navPoint378" playOrder="378">
+			<navLabel>
+				<text>COCOA OLD FASHIONED: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/24_O.xhtml#_idParaDest-378" />
+		</navPoint>
+		<navPoint id="navPoint379" playOrder="379">
+			<navLabel>
+				<text>YULETIDE OLDE-FASHIONED: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/24_O.xhtml#_idParaDest-379" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint380" playOrder="380">
+			<navLabel>
+				<text>ORANGE BLOSSOM</text>
+			</navLabel>
+			<content  src="xhtml/24_O.xhtml#_idParaDest-380" />
+		<navPoint id="navPoint381" playOrder="381">
+			<navLabel>
+				<text>ORANGE BLOSSOM NO. 2</text>
+			</navLabel>
+			<content  src="xhtml/24_O.xhtml#_idParaDest-381" />
+		</navPoint>
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint382" playOrder="382">
+			<navLabel>
+				<text>P</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-382" />
+		<navPoint id="navPoint383" playOrder="383">
+			<navLabel>
+				<text>PALL MALL (HIGHBALL)</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-383" />
+		</navPoint>
+		<navPoint id="navPoint384" playOrder="384">
+			<navLabel>
+				<text>PALOMA: Classic</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-384" />
+		<navPoint id="navPoint385" playOrder="385">
+			<navLabel>
+				<text>PALOMA FLORA: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-385" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint386" playOrder="386">
+			<navLabel>
+				<text>PAN-AMERICAN</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-386" />
+		</navPoint>
+		<navPoint id="navPoint387" playOrder="387">
+			<navLabel>
+				<text>PEACH BLOW FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-387" />
+		</navPoint>
+		<navPoint id="navPoint388" playOrder="388">
+			<navLabel>
+				<text>PEACHY PEACOCK COBBLER: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-388" />
+		<navPoint id="navPoint389" playOrder="389">
+			<navLabel>
+				<text>PEACH-INFUSED BOURBON</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-389" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint390" playOrder="390">
+			<navLabel>
+				<text>PEACOCK (Old Books Version)</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-390" />
+		</navPoint>
+		<navPoint id="navPoint391" playOrder="391">
+			<navLabel>
+				<text>THE PEACOCK (2005 Version)</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-391" />
+		</navPoint>
+		<navPoint id="navPoint392" playOrder="392">
+			<navLabel>
+				<text>THE PEACOCK (2006 to Present)</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-392" />
+		<navPoint id="navPoint393" playOrder="393">
+			<navLabel>
+				<text>PEACOCK ALLEY: (Ted Saucier Bottoms Up)</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-393" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint394" playOrder="394">
+			<navLabel>
+				<text>PEGGY O’NEILL PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-394" />
+		</navPoint>
+		<navPoint id="navPoint395" playOrder="395">
+			<navLabel>
+				<text>PEPSIN TODDY</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-395" />
+		</navPoint>
+		<navPoint id="navPoint396" playOrder="396">
+			<navLabel>
+				<text>PICK ME UP</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-396" />
+		<navPoint id="navPoint397" playOrder="397">
+			<navLabel>
+				<text>PICK ME UP NO. 2</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-397" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint398" playOrder="398">
+			<navLabel>
+				<text>PINEAPPLE FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-398" />
+		</navPoint>
+		<navPoint id="navPoint399" playOrder="399">
+			<navLabel>
+				<text>PING PONG</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-399" />
+		<navPoint id="navPoint400" playOrder="400">
+			<navLabel>
+				<text>PING PONG (IMPROVED)</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-400" />
+		</navPoint>
+		<navPoint id="navPoint401" playOrder="401">
+			<navLabel>
+				<text>TIPPERARY (OLD BAR VERSION)</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-401" />
+		</navPoint>
+		<navPoint id="navPoint402" playOrder="402">
+			<navLabel>
+				<text>PING PONG FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-402" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint403" playOrder="403">
+			<navLabel>
+				<text>PISCO SOUR: Classic</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-403" />
+		<navPoint id="navPoint404" playOrder="404">
+			<navLabel>
+				<text>SUITE MARILYN: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-404" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint405" playOrder="405">
+			<navLabel>
+				<text>PLANTER’S PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-405" />
+		</navPoint>
+		<navPoint id="navPoint406" playOrder="406">
+			<navLabel>
+				<text>POLO</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-406" />
+		</navPoint>
+		<navPoint id="navPoint407" playOrder="407">
+			<navLabel>
+				<text>POMPIER (Cascade/Vermouth Cassis)</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-407" />
+		</navPoint>
+		<navPoint id="navPoint408" playOrder="408">
+			<navLabel>
+				<text>PRESIDENTE</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-408" />
+		</navPoint>
+		<navPoint id="navPoint409" playOrder="409">
+			<navLabel>
+				<text>PRESIDENT’S GHOST (“Banshee” Improved) : Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-409" />
+		</navPoint>
+		<navPoint id="navPoint410" playOrder="410">
+			<navLabel>
+				<text>PRINCE</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-410" />
+		</navPoint>
+		<navPoint id="navPoint411" playOrder="411">
+			<navLabel>
+				<text>PRINCE HENRY</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-411" />
+		</navPoint>
+		<navPoint id="navPoint412" playOrder="412">
+			<navLabel>
+				<text>PRINCETON</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-412" />
+		<navPoint id="navPoint413" playOrder="413">
+			<navLabel>
+				<text>GEORGE KAPPELER VERSION (1895)</text>
+			</navLabel>
+			<content  src="xhtml/25_P.xhtml#_idParaDest-413" />
+		</navPoint>
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint414" playOrder="414">
+			<navLabel>
+				<text>Q</text>
+			</navLabel>
+			<content  src="xhtml/26_Q.xhtml#_idParaDest-414" />
+		<navPoint id="navPoint415" playOrder="415">
+			<navLabel>
+				<text>QUEEN CHARLOTTE</text>
+			</navLabel>
+			<content  src="xhtml/26_Q.xhtml#_idParaDest-415" />
+		</navPoint>
+		<navPoint id="navPoint416" playOrder="416">
+			<navLabel>
+				<text>QUEEN ELIZABETH</text>
+			</navLabel>
+			<content  src="xhtml/26_Q.xhtml#_idParaDest-416" />
+		</navPoint>
+		<navPoint id="navPoint417" playOrder="417">
+			<navLabel>
+				<text>THE QUIET MAN (St. Patrick’s Day): Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/26_Q.xhtml#_idParaDest-417" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint418" playOrder="418">
+			<navLabel>
+				<text>R</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-418" />
+		<navPoint id="navPoint419" playOrder="419">
+			<navLabel>
+				<text>RABBIT’S DILEMMA: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-419" />
+		</navPoint>
+		<navPoint id="navPoint420" playOrder="420">
+			<navLabel>
+				<text>RAMOS GIN FIZZ (a.k.a. New Orleans Fizz)</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-420" />
+		</navPoint>
+		<navPoint id="navPoint421" playOrder="421">
+			<navLabel>
+				<text>RASPBERRY BERET: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-421" />
+		<navPoint id="navPoint422" playOrder="422">
+			<navLabel>
+				<text>SOUTHERN GENTLEMAN: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-422" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint423" playOrder="423">
+			<navLabel>
+				<text>REES</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-423" />
+		</navPoint>
+		<navPoint id="navPoint424" playOrder="424">
+			<navLabel>
+				<text>RIDING CLUB</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-424" />
+		<navPoint id="navPoint425" playOrder="425">
+			<navLabel>
+				<text>(MONTAUK) RIDING CLUB: Classic</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-425" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint426" playOrder="426">
+			<navLabel>
+				<text>RIO GRANDE: Classic</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-426" />
+		</navPoint>
+		<navPoint id="navPoint427" playOrder="427">
+			<navLabel>
+				<text>ROB ROY</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-427" />
+		<navPoint id="navPoint428" playOrder="428">
+			<navLabel>
+				<text>ROB ROY: Dry</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-428" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint429" playOrder="429">
+			<navLabel>
+				<text>ROBERT BURNS</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-429" />
+		<navPoint id="navPoint430" playOrder="430">
+			<navLabel>
+				<text>BOBBY BURNS: Harry Craddock Variation</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-430" />
+		</navPoint>
+		<navPoint id="navPoint431" playOrder="431">
+			<navLabel>
+				<text>TALE OF TWO ROBERTS: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-431" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint432" playOrder="432">
+			<navLabel>
+				<text>ROBIN</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-432" />
+		</navPoint>
+		<navPoint id="navPoint433" playOrder="433">
+			<navLabel>
+				<text>ROCK AND RYE</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-433" />
+		</navPoint>
+		<navPoint id="navPoint434" playOrder="434">
+			<navLabel>
+				<text>ROMAN PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-434" />
+		</navPoint>
+		<navPoint id="navPoint435" playOrder="435">
+			<navLabel>
+				<text>ROMAN HOLIDAY: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-435" />
+		</navPoint>
+		<navPoint id="navPoint436" playOrder="436">
+			<navLabel>
+				<text>ROOFTOP MAGIC: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-436" />
+		</navPoint>
+		<navPoint id="navPoint437" playOrder="437">
+			<navLabel>
+				<text>ROOSEVELT PUNCH/SOUR</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-437" />
+		</navPoint>
+		<navPoint id="navPoint438" playOrder="438">
+			<navLabel>
+				<text>ROSEMARY’S, MAYBE?: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-438" />
+		</navPoint>
+		<navPoint id="navPoint439" playOrder="439">
+			<navLabel>
+				<text>RUBY</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-439" />
+		<navPoint id="navPoint440" playOrder="440">
+			<navLabel>
+				<text>RUBY: William “Cocktail” Boothby Variation</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-440" />
+		</navPoint>
+		<navPoint id="navPoint441" playOrder="441">
+			<navLabel>
+				<text>RUBY: Jack Grohusko Variation</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-441" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint442" playOrder="442">
+			<navLabel>
+				<text>RUM PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-442" />
+		<navPoint id="navPoint443" playOrder="443">
+			<navLabel>
+				<text>RUM AND FRUIT PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/27_R.xhtml#_idParaDest-443" />
+		</navPoint>
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint444" playOrder="444">
+			<navLabel>
+				<text>S</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-444" />
+		<navPoint id="navPoint445" playOrder="445">
+			<navLabel>
+				<text>SALOMÉ</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-445" />
+		<navPoint id="navPoint446" playOrder="446">
+			<navLabel>
+				<text>SALOMÉ: Jacques Straub Variation</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-446" />
+		</navPoint>
+		<navPoint id="navPoint447" playOrder="447">
+			<navLabel>
+				<text>SALOMÉ: Harry Craddock Variation</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-447" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint448" playOrder="448">
+			<navLabel>
+				<text>SANGAREE: Old Bar Variation</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-448" />
+		<navPoint id="navPoint449" playOrder="449">
+			<navLabel>
+				<text>PORT WINE SANGAREE (STANDARD)</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-449" />
+		</navPoint>
+		<navPoint id="navPoint450" playOrder="450">
+			<navLabel>
+				<text>RUM SANGAREE/PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-450" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint451" playOrder="451">
+			<navLabel>
+				<text>SATCHMO AT THE WALDORF: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-451" />
+		</navPoint>
+		<navPoint id="navPoint452" playOrder="452">
+			<navLabel>
+				<text>SAVANNAH</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-452" />
+		</navPoint>
+		<navPoint id="navPoint453" playOrder="453">
+			<navLabel>
+				<text>SAZERAC</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-453" />
+		</navPoint>
+		<navPoint id="navPoint454" playOrder="454">
+			<navLabel>
+				<text>SHANDYGAFF</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-454" />
+		</navPoint>
+		<navPoint id="navPoint455" playOrder="455">
+			<navLabel>
+				<text>SHANGHAI TEA: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-455" />
+		</navPoint>
+		<navPoint id="navPoint456" playOrder="456">
+			<navLabel>
+				<text>SHERIDAN PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-456" />
+		</navPoint>
+		<navPoint id="navPoint457" playOrder="457">
+			<navLabel>
+				<text>SIDECAR</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-457" />
+		<navPoint id="navPoint458" playOrder="458">
+			<navLabel>
+				<text>SOUTHEAST SIDECAR: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-458" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint459" playOrder="459">
+			<navLabel>
+				<text>SKIPPER</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-459" />
+		</navPoint>
+		<navPoint id="navPoint460" playOrder="460">
+			<navLabel>
+				<text>SLING/TODDY (Cold)</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-460" />
+		</navPoint>
+		<navPoint id="navPoint461" playOrder="461">
+			<navLabel>
+				<text>SNOW BALL FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-461" />
+		<navPoint id="navPoint462" playOrder="462">
+			<navLabel>
+				<text>SNOW BALL FIZZ: Jacques Straub Rendition (a.k.a. Silver Bowl Fizz)</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-462" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint463" playOrder="463">
+			<navLabel>
+				<text>SOOTHER</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-463" />
+		</navPoint>
+		<navPoint id="navPoint464" playOrder="464">
+			<navLabel>
+				<text>SOUR</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-464" />
+		<navPoint id="navPoint465" playOrder="465">
+			<navLabel>
+				<text>OLD BAR VARIATION</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-465" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint466" playOrder="466">
+			<navLabel>
+				<text>STEINWAY PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-466" />
+		</navPoint>
+		<navPoint id="navPoint467" playOrder="467">
+			<navLabel>
+				<text>STEPHEN’S COCKTAIL</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-467" />
+		</navPoint>
+		<navPoint id="navPoint468" playOrder="468">
+			<navLabel>
+				<text>STINGER</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-468" />
+		</navPoint>
+		<navPoint id="navPoint469" playOrder="469">
+			<navLabel>
+				<text>STONE FENCE</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-469" />
+		<navPoint id="navPoint470" playOrder="470">
+			<navLabel>
+				<text>JERSEY</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-470" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint471" playOrder="471">
+			<navLabel>
+				<text>STORMY MANHATTAN ISLAND: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-471" />
+		</navPoint>
+		<navPoint id="navPoint472" playOrder="472">
+			<navLabel>
+				<text>STRAWBERRY</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-472" />
+		</navPoint>
+		<navPoint id="navPoint473" playOrder="473">
+			<navLabel>
+				<text>STRAWBERRY FIELDS: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-473" />
+		</navPoint>
+		<navPoint id="navPoint474" playOrder="474">
+			<navLabel>
+				<text>SUBURBAN</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-474" />
+		</navPoint>
+		<navPoint id="navPoint475" playOrder="475">
+			<navLabel>
+				<text>SUISETTE FIZZ</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-475" />
+		</navPoint>
+		<navPoint id="navPoint476" playOrder="476">
+			<navLabel>
+				<text>SWAN</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-476" />
+		</navPoint>
+		<navPoint id="navPoint477" playOrder="477">
+			<navLabel>
+				<text>SYMPHONY OF MOIST JOY</text>
+			</navLabel>
+			<content  src="xhtml/28_S.xhtml#_idParaDest-477" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint478" playOrder="478">
+			<navLabel>
+				<text>T</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-478" />
+		<navPoint id="navPoint479" playOrder="479">
+			<navLabel>
+				<text>TANGO NO. 2</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-479" />
+		</navPoint>
+		<navPoint id="navPoint480" playOrder="480">
+			<navLabel>
+				<text>TEA COBBLER</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-480" />
+		<navPoint id="navPoint481" playOrder="481">
+			<navLabel>
+				<text>JAMAICAN COLD TEA</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-481" />
+		</navPoint>
+		<navPoint id="navPoint482" playOrder="482">
+			<navLabel>
+				<text>TEA TIME</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-482" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint483" playOrder="483">
+			<navLabel>
+				<text>TENNIS BALL: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-483" />
+		</navPoint>
+		<navPoint id="navPoint484" playOrder="484">
+			<navLabel>
+				<text>TERENCE STAMP: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-484" />
+		</navPoint>
+		<navPoint id="navPoint485" playOrder="485">
+			<navLabel>
+				<text>THOMPSON</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-485" />
+		</navPoint>
+		<navPoint id="navPoint486" playOrder="486">
+			<navLabel>
+				<text>TIME AFTER THYME: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-486" />
+		</navPoint>
+		<navPoint id="navPoint487" playOrder="487">
+			<navLabel>
+				<text>TIPPERARY: Adapted Hugo Ensslin Version</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-487" />
+		</navPoint>
+		<navPoint id="navPoint488" playOrder="488">
+			<navLabel>
+				<text>TIP TOP</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-488" />
+		</navPoint>
+		<navPoint id="navPoint489" playOrder="489">
+			<navLabel>
+				<text>TRILBY</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-489" />
+		<navPoint id="navPoint490" playOrder="490">
+			<navLabel>
+				<text>TRILBY NO. 2: Harry Johnson Adaptation/Toots Shor: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-490" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint491" playOrder="491">
+			<navLabel>
+				<text>TURF </text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-491" />
+		<navPoint id="navPoint492" playOrder="492">
+			<navLabel>
+				<text>TURF /TURF CLUB (ADAPTED FROM HARRY JOHNSON’S BARTENDERS’ MANUAL)</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-492" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint493" playOrder="493">
+			<navLabel>
+				<text>TUXEDO</text>
+			</navLabel>
+			<content  src="xhtml/29_T.xhtml#_idParaDest-493" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint494" playOrder="494">
+			<navLabel>
+				<text>U</text>
+			</navLabel>
+			<content  src="xhtml/30_U.xhtml#_idParaDest-494" />
+		<navPoint id="navPoint495" playOrder="495">
+			<navLabel>
+				<text>UNION LEAGUE</text>
+			</navLabel>
+			<content  src="xhtml/30_U.xhtml#_idParaDest-495" />
+		</navPoint>
+		<navPoint id="navPoint496" playOrder="496">
+			<navLabel>
+				<text>UNION SQUARE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/30_U.xhtml#_idParaDest-496" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint497" playOrder="497">
+			<navLabel>
+				<text>V</text>
+			</navLabel>
+			<content  src="xhtml/31_V.xhtml#_idParaDest-497" />
+		<navPoint id="navPoint498" playOrder="498">
+			<navLabel>
+				<text>VALENTINE’S DAY COCKTAIL NO. 1: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/31_V.xhtml#_idParaDest-498" />
+		<navPoint id="navPoint499" playOrder="499">
+			<navLabel>
+				<text>VALENTINE’S DAY COCKTAIL NO. 2: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/31_V.xhtml#_idParaDest-499" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint500" playOrder="500">
+			<navLabel>
+				<text>VESPER: Classic</text>
+			</navLabel>
+			<content  src="xhtml/31_V.xhtml#_idParaDest-500" />
+		</navPoint>
+		<navPoint id="navPoint501" playOrder="501">
+			<navLabel>
+				<text>VICTORY SWIZZLE</text>
+			</navLabel>
+			<content  src="xhtml/31_V.xhtml#_idParaDest-501" />
+		</navPoint>
+		<navPoint id="navPoint502" playOrder="502">
+			<navLabel>
+				<text>VIEUX CARRÉ: Classic</text>
+			</navLabel>
+			<content  src="xhtml/31_V.xhtml#_idParaDest-502" />
+		</navPoint>
+		<navPoint id="navPoint503" playOrder="503">
+			<navLabel>
+				<text>VIVARY</text>
+			</navLabel>
+			<content  src="xhtml/31_V.xhtml#_idParaDest-503" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint504" playOrder="504">
+			<navLabel>
+				<text>W</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-504" />
+		<navPoint id="navPoint505" playOrder="505">
+			<navLabel>
+				<text>WALDORF</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-505" />
+		<navPoint id="navPoint506" playOrder="506">
+			<navLabel>
+				<text>SHERMAN (REVERSE WALDORF)</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-506" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint507" playOrder="507">
+			<navLabel>
+				<text>WALDORF FIZZ: New Waldorf Astoria Adaptation</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-507" />
+		</navPoint>
+		<navPoint id="navPoint508" playOrder="508">
+			<navLabel>
+				<text>WALDORF PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-508" />
+		</navPoint>
+		<navPoint id="navPoint509" playOrder="509">
+			<navLabel>
+				<text>WALK IN THE WOODS (Autumn Wedding Cocktail): Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-509" />
+		</navPoint>
+		<navPoint id="navPoint510" playOrder="510">
+			<navLabel>
+				<text>WARD EIGHT</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-510" />
+		</navPoint>
+		<navPoint id="navPoint511" playOrder="511">
+			<navLabel>
+				<text>WEEK-END AT THE WALDORF : Ted Saucier’s Bottoms Up</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-511" />
+		</navPoint>
+		<navPoint id="navPoint512" playOrder="512">
+			<navLabel>
+				<text>WHISPERS OF THE FROST</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-512" />
+		</navPoint>
+		<navPoint id="navPoint513" playOrder="513">
+			<navLabel>
+				<text>WHITTAKER</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-513" />
+		</navPoint>
+		<navPoint id="navPoint514" playOrder="514">
+			<navLabel>
+				<text>WILD CHERRY</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-514" />
+		</navPoint>
+		<navPoint id="navPoint515" playOrder="515">
+			<navLabel>
+				<text>WINTER</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-515" />
+		<navPoint id="navPoint516" playOrder="516">
+			<navLabel>
+				<text>SUMMER: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-516" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint517" playOrder="517">
+			<navLabel>
+				<text>WORLD CUP: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-517" />
+		</navPoint>
+		<navPoint id="navPoint518" playOrder="518">
+			<navLabel>
+				<text>WORLD TRAVELER: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-518" />
+		</navPoint>
+		<navPoint id="navPoint519" playOrder="519">
+			<navLabel>
+				<text>WOXUM (Improved)</text>
+			</navLabel>
+			<content  src="xhtml/32_W.xhtml#_idParaDest-519" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint520" playOrder="520">
+			<navLabel>
+				<text>X</text>
+			</navLabel>
+			<content  src="xhtml/33_X.xhtml#_idParaDest-520" />
+		<navPoint id="navPoint521" playOrder="521">
+			<navLabel>
+				<text>X MARKS THE SPOT: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/33_X.xhtml#_idParaDest-521" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint522" playOrder="522">
+			<navLabel>
+				<text>Y</text>
+			</navLabel>
+			<content  src="xhtml/34_Y.xhtml#_idParaDest-522" />
+		<navPoint id="navPoint523" playOrder="523">
+			<navLabel>
+				<text>YACHT CLUB</text>
+			</navLabel>
+			<content  src="xhtml/34_Y.xhtml#_idParaDest-523" />
+		<navPoint id="navPoint524" playOrder="524">
+			<navLabel>
+				<text>PARADISE</text>
+			</navLabel>
+			<content  src="xhtml/34_Y.xhtml#_idParaDest-524" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint525" playOrder="525">
+			<navLabel>
+				<text>YALE</text>
+			</navLabel>
+			<content  src="xhtml/34_Y.xhtml#_idParaDest-525" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint526" playOrder="526">
+			<navLabel>
+				<text>Z</text>
+			</navLabel>
+			<content  src="xhtml/35_Z.xhtml#_idParaDest-526" />
+		<navPoint id="navPoint527" playOrder="527">
+			<navLabel>
+				<text>ZAZA</text>
+			</navLabel>
+			<content  src="xhtml/35_Z.xhtml#_idParaDest-527" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint528" playOrder="528">
+			<navLabel>
+				<text>#</text>
+			</navLabel>
+			<content  src="xhtml/36_Numb.xhtml#_idParaDest-528" />
+		<navPoint id="navPoint529" playOrder="529">
+			<navLabel>
+				<text>5 STAR: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/36_Numb.xhtml#_idParaDest-529" />
+		</navPoint>
+		<navPoint id="navPoint530" playOrder="530">
+			<navLabel>
+				<text>1915</text>
+			</navLabel>
+			<content  src="xhtml/36_Numb.xhtml#_idParaDest-530" />
+		</navPoint>
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint531" playOrder="531">
+			<navLabel>
+				<text>LARGE CUPS AND PUNCHES </text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-531" />
+		<navPoint id="navPoint532" playOrder="532">
+			<navLabel>
+				<text>OLEO SACCHARUM (Waldorf Astoria)</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-532" />
+		</navPoint>
+		<navPoint id="navPoint533" playOrder="533">
+			<navLabel>
+				<text>BASIC PUNCH RECIPE</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-533" />
+		</navPoint>
+		<navPoint id="navPoint534" playOrder="534">
+			<navLabel>
+				<text>BISHOP PUNCH (Pitcher)</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-534" />
+		</navPoint>
+		<navPoint id="navPoint535" playOrder="535">
+			<navLabel>
+				<text>BRANDY CIDER NECTAR (Pitcher)</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-535" />
+		</navPoint>
+		<navPoint id="navPoint536" playOrder="536">
+			<navLabel>
+				<text>CHAMPAGNE CUP (Pitcher)</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-536" />
+		</navPoint>
+		<navPoint id="navPoint537" playOrder="537">
+			<navLabel>
+				<text>(WALDORF) CHAMPAGNE PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-537" />
+		</navPoint>
+		<navPoint id="navPoint538" playOrder="538">
+			<navLabel>
+				<text>CLARET CUP AUX CERISES PUNCH (Red Wine and Cherry Punch)</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-538" />
+		</navPoint>
+		<navPoint id="navPoint539" playOrder="539">
+			<navLabel>
+				<text>MOSELLE CUP (Pitcher)</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-539" />
+		</navPoint>
+		<navPoint id="navPoint540" playOrder="540">
+			<navLabel>
+				<text>PUNCH UNIVERSAL</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-540" />
+		</navPoint>
+		<navPoint id="navPoint541" playOrder="541">
+			<navLabel>
+				<text>CARIBBEAN FISH HOUSE PUNCH (Waldorf Astoria Variation)</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-541" />
+		</navPoint>
+		<navPoint id="navPoint542" playOrder="542">
+			<navLabel>
+				<text>COLD BRANDY AND RUM PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-542" />
+		</navPoint>
+		<navPoint id="navPoint543" playOrder="543">
+			<navLabel>
+				<text>JAMAICA ORANGE CUP (Pitcher)</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-543" />
+		</navPoint>
+		<navPoint id="navPoint544" playOrder="544">
+			<navLabel>
+				<text>JAMAICA SWIZZLE (Pitcher)</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-544" />
+		</navPoint>
+		<navPoint id="navPoint545" playOrder="545">
+			<navLabel>
+				<text>MYERS’S PLANTERS PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-545" />
+		</navPoint>
+		<navPoint id="navPoint546" playOrder="546">
+			<navLabel>
+				<text>PING PONG PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/37_Chapter_4.xhtml#_idParaDest-546" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint547" playOrder="547">
+			<navLabel>
+				<text>HOT DRINKS</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-547" />
+		<navPoint id="navPoint548" playOrder="548">
+			<navLabel>
+				<text>BAKED APPLE TODDY</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-548" />
+		</navPoint>
+		<navPoint id="navPoint549" playOrder="549">
+			<navLabel>
+				<text>BLACK STRIPE (BLACKSTRAP) TODDY</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-549" />
+		</navPoint>
+		<navPoint id="navPoint550" playOrder="550">
+			<navLabel>
+				<text>IRISH COFFEE: Peacock Alley</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-550" />
+		</navPoint>
+		<navPoint id="navPoint551" playOrder="551">
+			<navLabel>
+				<text>(WALDORF) MILK PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-551" />
+		</navPoint>
+		<navPoint id="navPoint552" playOrder="552">
+			<navLabel>
+				<text>SLING/TODDY</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-552" />
+		</navPoint>
+		<navPoint id="navPoint553" playOrder="553">
+			<navLabel>
+				<text>SPICED RUM </text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-553" />
+		</navPoint>
+		<navPoint id="navPoint554" playOrder="554">
+			<navLabel>
+				<text>SPICED RUM NO. 2 (Hot Buttered Rum)</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-554" />
+		</navPoint>
+		<navPoint id="navPoint555" playOrder="555">
+			<navLabel>
+				<text>GROG</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-555" />
+		</navPoint>
+		<navPoint id="navPoint556" playOrder="556">
+			<navLabel>
+				<text>HOT RUM PUNCH</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-556" />
+		</navPoint>
+		<navPoint id="navPoint557" playOrder="557">
+			<navLabel>
+				<text>LOCOMOTIVE (Pitcher)</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-557" />
+		</navPoint>
+		<navPoint id="navPoint558" playOrder="558">
+			<navLabel>
+				<text>MULLED WINE</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-558" />
+		</navPoint>
+		<navPoint id="navPoint559" playOrder="559">
+			<navLabel>
+				<text>TOM AND JERRY</text>
+			</navLabel>
+			<content  src="xhtml/38_Chapter_5.xhtml#_idParaDest-559" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint560" playOrder="560">
+			<navLabel>
+				<text>HISTORICAL CONCOCTIONS </text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-560" />
+		<navPoint id="navPoint561" playOrder="561">
+			<navLabel>
+				<text>ANGEL’S BLUSH OR KISS (a.k.a. Martinique)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-561" />
+		</navPoint>
+		<navPoint id="navPoint562" playOrder="562">
+			<navLabel>
+				<text>ANGEL’S DREAM</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-562" />
+		</navPoint>
+		<navPoint id="navPoint563" playOrder="563">
+			<navLabel>
+				<text>ANGEL’S TIT</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-563" />
+		</navPoint>
+		<navPoint id="navPoint564" playOrder="564">
+			<navLabel>
+				<text>BABY TITTY (Sherry Glass)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-564" />
+		</navPoint>
+		<navPoint id="navPoint565" playOrder="565">
+			<navLabel>
+				<text>BRANDY CHAMPERELLE</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-565" />
+		</navPoint>
+		<navPoint id="navPoint566" playOrder="566">
+			<navLabel>
+				<text>BRANDY SCAFFA</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-566" />
+		</navPoint>
+		<navPoint id="navPoint567" playOrder="567">
+			<navLabel>
+				<text>COME UP SOME TIME: (Oscar)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-567" />
+		</navPoint>
+		<navPoint id="navPoint568" playOrder="568">
+			<navLabel>
+				<text>GARDEN OF EDEN</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-568" />
+		</navPoint>
+		<navPoint id="navPoint569" playOrder="569">
+			<navLabel>
+				<text>JOHN FRAZER</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-569" />
+		</navPoint>
+		<navPoint id="navPoint570" playOrder="570">
+			<navLabel>
+				<text>JOKER (Sherry Glass)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-570" />
+		</navPoint>
+		<navPoint id="navPoint571" playOrder="571">
+			<navLabel>
+				<text>JONES LA POUSSE</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-571" />
+		</navPoint>
+		<navPoint id="navPoint572" playOrder="572">
+			<navLabel>
+				<text>KING ALPHONSE</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-572" />
+		</navPoint>
+		<navPoint id="navPoint573" playOrder="573">
+			<navLabel>
+				<text>LOENSKY</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-573" />
+		</navPoint>
+		<navPoint id="navPoint574" playOrder="574">
+			<navLabel>
+				<text>MINCE PIE</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-574" />
+		</navPoint>
+		<navPoint id="navPoint575" playOrder="575">
+			<navLabel>
+				<text>RAINBOW (Sherry Glass)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-575" />
+		</navPoint>
+		<navPoint id="navPoint576" playOrder="576">
+			<navLabel>
+				<text>SMALL BEER</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-576" />
+		</navPoint>
+		<navPoint id="navPoint577" playOrder="577">
+			<navLabel>
+				<text>THREE QUARTER (Sherry Glass)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-577" />
+		</navPoint>
+		<navPoint id="navPoint578" playOrder="578">
+			<navLabel>
+				<text>WALDORF (Sherry Glass)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-578" />
+		</navPoint>
+		<navPoint id="navPoint579" playOrder="579">
+			<navLabel>
+				<text>WALDORF-ASTORIA (Sherry Glass)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-579" />
+		</navPoint>
+		<navPoint id="navPoint580" playOrder="580">
+			<navLabel>
+				<text>WIDOW’S KISS (Sherry Glass)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-580" />
+		</navPoint>
+		<navPoint id="navPoint581" playOrder="581">
+			<navLabel>
+				<text>GOLDEN SLIPPER (Sherry Glass)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-581" />
+		</navPoint>
+		<navPoint id="navPoint582" playOrder="582">
+			<navLabel>
+				<text>GOLDEN WEST: Oscar</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-582" />
+		</navPoint>
+		<navPoint id="navPoint583" playOrder="583">
+			<navLabel>
+				<text>HONEYMOON (a.k.a. Lune de Miel)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-583" />
+		</navPoint>
+		<navPoint id="navPoint584" playOrder="584">
+			<navLabel>
+				<text>KNICKERBINE</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-584" />
+		</navPoint>
+		<navPoint id="navPoint585" playOrder="585">
+			<navLabel>
+				<text>L’AMOUR</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-585" />
+		</navPoint>
+		<navPoint id="navPoint586" playOrder="586">
+			<navLabel>
+				<text>MOUNTAIN</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-586" />
+		</navPoint>
+		<navPoint id="navPoint587" playOrder="587">
+			<navLabel>
+				<text>PRAIRIE OR PRAIRIE CHICKEN</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-587" />
+		</navPoint>
+		<navPoint id="navPoint588" playOrder="588">
+			<navLabel>
+				<text>SHERRY AND EGG</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-588" />
+		</navPoint>
+		<navPoint id="navPoint589" playOrder="589">
+			<navLabel>
+				<text>BLUE BLAZER TODDY/JERSEY FLASHLIGHT</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-589" />
+		</navPoint>
+		<navPoint id="navPoint590" playOrder="590">
+			<navLabel>
+				<text>CAFÉ BRÛLER</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-590" />
+		</navPoint>
+		<navPoint id="navPoint591" playOrder="591">
+			<navLabel>
+				<text>FLAMBEAU (a.k.a. Orange Flambée Cognac)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-591" />
+		</navPoint>
+		<navPoint id="navPoint592" playOrder="592">
+			<navLabel>
+				<text>AMMONIA (Old Bar Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-592" />
+		</navPoint>
+		<navPoint id="navPoint593" playOrder="593">
+			<navLabel>
+				<text>DELGARCIA</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-593" />
+		</navPoint>
+		<navPoint id="navPoint594" playOrder="594">
+			<navLabel>
+				<text>HAPPY THOUGHT</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-594" />
+		</navPoint>
+		<navPoint id="navPoint595" playOrder="595">
+			<navLabel>
+				<text>SAM WARD</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-595" />
+		</navPoint>
+		<navPoint id="navPoint596" playOrder="596">
+			<navLabel>
+				<text>VIN MARIANI (Old Bar Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-596" />
+		</navPoint>
+		<navPoint id="navPoint597" playOrder="597">
+			<navLabel>
+				<text>WHISKEY AND TANSY (Old Bar Recipe)</text>
+			</navLabel>
+			<content  src="xhtml/39_Chapter_6.xhtml#_idParaDest-597" />
+		</navPoint>
+		</navPoint>
+		<navPoint id="navPoint598" playOrder="598">
+			<navLabel>
+				<text>ACKNOWLEDGMENTS </text>
+			</navLabel>
+			<content  src="xhtml/40_Chapter_7.xhtml#_idParaDest-598" />
+		</navPoint>
+		<navPoint id="navPoint599" playOrder="599">
+			<navLabel>
+				<text>INDEX</text>
+			</navLabel>
+			<content  src="xhtml/41_Chapter_8.xhtml#_idParaDest-599" />
+		</navPoint></navMap>
+	<pageList>
+		<navLabel><text>Page mapping for The Waldorf Astoria Bar Book</text></navLabel>
+		<pageTarget type="normal" value="iv" id="navPoint600" playOrder="600"><navLabel><text>iv</text></navLabel><content src="xhtml/04_Copyright.xhtml#pageMap_iv"/></pageTarget>
+		<pageTarget type="normal" value="v" id="navPoint601" playOrder="601"><navLabel><text>v</text></navLabel><content src="xhtml/05_Contents.xhtml#pageMap_v"/></pageTarget>
+		<pageTarget type="normal" value="vi" id="navPoint602" playOrder="602"><navLabel><text>vi</text></navLabel><content src="xhtml/05_Contents.xhtml#pageMap_vi"/></pageTarget>
+		<pageTarget type="normal" value="viii" id="navPoint603" playOrder="603"><navLabel><text>viii</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_viii"/></pageTarget>
+		<pageTarget type="normal" value="1" id="navPoint604" playOrder="604"><navLabel><text>1</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_1"/></pageTarget>
+		<pageTarget type="normal" value="2" id="navPoint605" playOrder="605"><navLabel><text>2</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_2"/></pageTarget>
+		<pageTarget type="normal" value="3" id="navPoint606" playOrder="606"><navLabel><text>3</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_3"/></pageTarget>
+		<pageTarget type="normal" value="4" id="navPoint607" playOrder="607"><navLabel><text>4</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_4"/></pageTarget>
+		<pageTarget type="normal" value="5" id="navPoint608" playOrder="608"><navLabel><text>5</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_5"/></pageTarget>
+		<pageTarget type="normal" value="6" id="navPoint609" playOrder="609"><navLabel><text>6</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_6"/></pageTarget>
+		<pageTarget type="normal" value="7" id="navPoint610" playOrder="610"><navLabel><text>7</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_7"/></pageTarget>
+		<pageTarget type="normal" value="8" id="navPoint611" playOrder="611"><navLabel><text>8</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_8"/></pageTarget>
+		<pageTarget type="normal" value="9" id="navPoint612" playOrder="612"><navLabel><text>9</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_9"/></pageTarget>
+		<pageTarget type="normal" value="10" id="navPoint613" playOrder="613"><navLabel><text>10</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_10"/></pageTarget>
+		<pageTarget type="normal" value="11" id="navPoint614" playOrder="614"><navLabel><text>11</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_11"/></pageTarget>
+		<pageTarget type="normal" value="12" id="navPoint615" playOrder="615"><navLabel><text>12</text></navLabel><content src="xhtml/06_Chapter_1.xhtml#pageMap_12"/></pageTarget>
+		<pageTarget type="normal" value="13" id="navPoint616" playOrder="616"><navLabel><text>13</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_13"/></pageTarget>
+		<pageTarget type="normal" value="14" id="navPoint617" playOrder="617"><navLabel><text>14</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_14"/></pageTarget>
+		<pageTarget type="normal" value="15" id="navPoint618" playOrder="618"><navLabel><text>15</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_15"/></pageTarget>
+		<pageTarget type="normal" value="16" id="navPoint619" playOrder="619"><navLabel><text>16</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_16"/></pageTarget>
+		<pageTarget type="normal" value="17" id="navPoint620" playOrder="620"><navLabel><text>17</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_17"/></pageTarget>
+		<pageTarget type="normal" value="18" id="navPoint621" playOrder="621"><navLabel><text>18</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_18"/></pageTarget>
+		<pageTarget type="normal" value="19" id="navPoint622" playOrder="622"><navLabel><text>19</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_19"/></pageTarget>
+		<pageTarget type="normal" value="20" id="navPoint623" playOrder="623"><navLabel><text>20</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_20"/></pageTarget>
+		<pageTarget type="normal" value="21" id="navPoint624" playOrder="624"><navLabel><text>21</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_21"/></pageTarget>
+		<pageTarget type="normal" value="22" id="navPoint625" playOrder="625"><navLabel><text>22</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_22"/></pageTarget>
+		<pageTarget type="normal" value="23" id="navPoint626" playOrder="626"><navLabel><text>23</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_23"/></pageTarget>
+		<pageTarget type="normal" value="24" id="navPoint627" playOrder="627"><navLabel><text>24</text></navLabel><content src="xhtml/07_Chapter_2.xhtml#pageMap_24"/></pageTarget>
+		<pageTarget type="normal" value="25" id="navPoint628" playOrder="628"><navLabel><text>25</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_25"/></pageTarget>
+		<pageTarget type="normal" value="26" id="navPoint629" playOrder="629"><navLabel><text>26</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_26"/></pageTarget>
+		<pageTarget type="normal" value="27" id="navPoint630" playOrder="630"><navLabel><text>27</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_27"/></pageTarget>
+		<pageTarget type="normal" value="28" id="navPoint631" playOrder="631"><navLabel><text>28</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_28"/></pageTarget>
+		<pageTarget type="normal" value="29" id="navPoint632" playOrder="632"><navLabel><text>29</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_29"/></pageTarget>
+		<pageTarget type="normal" value="30" id="navPoint633" playOrder="633"><navLabel><text>30</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_30"/></pageTarget>
+		<pageTarget type="normal" value="31" id="navPoint634" playOrder="634"><navLabel><text>31</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_31"/></pageTarget>
+		<pageTarget type="normal" value="32" id="navPoint635" playOrder="635"><navLabel><text>32</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_32"/></pageTarget>
+		<pageTarget type="normal" value="33" id="navPoint636" playOrder="636"><navLabel><text>33</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_33"/></pageTarget>
+		<pageTarget type="normal" value="34" id="navPoint637" playOrder="637"><navLabel><text>34</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_34"/></pageTarget>
+		<pageTarget type="normal" value="35" id="navPoint638" playOrder="638"><navLabel><text>35</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_35"/></pageTarget>
+		<pageTarget type="normal" value="36" id="navPoint639" playOrder="639"><navLabel><text>36</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_36"/></pageTarget>
+		<pageTarget type="normal" value="37" id="navPoint640" playOrder="640"><navLabel><text>37</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_37"/></pageTarget>
+		<pageTarget type="normal" value="38" id="navPoint641" playOrder="641"><navLabel><text>38</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_38"/></pageTarget>
+		<pageTarget type="normal" value="39" id="navPoint642" playOrder="642"><navLabel><text>39</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_39"/></pageTarget>
+		<pageTarget type="normal" value="40" id="navPoint643" playOrder="643"><navLabel><text>40</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_40"/></pageTarget>
+		<pageTarget type="normal" value="41" id="navPoint644" playOrder="644"><navLabel><text>41</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_41"/></pageTarget>
+		<pageTarget type="normal" value="42" id="navPoint645" playOrder="645"><navLabel><text>42</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_42"/></pageTarget>
+		<pageTarget type="normal" value="43" id="navPoint646" playOrder="646"><navLabel><text>43</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_43"/></pageTarget>
+		<pageTarget type="normal" value="44" id="navPoint647" playOrder="647"><navLabel><text>44</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_44"/></pageTarget>
+		<pageTarget type="normal" value="45" id="navPoint648" playOrder="648"><navLabel><text>45</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_45"/></pageTarget>
+		<pageTarget type="normal" value="46" id="navPoint649" playOrder="649"><navLabel><text>46</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_46"/></pageTarget>
+		<pageTarget type="normal" value="47" id="navPoint650" playOrder="650"><navLabel><text>47</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_47"/></pageTarget>
+		<pageTarget type="normal" value="48" id="navPoint651" playOrder="651"><navLabel><text>48</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_48"/></pageTarget>
+		<pageTarget type="normal" value="49" id="navPoint652" playOrder="652"><navLabel><text>49</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_49"/></pageTarget>
+		<pageTarget type="normal" value="50" id="navPoint653" playOrder="653"><navLabel><text>50</text></navLabel><content src="xhtml/08_Chapter_3.xhtml#pageMap_50"/></pageTarget>
+		<pageTarget type="normal" value="51" id="navPoint654" playOrder="654"><navLabel><text>51</text></navLabel><content src="xhtml/09_RECIPES_A_TO_Z.xhtml#pageMap_51"/></pageTarget>
+		<pageTarget type="normal" value="52" id="navPoint655" playOrder="655"><navLabel><text>52</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_52"/></pageTarget>
+		<pageTarget type="normal" value="53" id="navPoint656" playOrder="656"><navLabel><text>53</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_53"/></pageTarget>
+		<pageTarget type="normal" value="54" id="navPoint657" playOrder="657"><navLabel><text>54</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_54"/></pageTarget>
+		<pageTarget type="normal" value="55" id="navPoint658" playOrder="658"><navLabel><text>55</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_55"/></pageTarget>
+		<pageTarget type="normal" value="56" id="navPoint659" playOrder="659"><navLabel><text>56</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_56"/></pageTarget>
+		<pageTarget type="normal" value="57" id="navPoint660" playOrder="660"><navLabel><text>57</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_57"/></pageTarget>
+		<pageTarget type="normal" value="58" id="navPoint661" playOrder="661"><navLabel><text>58</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_58"/></pageTarget>
+		<pageTarget type="normal" value="59" id="navPoint662" playOrder="662"><navLabel><text>59</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_59"/></pageTarget>
+		<pageTarget type="normal" value="60" id="navPoint663" playOrder="663"><navLabel><text>60</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_60"/></pageTarget>
+		<pageTarget type="normal" value="61" id="navPoint664" playOrder="664"><navLabel><text>61</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_61"/></pageTarget>
+		<pageTarget type="normal" value="62" id="navPoint665" playOrder="665"><navLabel><text>62</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_62"/></pageTarget>
+		<pageTarget type="normal" value="63" id="navPoint666" playOrder="666"><navLabel><text>63</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_63"/></pageTarget>
+		<pageTarget type="normal" value="64" id="navPoint667" playOrder="667"><navLabel><text>64</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_64"/></pageTarget>
+		<pageTarget type="normal" value="65" id="navPoint668" playOrder="668"><navLabel><text>65</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_65"/></pageTarget>
+		<pageTarget type="normal" value="66" id="navPoint669" playOrder="669"><navLabel><text>66</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_66"/></pageTarget>
+		<pageTarget type="normal" value="67" id="navPoint670" playOrder="670"><navLabel><text>67</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_67"/></pageTarget>
+		<pageTarget type="normal" value="68" id="navPoint671" playOrder="671"><navLabel><text>68</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_68"/></pageTarget>
+		<pageTarget type="normal" value="69" id="navPoint672" playOrder="672"><navLabel><text>69</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_69"/></pageTarget>
+		<pageTarget type="normal" value="70" id="navPoint673" playOrder="673"><navLabel><text>70</text></navLabel><content src="xhtml/10_A.xhtml#pageMap_70"/></pageTarget>
+		<pageTarget type="normal" value="71" id="navPoint674" playOrder="674"><navLabel><text>71</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_71"/></pageTarget>
+		<pageTarget type="normal" value="72" id="navPoint675" playOrder="675"><navLabel><text>72</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_72"/></pageTarget>
+		<pageTarget type="normal" value="73" id="navPoint676" playOrder="676"><navLabel><text>73</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_73"/></pageTarget>
+		<pageTarget type="normal" value="74" id="navPoint677" playOrder="677"><navLabel><text>74</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_74"/></pageTarget>
+		<pageTarget type="normal" value="75" id="navPoint678" playOrder="678"><navLabel><text>75</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_75"/></pageTarget>
+		<pageTarget type="normal" value="76" id="navPoint679" playOrder="679"><navLabel><text>76</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_76"/></pageTarget>
+		<pageTarget type="normal" value="77" id="navPoint680" playOrder="680"><navLabel><text>77</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_77"/></pageTarget>
+		<pageTarget type="normal" value="78" id="navPoint681" playOrder="681"><navLabel><text>78</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_78"/></pageTarget>
+		<pageTarget type="normal" value="79" id="navPoint682" playOrder="682"><navLabel><text>79</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_79"/></pageTarget>
+		<pageTarget type="normal" value="80" id="navPoint683" playOrder="683"><navLabel><text>80</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_80"/></pageTarget>
+		<pageTarget type="normal" value="81" id="navPoint684" playOrder="684"><navLabel><text>81</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_81"/></pageTarget>
+		<pageTarget type="normal" value="82" id="navPoint685" playOrder="685"><navLabel><text>82</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_82"/></pageTarget>
+		<pageTarget type="normal" value="83" id="navPoint686" playOrder="686"><navLabel><text>83</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_83"/></pageTarget>
+		<pageTarget type="normal" value="84" id="navPoint687" playOrder="687"><navLabel><text>84</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_84"/></pageTarget>
+		<pageTarget type="normal" value="85" id="navPoint688" playOrder="688"><navLabel><text>85</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_85"/></pageTarget>
+		<pageTarget type="normal" value="86" id="navPoint689" playOrder="689"><navLabel><text>86</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_86"/></pageTarget>
+		<pageTarget type="normal" value="87" id="navPoint690" playOrder="690"><navLabel><text>87</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_87"/></pageTarget>
+		<pageTarget type="normal" value="88" id="navPoint691" playOrder="691"><navLabel><text>88</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_88"/></pageTarget>
+		<pageTarget type="normal" value="89" id="navPoint692" playOrder="692"><navLabel><text>89</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_89"/></pageTarget>
+		<pageTarget type="normal" value="90" id="navPoint693" playOrder="693"><navLabel><text>90</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_90"/></pageTarget>
+		<pageTarget type="normal" value="91" id="navPoint694" playOrder="694"><navLabel><text>91</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_91"/></pageTarget>
+		<pageTarget type="normal" value="92" id="navPoint695" playOrder="695"><navLabel><text>92</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_92"/></pageTarget>
+		<pageTarget type="normal" value="93" id="navPoint696" playOrder="696"><navLabel><text>93</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_93"/></pageTarget>
+		<pageTarget type="normal" value="94" id="navPoint697" playOrder="697"><navLabel><text>94</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_94"/></pageTarget>
+		<pageTarget type="normal" value="95" id="navPoint698" playOrder="698"><navLabel><text>95</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_95"/></pageTarget>
+		<pageTarget type="normal" value="96" id="navPoint699" playOrder="699"><navLabel><text>96</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_96"/></pageTarget>
+		<pageTarget type="normal" value="97" id="navPoint700" playOrder="700"><navLabel><text>97</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_97"/></pageTarget>
+		<pageTarget type="normal" value="98" id="navPoint701" playOrder="701"><navLabel><text>98</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_98"/></pageTarget>
+		<pageTarget type="normal" value="99" id="navPoint702" playOrder="702"><navLabel><text>99</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_99"/></pageTarget>
+		<pageTarget type="normal" value="100" id="navPoint703" playOrder="703"><navLabel><text>100</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_100"/></pageTarget>
+		<pageTarget type="normal" value="101" id="navPoint704" playOrder="704"><navLabel><text>101</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_101"/></pageTarget>
+		<pageTarget type="normal" value="102" id="navPoint705" playOrder="705"><navLabel><text>102</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_102"/></pageTarget>
+		<pageTarget type="normal" value="103" id="navPoint706" playOrder="706"><navLabel><text>103</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_103"/></pageTarget>
+		<pageTarget type="normal" value="104" id="navPoint707" playOrder="707"><navLabel><text>104</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_104"/></pageTarget>
+		<pageTarget type="normal" value="105" id="navPoint708" playOrder="708"><navLabel><text>105</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_105"/></pageTarget>
+		<pageTarget type="normal" value="106" id="navPoint709" playOrder="709"><navLabel><text>106</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_106"/></pageTarget>
+		<pageTarget type="normal" value="107" id="navPoint710" playOrder="710"><navLabel><text>107</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_107"/></pageTarget>
+		<pageTarget type="normal" value="108" id="navPoint711" playOrder="711"><navLabel><text>108</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_108"/></pageTarget>
+		<pageTarget type="normal" value="109" id="navPoint712" playOrder="712"><navLabel><text>109</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_109"/></pageTarget>
+		<pageTarget type="normal" value="110" id="navPoint713" playOrder="713"><navLabel><text>110</text></navLabel><content src="xhtml/11_B.xhtml#pageMap_110"/></pageTarget>
+		<pageTarget type="normal" value="111" id="navPoint714" playOrder="714"><navLabel><text>111</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_111"/></pageTarget>
+		<pageTarget type="normal" value="112" id="navPoint715" playOrder="715"><navLabel><text>112</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_112"/></pageTarget>
+		<pageTarget type="normal" value="113" id="navPoint716" playOrder="716"><navLabel><text>113</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_113"/></pageTarget>
+		<pageTarget type="normal" value="114" id="navPoint717" playOrder="717"><navLabel><text>114</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_114"/></pageTarget>
+		<pageTarget type="normal" value="115" id="navPoint718" playOrder="718"><navLabel><text>115</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_115"/></pageTarget>
+		<pageTarget type="normal" value="116" id="navPoint719" playOrder="719"><navLabel><text>116</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_116"/></pageTarget>
+		<pageTarget type="normal" value="117" id="navPoint720" playOrder="720"><navLabel><text>117</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_117"/></pageTarget>
+		<pageTarget type="normal" value="118" id="navPoint721" playOrder="721"><navLabel><text>118</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_118"/></pageTarget>
+		<pageTarget type="normal" value="119" id="navPoint722" playOrder="722"><navLabel><text>119</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_119"/></pageTarget>
+		<pageTarget type="normal" value="120" id="navPoint723" playOrder="723"><navLabel><text>120</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_120"/></pageTarget>
+		<pageTarget type="normal" value="121" id="navPoint724" playOrder="724"><navLabel><text>121</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_121"/></pageTarget>
+		<pageTarget type="normal" value="122" id="navPoint725" playOrder="725"><navLabel><text>122</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_122"/></pageTarget>
+		<pageTarget type="normal" value="123" id="navPoint726" playOrder="726"><navLabel><text>123</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_123"/></pageTarget>
+		<pageTarget type="normal" value="124" id="navPoint727" playOrder="727"><navLabel><text>124</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_124"/></pageTarget>
+		<pageTarget type="normal" value="125" id="navPoint728" playOrder="728"><navLabel><text>125</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_125"/></pageTarget>
+		<pageTarget type="normal" value="126" id="navPoint729" playOrder="729"><navLabel><text>126</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_126"/></pageTarget>
+		<pageTarget type="normal" value="127" id="navPoint730" playOrder="730"><navLabel><text>127</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_127"/></pageTarget>
+		<pageTarget type="normal" value="128" id="navPoint731" playOrder="731"><navLabel><text>128</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_128"/></pageTarget>
+		<pageTarget type="normal" value="129" id="navPoint732" playOrder="732"><navLabel><text>129</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_129"/></pageTarget>
+		<pageTarget type="normal" value="130" id="navPoint733" playOrder="733"><navLabel><text>130</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_130"/></pageTarget>
+		<pageTarget type="normal" value="131" id="navPoint734" playOrder="734"><navLabel><text>131</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_131"/></pageTarget>
+		<pageTarget type="normal" value="132" id="navPoint735" playOrder="735"><navLabel><text>132</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_132"/></pageTarget>
+		<pageTarget type="normal" value="133" id="navPoint736" playOrder="736"><navLabel><text>133</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_133"/></pageTarget>
+		<pageTarget type="normal" value="134" id="navPoint737" playOrder="737"><navLabel><text>134</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_134"/></pageTarget>
+		<pageTarget type="normal" value="135" id="navPoint738" playOrder="738"><navLabel><text>135</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_135"/></pageTarget>
+		<pageTarget type="normal" value="136" id="navPoint739" playOrder="739"><navLabel><text>136</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_136"/></pageTarget>
+		<pageTarget type="normal" value="137" id="navPoint740" playOrder="740"><navLabel><text>137</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_137"/></pageTarget>
+		<pageTarget type="normal" value="138" id="navPoint741" playOrder="741"><navLabel><text>138</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_138"/></pageTarget>
+		<pageTarget type="normal" value="139" id="navPoint742" playOrder="742"><navLabel><text>139</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_139"/></pageTarget>
+		<pageTarget type="normal" value="140" id="navPoint743" playOrder="743"><navLabel><text>140</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_140"/></pageTarget>
+		<pageTarget type="normal" value="141" id="navPoint744" playOrder="744"><navLabel><text>141</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_141"/></pageTarget>
+		<pageTarget type="normal" value="142" id="navPoint745" playOrder="745"><navLabel><text>142</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_142"/></pageTarget>
+		<pageTarget type="normal" value="143" id="navPoint746" playOrder="746"><navLabel><text>143</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_143"/></pageTarget>
+		<pageTarget type="normal" value="144" id="navPoint747" playOrder="747"><navLabel><text>144</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_144"/></pageTarget>
+		<pageTarget type="normal" value="145" id="navPoint748" playOrder="748"><navLabel><text>145</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_145"/></pageTarget>
+		<pageTarget type="normal" value="146" id="navPoint749" playOrder="749"><navLabel><text>146</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_146"/></pageTarget>
+		<pageTarget type="normal" value="147" id="navPoint750" playOrder="750"><navLabel><text>147</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_147"/></pageTarget>
+		<pageTarget type="normal" value="148" id="navPoint751" playOrder="751"><navLabel><text>148</text></navLabel><content src="xhtml/12_C.xhtml#pageMap_148"/></pageTarget>
+		<pageTarget type="normal" value="149" id="navPoint752" playOrder="752"><navLabel><text>149</text></navLabel><content src="xhtml/13_D.xhtml#pageMap_149"/></pageTarget>
+		<pageTarget type="normal" value="150" id="navPoint753" playOrder="753"><navLabel><text>150</text></navLabel><content src="xhtml/13_D.xhtml#pageMap_150"/></pageTarget>
+		<pageTarget type="normal" value="151" id="navPoint754" playOrder="754"><navLabel><text>151</text></navLabel><content src="xhtml/13_D.xhtml#pageMap_151"/></pageTarget>
+		<pageTarget type="normal" value="152" id="navPoint755" playOrder="755"><navLabel><text>152</text></navLabel><content src="xhtml/13_D.xhtml#pageMap_152"/></pageTarget>
+		<pageTarget type="normal" value="153" id="navPoint756" playOrder="756"><navLabel><text>153</text></navLabel><content src="xhtml/13_D.xhtml#pageMap_153"/></pageTarget>
+		<pageTarget type="normal" value="154" id="navPoint757" playOrder="757"><navLabel><text>154</text></navLabel><content src="xhtml/13_D.xhtml#pageMap_154"/></pageTarget>
+		<pageTarget type="normal" value="155" id="navPoint758" playOrder="758"><navLabel><text>155</text></navLabel><content src="xhtml/13_D.xhtml#pageMap_155"/></pageTarget>
+		<pageTarget type="normal" value="156" id="navPoint759" playOrder="759"><navLabel><text>156</text></navLabel><content src="xhtml/13_D.xhtml#pageMap_156"/></pageTarget>
+		<pageTarget type="normal" value="157" id="navPoint760" playOrder="760"><navLabel><text>157</text></navLabel><content src="xhtml/14_E.xhtml#pageMap_157"/></pageTarget>
+		<pageTarget type="normal" value="158" id="navPoint761" playOrder="761"><navLabel><text>158</text></navLabel><content src="xhtml/14_E.xhtml#pageMap_158"/></pageTarget>
+		<pageTarget type="normal" value="159" id="navPoint762" playOrder="762"><navLabel><text>159</text></navLabel><content src="xhtml/14_E.xhtml#pageMap_159"/></pageTarget>
+		<pageTarget type="normal" value="160" id="navPoint763" playOrder="763"><navLabel><text>160</text></navLabel><content src="xhtml/14_E.xhtml#pageMap_160"/></pageTarget>
+		<pageTarget type="normal" value="161" id="navPoint764" playOrder="764"><navLabel><text>161</text></navLabel><content src="xhtml/14_E.xhtml#pageMap_161"/></pageTarget>
+		<pageTarget type="normal" value="162" id="navPoint765" playOrder="765"><navLabel><text>162</text></navLabel><content src="xhtml/14_E.xhtml#pageMap_162"/></pageTarget>
+		<pageTarget type="normal" value="163" id="navPoint766" playOrder="766"><navLabel><text>163</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_163"/></pageTarget>
+		<pageTarget type="normal" value="164" id="navPoint767" playOrder="767"><navLabel><text>164</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_164"/></pageTarget>
+		<pageTarget type="normal" value="165" id="navPoint768" playOrder="768"><navLabel><text>165</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_165"/></pageTarget>
+		<pageTarget type="normal" value="166" id="navPoint769" playOrder="769"><navLabel><text>166</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_166"/></pageTarget>
+		<pageTarget type="normal" value="167" id="navPoint770" playOrder="770"><navLabel><text>167</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_167"/></pageTarget>
+		<pageTarget type="normal" value="168" id="navPoint771" playOrder="771"><navLabel><text>168</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_168"/></pageTarget>
+		<pageTarget type="normal" value="169" id="navPoint772" playOrder="772"><navLabel><text>169</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_169"/></pageTarget>
+		<pageTarget type="normal" value="170" id="navPoint773" playOrder="773"><navLabel><text>170</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_170"/></pageTarget>
+		<pageTarget type="normal" value="171" id="navPoint774" playOrder="774"><navLabel><text>171</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_171"/></pageTarget>
+		<pageTarget type="normal" value="172" id="navPoint775" playOrder="775"><navLabel><text>172</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_172"/></pageTarget>
+		<pageTarget type="normal" value="173" id="navPoint776" playOrder="776"><navLabel><text>173</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_173"/></pageTarget>
+		<pageTarget type="normal" value="174" id="navPoint777" playOrder="777"><navLabel><text>174</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_174"/></pageTarget>
+		<pageTarget type="normal" value="175" id="navPoint778" playOrder="778"><navLabel><text>175</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_175"/></pageTarget>
+		<pageTarget type="normal" value="176" id="navPoint779" playOrder="779"><navLabel><text>176</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_176"/></pageTarget>
+		<pageTarget type="normal" value="177" id="navPoint780" playOrder="780"><navLabel><text>177</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_177"/></pageTarget>
+		<pageTarget type="normal" value="178" id="navPoint781" playOrder="781"><navLabel><text>178</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_178"/></pageTarget>
+		<pageTarget type="normal" value="179" id="navPoint782" playOrder="782"><navLabel><text>179</text></navLabel><content src="xhtml/15_F.xhtml#pageMap_179"/></pageTarget>
+		<pageTarget type="normal" value="180" id="navPoint783" playOrder="783"><navLabel><text>180</text></navLabel><content src="xhtml/16_G.xhtml#pageMap_180"/></pageTarget>
+		<pageTarget type="normal" value="181" id="navPoint784" playOrder="784"><navLabel><text>181</text></navLabel><content src="xhtml/16_G.xhtml#pageMap_181"/></pageTarget>
+		<pageTarget type="normal" value="182" id="navPoint785" playOrder="785"><navLabel><text>182</text></navLabel><content src="xhtml/16_G.xhtml#pageMap_182"/></pageTarget>
+		<pageTarget type="normal" value="183" id="navPoint786" playOrder="786"><navLabel><text>183</text></navLabel><content src="xhtml/16_G.xhtml#pageMap_183"/></pageTarget>
+		<pageTarget type="normal" value="184" id="navPoint787" playOrder="787"><navLabel><text>184</text></navLabel><content src="xhtml/16_G.xhtml#pageMap_184"/></pageTarget>
+		<pageTarget type="normal" value="185" id="navPoint788" playOrder="788"><navLabel><text>185</text></navLabel><content src="xhtml/16_G.xhtml#pageMap_185"/></pageTarget>
+		<pageTarget type="normal" value="186" id="navPoint789" playOrder="789"><navLabel><text>186</text></navLabel><content src="xhtml/16_G.xhtml#pageMap_186"/></pageTarget>
+		<pageTarget type="normal" value="187" id="navPoint790" playOrder="790"><navLabel><text>187</text></navLabel><content src="xhtml/16_G.xhtml#pageMap_187"/></pageTarget>
+		<pageTarget type="normal" value="188" id="navPoint791" playOrder="791"><navLabel><text>188</text></navLabel><content src="xhtml/17_H.xhtml#pageMap_188"/></pageTarget>
+		<pageTarget type="normal" value="189" id="navPoint792" playOrder="792"><navLabel><text>189</text></navLabel><content src="xhtml/17_H.xhtml#pageMap_189"/></pageTarget>
+		<pageTarget type="normal" value="190" id="navPoint793" playOrder="793"><navLabel><text>190</text></navLabel><content src="xhtml/17_H.xhtml#pageMap_190"/></pageTarget>
+		<pageTarget type="normal" value="191" id="navPoint794" playOrder="794"><navLabel><text>191</text></navLabel><content src="xhtml/17_H.xhtml#pageMap_191"/></pageTarget>
+		<pageTarget type="normal" value="192" id="navPoint795" playOrder="795"><navLabel><text>192</text></navLabel><content src="xhtml/17_H.xhtml#pageMap_192"/></pageTarget>
+		<pageTarget type="normal" value="193" id="navPoint796" playOrder="796"><navLabel><text>193</text></navLabel><content src="xhtml/17_H.xhtml#pageMap_193"/></pageTarget>
+		<pageTarget type="normal" value="194" id="navPoint797" playOrder="797"><navLabel><text>194</text></navLabel><content src="xhtml/17_H.xhtml#pageMap_194"/></pageTarget>
+		<pageTarget type="normal" value="195" id="navPoint798" playOrder="798"><navLabel><text>195</text></navLabel><content src="xhtml/17_H.xhtml#pageMap_195"/></pageTarget>
+		<pageTarget type="normal" value="196" id="navPoint799" playOrder="799"><navLabel><text>196</text></navLabel><content src="xhtml/18_I.xhtml#pageMap_196"/></pageTarget>
+		<pageTarget type="normal" value="197" id="navPoint800" playOrder="800"><navLabel><text>197</text></navLabel><content src="xhtml/18_I.xhtml#pageMap_197"/></pageTarget>
+		<pageTarget type="normal" value="198" id="navPoint801" playOrder="801"><navLabel><text>198</text></navLabel><content src="xhtml/18_I.xhtml#pageMap_198"/></pageTarget>
+		<pageTarget type="normal" value="199" id="navPoint802" playOrder="802"><navLabel><text>199</text></navLabel><content src="xhtml/19_J.xhtml#pageMap_199"/></pageTarget>
+		<pageTarget type="normal" value="200" id="navPoint803" playOrder="803"><navLabel><text>200</text></navLabel><content src="xhtml/19_J.xhtml#pageMap_200"/></pageTarget>
+		<pageTarget type="normal" value="201" id="navPoint804" playOrder="804"><navLabel><text>201</text></navLabel><content src="xhtml/19_J.xhtml#pageMap_201"/></pageTarget>
+		<pageTarget type="normal" value="202" id="navPoint805" playOrder="805"><navLabel><text>202</text></navLabel><content src="xhtml/19_J.xhtml#pageMap_202"/></pageTarget>
+		<pageTarget type="normal" value="203" id="navPoint806" playOrder="806"><navLabel><text>203</text></navLabel><content src="xhtml/19_J.xhtml#pageMap_203"/></pageTarget>
+		<pageTarget type="normal" value="204" id="navPoint807" playOrder="807"><navLabel><text>204</text></navLabel><content src="xhtml/19_J.xhtml#pageMap_204"/></pageTarget>
+		<pageTarget type="normal" value="205" id="navPoint808" playOrder="808"><navLabel><text>205</text></navLabel><content src="xhtml/19_J.xhtml#pageMap_205"/></pageTarget>
+		<pageTarget type="normal" value="206" id="navPoint809" playOrder="809"><navLabel><text>206</text></navLabel><content src="xhtml/19_J.xhtml#pageMap_206"/></pageTarget>
+		<pageTarget type="normal" value="207" id="navPoint810" playOrder="810"><navLabel><text>207</text></navLabel><content src="xhtml/19_J.xhtml#pageMap_207"/></pageTarget>
+		<pageTarget type="normal" value="208" id="navPoint811" playOrder="811"><navLabel><text>208</text></navLabel><content src="xhtml/20_K.xhtml#pageMap_208"/></pageTarget>
+		<pageTarget type="normal" value="209" id="navPoint812" playOrder="812"><navLabel><text>209</text></navLabel><content src="xhtml/20_K.xhtml#pageMap_209"/></pageTarget>
+		<pageTarget type="normal" value="210" id="navPoint813" playOrder="813"><navLabel><text>210</text></navLabel><content src="xhtml/20_K.xhtml#pageMap_210"/></pageTarget>
+		<pageTarget type="normal" value="211" id="navPoint814" playOrder="814"><navLabel><text>211</text></navLabel><content src="xhtml/20_K.xhtml#pageMap_211"/></pageTarget>
+		<pageTarget type="normal" value="212" id="navPoint815" playOrder="815"><navLabel><text>212</text></navLabel><content src="xhtml/21_L.xhtml#pageMap_212"/></pageTarget>
+		<pageTarget type="normal" value="213" id="navPoint816" playOrder="816"><navLabel><text>213</text></navLabel><content src="xhtml/21_L.xhtml#pageMap_213"/></pageTarget>
+		<pageTarget type="normal" value="214" id="navPoint817" playOrder="817"><navLabel><text>214</text></navLabel><content src="xhtml/21_L.xhtml#pageMap_214"/></pageTarget>
+		<pageTarget type="normal" value="215" id="navPoint818" playOrder="818"><navLabel><text>215</text></navLabel><content src="xhtml/21_L.xhtml#pageMap_215"/></pageTarget>
+		<pageTarget type="normal" value="216" id="navPoint819" playOrder="819"><navLabel><text>216</text></navLabel><content src="xhtml/21_L.xhtml#pageMap_216"/></pageTarget>
+		<pageTarget type="normal" value="217" id="navPoint820" playOrder="820"><navLabel><text>217</text></navLabel><content src="xhtml/21_L.xhtml#pageMap_217"/></pageTarget>
+		<pageTarget type="normal" value="218" id="navPoint821" playOrder="821"><navLabel><text>218</text></navLabel><content src="xhtml/21_L.xhtml#pageMap_218"/></pageTarget>
+		<pageTarget type="normal" value="219" id="navPoint822" playOrder="822"><navLabel><text>219</text></navLabel><content src="xhtml/21_L.xhtml#pageMap_219"/></pageTarget>
+		<pageTarget type="normal" value="220" id="navPoint823" playOrder="823"><navLabel><text>220</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_220"/></pageTarget>
+		<pageTarget type="normal" value="221" id="navPoint824" playOrder="824"><navLabel><text>221</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_221"/></pageTarget>
+		<pageTarget type="normal" value="222" id="navPoint825" playOrder="825"><navLabel><text>222</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_222"/></pageTarget>
+		<pageTarget type="normal" value="223" id="navPoint826" playOrder="826"><navLabel><text>223</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_223"/></pageTarget>
+		<pageTarget type="normal" value="224" id="navPoint827" playOrder="827"><navLabel><text>224</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_224"/></pageTarget>
+		<pageTarget type="normal" value="225" id="navPoint828" playOrder="828"><navLabel><text>225</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_225"/></pageTarget>
+		<pageTarget type="normal" value="226" id="navPoint829" playOrder="829"><navLabel><text>226</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_226"/></pageTarget>
+		<pageTarget type="normal" value="227" id="navPoint830" playOrder="830"><navLabel><text>227</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_227"/></pageTarget>
+		<pageTarget type="normal" value="228" id="navPoint831" playOrder="831"><navLabel><text>228</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_228"/></pageTarget>
+		<pageTarget type="normal" value="229" id="navPoint832" playOrder="832"><navLabel><text>229</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_229"/></pageTarget>
+		<pageTarget type="normal" value="230" id="navPoint833" playOrder="833"><navLabel><text>230</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_230"/></pageTarget>
+		<pageTarget type="normal" value="231" id="navPoint834" playOrder="834"><navLabel><text>231</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_231"/></pageTarget>
+		<pageTarget type="normal" value="232" id="navPoint835" playOrder="835"><navLabel><text>232</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_232"/></pageTarget>
+		<pageTarget type="normal" value="233" id="navPoint836" playOrder="836"><navLabel><text>233</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_233"/></pageTarget>
+		<pageTarget type="normal" value="234" id="navPoint837" playOrder="837"><navLabel><text>234</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_234"/></pageTarget>
+		<pageTarget type="normal" value="235" id="navPoint838" playOrder="838"><navLabel><text>235</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_235"/></pageTarget>
+		<pageTarget type="normal" value="236" id="navPoint839" playOrder="839"><navLabel><text>236</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_236"/></pageTarget>
+		<pageTarget type="normal" value="237" id="navPoint840" playOrder="840"><navLabel><text>237</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_237"/></pageTarget>
+		<pageTarget type="normal" value="238" id="navPoint841" playOrder="841"><navLabel><text>238</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_238"/></pageTarget>
+		<pageTarget type="normal" value="239" id="navPoint842" playOrder="842"><navLabel><text>239</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_239"/></pageTarget>
+		<pageTarget type="normal" value="240" id="navPoint843" playOrder="843"><navLabel><text>240</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_240"/></pageTarget>
+		<pageTarget type="normal" value="241" id="navPoint844" playOrder="844"><navLabel><text>241</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_241"/></pageTarget>
+		<pageTarget type="normal" value="242" id="navPoint845" playOrder="845"><navLabel><text>242</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_242"/></pageTarget>
+		<pageTarget type="normal" value="243" id="navPoint846" playOrder="846"><navLabel><text>243</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_243"/></pageTarget>
+		<pageTarget type="normal" value="244" id="navPoint847" playOrder="847"><navLabel><text>244</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_244"/></pageTarget>
+		<pageTarget type="normal" value="245" id="navPoint848" playOrder="848"><navLabel><text>245</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_245"/></pageTarget>
+		<pageTarget type="normal" value="246" id="navPoint849" playOrder="849"><navLabel><text>246</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_246"/></pageTarget>
+		<pageTarget type="normal" value="247" id="navPoint850" playOrder="850"><navLabel><text>247</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_247"/></pageTarget>
+		<pageTarget type="normal" value="248" id="navPoint851" playOrder="851"><navLabel><text>248</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_248"/></pageTarget>
+		<pageTarget type="normal" value="249" id="navPoint852" playOrder="852"><navLabel><text>249</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_249"/></pageTarget>
+		<pageTarget type="normal" value="250" id="navPoint853" playOrder="853"><navLabel><text>250</text></navLabel><content src="xhtml/22_M.xhtml#pageMap_250"/></pageTarget>
+		<pageTarget type="normal" value="251" id="navPoint854" playOrder="854"><navLabel><text>251</text></navLabel><content src="xhtml/23_N.xhtml#pageMap_251"/></pageTarget>
+		<pageTarget type="normal" value="252" id="navPoint855" playOrder="855"><navLabel><text>252</text></navLabel><content src="xhtml/23_N.xhtml#pageMap_252"/></pageTarget>
+		<pageTarget type="normal" value="253" id="navPoint856" playOrder="856"><navLabel><text>253</text></navLabel><content src="xhtml/23_N.xhtml#pageMap_253"/></pageTarget>
+		<pageTarget type="normal" value="254" id="navPoint857" playOrder="857"><navLabel><text>254</text></navLabel><content src="xhtml/23_N.xhtml#pageMap_254"/></pageTarget>
+		<pageTarget type="normal" value="255" id="navPoint858" playOrder="858"><navLabel><text>255</text></navLabel><content src="xhtml/23_N.xhtml#pageMap_255"/></pageTarget>
+		<pageTarget type="normal" value="256" id="navPoint859" playOrder="859"><navLabel><text>256</text></navLabel><content src="xhtml/23_N.xhtml#pageMap_256"/></pageTarget>
+		<pageTarget type="normal" value="257" id="navPoint860" playOrder="860"><navLabel><text>257</text></navLabel><content src="xhtml/23_N.xhtml#pageMap_257"/></pageTarget>
+		<pageTarget type="normal" value="258" id="navPoint861" playOrder="861"><navLabel><text>258</text></navLabel><content src="xhtml/24_O.xhtml#pageMap_258"/></pageTarget>
+		<pageTarget type="normal" value="259" id="navPoint862" playOrder="862"><navLabel><text>259</text></navLabel><content src="xhtml/24_O.xhtml#pageMap_259"/></pageTarget>
+		<pageTarget type="normal" value="260" id="navPoint863" playOrder="863"><navLabel><text>260</text></navLabel><content src="xhtml/24_O.xhtml#pageMap_260"/></pageTarget>
+		<pageTarget type="normal" value="261" id="navPoint864" playOrder="864"><navLabel><text>261</text></navLabel><content src="xhtml/24_O.xhtml#pageMap_261"/></pageTarget>
+		<pageTarget type="normal" value="262" id="navPoint865" playOrder="865"><navLabel><text>262</text></navLabel><content src="xhtml/24_O.xhtml#pageMap_262"/></pageTarget>
+		<pageTarget type="normal" value="263" id="navPoint866" playOrder="866"><navLabel><text>263</text></navLabel><content src="xhtml/24_O.xhtml#pageMap_263"/></pageTarget>
+		<pageTarget type="normal" value="264" id="navPoint867" playOrder="867"><navLabel><text>264</text></navLabel><content src="xhtml/24_O.xhtml#pageMap_264"/></pageTarget>
+		<pageTarget type="normal" value="265" id="navPoint868" playOrder="868"><navLabel><text>265</text></navLabel><content src="xhtml/24_O.xhtml#pageMap_265"/></pageTarget>
+		<pageTarget type="normal" value="266" id="navPoint869" playOrder="869"><navLabel><text>266</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_266"/></pageTarget>
+		<pageTarget type="normal" value="267" id="navPoint870" playOrder="870"><navLabel><text>267</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_267"/></pageTarget>
+		<pageTarget type="normal" value="268" id="navPoint871" playOrder="871"><navLabel><text>268</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_268"/></pageTarget>
+		<pageTarget type="normal" value="269" id="navPoint872" playOrder="872"><navLabel><text>269</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_269"/></pageTarget>
+		<pageTarget type="normal" value="270" id="navPoint873" playOrder="873"><navLabel><text>270</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_270"/></pageTarget>
+		<pageTarget type="normal" value="271" id="navPoint874" playOrder="874"><navLabel><text>271</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_271"/></pageTarget>
+		<pageTarget type="normal" value="272" id="navPoint875" playOrder="875"><navLabel><text>272</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_272"/></pageTarget>
+		<pageTarget type="normal" value="273" id="navPoint876" playOrder="876"><navLabel><text>273</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_273"/></pageTarget>
+		<pageTarget type="normal" value="274" id="navPoint877" playOrder="877"><navLabel><text>274</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_274"/></pageTarget>
+		<pageTarget type="normal" value="275" id="navPoint878" playOrder="878"><navLabel><text>275</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_275"/></pageTarget>
+		<pageTarget type="normal" value="276" id="navPoint879" playOrder="879"><navLabel><text>276</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_276"/></pageTarget>
+		<pageTarget type="normal" value="277" id="navPoint880" playOrder="880"><navLabel><text>277</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_277"/></pageTarget>
+		<pageTarget type="normal" value="278" id="navPoint881" playOrder="881"><navLabel><text>278</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_278"/></pageTarget>
+		<pageTarget type="normal" value="279" id="navPoint882" playOrder="882"><navLabel><text>279</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_279"/></pageTarget>
+		<pageTarget type="normal" value="280" id="navPoint883" playOrder="883"><navLabel><text>280</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_280"/></pageTarget>
+		<pageTarget type="normal" value="281" id="navPoint884" playOrder="884"><navLabel><text>281</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_281"/></pageTarget>
+		<pageTarget type="normal" value="282" id="navPoint885" playOrder="885"><navLabel><text>282</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_282"/></pageTarget>
+		<pageTarget type="normal" value="283" id="navPoint886" playOrder="886"><navLabel><text>283</text></navLabel><content src="xhtml/25_P.xhtml#pageMap_283"/></pageTarget>
+		<pageTarget type="normal" value="284" id="navPoint887" playOrder="887"><navLabel><text>284</text></navLabel><content src="xhtml/26_Q.xhtml#pageMap_284"/></pageTarget>
+		<pageTarget type="normal" value="285" id="navPoint888" playOrder="888"><navLabel><text>285</text></navLabel><content src="xhtml/26_Q.xhtml#pageMap_285"/></pageTarget>
+		<pageTarget type="normal" value="286" id="navPoint889" playOrder="889"><navLabel><text>286</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_286"/></pageTarget>
+		<pageTarget type="normal" value="287" id="navPoint890" playOrder="890"><navLabel><text>287</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_287"/></pageTarget>
+		<pageTarget type="normal" value="288" id="navPoint891" playOrder="891"><navLabel><text>288</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_288"/></pageTarget>
+		<pageTarget type="normal" value="289" id="navPoint892" playOrder="892"><navLabel><text>289</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_289"/></pageTarget>
+		<pageTarget type="normal" value="290" id="navPoint893" playOrder="893"><navLabel><text>290</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_290"/></pageTarget>
+		<pageTarget type="normal" value="291" id="navPoint894" playOrder="894"><navLabel><text>291</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_291"/></pageTarget>
+		<pageTarget type="normal" value="292" id="navPoint895" playOrder="895"><navLabel><text>292</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_292"/></pageTarget>
+		<pageTarget type="normal" value="293" id="navPoint896" playOrder="896"><navLabel><text>293</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_293"/></pageTarget>
+		<pageTarget type="normal" value="294" id="navPoint897" playOrder="897"><navLabel><text>294</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_294"/></pageTarget>
+		<pageTarget type="normal" value="295" id="navPoint898" playOrder="898"><navLabel><text>295</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_295"/></pageTarget>
+		<pageTarget type="normal" value="296" id="navPoint899" playOrder="899"><navLabel><text>296</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_296"/></pageTarget>
+		<pageTarget type="normal" value="297" id="navPoint900" playOrder="900"><navLabel><text>297</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_297"/></pageTarget>
+		<pageTarget type="normal" value="298" id="navPoint901" playOrder="901"><navLabel><text>298</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_298"/></pageTarget>
+		<pageTarget type="normal" value="299" id="navPoint902" playOrder="902"><navLabel><text>299</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_299"/></pageTarget>
+		<pageTarget type="normal" value="300" id="navPoint903" playOrder="903"><navLabel><text>300</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_300"/></pageTarget>
+		<pageTarget type="normal" value="301" id="navPoint904" playOrder="904"><navLabel><text>301</text></navLabel><content src="xhtml/27_R.xhtml#pageMap_301"/></pageTarget>
+		<pageTarget type="normal" value="302" id="navPoint905" playOrder="905"><navLabel><text>302</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_302"/></pageTarget>
+		<pageTarget type="normal" value="303" id="navPoint906" playOrder="906"><navLabel><text>303</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_303"/></pageTarget>
+		<pageTarget type="normal" value="304" id="navPoint907" playOrder="907"><navLabel><text>304</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_304"/></pageTarget>
+		<pageTarget type="normal" value="305" id="navPoint908" playOrder="908"><navLabel><text>305</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_305"/></pageTarget>
+		<pageTarget type="normal" value="306" id="navPoint909" playOrder="909"><navLabel><text>306</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_306"/></pageTarget>
+		<pageTarget type="normal" value="307" id="navPoint910" playOrder="910"><navLabel><text>307</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_307"/></pageTarget>
+		<pageTarget type="normal" value="308" id="navPoint911" playOrder="911"><navLabel><text>308</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_308"/></pageTarget>
+		<pageTarget type="normal" value="309" id="navPoint912" playOrder="912"><navLabel><text>309</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_309"/></pageTarget>
+		<pageTarget type="normal" value="310" id="navPoint913" playOrder="913"><navLabel><text>310</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_310"/></pageTarget>
+		<pageTarget type="normal" value="311" id="navPoint914" playOrder="914"><navLabel><text>311</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_311"/></pageTarget>
+		<pageTarget type="normal" value="312" id="navPoint915" playOrder="915"><navLabel><text>312</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_312"/></pageTarget>
+		<pageTarget type="normal" value="313" id="navPoint916" playOrder="916"><navLabel><text>313</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_313"/></pageTarget>
+		<pageTarget type="normal" value="314" id="navPoint917" playOrder="917"><navLabel><text>314</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_314"/></pageTarget>
+		<pageTarget type="normal" value="315" id="navPoint918" playOrder="918"><navLabel><text>315</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_315"/></pageTarget>
+		<pageTarget type="normal" value="316" id="navPoint919" playOrder="919"><navLabel><text>316</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_316"/></pageTarget>
+		<pageTarget type="normal" value="317" id="navPoint920" playOrder="920"><navLabel><text>317</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_317"/></pageTarget>
+		<pageTarget type="normal" value="318" id="navPoint921" playOrder="921"><navLabel><text>318</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_318"/></pageTarget>
+		<pageTarget type="normal" value="319" id="navPoint922" playOrder="922"><navLabel><text>319</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_319"/></pageTarget>
+		<pageTarget type="normal" value="320" id="navPoint923" playOrder="923"><navLabel><text>320</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_320"/></pageTarget>
+		<pageTarget type="normal" value="321" id="navPoint924" playOrder="924"><navLabel><text>321</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_321"/></pageTarget>
+		<pageTarget type="normal" value="322" id="navPoint925" playOrder="925"><navLabel><text>322</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_322"/></pageTarget>
+		<pageTarget type="normal" value="323" id="navPoint926" playOrder="926"><navLabel><text>323</text></navLabel><content src="xhtml/28_S.xhtml#pageMap_323"/></pageTarget>
+		<pageTarget type="normal" value="324" id="navPoint927" playOrder="927"><navLabel><text>324</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_324"/></pageTarget>
+		<pageTarget type="normal" value="325" id="navPoint928" playOrder="928"><navLabel><text>325</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_325"/></pageTarget>
+		<pageTarget type="normal" value="326" id="navPoint929" playOrder="929"><navLabel><text>326</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_326"/></pageTarget>
+		<pageTarget type="normal" value="327" id="navPoint930" playOrder="930"><navLabel><text>327</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_327"/></pageTarget>
+		<pageTarget type="normal" value="328" id="navPoint931" playOrder="931"><navLabel><text>328</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_328"/></pageTarget>
+		<pageTarget type="normal" value="329" id="navPoint932" playOrder="932"><navLabel><text>329</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_329"/></pageTarget>
+		<pageTarget type="normal" value="330" id="navPoint933" playOrder="933"><navLabel><text>330</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_330"/></pageTarget>
+		<pageTarget type="normal" value="331" id="navPoint934" playOrder="934"><navLabel><text>331</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_331"/></pageTarget>
+		<pageTarget type="normal" value="332" id="navPoint935" playOrder="935"><navLabel><text>332</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_332"/></pageTarget>
+		<pageTarget type="normal" value="333" id="navPoint936" playOrder="936"><navLabel><text>333</text></navLabel><content src="xhtml/29_T.xhtml#pageMap_333"/></pageTarget>
+		<pageTarget type="normal" value="334" id="navPoint937" playOrder="937"><navLabel><text>334</text></navLabel><content src="xhtml/30_U.xhtml#pageMap_334"/></pageTarget>
+		<pageTarget type="normal" value="335" id="navPoint938" playOrder="938"><navLabel><text>335</text></navLabel><content src="xhtml/30_U.xhtml#pageMap_335"/></pageTarget>
+		<pageTarget type="normal" value="336" id="navPoint939" playOrder="939"><navLabel><text>336</text></navLabel><content src="xhtml/31_V.xhtml#pageMap_336"/></pageTarget>
+		<pageTarget type="normal" value="337" id="navPoint940" playOrder="940"><navLabel><text>337</text></navLabel><content src="xhtml/31_V.xhtml#pageMap_337"/></pageTarget>
+		<pageTarget type="normal" value="338" id="navPoint941" playOrder="941"><navLabel><text>338</text></navLabel><content src="xhtml/31_V.xhtml#pageMap_338"/></pageTarget>
+		<pageTarget type="normal" value="339" id="navPoint942" playOrder="942"><navLabel><text>339</text></navLabel><content src="xhtml/31_V.xhtml#pageMap_339"/></pageTarget>
+		<pageTarget type="normal" value="340" id="navPoint943" playOrder="943"><navLabel><text>340</text></navLabel><content src="xhtml/31_V.xhtml#pageMap_340"/></pageTarget>
+		<pageTarget type="normal" value="341" id="navPoint944" playOrder="944"><navLabel><text>341</text></navLabel><content src="xhtml/32_W.xhtml#pageMap_341"/></pageTarget>
+		<pageTarget type="normal" value="342" id="navPoint945" playOrder="945"><navLabel><text>342</text></navLabel><content src="xhtml/32_W.xhtml#pageMap_342"/></pageTarget>
+		<pageTarget type="normal" value="343" id="navPoint946" playOrder="946"><navLabel><text>343</text></navLabel><content src="xhtml/32_W.xhtml#pageMap_343"/></pageTarget>
+		<pageTarget type="normal" value="344" id="navPoint947" playOrder="947"><navLabel><text>344</text></navLabel><content src="xhtml/32_W.xhtml#pageMap_344"/></pageTarget>
+		<pageTarget type="normal" value="345" id="navPoint948" playOrder="948"><navLabel><text>345</text></navLabel><content src="xhtml/32_W.xhtml#pageMap_345"/></pageTarget>
+		<pageTarget type="normal" value="346" id="navPoint949" playOrder="949"><navLabel><text>346</text></navLabel><content src="xhtml/32_W.xhtml#pageMap_346"/></pageTarget>
+		<pageTarget type="normal" value="347" id="navPoint950" playOrder="950"><navLabel><text>347</text></navLabel><content src="xhtml/32_W.xhtml#pageMap_347"/></pageTarget>
+		<pageTarget type="normal" value="348" id="navPoint951" playOrder="951"><navLabel><text>348</text></navLabel><content src="xhtml/32_W.xhtml#pageMap_348"/></pageTarget>
+		<pageTarget type="normal" value="349" id="navPoint952" playOrder="952"><navLabel><text>349</text></navLabel><content src="xhtml/32_W.xhtml#pageMap_349"/></pageTarget>
+		<pageTarget type="normal" value="350" id="navPoint953" playOrder="953"><navLabel><text>350</text></navLabel><content src="xhtml/33_X.xhtml#pageMap_350"/></pageTarget>
+		<pageTarget type="normal" value="351" id="navPoint954" playOrder="954"><navLabel><text>351</text></navLabel><content src="xhtml/34_Y.xhtml#pageMap_351"/></pageTarget>
+		<pageTarget type="normal" value="352" id="navPoint955" playOrder="955"><navLabel><text>352</text></navLabel><content src="xhtml/34_Y.xhtml#pageMap_352"/></pageTarget>
+		<pageTarget type="normal" value="353" id="navPoint956" playOrder="956"><navLabel><text>353</text></navLabel><content src="xhtml/35_Z.xhtml#pageMap_353"/></pageTarget>
+		<pageTarget type="normal" value="354" id="navPoint957" playOrder="957"><navLabel><text>354</text></navLabel><content src="xhtml/36_Numb.xhtml#pageMap_354"/></pageTarget>
+		<pageTarget type="normal" value="355" id="navPoint958" playOrder="958"><navLabel><text>355</text></navLabel><content src="xhtml/36_Numb.xhtml#pageMap_355"/></pageTarget>
+		<pageTarget type="normal" value="356" id="navPoint959" playOrder="959"><navLabel><text>356</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_356"/></pageTarget>
+		<pageTarget type="normal" value="357" id="navPoint960" playOrder="960"><navLabel><text>357</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_357"/></pageTarget>
+		<pageTarget type="normal" value="358" id="navPoint961" playOrder="961"><navLabel><text>358</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_358"/></pageTarget>
+		<pageTarget type="normal" value="359" id="navPoint962" playOrder="962"><navLabel><text>359</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_359"/></pageTarget>
+		<pageTarget type="normal" value="360" id="navPoint963" playOrder="963"><navLabel><text>360</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_360"/></pageTarget>
+		<pageTarget type="normal" value="361" id="navPoint964" playOrder="964"><navLabel><text>361</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_361"/></pageTarget>
+		<pageTarget type="normal" value="362" id="navPoint965" playOrder="965"><navLabel><text>362</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_362"/></pageTarget>
+		<pageTarget type="normal" value="363" id="navPoint966" playOrder="966"><navLabel><text>363</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_363"/></pageTarget>
+		<pageTarget type="normal" value="364" id="navPoint967" playOrder="967"><navLabel><text>364</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_364"/></pageTarget>
+		<pageTarget type="normal" value="365" id="navPoint968" playOrder="968"><navLabel><text>365</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_365"/></pageTarget>
+		<pageTarget type="normal" value="366" id="navPoint969" playOrder="969"><navLabel><text>366</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_366"/></pageTarget>
+		<pageTarget type="normal" value="367" id="navPoint970" playOrder="970"><navLabel><text>367</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_367"/></pageTarget>
+		<pageTarget type="normal" value="368" id="navPoint971" playOrder="971"><navLabel><text>368</text></navLabel><content src="xhtml/37_Chapter_4.xhtml#pageMap_368"/></pageTarget>
+		<pageTarget type="normal" value="369" id="navPoint972" playOrder="972"><navLabel><text>369</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_369"/></pageTarget>
+		<pageTarget type="normal" value="370" id="navPoint973" playOrder="973"><navLabel><text>370</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_370"/></pageTarget>
+		<pageTarget type="normal" value="371" id="navPoint974" playOrder="974"><navLabel><text>371</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_371"/></pageTarget>
+		<pageTarget type="normal" value="372" id="navPoint975" playOrder="975"><navLabel><text>372</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_372"/></pageTarget>
+		<pageTarget type="normal" value="373" id="navPoint976" playOrder="976"><navLabel><text>373</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_373"/></pageTarget>
+		<pageTarget type="normal" value="374" id="navPoint977" playOrder="977"><navLabel><text>374</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_374"/></pageTarget>
+		<pageTarget type="normal" value="375" id="navPoint978" playOrder="978"><navLabel><text>375</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_375"/></pageTarget>
+		<pageTarget type="normal" value="376" id="navPoint979" playOrder="979"><navLabel><text>376</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_376"/></pageTarget>
+		<pageTarget type="normal" value="377" id="navPoint980" playOrder="980"><navLabel><text>377</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_377"/></pageTarget>
+		<pageTarget type="normal" value="378" id="navPoint981" playOrder="981"><navLabel><text>378</text></navLabel><content src="xhtml/38_Chapter_5.xhtml#pageMap_378"/></pageTarget>
+		<pageTarget type="normal" value="379" id="navPoint982" playOrder="982"><navLabel><text>379</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_379"/></pageTarget>
+		<pageTarget type="normal" value="380" id="navPoint983" playOrder="983"><navLabel><text>380</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_380"/></pageTarget>
+		<pageTarget type="normal" value="381" id="navPoint984" playOrder="984"><navLabel><text>381</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_381"/></pageTarget>
+		<pageTarget type="normal" value="382" id="navPoint985" playOrder="985"><navLabel><text>382</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_382"/></pageTarget>
+		<pageTarget type="normal" value="383" id="navPoint986" playOrder="986"><navLabel><text>383</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_383"/></pageTarget>
+		<pageTarget type="normal" value="384" id="navPoint987" playOrder="987"><navLabel><text>384</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_384"/></pageTarget>
+		<pageTarget type="normal" value="385" id="navPoint988" playOrder="988"><navLabel><text>385</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_385"/></pageTarget>
+		<pageTarget type="normal" value="386" id="navPoint989" playOrder="989"><navLabel><text>386</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_386"/></pageTarget>
+		<pageTarget type="normal" value="387" id="navPoint990" playOrder="990"><navLabel><text>387</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_387"/></pageTarget>
+		<pageTarget type="normal" value="388" id="navPoint991" playOrder="991"><navLabel><text>388</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_388"/></pageTarget>
+		<pageTarget type="normal" value="389" id="navPoint992" playOrder="992"><navLabel><text>389</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_389"/></pageTarget>
+		<pageTarget type="normal" value="390" id="navPoint993" playOrder="993"><navLabel><text>390</text></navLabel><content src="xhtml/39_Chapter_6.xhtml#pageMap_390"/></pageTarget>
+		<pageTarget type="normal" value="391" id="navPoint994" playOrder="994"><navLabel><text>391</text></navLabel><content src="xhtml/40_Chapter_7.xhtml#pageMap_391"/></pageTarget>
+		<pageTarget type="normal" value="392" id="navPoint995" playOrder="995"><navLabel><text>392</text></navLabel><content src="xhtml/40_Chapter_7.xhtml#pageMap_392"/></pageTarget>
+		<pageTarget type="normal" value="393" id="navPoint996" playOrder="996"><navLabel><text>393</text></navLabel><content src="xhtml/40_Chapter_7.xhtml#pageMap_393"/></pageTarget>
+		<pageTarget type="normal" value="394" id="navPoint997" playOrder="997"><navLabel><text>394</text></navLabel><content src="xhtml/40_Chapter_7.xhtml#pageMap_394"/></pageTarget>
+		<pageTarget type="normal" value="395" id="navPoint998" playOrder="998"><navLabel><text>395</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_395"/></pageTarget>
+		<pageTarget type="normal" value="396" id="navPoint999" playOrder="999"><navLabel><text>396</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_396"/></pageTarget>
+		<pageTarget type="normal" value="397" id="navPoint1000" playOrder="1000"><navLabel><text>397</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_397"/></pageTarget>
+		<pageTarget type="normal" value="398" id="navPoint1001" playOrder="1001"><navLabel><text>398</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_398"/></pageTarget>
+		<pageTarget type="normal" value="399" id="navPoint1002" playOrder="1002"><navLabel><text>399</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_399"/></pageTarget>
+		<pageTarget type="normal" value="400" id="navPoint1003" playOrder="1003"><navLabel><text>400</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_400"/></pageTarget>
+		<pageTarget type="normal" value="401" id="navPoint1004" playOrder="1004"><navLabel><text>401</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_401"/></pageTarget>
+		<pageTarget type="normal" value="402" id="navPoint1005" playOrder="1005"><navLabel><text>402</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_402"/></pageTarget>
+		<pageTarget type="normal" value="403" id="navPoint1006" playOrder="1006"><navLabel><text>403</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_403"/></pageTarget>
+		<pageTarget type="normal" value="404" id="navPoint1007" playOrder="1007"><navLabel><text>404</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_404"/></pageTarget>
+		<pageTarget type="normal" value="405" id="navPoint1008" playOrder="1008"><navLabel><text>405</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_405"/></pageTarget>
+		<pageTarget type="normal" value="406" id="navPoint1009" playOrder="1009"><navLabel><text>406</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_406"/></pageTarget>
+		<pageTarget type="normal" value="407" id="navPoint1010" playOrder="1010"><navLabel><text>407</text></navLabel><content src="xhtml/41_Chapter_8.xhtml#pageMap_407"/></pageTarget>
+	</pageList>
+</ncx>

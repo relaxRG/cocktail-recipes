@@ -148,6 +148,7 @@ const dict = {
   "detail.meta.spirit": { zh: "基酒", en: "Spirit" },
   "detail.meta.glass": { zh: "杯型", en: "Glass" },
   "detail.meta.method": { zh: "方法", en: "Method" },
+  "detail.meta.ice": { zh: "冰块", en: "Ice" },
   "detail.meta.strength": { zh: "烈度", en: "Strength" },
   "detail.ingredients": { zh: "配料", en: "Ingredients" },
   "detail.noIngredients": { zh: "未填写配料", en: "No ingredients" },
@@ -205,6 +206,7 @@ const dict = {
   "form.spirit": { zh: "基酒", en: "Base Spirit" },
   "form.glass": { zh: "杯型", en: "Glass" },
   "form.method": { zh: "制作方法", en: "Method" },
+  "form.ice": { zh: "冰块", en: "Ice" },
   "form.strength": { zh: "烈度", en: "Strength" },
   "form.strengthBand": { zh: "酒精度区间(可选)", en: "ABV range (optional)" },
   "form.abv.auto": {
