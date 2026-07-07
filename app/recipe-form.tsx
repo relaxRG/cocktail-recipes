@@ -18,10 +18,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { RecipeDraft, useRecipeStore } from "@/lib/recipes/store";
 import {
-  BASE_SPIRITS,
   CODEX_FAMILIES,
-  FLAVOR_TAGS,
-  GLASSES,
   Ingredient,
   METHODS,
   STRENGTH_LABELS,
@@ -33,16 +30,19 @@ function ChipGroup({
   options,
   value,
   onChange,
+  colorsMap,
 }: {
   options: readonly string[];
   value: string;
   onChange: (v: string) => void;
+  colorsMap?: Record<string, string>;
 }) {
   const colors = useColors();
   return (
     <View style={styles.chipWrap}>
       {options.map((opt) => {
         const active = value === opt;
+        const tint = colorsMap?.[opt];
         return (
           <Pressable
             key={opt}
@@ -50,8 +50,8 @@ function ChipGroup({
             style={[
               styles.chip,
               {
-                backgroundColor: active ? colors.primary : colors.surface,
-                borderColor: active ? colors.primary : colors.border,
+                backgroundColor: active ? (tint ?? colors.primary) : colors.surface,
+                borderColor: active ? (tint ?? colors.primary) : (tint ? tint + "66" : colors.border),
               },
             ]}
           >
@@ -67,12 +67,20 @@ export default function RecipeFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { getRecipe, addRecipe, updateRecipe, categories } = useRecipeStore();
+  const { getRecipe, addRecipe, updateRecipe, categories, tagsOf } = useRecipeStore();
   const editing = getRecipe(id);
+
+  const spiritTags = tagsOf("spirit");
+  const glassTags = tagsOf("glass");
+  const flavorTags = tagsOf("flavor");
+  const spiritNames = spiritTags.map((t) => t.name);
+  const glassNames = glassTags.map((t) => t.name);
+  const spiritColors = Object.fromEntries(spiritTags.map((t) => [t.name, t.color]));
+  const glassColors = Object.fromEntries(glassTags.map((t) => [t.name, t.color]));
 
   const [name, setName] = useState(editing?.name ?? "");
   const [categoryId, setCategoryId] = useState<string | null>(editing?.categoryId ?? null);
-  const [baseSpirit, setBaseSpirit] = useState(editing?.baseSpirit ?? "金酒");
+  const [baseSpirit, setBaseSpirit] = useState(editing?.baseSpirit ?? (spiritNames[0] ?? ""));
   const [glass, setGlass] = useState(editing?.glass ?? "");
   const [method, setMethod] = useState(editing?.method ?? "摇和");
   const [strength, setStrength] = useState<Strength>(editing?.strength ?? "medium");
@@ -225,7 +233,16 @@ export default function RecipeFormScreen() {
 
           {/* Base spirit */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">基酒</Text>
-          <ChipGroup options={BASE_SPIRITS} value={baseSpirit} onChange={setBaseSpirit} />
+          {spiritNames.length > 0 ? (
+            <ChipGroup
+              options={spiritNames}
+              value={baseSpirit}
+              onChange={setBaseSpirit}
+              colorsMap={spiritColors}
+            />
+          ) : (
+            <Text className="text-xs text-muted">暂无基酒标签,可在“分类”页添加</Text>
+          )}
 
           {/* Codex family */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">
@@ -271,28 +288,32 @@ export default function RecipeFormScreen() {
 
           {/* Flavor tags */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">风味标签(可多选)</Text>
-          <View style={styles.chipWrap}>
-            {FLAVOR_TAGS.map((tag) => {
-              const active = flavors.includes(tag);
-              return (
-                <Pressable
-                  key={tag}
-                  onPress={() => toggleFlavor(tag)}
-                  style={[
-                    styles.chip,
-                    {
-                      backgroundColor: active ? colors.primary : colors.surface,
-                      borderColor: active ? colors.primary : colors.border,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
-                    {tag}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
+          {flavorTags.length > 0 ? (
+            <View style={styles.chipWrap}>
+              {flavorTags.map((tag) => {
+                const active = flavors.includes(tag.name);
+                return (
+                  <Pressable
+                    key={tag.id}
+                    onPress={() => toggleFlavor(tag.name)}
+                    style={[
+                      styles.chip,
+                      {
+                        backgroundColor: active ? tag.color : colors.surface,
+                        borderColor: active ? tag.color : tag.color + "66",
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
+                      {tag.name}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : (
+            <Text className="text-xs text-muted">暂无风味标签,可在“分类”页添加</Text>
+          )}
 
           {/* Method */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">制作方法</Text>
@@ -313,7 +334,16 @@ export default function RecipeFormScreen() {
 
           {/* Glass */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">杯型</Text>
-          <ChipGroup options={GLASSES} value={glass} onChange={setGlass} />
+          {glassNames.length > 0 ? (
+            <ChipGroup
+              options={glassNames}
+              value={glass}
+              onChange={setGlass}
+              colorsMap={glassColors}
+            />
+          ) : (
+            <Text className="text-xs text-muted">暂无杯型标签,可在“分类”页添加</Text>
+          )}
 
           {/* Ingredients */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">配料</Text>

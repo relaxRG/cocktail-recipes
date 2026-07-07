@@ -91,6 +91,48 @@ export interface Category {
   createdAt: number;
 }
 
+/** 可自定义标签的种类:基酒 / 杯型 / 风味 */
+export type TagKind = "spirit" | "glass" | "flavor";
+
+/** 通用自定义标签(基酒、杯型、风味) */
+export interface TagItem {
+  id: string;
+  kind: TagKind;
+  name: string;
+  color: string;
+  createdAt: number;
+}
+
+export const TAG_KIND_LABELS: Record<TagKind, string> = {
+  spirit: "基酒",
+  glass: "杯型",
+  flavor: "风味",
+};
+
+/** 构建默认标签集合(首次启动时初始化,之后完全由用户管理) */
+export function buildDefaultTags(): TagItem[] {
+  const now = Date.now();
+  let i = 0;
+  const mk = (kind: TagKind, name: string, color: string): TagItem => ({
+    id: `tag-${kind}-${i}`,
+    kind,
+    name,
+    color,
+    createdAt: now + i++,
+  });
+  return [
+    ...BASE_SPIRITS.map((n, idx) =>
+      mk("spirit", n, CATEGORY_COLORS[idx % CATEGORY_COLORS.length]),
+    ),
+    ...GLASSES.map((n, idx) =>
+      mk("glass", n, CATEGORY_COLORS[(idx + 3) % CATEGORY_COLORS.length]),
+    ),
+    ...FLAVOR_TAGS.map((n, idx) =>
+      mk("flavor", n, CATEGORY_COLORS[(idx + 5) % CATEGORY_COLORS.length]),
+    ),
+  ];
+}
+
 export const BASE_SPIRITS = [
   "金酒",
   "朗姆",

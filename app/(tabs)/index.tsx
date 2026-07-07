@@ -19,14 +19,15 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { filterRecipes } from "@/lib/recipes/search";
 import { useRecipeStore } from "@/lib/recipes/store";
-import { CODEX_FAMILIES, FLAVOR_TAGS } from "@/lib/recipes/types";
+import { CODEX_FAMILIES } from "@/lib/recipes/types";
 
 type Filter = { type: "all" } | { type: "favorites" } | { type: "category"; id: string };
 
 export default function RecipesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { ready, recipes, categories, importSamples } = useRecipeStore();
+  const { ready, recipes, categories, importSamples, tagsOf } = useRecipeStore();
+  const flavorTags = tagsOf("flavor");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>({ type: "all" });
   const [codexFilter, setCodexFilter] = useState<string>("");
@@ -114,7 +115,10 @@ export default function RecipesScreen() {
             return (
               <Pressable
                 key={cat.id}
-                style={chipStyle(active)}
+                style={[
+                  chipStyle(active),
+                  active && { backgroundColor: cat.color, borderColor: cat.color },
+                ]}
                 onPress={() => setFilter({ type: "category", id: cat.id })}
               >
                 <Text style={chipTextStyle(active)}>{cat.name}</Text>
@@ -144,15 +148,18 @@ export default function RecipesScreen() {
             );
           })}
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          {FLAVOR_TAGS.map((tag) => {
-            const active = flavorFilter === tag;
+          {flavorTags.map((tag) => {
+            const active = flavorFilter === tag.name;
             return (
               <Pressable
-                key={tag}
-                style={chipStyle(active)}
-                onPress={() => setFlavorFilter(active ? "" : tag)}
+                key={tag.id}
+                style={[
+                  chipStyle(active),
+                  active && { backgroundColor: tag.color, borderColor: tag.color },
+                ]}
+                onPress={() => setFlavorFilter(active ? "" : tag.name)}
               >
-                <Text style={chipTextStyle(active)}>{tag}</Text>
+                <Text style={chipTextStyle(active)}>{tag.name}</Text>
               </Pressable>
             );
           })}

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { filterRecipes } from "../lib/recipes/search";
 import { buildDefaultCategories, buildSampleRecipes } from "../lib/recipes/seed";
-import { CODEX_FAMILIES, genId, normalizeRecipe } from "../lib/recipes/types";
+import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib/recipes/types";
 
 describe("recipes data layer", () => {
   it("generates unique ids", () => {
@@ -114,5 +114,19 @@ describe("recipes data layer", () => {
     const result = filterRecipes(recipes, "iba", {});
     expect(result.length).toBe(1);
     expect(result[0].name).toContain("尼格罗尼");
+  });
+
+  it("builds default tags for spirit, glass and flavor", () => {
+    const tags = buildDefaultTags();
+    const spirits = tags.filter((t) => t.kind === "spirit");
+    const glasses = tags.filter((t) => t.kind === "glass");
+    const flavors = tags.filter((t) => t.kind === "flavor");
+    expect(spirits.length).toBeGreaterThan(0);
+    expect(glasses.length).toBeGreaterThan(0);
+    expect(flavors.length).toBe(10);
+    // 每个标签都有颜色且 id 唯一
+    const ids = new Set(tags.map((t) => t.id));
+    expect(ids.size).toBe(tags.length);
+    expect(tags.every((t) => /^#[0-9A-Fa-f]{6}$/.test(t.color))).toBe(true);
   });
 });
