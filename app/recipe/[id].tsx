@@ -10,6 +10,8 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { estimateRecipeCost, formatAmountAsMl } from "@/lib/bottles/cost";
 import { useBottleStore } from "@/lib/bottles/store";
+import { matchPrep } from "@/lib/homemade/match";
+import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { STRENGTH_LABELS } from "@/lib/recipes/types";
 
@@ -20,6 +22,7 @@ export default function RecipeDetailScreen() {
   const { t } = useI18n();
   const { getRecipe, getCategory, toggleFavorite, deleteRecipe } = useRecipeStore();
   const { bottles } = useBottleStore();
+  const { preps } = useHomemadeStore();
   const recipe = getRecipe(id);
 
   if (!recipe) {
@@ -176,18 +179,46 @@ export default function RecipeDetailScreen() {
             <Text className="text-sm text-muted py-4">{t("detail.noIngredients")}</Text>
           ) : (
             recipe.ingredients.map((ing, idx) => (
-              <View
-                key={ing.id}
-                className="flex-row items-center justify-between py-3"
-                style={
-                  idx > 0
-                    ? { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }
-                    : undefined
-                }
-              >
-                <Text className="text-base text-foreground flex-1 pr-3">{ing.name}</Text>
-                <Text className="text-base text-muted">{formatAmountAsMl(ing.amount)}</Text>
-              </View>
+              (() => {
+                const prep = matchPrep(ing.name, preps);
+                const inner = (
+                  <View
+                    className="flex-row items-center justify-between py-3"
+                    style={
+                      idx > 0
+                        ? { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }
+                        : undefined
+                    }
+                  >
+                    <View className="flex-1 pr-3">
+                      <Text className="text-base text-foreground">{ing.name}</Text>
+                      {prep ? (
+                        <View className="flex-row items-center mt-1" style={{ gap: 4 }}>
+                          <IconSymbol name="sparkles" size={12} color={colors.primary} />
+                          <Text className="text-xs" style={{ color: colors.primary }}>
+                            {t("detail.homemade.link", { name: prep.name })}
+                          </Text>
+                          <IconSymbol name="chevron.right" size={11} color={colors.primary} />
+                        </View>
+                      ) : null}
+                    </View>
+                    <Text className="text-base text-muted">{formatAmountAsMl(ing.amount)}</Text>
+                  </View>
+                );
+                return prep ? (
+                  <Pressable
+                    key={ing.id}
+                    onPress={() =>
+                      router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })
+                    }
+                    style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                  >
+                    {inner}
+                  </Pressable>
+                ) : (
+                  <View key={ing.id}>{inner}</View>
+                );
+              })()
             ))
           )}
         </View>

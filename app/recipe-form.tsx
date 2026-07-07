@@ -19,6 +19,8 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
+import { matchPrep, suggestPrep } from "@/lib/homemade/match";
+import { useHomemadeStore } from "@/lib/homemade/store";
 import { RecipeDraft, useRecipeStore } from "@/lib/recipes/store";
 import { parseRecipeText } from "@/lib/recipes/parser";
 import {
@@ -73,6 +75,7 @@ export default function RecipeFormScreen() {
   const insets = useSafeAreaInsets();
   const { t } = useI18n();
   const { getRecipe, addRecipe, updateRecipe, categories, tagsOf } = useRecipeStore();
+  const { preps } = useHomemadeStore();
   const editing = getRecipe(id);
 
   const spiritTags = tagsOf("spirit");
@@ -448,39 +451,79 @@ export default function RecipeFormScreen() {
 
           {/* Ingredients */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.ingredients")}</Text>
-          {ingredients.map((ing) => (
-            <View key={ing.id} className="flex-row items-center mb-2" style={{ gap: 8 }}>
-              <TextInput
-                className="flex-[3] bg-surface border border-border rounded-xl px-3 py-2.5 text-base text-foreground"
-                placeholder={t("form.ingredient.name")}
-                placeholderTextColor={colors.muted}
-                value={ing.name}
-                onChangeText={(v) => updateIngredient(ing.id, "name", v)}
-                returnKeyType="done"
-                style={{ lineHeight: 20 }}
-              />
-              <TextInput
-                className="flex-[2] bg-surface border border-border rounded-xl px-3 py-2.5 text-base text-foreground"
-                placeholder={t("form.ingredient.amount")}
-                placeholderTextColor={colors.muted}
-                value={ing.amount}
-                onChangeText={(v) => updateIngredient(ing.id, "amount", v)}
-                returnKeyType="done"
-                style={{ lineHeight: 20 }}
-              />
-              <Pressable
-                onPress={() => removeIngredientRow(ing.id)}
-                hitSlop={8}
-                style={({ pressed }) => [pressed && { opacity: 0.6 }]}
-              >
-                <IconSymbol
-                  name="minus.circle.fill"
-                  size={24}
-                  color={ingredients.length > 1 ? colors.error : colors.border}
-                />
-              </Pressable>
-            </View>
-          ))}
+          {ingredients.map((ing) => {
+            const trimmed = ing.name.trim();
+            const prep = trimmed.length >= 2 ? matchPrep(trimmed, preps) : null;
+            const suggestion = !prep && trimmed.length >= 2 ? suggestPrep(trimmed) : null;
+            return (
+              <View key={ing.id} className="mb-2">
+                <View className="flex-row items-center" style={{ gap: 8 }}>
+                  <TextInput
+                    className="flex-[3] bg-surface border border-border rounded-xl px-3 py-2.5 text-base text-foreground"
+                    placeholder={t("form.ingredient.name")}
+                    placeholderTextColor={colors.muted}
+                    value={ing.name}
+                    onChangeText={(v) => updateIngredient(ing.id, "name", v)}
+                    returnKeyType="done"
+                    style={{ lineHeight: 20 }}
+                  />
+                  <TextInput
+                    className="flex-[2] bg-surface border border-border rounded-xl px-3 py-2.5 text-base text-foreground"
+                    placeholder={t("form.ingredient.amount")}
+                    placeholderTextColor={colors.muted}
+                    value={ing.amount}
+                    onChangeText={(v) => updateIngredient(ing.id, "amount", v)}
+                    returnKeyType="done"
+                    style={{ lineHeight: 20 }}
+                  />
+                  <Pressable
+                    onPress={() => removeIngredientRow(ing.id)}
+                    hitSlop={8}
+                    style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                  >
+                    <IconSymbol
+                      name="minus.circle.fill"
+                      size={24}
+                      color={ingredients.length > 1 ? colors.error : colors.border}
+                    />
+                  </Pressable>
+                </View>
+                {prep ? (
+                  <Pressable
+                    onPress={() =>
+                      router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })
+                    }
+                    style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
+                  >
+                    <IconSymbol name="sparkles" size={12} color={colors.primary} />
+                    <Text className="text-xs" style={{ color: colors.primary, lineHeight: 16 }}>
+                      {t("form.homemade.matched", { name: prep.name })}
+                    </Text>
+                    <IconSymbol name="chevron.right" size={11} color={colors.primary} />
+                  </Pressable>
+                ) : suggestion ? (
+                  <Pressable
+                    onPress={() =>
+                      router.push({
+                        pathname: "/homemade-form",
+                        params: {
+                          prefillName: suggestion.name,
+                          prefillNameAlt: suggestion.nameAlt,
+                          prefillType: suggestion.type,
+                        },
+                      })
+                    }
+                    style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
+                  >
+                    <IconSymbol name="plus.circle.fill" size={12} color={colors.success} />
+                    <Text className="text-xs" style={{ color: colors.success, lineHeight: 16 }}>
+                      {t("form.homemade.add")} · {suggestion.name}
+                    </Text>
+                  </Pressable>
+                ) : null}
+              </View>
+            );
+          })}
           <Pressable
             onPress={addIngredientRow}
             style={({ pressed }) => [styles.addRow, pressed && { opacity: 0.6 }]}
@@ -590,6 +633,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
     paddingVertical: 6,
+  },
+  prepHint: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 4,
+    paddingHorizontal: 4,
   },
   importBtn: {
     flexDirection: "row",

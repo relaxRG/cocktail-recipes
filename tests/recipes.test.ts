@@ -17,6 +17,7 @@ import { parseRecipeText, splitIngredientLine, looksLikeIngredientLine } from ".
 import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib/recipes/types";
 import { buildSamplePreps } from "../lib/homemade/seed";
 import { filterPreps } from "../lib/homemade/store";
+import { matchPrep, suggestPrep } from "../lib/homemade/match";
 import {
   PREP_SECTIONS,
   PREP_TYPES,
@@ -89,6 +90,40 @@ describe("homemade preps", () => {
     // section + type combined
     const syrupsOnly = filterPreps(preps, "", "syrup", "homemade-syrup");
     expect(syrupsOnly.every((p) => p.type === "syrup")).toBe(true);
+  });
+
+  it("matches recipe ingredients to homemade preps bilingually", () => {
+    const preps = buildSamplePreps();
+    // English exact / partial
+    const m1 = matchPrep("Simple Syrup", preps);
+    expect(m1?.name.toLowerCase()).toContain("simple syrup");
+    // Chinese name matches nameAlt
+    const m2 = matchPrep("蜂蜜糖浆", preps);
+    expect(m2).not.toBeNull();
+    // Qualifier stripped (homemade / 自制 prefix)
+    const m3 = matchPrep("自制姜糖浆", preps);
+    expect(m3).not.toBeNull();
+    const m4 = matchPrep("homemade orgeat", preps);
+    expect(m4?.name.toLowerCase()).toContain("orgeat");
+    // No weak false positives
+    expect(matchPrep("Gin", preps)).toBeNull();
+    expect(matchPrep("青柠汁", preps)?.name ?? null).not.toBe(undefined);
+  });
+
+  it("suggests homemade prep templates for known unmatched ingredients", () => {
+    const s1 = suggestPrep("Cinnamon Syrup");
+    expect(s1?.type).toBe("syrup");
+    expect(s1?.name).toBe("Cinnamon Syrup");
+    const s2 = suggestPrep("法勒南");
+    expect(s2?.type).toBe("cordial");
+    const s3 = suggestPrep("咖啡利口酒");
+    expect(s3?.type).toBe("liqueur");
+    const s4 = suggestPrep("chili-infused tequila");
+    expect(s4?.type).toBe("infusion");
+    expect(s4?.name).toBe("chili-infused tequila");
+    // Non-homemade ingredients yield no suggestion
+    expect(suggestPrep("Angostura Bitters (bottled)")).toBeNull();
+    expect(suggestPrep("Lime Juice")).toBeNull();
   });
 });
 

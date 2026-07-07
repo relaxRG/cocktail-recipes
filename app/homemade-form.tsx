@@ -23,13 +23,20 @@ export default function HomemadeFormScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id, prefillName, prefillNameAlt, prefillType } = useLocalSearchParams<{
+    id?: string;
+    prefillName?: string;
+    prefillNameAlt?: string;
+    prefillType?: string;
+  }>();
   const { getPrep, addPrep, updatePrep } = useHomemadeStore();
   const editing = getPrep(id);
 
-  const [name, setName] = useState(editing?.name ?? "");
-  const [nameAlt, setNameAlt] = useState(editing?.nameAlt ?? "");
-  const [type, setType] = useState(editing?.type ?? "syrup");
+  const [name, setName] = useState(editing?.name ?? prefillName ?? "");
+  const [nameAlt, setNameAlt] = useState(editing?.nameAlt ?? prefillNameAlt ?? "");
+  const [type, setType] = useState(
+    editing?.type ?? (prefillType && PREP_TYPES.some((p) => p.key === prefillType) ? prefillType : "syrup"),
+  );
   const [ingredientsText, setIngredientsText] = useState(
     editing ? editing.ingredients.join("\n") : "",
   );
