@@ -64,6 +64,7 @@ interface RecipeStore {
   updateRecipe: (id: string, draft: RecipeDraft) => void;
   deleteRecipe: (id: string) => void;
   toggleFavorite: (id: string) => void;
+  toggleMade: (id: string) => void;
   addCategory: (name: string, color: string) => Category | null;
   renameCategory: (id: string, name: string) => void;
   setCategoryNameEn: (id: string, nameEn: string) => void;
@@ -188,6 +189,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       const recipe: Recipe = {
         id: genId(),
         favorite: false,
+        made: false,
         createdAt: now,
         updatedAt: now,
         strengthBand: "",
@@ -235,6 +237,18 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       persistRecipes(
         recipesRef.current.map((r) =>
           r.id === id ? { ...r, favorite: !r.favorite, updatedAt: Date.now() } : r,
+        ),
+      );
+    },
+    [persistRecipes],
+  );
+
+  /** 切换"做过/未做过"状态 */
+  const toggleMade = useCallback(
+    (id: string) => {
+      persistRecipes(
+        recipesRef.current.map((r) =>
+          r.id === id ? { ...r, made: !r.made, updatedAt: Date.now() } : r,
         ),
       );
     },
@@ -558,6 +572,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       updateRecipe,
       deleteRecipe,
       toggleFavorite,
+      toggleMade,
       addCategory,
       renameCategory,
       setCategoryNameEn,
@@ -592,6 +607,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       updateRecipe,
       deleteRecipe,
       toggleFavorite,
+      toggleMade,
       addCategory,
       renameCategory,
       setCategoryNameEn,

@@ -92,6 +92,17 @@ export function RecipeCard({
               );
             })()}
             <View className="flex-row items-center flex-wrap mt-1.5" style={{ gap: 6 }}>
+              {recipe.made ? (
+                <View
+                  className="flex-row items-center px-2 py-0.5 rounded-full"
+                  style={{ backgroundColor: colors.success + "1E", gap: 3 }}
+                >
+                  <IconSymbol name="checkmark.circle.fill" size={11} color={colors.success} />
+                  <Text className="text-xs font-medium" style={{ color: colors.success }}>
+                    {t("made.badge")}
+                  </Text>
+                </View>
+              ) : null}
               {category ? (
                 <View
                   className="px-2 py-0.5 rounded-full"

@@ -4,6 +4,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import * as Haptics from "expo-haptics";
 
 import { RecipeCard } from "@/components/recipe-card";
+import { SwipeableRecipeRow } from "@/components/swipeable-recipe-row";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -29,7 +30,7 @@ export function RecipeGroupCard({
 
   // 单版本直接渲染普通卡片
   if (recipes.length <= 1) {
-    return <RecipeCard recipe={recipes[0]} isFirst={isFirst} isLast={isLast} />;
+    return <SwipeableRecipeRow recipe={recipes[0]} isFirst={isFirst} isLast={isLast} />;
   }
 
   const head = recipes[0];
@@ -115,7 +116,12 @@ export function RecipeGroupCard({
           ]}
         >
           {recipes.map((r, i) => (
-            <RecipeCard key={r.id} recipe={r} isFirst={false} isLast={i === recipes.length - 1 && isLast} />
+            <SwipeableRecipeRow
+              key={r.id}
+              recipe={r}
+              isFirst={false}
+              isLast={i === recipes.length - 1 && isLast}
+            />
           ))}
         </View>
       ) : null}

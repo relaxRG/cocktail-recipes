@@ -116,6 +116,8 @@ export interface Recipe {
   /** 注意事项(原 notes) */
   notes: string;
   favorite: boolean;
+  /** 做过/未做过:是否已亲手制作过该配方 */
+  made: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -142,6 +144,7 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
     garnish: "",
     notes: "",
     favorite: false,
+    made: false,
     createdAt: Date.now(),
     updatedAt: Date.now(),
     ...r,
@@ -155,6 +158,7 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
   base.strengthBand = (r.strengthBand ?? "") as StrengthBand | "";
   base.abv = typeof r.abv === "number" && isFinite(r.abv) ? r.abv : null;
   base.nameEn = r.nameEn ?? "";
+  base.made = r.made === true;
   // 旧数据迁移:混写名("尼格罗尼 Negroni")自动拆分为中英字段
   if (!base.nameEn) {
     const split = splitBilingualName(base.name);

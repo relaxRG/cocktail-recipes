@@ -21,6 +21,8 @@ export interface HomemadePrep {
   storage: string;
   notes: string;
   builtin: boolean;
+  /** 做过/未做过:是否已亲手制作过该自制品 */
+  made: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -135,6 +137,7 @@ export function normalizePrep(p: Partial<HomemadePrep> & { id: string }): Homema
     storage: p.storage ?? "",
     notes: p.notes ?? "",
     builtin: p.builtin ?? false,
+    made: p.made === true,
     createdAt: p.createdAt ?? Date.now(),
     updatedAt: p.updatedAt ?? Date.now(),
   };

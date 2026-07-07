@@ -29,9 +29,14 @@ interface HomemadeStore {
   preps: HomemadePrep[];
   sections: PrepSection[];
   types: PrepType[];
-  addPrep: (p: Omit<HomemadePrep, "id" | "createdAt" | "updatedAt" | "builtin">) => HomemadePrep;
+  addPrep: (
+    p: Omit<HomemadePrep, "id" | "createdAt" | "updatedAt" | "builtin" | "made"> & {
+      made?: boolean;
+    },
+  ) => HomemadePrep;
   updatePrep: (id: string, patch: Partial<HomemadePrep>) => void;
   deletePrep: (id: string) => void;
+  togglePrepMade: (id: string) => void;
   importSamples: () => number;
   getPrep: (id: string | undefined) => HomemadePrep | undefined;
   // Section management
@@ -133,6 +138,16 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
   const deletePrep = useCallback<HomemadeStore["deletePrep"]>(
     (id) => {
       persist(preps.filter((p) => p.id !== id));
+    },
+    [preps, persist],
+  );
+
+  /** 切换自制品"做过/未做过"状态 */
+  const togglePrepMade = useCallback<HomemadeStore["togglePrepMade"]>(
+    (id) => {
+      persist(
+        preps.map((p) => (p.id === id ? { ...p, made: !p.made, updatedAt: Date.now() } : p)),
+      );
     },
     [preps, persist],
   );
@@ -283,6 +298,7 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
       addPrep,
       updatePrep,
       deletePrep,
+      togglePrepMade,
       importSamples,
       getPrep,
       addSection,
@@ -303,6 +319,7 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
       addPrep,
       updatePrep,
       deletePrep,
+      togglePrepMade,
       importSamples,
       getPrep,
       addSection,

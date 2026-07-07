@@ -15,10 +15,11 @@ export function buildSampleRecipes(): Recipe[] {
   const mk = (
     partial: Omit<
       Recipe,
-      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "source" | "story" | "flavorDesc" | "strengthBand" | "abv" | "nameEn"
+      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "source" | "story" | "flavorDesc" | "strengthBand" | "abv" | "nameEn" | "made"
     > & {
       notes?: string;
       favorite?: boolean;
+      made?: boolean;
       variantOf?: string;
       codexFamily?: string;
       flavors?: string[];
@@ -36,6 +37,7 @@ export function buildSampleRecipes(): Recipe[] {
     return {
       id: genId() + "-" + offset,
       favorite: partial.favorite ?? false,
+      made: partial.made ?? false,
       notes: partial.notes ?? "",
       variantOf: partial.variantOf ?? "",
       codexFamily: partial.codexFamily ?? "",

@@ -29,6 +29,7 @@ export function buildSamplePreps(): HomemadePrep[] {
     storage,
     notes,
     builtin: true,
+    made: false,
     createdAt: now + i,
     updatedAt: now + i++,
   });

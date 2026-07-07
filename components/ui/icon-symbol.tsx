@@ -39,6 +39,8 @@ const MAPPING = {
   "chevron.left": "chevron-left",
   "xmark": "close",
   "checkmark": "check",
+  "checkmark.circle": "radio-button-unchecked",
+  "checkmark.circle.fill": "check-circle",
   "minus.circle.fill": "remove-circle",
   "plus.circle.fill": "add-circle",
   "sparkles": "auto-awesome",

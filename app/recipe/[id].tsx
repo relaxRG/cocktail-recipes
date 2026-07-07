@@ -22,7 +22,7 @@ export default function RecipeDetailScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
-  const { getRecipe, getCategory, toggleFavorite, deleteRecipe, tags } = useRecipeStore();
+  const { getRecipe, getCategory, toggleFavorite, toggleMade, deleteRecipe, tags } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
   const recipe = getRecipe(id);
@@ -67,6 +67,13 @@ export default function RecipeDetailScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     toggleFavorite(recipe.id);
+  };
+
+  const handleMade = () => {
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    toggleMade(recipe.id);
   };
 
   const confirmDelete = () => {
@@ -118,6 +125,17 @@ export default function RecipeDetailScreen() {
           <IconSymbol name="chevron.left" size={26} color={colors.foreground} />
         </Pressable>
         <View className="flex-row items-center" style={{ gap: 18 }}>
+          <Pressable
+            onPress={handleMade}
+            hitSlop={8}
+            style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+          >
+            <IconSymbol
+              name={recipe.made ? "checkmark.circle.fill" : "checkmark.circle"}
+              size={24}
+              color={recipe.made ? colors.success : colors.muted}
+            />
+          </Pressable>
           <Pressable
             onPress={handleFavorite}
             hitSlop={8}

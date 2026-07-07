@@ -19,7 +19,7 @@ export default function HomemadeDetailScreen() {
   const router = useRouter();
   const { t, lang } = useI18n();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getPrep, deletePrep, types } = useHomemadeStore();
+  const { getPrep, deletePrep, togglePrepMade, types } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const prep = getPrep(id);
 
@@ -96,6 +96,22 @@ export default function HomemadeDetailScreen() {
           <IconSymbol name="chevron.left" size={26} color={colors.foreground} />
         </Pressable>
         <View className="flex-1" />
+        <Pressable
+          onPress={() => {
+            if (Platform.OS !== "web") {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            }
+            togglePrepMade(prep.id);
+          }}
+          hitSlop={8}
+          style={({ pressed }) => [pressed && { opacity: 0.6 }, { marginRight: 18 }]}
+        >
+          <IconSymbol
+            name={prep.made ? "checkmark.circle.fill" : "checkmark.circle"}
+            size={23}
+            color={prep.made ? colors.success : colors.muted}
+          />
+        </Pressable>
         <Pressable
           onPress={() => router.push({ pathname: "/homemade-form", params: { id: prep.id } })}
           hitSlop={8}

@@ -13,8 +13,8 @@ import {
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { RecipeCard } from "@/components/recipe-card";
 import { RecipeGroupCard } from "@/components/recipe-group-card";
+import { SwipeableRecipeRow } from "@/components/swipeable-recipe-row";
 import { ScreenContainer } from "@/components/screen-container";
 import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -348,7 +348,7 @@ export default function RecipesScreen() {
                 isLast={index === grouped.length - 1}
               />
             ) : (
-              <RecipeCard
+              <SwipeableRecipeRow
                 recipe={item.items[0]}
                 isFirst={index === 0}
                 isLast={index === grouped.length - 1}

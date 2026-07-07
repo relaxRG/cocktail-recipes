@@ -2,6 +2,7 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
+  Alert,
   FlatList,
   Platform,
   Pressable,
@@ -15,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
+import { SwipeableRow } from "@/components/swipeable-row";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -416,9 +418,58 @@ function PrepRow({
   isLast: boolean;
   bottles: Bottle[];
 }) {
-  // (原有实现见下)
+  const colors = useColors();
+  const router = useRouter();
+  const { t, lang } = useI18n();
+  const { deletePrep, togglePrepMade } = useHomemadeStore();
+
+  const confirmDelete = () => {
+    const name = displayNames(prep.name, prep.nameAlt, lang).primary;
+    const doDelete = () => deletePrep(prep.id);
+    if (Platform.OS === "web") {
+      // eslint-disable-next-line no-alert
+      if (typeof window !== "undefined" && window.confirm(t("tags.delete.confirm", { name }))) {
+        doDelete();
+      }
+      return;
+    }
+    Alert.alert(t("hm.delete.title"), t("tags.delete.confirm", { name }), [
+      { text: t("common.cancel"), style: "cancel" },
+      { text: t("common.delete"), style: "destructive", onPress: doDelete },
+    ]);
+  };
+
   return (
-    <PrepRowInner prep={prep} isFirst={isFirst} isLast={isLast} bottles={bottles} />
+    <SwipeableRow
+      leftActions={[
+        {
+          key: "made",
+          label: prep.made ? t("made.unmark") : t("made.mark"),
+          icon: prep.made ? "checkmark.circle" : "checkmark.circle.fill",
+          color: colors.success,
+          onPress: () => togglePrepMade(prep.id),
+        },
+      ]}
+      rightActions={[
+        {
+          key: "edit",
+          label: t("common.edit"),
+          icon: "pencil",
+          color: colors.primary,
+          onPress: () =>
+            router.push({ pathname: "/homemade-form", params: { id: prep.id } }),
+        },
+        {
+          key: "delete",
+          label: t("common.delete"),
+          icon: "trash.fill",
+          color: colors.error,
+          onPress: confirmDelete,
+        },
+      ]}
+    >
+      <PrepRowInner prep={prep} isFirst={isFirst} isLast={isLast} bottles={bottles} />
+    </SwipeableRow>
   );
 }
 
@@ -517,7 +568,7 @@ function PrepGroupRow({
           ]}
         >
           {preps.map((p, i) => (
-            <PrepRowInner
+            <PrepRow
               key={p.id}
               prep={p}
               isFirst={false}
@@ -577,6 +628,13 @@ function PrepRowInner({
               </Text>
             ) : null}
             <View className="flex-row items-center mt-1.5" style={{ gap: 6, flexWrap: "wrap" }}>
+              {prep.made ? (
+                <View style={[styles.badge, { backgroundColor: colors.success + "1E" }]}>
+                  <Text style={[styles.badgeText, { color: colors.success }]}>
+                    {t("made.badge")}
+                  </Text>
+                </View>
+              ) : null}
               <View style={[styles.badge, { backgroundColor: colors.primary + "22" }]}>
                 <Text style={[styles.badgeText, { color: colors.primary }]}>
                   {prepTypeLabelIn(types, prep.type, lang)}
