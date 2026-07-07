@@ -55,10 +55,12 @@ interface RecipeStore {
   renameCategory: (id: string, name: string) => void;
   setCategoryColor: (id: string, color: string) => void;
   deleteCategory: (id: string) => void;
+  reorderCategories: (orderedIds: string[]) => void;
   addTag: (kind: TagKind, name: string, color: string) => TagItem | null;
   renameTag: (id: string, name: string) => void;
   setTagColor: (id: string, color: string) => void;
   deleteTag: (id: string) => void;
+  reorderTags: (kind: TagKind, orderedIds: string[]) => void;
   tagsOf: (kind: TagKind) => TagItem[];
   importSamples: () => void;
   getRecipe: (id: string | undefined) => Recipe | undefined;
@@ -296,6 +298,43 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     [tags],
   );
 
+  const reorderCategories = useCallback(
+    (orderedIds: string[]) => {
+      const map = new Map(categoriesRef.current.map((c) => [c.id, c]));
+      const next: Category[] = [];
+      for (const id of orderedIds) {
+        const item = map.get(id);
+        if (item) {
+          next.push(item);
+          map.delete(id);
+        }
+      }
+      // 保留不在 orderedIds 中的项(容错)
+      for (const rest of map.values()) next.push(rest);
+      persistCategories(next);
+    },
+    [persistCategories],
+  );
+
+  const reorderTags = useCallback(
+    (kind: TagKind, orderedIds: string[]) => {
+      const sameKind = tagsRef.current.filter((t) => t.kind === kind);
+      const others = tagsRef.current.filter((t) => t.kind !== kind);
+      const map = new Map(sameKind.map((t) => [t.id, t]));
+      const next: TagItem[] = [];
+      for (const id of orderedIds) {
+        const item = map.get(id);
+        if (item) {
+          next.push(item);
+          map.delete(id);
+        }
+      }
+      for (const rest of map.values()) next.push(rest);
+      persistTags([...others, ...next]);
+    },
+    [persistTags],
+  );
+
   const deleteCategory = useCallback(
     (id: string) => {
       persistCategories(categoriesRef.current.filter((c) => c.id !== id));
@@ -341,10 +380,12 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       renameCategory,
       setCategoryColor,
       deleteCategory,
+      reorderCategories,
       addTag,
       renameTag,
       setTagColor,
       deleteTag,
+      reorderTags,
       tagsOf,
       importSamples,
       getRecipe,
@@ -363,10 +404,12 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       renameCategory,
       setCategoryColor,
       deleteCategory,
+      reorderCategories,
       addTag,
       renameTag,
       setTagColor,
       deleteTag,
+      reorderTags,
       tagsOf,
       importSamples,
       getRecipe,

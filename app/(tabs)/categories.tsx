@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Platform,
@@ -10,6 +10,13 @@ import {
   View,
 } from "react-native";
 import * as Haptics from "expo-haptics";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -34,6 +41,66 @@ interface RowData {
   count: number;
 }
 
+/** 行高(含 mb-2.5 间距),用于拖拽位移换算 */
+const ROW_HEIGHT = 68;
+
+function DraggableRow({
+  index,
+  total,
+  onMove,
+  onDragStateChange,
+  children,
+}: {
+  index: number;
+  total: number;
+  onMove: (from: number, to: number) => void;
+  onDragStateChange: (dragging: boolean) => void;
+  children: React.ReactNode;
+}) {
+  const translateY = useSharedValue(0);
+  const active = useSharedValue(false);
+
+  const pan = Gesture.Pan()
+    .activateAfterLongPress(200)
+    .onStart(() => {
+      active.value = true;
+      runOnJS(onDragStateChange)(true);
+    })
+    .onUpdate((e) => {
+      translateY.value = e.translationY;
+    })
+    .onEnd((e) => {
+      const delta = Math.round(e.translationY / ROW_HEIGHT);
+      const to = Math.max(0, Math.min(total - 1, index + delta));
+      translateY.value = 0;
+      active.value = false;
+      runOnJS(onDragStateChange)(false);
+      if (to !== index) {
+        runOnJS(onMove)(index, to);
+      }
+    })
+    .onFinalize(() => {
+      translateY.value = 0;
+      active.value = false;
+      runOnJS(onDragStateChange)(false);
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: translateY.value },
+      { scale: withTiming(active.value ? 1.03 : 1, { duration: 120 }) },
+    ],
+    zIndex: active.value ? 10 : 0,
+    opacity: withTiming(active.value ? 0.92 : 1, { duration: 120 }),
+  }));
+
+  return (
+    <GestureDetector gesture={pan}>
+      <Animated.View style={animatedStyle}>{children}</Animated.View>
+    </GestureDetector>
+  );
+}
+
 export default function CategoriesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -45,10 +112,12 @@ export default function CategoriesScreen() {
     renameCategory,
     setCategoryColor,
     deleteCategory,
+    reorderCategories,
     addTag,
     renameTag,
     setTagColor,
     deleteTag,
+    reorderTags,
   } = useRecipeStore();
 
   const [section, setSection] = useState<SectionKey>("category");
@@ -57,6 +126,7 @@ export default function CategoriesScreen() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [colorPickerId, setColorPickerId] = useState<string | null>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
 
   const rows: RowData[] = useMemo(() => {
     if (section === "category") {
@@ -83,6 +153,28 @@ export default function CategoriesScreen() {
   }, [section, categories, tags, recipes]);
 
   const sectionLabel = SECTIONS.find((s) => s.key === section)!.label;
+
+  const applyOrder = useCallback(
+    (orderedIds: string[]) => {
+      if (section === "category") reorderCategories(orderedIds);
+      else reorderTags(section, orderedIds);
+    },
+    [section, reorderCategories, reorderTags],
+  );
+
+  const moveRow = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      if (toIndex < 0 || toIndex >= rows.length || fromIndex === toIndex) return;
+      const ids = rows.map((r) => r.id);
+      const [moved] = ids.splice(fromIndex, 1);
+      ids.splice(toIndex, 0, moved);
+      applyOrder(ids);
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    },
+    [rows, applyOrder],
+  );
 
   const handleAdd = () => {
     const created =
@@ -180,6 +272,7 @@ export default function CategoriesScreen() {
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 + insets.bottom }}
         keyboardShouldPersistTaps="handled"
+        scrollEnabled={draggingId === null}
       >
         {/* Add new */}
         <View className="bg-surface border border-border rounded-2xl p-4 mb-4">
@@ -228,15 +321,25 @@ export default function CategoriesScreen() {
             </Text>
           </View>
         ) : (
-          rows.map((item) => {
+          rows.map((item, index) => {
             const isEditing = editingId === item.id;
             const showPicker = colorPickerId === item.id;
             return (
-              <View
+              <DraggableRow
                 key={item.id}
+                index={index}
+                total={rows.length}
+                onMove={moveRow}
+                onDragStateChange={(dragging) => setDraggingId(dragging ? item.id : null)}
+              >
+              <View
                 className="bg-surface border border-border rounded-2xl px-4 py-3 mb-2.5"
+                style={draggingId === item.id ? { borderColor: colors.primary } : undefined}
               >
                 <View className="flex-row items-center">
+                  <View style={{ marginRight: 10 }}>
+                    <IconSymbol name="line.3.horizontal" size={18} color={colors.muted} />
+                  </View>
                   <Pressable
                     onPress={() => setColorPickerId(showPicker ? null : item.id)}
                     hitSlop={6}
@@ -303,12 +406,13 @@ export default function CategoriesScreen() {
                   </View>
                 ) : null}
               </View>
+              </DraggableRow>
             );
           })
         )}
 
         <Text className="text-xs text-muted mt-2 px-1" style={{ lineHeight: 18 }}>
-          点击色点可为标签更换颜色;新增的标签会出现在配方表单与首页筛选中。
+          点击色点可换颜色;长按标签行上下拖动可调整顺序,排序会同步到表单与筛选。
         </Text>
       </ScrollView>
     </ScreenContainer>

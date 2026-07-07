@@ -129,4 +129,26 @@ describe("recipes data layer", () => {
     expect(ids.size).toBe(tags.length);
     expect(tags.every((t) => /^#[0-9A-Fa-f]{6}$/.test(t.color))).toBe(true);
   });
+
+  it("reorders tags within a kind while preserving other kinds", () => {
+    // 模拟 store 中 reorderTags 的核心逻辑
+    const tags = buildDefaultTags();
+    const flavors = tags.filter((t) => t.kind === "flavor");
+    const others = tags.filter((t) => t.kind !== "flavor");
+    const orderedIds = [...flavors.map((t) => t.id)].reverse();
+    const map = new Map(flavors.map((t) => [t.id, t]));
+    const next: typeof flavors = [];
+    for (const id of orderedIds) {
+      const item = map.get(id);
+      if (item) {
+        next.push(item);
+        map.delete(id);
+      }
+    }
+    const result = [...others, ...next];
+    expect(result.length).toBe(tags.length);
+    const resultFlavors = result.filter((t) => t.kind === "flavor");
+    expect(resultFlavors[0].name).toBe(flavors[flavors.length - 1].name);
+    expect(resultFlavors[resultFlavors.length - 1].name).toBe(flavors[0].name);
+  });
 });

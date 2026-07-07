@@ -21,6 +21,7 @@ const MAPPING = {
   "wineglass.fill": "local-bar",
   "folder.fill": "folder",
   "plus": "add",
+  "line.3.horizontal": "drag-handle",
   "star.fill": "star",
   "star": "star-border",
   "magnifyingglass": "search",
