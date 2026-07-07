@@ -15,13 +15,14 @@ export function buildSampleRecipes(): Recipe[] {
   const mk = (
     partial: Omit<
       Recipe,
-      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors"
+      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "source"
     > & {
       notes?: string;
       favorite?: boolean;
       variantOf?: string;
       codexFamily?: string;
       flavors?: string[];
+      source?: string;
     },
     offset: number,
   ): Recipe => ({
@@ -31,6 +32,7 @@ export function buildSampleRecipes(): Recipe[] {
     variantOf: partial.variantOf ?? "",
     codexFamily: partial.codexFamily ?? "",
     flavors: partial.flavors ?? [],
+    source: partial.source ?? "",
     createdAt: now + offset,
     updatedAt: now + offset,
     ...partial,
@@ -47,6 +49,7 @@ export function buildSampleRecipes(): Recipe[] {
         strength: "strong",
         codexFamily: "马天尼 Martini",
         flavors: ["苦韵", "草本"],
+        source: "IBA 官方配方",
         ingredients: [
           { id: "i1", name: "金酒", amount: "30ml" },
           { id: "i2", name: "金巴利", amount: "30ml" },

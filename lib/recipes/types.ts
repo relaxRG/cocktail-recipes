@@ -45,6 +45,8 @@ export interface Recipe {
   codexFamily: string;
   /** 风味标签,多选 */
   flavors: string[];
+  /** 引用来源:书籍、网站、调酒师等,如"Cocktail Codex, p.120" */
+  source: string;
   ingredients: Ingredient[];
   steps: string;
   garnish: string;
@@ -65,6 +67,7 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
     variantOf: "",
     codexFamily: "",
     flavors: [],
+    source: "",
     ingredients: [],
     steps: "",
     garnish: "",
@@ -77,6 +80,7 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
   base.variantOf = r.variantOf ?? "";
   base.codexFamily = r.codexFamily ?? "";
   base.flavors = Array.isArray(r.flavors) ? r.flavors : [];
+  base.source = r.source ?? "";
   return base;
 }
 

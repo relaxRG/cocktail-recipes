@@ -218,6 +218,16 @@ export default function RecipeDetailScreen() {
             </View>
           </>
         ) : null}
+
+        {/* Source */}
+        {recipe.source ? (
+          <>
+            <Text className="text-lg font-semibold text-foreground mt-6 mb-2">引用来源</Text>
+            <View className="bg-surface border border-border rounded-2xl p-4">
+              <Text className="text-sm text-muted leading-relaxed">{recipe.source}</Text>
+            </View>
+          </>
+        ) : null}
       </ScrollView>
     </ScreenContainer>
   );

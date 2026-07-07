@@ -29,6 +29,7 @@ export function filterRecipes(
     if (r.garnish.toLowerCase().includes(q)) return true;
     if (r.variantOf.toLowerCase().includes(q)) return true;
     if (r.codexFamily.toLowerCase().includes(q)) return true;
+    if (r.source.toLowerCase().includes(q)) return true;
     if (r.flavors.some((f) => f.toLowerCase().includes(q))) return true;
     return r.ingredients.some((i) => i.name.toLowerCase().includes(q));
   });

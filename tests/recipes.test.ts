@@ -102,9 +102,17 @@ describe("recipes data layer", () => {
     expect(normalized.variantOf).toBe("");
     expect(normalized.codexFamily).toBe("");
     expect(normalized.flavors).toEqual([]);
+    expect(normalized.source).toBe("");
   });
 
   it("exposes six codex families", () => {
     expect(CODEX_FAMILIES.length).toBe(6);
+  });
+
+  it("searches by source text", () => {
+    const recipes = buildSampleRecipes();
+    const result = filterRecipes(recipes, "iba", {});
+    expect(result.length).toBe(1);
+    expect(result[0].name).toContain("尼格罗尼");
   });
 });

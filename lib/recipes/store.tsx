@@ -26,6 +26,7 @@ export interface RecipeDraft {
   variantOf: string;
   codexFamily: string;
   flavors: string[];
+  source: string;
   ingredients: Recipe["ingredients"];
   steps: string;
   garnish: string;

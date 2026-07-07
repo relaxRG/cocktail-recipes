@@ -79,6 +79,7 @@ export default function RecipeFormScreen() {
   const [variantOf, setVariantOf] = useState(editing?.variantOf ?? "");
   const [codexFamily, setCodexFamily] = useState(editing?.codexFamily ?? "");
   const [flavors, setFlavors] = useState<string[]>(editing?.flavors ?? []);
+  const [source, setSource] = useState(editing?.source ?? "");
   const [ingredients, setIngredients] = useState<Ingredient[]>(
     editing?.ingredients?.length
       ? editing.ingredients
@@ -125,6 +126,7 @@ export default function RecipeFormScreen() {
       variantOf: variantOf.trim(),
       codexFamily,
       flavors,
+      source: source.trim(),
       ingredients: ingredients.filter((i) => i.name.trim().length > 0),
       steps: steps.trim(),
       garnish: garnish.trim(),
@@ -392,6 +394,18 @@ export default function RecipeFormScreen() {
             onChangeText={setNotes}
             multiline
             style={{ minHeight: 80, textAlignVertical: "top", lineHeight: 22 }}
+          />
+
+          {/* Source */}
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">引用来源</Text>
+          <TextInput
+            className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
+            placeholder="如:Cocktail Codex p.120 / 某酒吧 / 网站链接"
+            placeholderTextColor={colors.muted}
+            value={source}
+            onChangeText={setSource}
+            returnKeyType="done"
+            style={{ lineHeight: 20 }}
           />
         </ScrollView>
 
