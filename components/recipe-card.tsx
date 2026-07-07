@@ -81,15 +81,19 @@ export function RecipeCard({
             {(() => {
               const dn = displayNames(recipe.nameEn, recipe.name, lang);
               return (
-                <Text className="text-lg font-semibold text-foreground" numberOfLines={1}>
-                  {dn.primary}
+                <View style={{ minHeight: 40 }}>
+                  <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+                    {dn.primary}
+                  </Text>
                   {dn.secondary ? (
-                    <Text className="text-sm font-normal text-muted">  {dn.secondary}</Text>
+                    <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                      {dn.secondary}
+                    </Text>
                   ) : null}
-                </Text>
+                </View>
               );
             })()}
-            <View className="flex-row items-center flex-wrap mt-1.5" style={{ gap: 6 }}>
+            <View className="flex-row items-center mt-1.5" style={{ gap: 6, overflow: "hidden", height: 24 }}>
               {category ? (
                 <View
                   className="px-2 py-0.5 rounded-full"
@@ -140,11 +144,6 @@ export function RecipeCard({
                 </View>
               ) : null}
             </View>
-            {recipe.variantOf ? (
-              <Text className="text-xs text-muted mt-1.5" numberOfLines={1}>
-                {t("card.variant")} · {recipe.variantOf}
-              </Text>
-            ) : null}
           </View>
           <View className="flex-row items-center" style={{ gap: 14 }}>
             <Pressable
@@ -171,11 +170,9 @@ export function RecipeCard({
             </Pressable>
           </View>
         </View>
-        {ingredientSummary ? (
-          <Text className="text-sm text-muted mt-2.5" numberOfLines={1}>
-            {ingredientSummary}
-          </Text>
-        ) : null}
+        <Text className="text-sm text-muted mt-2" numberOfLines={1} style={{ minHeight: 18 }}>
+          {ingredientSummary || " "}
+        </Text>
       </View>
       {!isLast ? (
         <View className="bg-surface">
