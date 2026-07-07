@@ -22,6 +22,7 @@ import { filterPreps, useHomemadeStore } from "@/lib/homemade/store";
 import { useBottleStore } from "@/lib/bottles/store";
 import { estimatePrepCost } from "@/lib/homemade/cost";
 import { primaryTechnique, techniqueLabel, TECHNIQUES, detectPrepTechniques } from "@/lib/homemade/technique";
+import { groupPrepsByName } from "@/lib/recipes/grouping";
 import { Bottle } from "@/lib/bottles/types";
 import {
   HomemadePrep,
@@ -32,7 +33,8 @@ import {
 
 type ListRow =
   | { kind: "header"; key: string; sectionKey: string; count: number }
-  | { kind: "item"; key: string; prep: HomemadePrep; isFirst: boolean; isLast: boolean };
+  | { kind: "item"; key: string; prep: HomemadePrep; isFirst: boolean; isLast: boolean }
+  | { kind: "group"; key: string; preps: HomemadePrep[]; isFirst: boolean; isLast: boolean };
 
 export default function HomemadeScreen() {
   const colors = useColors();
@@ -45,6 +47,8 @@ export default function HomemadeScreen() {
   const [section, setSection] = useState<string>("");
   const [type, setType] = useState<string>("");
   const [technique, setTechnique] = useState<string>("");
+  /** 已展开的同名组 key 集合 */
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const filtered = useMemo(
     () => {
@@ -84,15 +88,23 @@ export default function HomemadeScreen() {
     for (const s of sections) {
       const items = filtered.filter((p) => prepSectionOfIn(types, p.type) === s.key);
       if (items.length === 0) continue;
+      // 同名折叠:分区内同名自制品折叠为一组
+      const groups = groupPrepsByName(items);
       out.push({ kind: "header", key: `h-${s.key}`, sectionKey: s.key, count: items.length });
-      items.forEach((p, idx) => {
-        out.push({
-          kind: "item",
-          key: p.id,
-          prep: p,
-          isFirst: idx === 0,
-          isLast: idx === items.length - 1,
-        });
+      groups.forEach((g, idx) => {
+        const isFirst = idx === 0;
+        const isLast = idx === groups.length - 1;
+        if (g.items.length > 1) {
+          out.push({
+            kind: "group",
+            key: `g-${s.key}-${g.key}`,
+            preps: g.items,
+            isFirst,
+            isLast,
+          });
+        } else {
+          out.push({ kind: "item", key: g.items[0].id, prep: g.items[0], isFirst, isLast });
+        }
       });
     }
     return out;
@@ -319,6 +331,22 @@ export default function HomemadeScreen() {
                   {prepSectionLabelIn(sections, item.sectionKey, lang)} · {item.count}
                 </Text>
               </View>
+            ) : item.kind === "group" ? (
+              <PrepGroupRow
+                preps={item.preps}
+                isFirst={item.isFirst}
+                isLast={item.isLast}
+                expanded={expandedGroups.has(item.key)}
+                onToggle={() =>
+                  setExpandedGroups((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(item.key)) next.delete(item.key);
+                    else next.add(item.key);
+                    return next;
+                  })
+                }
+                bottles={bottles}
+              />
             ) : (
               <PrepRow prep={item.prep} isFirst={item.isFirst} isLast={item.isLast} bottles={bottles} />
             )
@@ -342,6 +370,137 @@ export default function HomemadeScreen() {
 }
 
 function PrepRow({
+  prep,
+  isFirst,
+  isLast,
+  bottles,
+}: {
+  prep: HomemadePrep;
+  isFirst: boolean;
+  isLast: boolean;
+  bottles: Bottle[];
+}) {
+  // (原有实现见下)
+  return (
+    <PrepRowInner prep={prep} isFirst={isFirst} isLast={isLast} bottles={bottles} />
+  );
+}
+
+/** 同名自制品折叠组:组头显示名称与版本数,可展开;提供对比入口 */
+function PrepGroupRow({
+  preps,
+  isFirst,
+  isLast,
+  expanded,
+  onToggle,
+  bottles,
+}: {
+  preps: HomemadePrep[];
+  isFirst: boolean;
+  isLast: boolean;
+  expanded: boolean;
+  onToggle: () => void;
+  bottles: Bottle[];
+}) {
+  const colors = useColors();
+  const router = useRouter();
+  const { t, lang } = useI18n();
+  const head = preps[0];
+  const names = displayNames(head.name, head.nameAlt, lang);
+
+  const handleToggle = () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onToggle();
+  };
+
+  const goCompare = () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    router.push({
+      pathname: "/compare",
+      params: { type: "prep", ids: preps.map((p) => p.id).join(",") },
+    });
+  };
+
+  return (
+    <View>
+      <Pressable onPress={handleToggle} style={({ pressed }) => [pressed && { opacity: 0.7 }]}>
+        <View
+          className="bg-surface px-4 py-3"
+          style={[
+            isFirst && { borderTopLeftRadius: 12, borderTopRightRadius: 12 },
+            isLast && !expanded && { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 },
+          ]}
+        >
+          <View className="flex-row items-center">
+            <View className="flex-1 pr-2">
+              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+                {names.primary}
+                {names.secondary ? (
+                  <Text className="text-xs font-normal text-muted">  {names.secondary}</Text>
+                ) : null}
+              </Text>
+              <View className="flex-row items-center mt-1.5" style={{ gap: 6 }}>
+                <View style={[styles.badge, { backgroundColor: colors.primary + "18" }]}>
+                  <Text style={[styles.badgeText, { color: colors.primary }]}>
+                    {t("group.versions", { n: preps.length })}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={goCompare}
+                  hitSlop={6}
+                  style={({ pressed }) => [
+                    styles.groupCompareBtn,
+                    { borderColor: colors.primary + "66", backgroundColor: colors.primary + "10" },
+                    pressed && { opacity: 0.6 },
+                  ]}
+                >
+                  <IconSymbol name="rectangle.split.2x1" size={11} color={colors.primary} />
+                  <Text style={[styles.badgeText, { color: colors.primary }]}>
+                    {t("group.compare")}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+            <IconSymbol
+              name={expanded ? "chevron.up" : "chevron.down"}
+              size={16}
+              color={colors.muted}
+            />
+          </View>
+        </View>
+      </Pressable>
+      {expanded ? (
+        <View
+          style={[
+            { borderLeftWidth: 3, borderLeftColor: colors.primary + "55" },
+            isLast && { borderBottomLeftRadius: 12, borderBottomRightRadius: 12, overflow: "hidden" },
+          ]}
+        >
+          {preps.map((p, i) => (
+            <PrepRowInner
+              key={p.id}
+              prep={p}
+              isFirst={false}
+              isLast={i === preps.length - 1 && isLast}
+              bottles={bottles}
+            />
+          ))}
+        </View>
+      ) : null}
+      {!isLast ? (
+        <View className="bg-surface">
+          <View className="bg-border" style={{ height: StyleSheet.hairlineWidth, marginLeft: 16 }} />
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function PrepRowInner({
   prep,
   isFirst,
   isLast,
@@ -498,6 +657,15 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "600",
     lineHeight: 15,
+  },
+  groupCompareBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+    borderWidth: 1,
   },
   importBtn: {
     flexDirection: "row",

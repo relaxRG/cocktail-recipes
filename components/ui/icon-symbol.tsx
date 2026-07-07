@@ -22,6 +22,7 @@ const MAPPING = {
   "folder.fill": "folder",
   "chevron.up": "keyboard-arrow-up",
   "chevron.down": "keyboard-arrow-down",
+  "rectangle.split.2x1": "compare",
   "arrow.right": "arrow-forward",
   "slider.horizontal.3": "tune",
   "plus": "add",

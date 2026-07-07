@@ -14,12 +14,14 @@ import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { RecipeCard } from "@/components/recipe-card";
+import { RecipeGroupCard } from "@/components/recipe-group-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { filterRecipes } from "@/lib/recipes/search";
+import { groupRecipesByName } from "@/lib/recipes/grouping";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { CODEX_FAMILIES } from "@/lib/recipes/types";
 
@@ -46,6 +48,9 @@ export default function RecipesScreen() {
       }),
     [recipes, query, filter, codexFilter, flavorFilter],
   );
+
+  /** 同名折叠:同一鸡尾酒的多个版本折叠为一组 */
+  const grouped = useMemo(() => groupRecipesByName(filtered), [filtered]);
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
@@ -218,14 +223,22 @@ export default function RecipesScreen() {
         </View>
       ) : (
         <FlatList
-          data={filtered}
-          keyExtractor={(item) => item.id}
+          data={grouped}
+          keyExtractor={(g) => g.items[0].id}
           renderItem={({ item, index }) => (
-            <RecipeCard
-              recipe={item}
-              isFirst={index === 0}
-              isLast={index === filtered.length - 1}
-            />
+            item.items.length > 1 ? (
+              <RecipeGroupCard
+                recipes={item.items}
+                isFirst={index === 0}
+                isLast={index === grouped.length - 1}
+              />
+            ) : (
+              <RecipeCard
+                recipe={item.items[0]}
+                isFirst={index === 0}
+                isLast={index === grouped.length - 1}
+              />
+            )
           )}
           contentContainerStyle={{
             paddingHorizontal: 20,
