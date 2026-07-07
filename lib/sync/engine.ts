@@ -52,6 +52,9 @@ export type SyncState = {
 let state: SyncState = { enabled: false, syncing: false, lastSyncedAt: null, error: null };
 
 function setState(patch: Partial<SyncState>) {
+  // 仅在实际变化时更新并通知,避免订阅组件陷入 setState 循环
+  const changed = (Object.keys(patch) as (keyof SyncState)[]).some((k) => state[k] !== patch[k]);
+  if (!changed) return;
   state = { ...state, ...patch };
   listeners.forEach((l) => l(state));
 }

@@ -37,21 +37,26 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
   const startedRef = useRef(false);
   const utils = trpc.useUtils();
   const pushMutation = trpc.sync.push.useMutation();
+  // mutation 对象每次渲染都是新引用,存入 ref 避免 effect 依赖循环
+  const pushMutationRef = useRef(pushMutation);
+  pushMutationRef.current = pushMutation;
+  const utilsRef = useRef(utils);
+  utilsRef.current = utils;
 
   useEffect(() => subscribeSyncState(setSyncState), []);
 
   const pushFn = useCallback(
     async (entries: { storageKey: string; value: string; clientUpdatedAt: number }[]) => {
-      await pushMutation.mutateAsync({ entries });
+      await pushMutationRef.current.mutateAsync({ entries });
     },
-    [pushMutation],
+    [],
   );
 
   useEffect(() => {
     if (authLoading) return;
     if (!isAuthenticated || !user) {
       disableSync();
-      setAccessAllowed(null);
+      setAccessAllowed((prev) => (prev === null ? prev : null));
       startedRef.current = false;
       return;
     }
@@ -61,7 +66,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     (async () => {
       try {
-        const pulled = await utils.sync.pull.fetch();
+        const pulled = await utilsRef.current.sync.pull.fetch();
         if (cancelled) return;
         setAccessAllowed(true);
         const overwritten = await runInitialSync(pulled.entries, pushFn);
@@ -85,7 +90,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, isAuthenticated, user, utils, pushFn]);
+  }, [authLoading, isAuthenticated, user?.id, pushFn]);
 
   const login = useCallback(() => {
     void import("@/constants/oauth").then((m) => m.startOAuthLogin());

@@ -194,3 +194,4 @@
 - [ ] 端到端测试、检查点交付并指引发布
 - [x] 网页端 Apple 官网风格宽屏适配(留白/毛玻璃/圆润卡片/居中容器)
 - [x] 修复 global.css 导致 Metro/NativeWind 解析崩溃(登录不可用)
+- [x] 修复 Expo Go 上 maximum update depth exceeded 渲染死循环

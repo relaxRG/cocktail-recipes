@@ -105,3 +105,8 @@
 - components/web-auth-gate.tsx 文件保留但未引用。sync 后端路由/表保留。
 - 重启 dev server 后无新崩溃。App web 预览恢复正常显示 447 配方。
 - 当前预览域名: 8081-ifz0mpj8uabc1h83acyj6-1a396481.sg1.manus.computer (二维码 expo-qr-code.png 已按此生成)。
+
+## 修复 maximum update depth exceeded(2026-07-08)
+- 根因: sync/engine.ts setState 每次创建新 state 对象并通知订阅者,未登录时 SyncProvider effect 每次运行 disableSync→emit 新对象→SyncProvider setState→重渲染→effect 依赖 utils/pushMutation(每渲染新引用)再次运行→死循环。
+- 修复: engine.setState 仅在实际值变化时 emit;provider 中 pushMutation/utils 改用 ref,effect 依赖收敛为 [authLoading, isAuthenticated, user?.id, pushFn],未登录分支 setAccessAllowed 加条件。
+- 验证: 测试 169 通过,web 预览 / 与 /me 正常渲染,日志无新报错。
