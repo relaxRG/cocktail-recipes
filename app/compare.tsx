@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useMemo } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useMemo, useState } from "react";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -48,11 +48,47 @@ export default function CompareScreen() {
   const { t, lang } = useI18n();
   const params = useLocalSearchParams<{ type?: string; ids?: string }>();
   const type = params.type === "prep" ? "prep" : "recipe";
-  const ids = (params.ids ?? "").split(",").filter(Boolean);
+  const initialIds = (params.ids ?? "").split(",").filter(Boolean);
+  const [ids, setIds] = useState<string[]>(initialIds);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  /** 更换模式:非 null 时选中的新对象将替换该 id */
+  const [replaceId, setReplaceId] = useState<string | null>(null);
+  const [pickerQuery, setPickerQuery] = useState("");
 
   const { recipes, getCategory } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps, types } = useHomemadeStore();
+
+  /** 选择器候选:未在对比中的同类型对象,支持搜索 */
+  const pickerCandidates = useMemo(() => {
+    const q = pickerQuery.trim().toLowerCase();
+    const list =
+      type === "prep"
+        ? preps.map((p) => ({ id: p.id, name: p.name, alt: p.nameAlt ?? "" }))
+        : recipes.map((r) => ({ id: r.id, name: r.name, alt: r.nameEn ?? "" }));
+    return list
+      .filter((it) => !ids.includes(it.id))
+      .filter(
+        (it) =>
+          q === "" ||
+          it.name.toLowerCase().includes(q) ||
+          it.alt.toLowerCase().includes(q),
+      )
+      .slice(0, 50);
+  }, [type, preps, recipes, ids, pickerQuery]);
+
+  const removeColumn = (id: string) => {
+    setIds((prev) => prev.filter((x) => x !== id));
+  };
+  const pickCandidate = (id: string) => {
+    setIds((prev) => {
+      if (replaceId) return prev.map((x) => (x === replaceId ? id : x));
+      return prev.length >= 6 ? prev : [...prev, id];
+    });
+    setPickerOpen(false);
+    setReplaceId(null);
+    setPickerQuery("");
+  };
 
   /** 列头与分组行数据 */
   const { columns, sections } = useMemo(() => {
@@ -414,6 +450,28 @@ export default function CompareScreen() {
                   onPress={() => router.push(col.route as never)}
                   style={({ pressed }) => [styles.colHeader, pressed && { opacity: 0.7 }]}
                 >
+                  {/* 列操作:移除 × 与更换 ⇄(仅剩2列时不可移除) */}
+                  <View className="flex-row justify-center mb-1" style={{ gap: 14 }}>
+                    <Pressable
+                      hitSlop={8}
+                      onPress={() => {
+                        setReplaceId(col.id);
+                        setPickerOpen(true);
+                      }}
+                      style={({ pressed }) => [pressed && { opacity: 0.5 }]}
+                    >
+                      <IconSymbol name="arrow.triangle.2.circlepath" size={15} color={colors.primary} />
+                    </Pressable>
+                    {columns.length > 2 ? (
+                      <Pressable
+                        hitSlop={8}
+                        onPress={() => removeColumn(col.id)}
+                        style={({ pressed }) => [pressed && { opacity: 0.5 }]}
+                      >
+                        <IconSymbol name="xmark.circle.fill" size={15} color={colors.muted} />
+                      </Pressable>
+                    ) : null}
+                  </View>
                   <Text
                     className="text-[15px] font-semibold text-foreground text-center"
                     numberOfLines={2}
@@ -431,6 +489,25 @@ export default function CompareScreen() {
                   </Text>
                 </Pressable>
               ))}
+              {/* 添加列 */}
+              {columns.length < 6 ? (
+                <Pressable
+                  onPress={() => {
+                    setReplaceId(null);
+                    setPickerOpen(true);
+                  }}
+                  style={({ pressed }) => [
+                    styles.addCol,
+                    { borderColor: colors.border },
+                    pressed && { opacity: 0.6 },
+                  ]}
+                >
+                  <IconSymbol name="plus.circle.fill" size={22} color={colors.primary} />
+                  <Text className="text-xs mt-1" style={{ color: colors.primary }}>
+                    {t("compare.addItem")}
+                  </Text>
+                </Pressable>
+              ) : null}
             </View>
 
             {/* 分组规格行 */}
@@ -501,6 +578,75 @@ export default function CompareScreen() {
           </View>
         </ScrollView>
       </ScrollView>
+
+      {/* 对象选择器 */}
+      <Modal
+        visible={pickerOpen}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setPickerOpen(false)}
+      >
+        <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.35)" }}>
+          <View
+            className="bg-background rounded-t-2xl px-4 pt-4"
+            style={{ maxHeight: "72%", paddingBottom: 28 }}
+          >
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="text-base font-semibold text-foreground">
+                {replaceId ? t("compare.replaceItem") : t("compare.addItem")}
+              </Text>
+              <Pressable
+                hitSlop={8}
+                onPress={() => {
+                  setPickerOpen(false);
+                  setReplaceId(null);
+                }}
+                style={({ pressed }) => [pressed && { opacity: 0.5 }]}
+              >
+                <IconSymbol name="xmark.circle.fill" size={22} color={colors.muted} />
+              </Pressable>
+            </View>
+            <TextInput
+              value={pickerQuery}
+              onChangeText={setPickerQuery}
+              placeholder={t("compare.pickerSearch")}
+              placeholderTextColor={colors.muted}
+              returnKeyType="done"
+              className="bg-surface rounded-lg px-3 text-foreground"
+              style={{ height: 40, fontSize: 14, marginBottom: 10 }}
+            />
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {pickerCandidates.length === 0 ? (
+                <Text className="text-sm text-muted py-6 text-center">{t("compare.pickerEmpty")}</Text>
+              ) : (
+                pickerCandidates.map((it, i) => (
+                  <Pressable
+                    key={it.id}
+                    onPress={() => pickCandidate(it.id)}
+                    style={({ pressed }) => [
+                      {
+                        paddingVertical: 12,
+                        borderTopWidth: i > 0 ? StyleSheet.hairlineWidth : 0,
+                        borderTopColor: colors.border,
+                      },
+                      pressed && { opacity: 0.6 },
+                    ]}
+                  >
+                    <Text className="text-[15px] text-foreground" numberOfLines={1}>
+                      {it.name}
+                    </Text>
+                    {it.alt ? (
+                      <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                        {it.alt}
+                      </Text>
+                    ) : null}
+                  </Pressable>
+                ))
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </ScreenContainer>
   );
 }
@@ -515,6 +661,16 @@ const styles = StyleSheet.create({
     width: COL_WIDTH,
     paddingHorizontal: 8,
     paddingVertical: 6,
+  },
+  addCol: {
+    width: 76,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderStyle: "dashed",
+    borderRadius: 12,
+    marginBottom: 6,
   },
   specRow: {
     flexDirection: "row",
