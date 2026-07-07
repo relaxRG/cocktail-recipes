@@ -20,7 +20,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { suggestPrep } from "@/lib/homemade/match";
-import { smartLinkIngredient } from "@/lib/recipes/smart-link";
+import { smartLinkIngredient, smartLinkDisplayName } from "@/lib/recipes/smart-link";
 import { analyzeUnknownIngredient } from "@/lib/classify";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useBottleStore } from "@/lib/bottles/store";
@@ -709,33 +709,71 @@ export default function RecipeFormScreen() {
                   </View>
                 ) : null}
                 {prep ? (
-                  <Pressable
-                    onPress={() =>
-                      router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })
-                    }
-                    style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
-                  >
-                    <IconSymbol name="sparkles" size={12} color={colors.primary} />
-                    <Text className="text-xs" style={{ color: colors.primary, lineHeight: 16 }}>
-                      {t("form.homemade.matched", { name: displayNames(prep.name, prep.nameAlt, lang).primary })}
-                    </Text>
-                    <IconSymbol name="chevron.right" size={11} color={colors.primary} />
-                  </Pressable>
+                  (() => {
+                    const canon = smartLinkDisplayName(link, lang as "zh" | "en");
+                    const differs = canon && canon.primary !== trimmed;
+                    return (
+                      <View className="flex-row items-center flex-wrap" style={{ gap: 10 }}>
+                        <Pressable
+                          onPress={() =>
+                            router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })
+                          }
+                          style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
+                        >
+                          <IconSymbol name="sparkles" size={12} color={colors.primary} />
+                          <Text className="text-xs" style={{ color: colors.primary, lineHeight: 16 }}>
+                            {t("form.homemade.matched", { name: displayNames(prep.name, prep.nameAlt, lang).primary })}
+                          </Text>
+                          <IconSymbol name="chevron.right" size={11} color={colors.primary} />
+                        </Pressable>
+                        {differs ? (
+                          <Pressable
+                            onPress={() => pickSuggestion(ing.id, canon!.primary)}
+                            style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
+                          >
+                            <IconSymbol name="arrow.triangle.2.circlepath" size={12} color={colors.success} />
+                            <Text className="text-xs" style={{ color: colors.success, lineHeight: 16 }}>
+                              {t("form.replaceCanonical", { name: canon!.primary })}
+                            </Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
+                    );
+                  })()
                 ) : linkedBottle ? (
-                  <Pressable
-                    onPress={() =>
-                      router.push({ pathname: "/bottle/[id]", params: { id: linkedBottle.id } })
-                    }
-                    style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
-                  >
-                    <IconSymbol name="link" size={12} color={colors.primary} />
-                    <Text className="text-xs" style={{ color: colors.primary, lineHeight: 16 }}>
-                      {t("form.bottle.matched", {
-                        name: displayNames(linkedBottle.nameEn, linkedBottle.nameZh, lang).primary,
-                      })}
-                    </Text>
-                    <IconSymbol name="chevron.right" size={11} color={colors.primary} />
-                  </Pressable>
+                  (() => {
+                    const canon = smartLinkDisplayName(link, lang as "zh" | "en");
+                    const differs = canon && canon.primary !== trimmed;
+                    return (
+                      <View className="flex-row items-center flex-wrap" style={{ gap: 10 }}>
+                        <Pressable
+                          onPress={() =>
+                            router.push({ pathname: "/bottle/[id]", params: { id: linkedBottle.id } })
+                          }
+                          style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
+                        >
+                          <IconSymbol name="link" size={12} color={colors.primary} />
+                          <Text className="text-xs" style={{ color: colors.primary, lineHeight: 16 }}>
+                            {t("form.bottle.matched", {
+                              name: displayNames(linkedBottle.nameEn, linkedBottle.nameZh, lang).primary,
+                            })}
+                          </Text>
+                          <IconSymbol name="chevron.right" size={11} color={colors.primary} />
+                        </Pressable>
+                        {differs ? (
+                          <Pressable
+                            onPress={() => pickSuggestion(ing.id, canon!.primary)}
+                            style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
+                          >
+                            <IconSymbol name="arrow.triangle.2.circlepath" size={12} color={colors.success} />
+                            <Text className="text-xs" style={{ color: colors.success, lineHeight: 16 }}>
+                              {t("form.replaceCanonical", { name: canon!.primary })}
+                            </Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
+                    );
+                  })()
                 ) : suggestion ? (
                   <Pressable
                     onPress={() =>

@@ -111,3 +111,38 @@ export function smartLinkAll(
   }
   return out;
 }
+
+/**
+ * 智能显示名:配料匹配到产品后,直接用产品在酒库/自制库中的规范名替换显示。
+ * - 中文界面:主名=产品中文名(缺则英文),副名=英文名
+ * - 英文界面:主名=产品英文名(缺则中文),副名=中文名
+ * 未匹配时返回 null(调用方回退到原有 ingredientDisplayName)。
+ */
+export function smartLinkDisplayName(
+  link: SmartLink,
+  lang: "zh" | "en",
+): { primary: string; secondary: string } | null {
+  if (!link) return null;
+  let zh = "";
+  let en = "";
+  if (link.kind === "bottle") {
+    zh = link.bottle.nameZh?.trim() ?? "";
+    en = link.bottle.nameEn?.trim() ?? "";
+  } else {
+    // 自制库约定: name 可能是英文或中文, nameAlt 为另一语言
+    const a = link.prep.name?.trim() ?? "";
+    const b = link.prep.nameAlt?.trim() ?? "";
+    const isZh = (s: string) => /[\u4e00-\u9fff]/.test(s);
+    if (isZh(a)) {
+      zh = a;
+      en = b;
+    } else {
+      en = a;
+      zh = isZh(b) ? b : b || "";
+    }
+  }
+  const primary = lang === "zh" ? zh || en : en || zh;
+  const secondary = lang === "zh" ? (zh ? en : "") : en ? zh : "";
+  if (!primary) return null;
+  return { primary, secondary: secondary === primary ? "" : secondary };
+}

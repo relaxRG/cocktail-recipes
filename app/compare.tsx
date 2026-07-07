@@ -10,8 +10,8 @@ import { displayNames } from "@/lib/utils";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useHomemadeStore } from "@/lib/homemade/store";
-import { estimateRecipeCost } from "@/lib/bottles/cost";
-import { estimateHomemadeIngredientCost, estimatePrepCost } from "@/lib/homemade/cost";
+import { estimatePrepCost } from "@/lib/homemade/cost";
+import { estimateRecipeCostSmart } from "@/lib/recipes/smart-cost";
 import { detectPrepTechniques, techniqueLabel } from "@/lib/homemade/technique";
 import { prepTypeLabelIn } from "@/lib/homemade/types";
 import {
@@ -129,24 +129,8 @@ export default function CompareScreen() {
     }));
     const costs = items.map((r) => {
       if (r.ingredients.length === 0) return null;
-      const base = estimateRecipeCost(r.ingredients, bottles);
-      let total = base.total;
-      let count = base.estimatedCount;
-      for (const item of base.items) {
-        if (item.cost === null && item.reason === "no_bottle") {
-          const hm = estimateHomemadeIngredientCost(
-            item.ingredient.name,
-            item.ingredient.amount,
-            preps,
-            bottles,
-          );
-          if (hm) {
-            total += hm.cost;
-            count += 1;
-          }
-        }
-      }
-      return count > 0 ? total : null;
+      const est = estimateRecipeCostSmart(r.ingredients, bottles, preps);
+      return est.estimatedCount > 0 ? est.total : null;
     });
     const sections: CompareSection[] = [
       {

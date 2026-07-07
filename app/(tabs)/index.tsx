@@ -37,8 +37,7 @@ import { displayNames } from "@/lib/utils";
 import { filterRecipes } from "@/lib/recipes/search";
 import { groupRecipesByName } from "@/lib/recipes/grouping";
 import { sortRecipes, RECIPE_SORTS, RecipeSort } from "@/lib/recipes/sort";
-import { estimateRecipeCost } from "@/lib/bottles/cost";
-import { estimateHomemadeIngredientCost } from "@/lib/homemade/cost";
+import { estimateRecipeCostSmart } from "@/lib/recipes/smart-cost";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
@@ -121,24 +120,8 @@ export default function RecipesScreen() {
       if (cache.has(r.id)) return cache.get(r.id)!;
       let v: number | null = null;
       if (r.ingredients.length > 0) {
-        const base = estimateRecipeCost(r.ingredients, bottles);
-        let total = base.total;
-        let count = base.estimatedCount;
-        for (const item of base.items) {
-          if (item.cost === null && item.reason === "no_bottle") {
-            const hm = estimateHomemadeIngredientCost(
-              item.ingredient.name,
-              item.ingredient.amount,
-              preps,
-              bottles,
-            );
-            if (hm) {
-              total += hm.cost;
-              count += 1;
-            }
-          }
-        }
-        v = count > 0 ? total : null;
+        const est = estimateRecipeCostSmart(r.ingredients, bottles, preps);
+        v = est.estimatedCount > 0 ? est.total : null;
       }
       cache.set(r.id, v);
       return v;

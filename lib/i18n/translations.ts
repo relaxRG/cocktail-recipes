@@ -391,6 +391,7 @@ const dict = {
   "detail.bottle.link": { zh: "酒库:{name}", en: "Bar stock: {name}" },
   "form.homemade.matched": { zh: "已在自制库:{name}", en: "In Homemade Lab: {name}" },
   "form.bottle.matched": { zh: "已链接酒库:{name}", en: "Linked to bar stock: {name}" },
+  "form.replaceCanonical": { zh: "替换为规范名:{name}", en: "Use canonical name: {name}" },
   "form.homemade.add": { zh: "添加到自制库", en: "Add to Homemade Lab" },
   "form.smartAdd.bottle": { zh: "添加到酒库", en: "Add to Bottles" },
   "form.smartAdd.material": { zh: "添加到原材料库", en: "Add to Raw Materials" },

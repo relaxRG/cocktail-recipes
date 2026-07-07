@@ -50,6 +50,7 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
+    // App-only build: web SafeArea override no longer used.
     if (Platform.OS !== "web") return;
     const unsubscribe = subscribeSafeAreaInsets(handleSafeAreaUpdate);
     return () => unsubscribe();

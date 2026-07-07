@@ -133,3 +133,18 @@
 - icon-symbol.tsx 添加 "link": "link" 映射
 - 真实数据验证: 1883 配料匹配 1874 (99.5%), 酒库1665/自制209; 未匹配仅冷水/冰水/蛋/大方冰等通用词(合理)
 - 179 项测试通过(新增 tests/smart-link.test.ts 9项), TS 零错误
+
+## 2026-07-08 智能成本估算修复(进行中)
+- 用户需求1: 配料名直接替换为酒库/自制库规范名+点击跳转 → 已完成(详情页+成本区+表单)
+  - smart-link.ts 加了 smartLinkDisplayName(link, lang) 返回 {primary, secondary}
+  - 表单 recipe-form.tsx: 匹配提示旁增加"替换为规范名"按钮(pickSuggestion 替换输入)
+  - 翻译键 form.replaceCanonical (393行后), 图标 arrow.triangle.2.circlepath→sync (icon-symbol.tsx 49行后)
+  - tests/smart-display.test.ts 4项通过
+- 用户需求2: 修复成本估算价格不显示/总成本算不出
+  - 诊断: 旧 estimateRecipeCost 只用 matchBottle, 1883配料中732 no_bottle, 其中636可被 smartLink 修复
+  - 新建 lib/recipes/smart-cost.ts: estimateRecipeCostSmart 复用 smartLinkIngredient 五级匹配
+    + parseAmountLoose 支持 dash(0.9ml)/drop/pinch/rinse/barspoon/tsp/tbsp/splash/float/top
+    + 自制品走 estimateHomemadeIngredientCost (来自 lib/homemade/cost.ts 362行)
+  - 待办: 详情页 [id].tsx 64-75行改用 estimateRecipeCostSmart; 成本区渲染(396-490行)已用 cLink/cSmart 智能名
+  - 诊断脚本: scripts/diag-cost.ts (旧) / diag-cost2.ts (新,待运行)
+- 详情页成本区当前结构: costEst.items.map 内 row 变量 + cLink 智能链接 + Pressable 跳转 (415-490行)

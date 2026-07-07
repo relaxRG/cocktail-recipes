@@ -10,8 +10,8 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
-import { estimateRecipeCost, formatAmountAsMl } from "@/lib/bottles/cost";
-import { estimateHomemadeIngredientCost } from "@/lib/homemade/cost";
+import { formatAmountAsMl } from "@/lib/bottles/cost";
+import { estimateRecipeCostSmart } from "@/lib/recipes/smart-cost";
 import {
   garnishDisplayText,
   ingredientDisplayName,
@@ -19,7 +19,7 @@ import {
 } from "@/lib/recipes/ingredient-display";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useHomemadeStore } from "@/lib/homemade/store";
-import { smartLinkIngredient } from "@/lib/recipes/smart-link";
+import { smartLinkIngredient, smartLinkDisplayName } from "@/lib/recipes/smart-link";
 import { useRecipeStore } from "@/lib/recipes/store";
 import {
   STRENGTH_LABELS,
@@ -61,18 +61,8 @@ export default function RecipeDetailScreen() {
     const hit = tags.find((tg) => tg.kind === kind && tg.name === name);
     return hit ? displayNames(hit.nameEn ?? "", hit.name, lang).primary : name;
   };
-  const baseCostEst = estimateRecipeCost(recipe.ingredients, bottles);
-  // Fallback: cost un-matched ingredients via homemade prep unit cost
-  const hmCosts = baseCostEst.items.map((item) =>
-    item.cost === null && item.reason === "no_bottle"
-      ? estimateHomemadeIngredientCost(item.ingredient.name, item.ingredient.amount, preps, bottles)
-      : null,
-  );
-  const costEst = {
-    ...baseCostEst,
-    total: baseCostEst.total + hmCosts.reduce((s, h) => s + (h?.cost ?? 0), 0),
-    estimatedCount: baseCostEst.estimatedCount + hmCosts.filter((h) => h !== null).length,
-  };
+  // Smart cost: same 5-level matching as ingredient linking (bottles + homemade preps)
+  const costEst = estimateRecipeCostSmart(recipe.ingredients, bottles, preps);
 
   const handleFavorite = () => {
     if (Platform.OS !== "web") {
@@ -267,15 +257,9 @@ export default function RecipeDetailScreen() {
             recipe.ingredients.map((ing, idx) => (
               (() => {
                 const link = smartLinkIngredient(ing.name, bottles, preps);
-                const linkLabel = link
-                  ? link.kind === "prep"
-                    ? t("detail.homemade.link", {
-                        name: displayNames(link.prep.name, link.prep.nameAlt, lang).primary,
-                      })
-                    : t("detail.bottle.link", {
-                        name: displayNames(link.bottle.nameEn, link.bottle.nameZh, lang).primary,
-                      })
-                  : null;
+                const smart = smartLinkDisplayName(link, lang as "zh" | "en");
+                const primaryName =
+                  smart?.primary ?? ingredientDisplayName(ing.name, lang as "zh" | "en", bottles, preps);
                 const inner = (
                   <View
                     className="flex-row items-center justify-between py-3"
@@ -286,21 +270,25 @@ export default function RecipeDetailScreen() {
                     }
                   >
                     <View className="flex-1 pr-3">
-                      <Text className="text-base text-foreground">
-                        {ingredientDisplayName(ing.name, lang as "zh" | "en", bottles, preps)}
-                      </Text>
-                      {linkLabel ? (
-                        <View className="flex-row items-center mt-1" style={{ gap: 4 }}>
+                      <View className="flex-row items-center" style={{ gap: 5 }}>
+                        <Text
+                          className="text-base"
+                          style={{ color: link ? colors.primary : colors.foreground, flexShrink: 1 }}
+                        >
+                          {primaryName}
+                        </Text>
+                        {link ? (
                           <IconSymbol
-                            name={link!.kind === "prep" ? "sparkles" : "link"}
-                            size={12}
+                            name={link.kind === "prep" ? "sparkles" : "chevron.right"}
+                            size={link.kind === "prep" ? 12 : 11}
                             color={colors.primary}
                           />
-                          <Text className="text-xs" style={{ color: colors.primary }}>
-                            {linkLabel}
-                          </Text>
-                          <IconSymbol name="chevron.right" size={11} color={colors.primary} />
-                        </View>
+                        ) : null}
+                      </View>
+                      {smart?.secondary ? (
+                        <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                          {smart.secondary}
+                        </Text>
                       ) : null}
                     </View>
                     <Text className="text-base text-muted">{formatAmountAsMl(ing.amount)}</Text>
@@ -410,10 +398,15 @@ export default function RecipeDetailScreen() {
                 </Text>
               </View>
               {costEst.items.map((item, idx) => {
-                const hm = hmCosts[idx];
-                return (
+                const cLink = item.link;
+                const cSmart = smartLinkDisplayName(cLink, lang as "zh" | "en");
+                const cName =
+                  cSmart?.primary ??
+                  ingredientDisplayName(item.ingredient.name, lang as "zh" | "en", bottles, preps);
+                const linkedBottle = cLink?.kind === "bottle" ? cLink.bottle : null;
+                const linkedPrep = cLink?.kind === "prep" ? cLink.prep : null;
+                const row = (
                 <View
-                  key={item.ingredient.id}
                   className="flex-row items-center justify-between py-2.5"
                   style={
                     idx > 0
@@ -422,24 +415,33 @@ export default function RecipeDetailScreen() {
                   }
                 >
                   <View className="flex-1 pr-3">
-                    <Text className="text-sm text-foreground" numberOfLines={1}>
-                      {ingredientDisplayName(item.ingredient.name, lang as "zh" | "en", bottles, preps)}
-                    </Text>
-                    {item.bottle && item.cost !== null ? (
+                    <View className="flex-row items-center" style={{ gap: 4 }}>
+                      <Text
+                        className="text-sm"
+                        numberOfLines={1}
+                        style={{ color: cLink ? colors.primary : colors.foreground, flexShrink: 1 }}
+                      >
+                        {cName}
+                      </Text>
+                      {cLink ? (
+                        <IconSymbol name="chevron.right" size={10} color={colors.primary} />
+                      ) : null}
+                    </View>
+                    {linkedBottle && item.cost !== null ? (
                       <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                        {displayNames(item.bottle.nameEn, item.bottle.nameZh, lang).primary} ¥{item.bottle.priceCny}/{item.bottle.volume} ×{" "}
+                        {displayNames(linkedBottle.nameEn, linkedBottle.nameZh, lang).primary} ¥{linkedBottle.priceCny}/{linkedBottle.volume} ×{" "}
                         {item.amountMl?.toFixed(0)}ml
                       </Text>
-                    ) : hm ? (
+                    ) : linkedPrep && item.cost !== null ? (
                       <Text className="text-xs mt-0.5" numberOfLines={1} style={{ color: colors.primary }}>
                         {t("detail.cost.homemade", {
-                          name: displayNames(hm.prep.name, hm.prep.nameAlt, lang).primary,
-                          p: hm.costPer30Ml.toFixed(1),
+                          name: displayNames(linkedPrep.name, linkedPrep.nameAlt, lang).primary,
+                          p: item.amountMl && item.amountMl > 0 ? ((item.cost / item.amountMl) * 30).toFixed(1) : item.cost.toFixed(1),
                         })}
                       </Text>
                     ) : (
                       <Text className="text-xs text-muted mt-0.5">
-                        {item.reason === "no_bottle"
+                        {item.reason === "no_match"
                           ? t("detail.cost.noBottle")
                           : item.reason === "no_amount"
                             ? t("detail.cost.noAmount")
@@ -451,15 +453,26 @@ export default function RecipeDetailScreen() {
                   </View>
                   <Text
                     className="text-sm font-semibold"
-                    style={{ color: item.cost !== null || hm ? colors.foreground : colors.muted }}
+                    style={{ color: item.cost !== null ? colors.foreground : colors.muted }}
                   >
-                    {item.cost !== null
-                      ? `¥${item.cost.toFixed(1)}`
-                      : hm
-                        ? `¥${hm.cost.toFixed(1)}`
-                        : "—"}
+                    {item.cost !== null ? `¥${item.cost.toFixed(1)}` : "—"}
                   </Text>
                 </View>
+                );
+                return cLink ? (
+                  <Pressable
+                    key={item.ingredient.id}
+                    onPress={() =>
+                      cLink.kind === "prep"
+                        ? router.push({ pathname: "/homemade/[id]", params: { id: cLink.prep.id } })
+                        : router.push({ pathname: "/bottle/[id]", params: { id: cLink.bottle.id } })
+                    }
+                    style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                  >
+                    {row}
+                  </Pressable>
+                ) : (
+                  <View key={item.ingredient.id}>{row}</View>
                 );
               })}
               <Text className="text-[11px] text-muted py-2.5" style={{ lineHeight: 15 }}>
