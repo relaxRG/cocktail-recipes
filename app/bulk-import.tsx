@@ -27,7 +27,7 @@ import { classifyPrepGroup, guessPrepType } from "@/lib/homemade/types";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { genId } from "@/lib/recipes/types";
 
-type ItemType = "bottle" | "prep" | "recipe";
+type ItemType = "bottle" | "prep" | "recipe" | "material";
 
 interface ExtractedItem {
   type: ItemType;
@@ -65,8 +65,9 @@ const TYPE_LABEL: Record<ItemType, { zh: string; en: string }> = {
   bottle: { zh: "酒库", en: "Bottle" },
   prep: { zh: "自制", en: "Prep" },
   recipe: { zh: "配方", en: "Recipe" },
+  material: { zh: "原料", en: "Material" },
 };
-const TYPE_ORDER: ItemType[] = ["bottle", "prep", "recipe"];
+const TYPE_ORDER: ItemType[] = ["bottle", "material", "prep", "recipe"];
 
 export default function BulkImportScreen() {
   const colors = useColors();
@@ -193,6 +194,12 @@ export default function BulkImportScreen() {
     [bottleCategories],
   );
 
+  /** material 条目:匹配到原材料库(group=materials)分类,默认"原材料" */
+  const matchMaterialCategory = useCallback((): string => {
+    const mats = bottleCategories.filter((c) => c.group === "materials");
+    return mats.find((c) => c.zh === "原材料")?.zh ?? mats[0]?.zh ?? "原材料";
+  }, [bottleCategories]);
+
   const matchPrepType = useCallback(
     (item: ExtractedItem): string => {
       const hint = `${item.category} ${item.nameZh} ${item.nameEn} ${item.notes} ${(item.prepIngredients ?? []).join(" ")}`;
@@ -222,11 +229,12 @@ export default function BulkImportScreen() {
     const selected = rows.filter((r) => r.checked);
     let count = 0;
     for (const { item } of selected) {
-      if (item.type === "bottle") {
+      if (item.type === "bottle" || item.type === "material") {
         addBottle({
           nameZh: item.nameZh || item.nameEn,
           nameEn: item.nameEn || item.nameZh,
-          category: matchBottleCategory(item.category),
+          category:
+            item.type === "material" ? matchMaterialCategory() : matchBottleCategory(item.category),
           style: item.style,
           brand: item.brand,
           origin: item.origin,
@@ -295,7 +303,7 @@ export default function BulkImportScreen() {
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-  }, [rows, addBottle, addPrep, addRecipe, matchBottleCategory, matchPrepType, matchRecipeCategory, sections, types]);
+  }, [rows, addBottle, addPrep, addRecipe, matchBottleCategory, matchMaterialCategory, matchPrepType, matchRecipeCategory, sections, types]);
 
   const selectedCount = useMemo(() => rows.filter((r) => r.checked).length, [rows]);
   const canExtract = !busy && (Boolean(text.trim()) || Boolean(fileBase64));
