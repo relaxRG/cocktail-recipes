@@ -23,6 +23,7 @@ import { trpc } from "@/lib/trpc";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
 import { useHomemadeStore } from "@/lib/homemade/store";
+import { classifyPrepGroup, guessPrepType } from "@/lib/homemade/types";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { genId } from "@/lib/recipes/types";
 
@@ -194,11 +195,11 @@ export default function BulkImportScreen() {
 
   const matchPrepType = useCallback(
     (item: ExtractedItem): string => {
-      const hint = `${item.category} ${item.notes} ${item.nameZh}`.toLowerCase();
+      const hint = `${item.category} ${item.nameZh} ${item.nameEn} ${item.notes} ${(item.prepIngredients ?? []).join(" ")}`;
+      const guessed = guessPrepType(hint, types);
+      if (guessed) return guessed;
       const hit = types.find((tp) => hint.includes(tp.zh.toLowerCase()) || hint.includes(tp.en.toLowerCase()));
       if (hit) return hit.key;
-      if (hint.includes("糖浆") || hint.includes("syrup"))
-        return types.find((tp) => tp.en.toLowerCase().includes("syrup"))?.key ?? types[0]?.key ?? "";
       return types[types.length - 1]?.key ?? "";
     },
     [types],
@@ -236,10 +237,21 @@ export default function BulkImportScreen() {
         });
         count++;
       } else if (item.type === "prep") {
+        const prepType = matchPrepType(item);
         addPrep({
           name: item.nameEn || item.nameZh,
           nameAlt: item.nameZh,
-          type: matchPrepType(item),
+          type: prepType,
+          abvGroup: classifyPrepGroup({
+            name: item.nameEn,
+            nameAlt: item.nameZh,
+            type: prepType,
+            ingredients: item.prepIngredients,
+            recipe: item.prepRecipe || item.steps,
+            notes: item.notes,
+            sections,
+            types,
+          }),
           ingredients: item.prepIngredients,
           recipe: item.prepRecipe || item.steps,
           yield: item.prepYield,
@@ -283,7 +295,7 @@ export default function BulkImportScreen() {
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-  }, [rows, addBottle, addPrep, addRecipe, matchBottleCategory, matchPrepType, matchRecipeCategory]);
+  }, [rows, addBottle, addPrep, addRecipe, matchBottleCategory, matchPrepType, matchRecipeCategory, sections, types]);
 
   const selectedCount = useMemo(() => rows.filter((r) => r.checked).length, [rows]);
   const canExtract = !busy && (Boolean(text.trim()) || Boolean(fileBase64));

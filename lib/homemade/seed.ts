@@ -22,6 +22,7 @@ export function buildSamplePreps(): HomemadePrep[] {
     name,
     nameAlt,
     type,
+    abvGroup: null,
     ingredients,
     recipe,
     yield: yieldStr,

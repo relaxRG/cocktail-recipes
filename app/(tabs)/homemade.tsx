@@ -41,6 +41,10 @@ import { sortPreps, PREP_SORTS, PrepSort } from "@/lib/recipes/sort";
 import { Bottle } from "@/lib/bottles/types";
 import {
   HomemadePrep,
+  PREP_GROUPS,
+  PrepGroup,
+  prepGroupOf,
+  prepGroupOfSection,
   prepSectionLabelIn,
   prepSectionOfIn,
   prepTypeLabelIn,
@@ -59,8 +63,20 @@ export default function HomemadeScreen() {
   const { ready, preps, importSamples, sections, types, reorderPreps } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const [query, setQuery] = useState("");
+  // 顶层分组:含酒精 / 无酒精(类似酒库的基酒库/酒款库/原材料库)
+  const [group, setGroup] = usePersistedState<PrepGroup>("homemade.group.v1", "alcoholic");
   // 快捷筛选(独立于 Filter 面板,持久化保留):分区 → 类型子分类
-  const [quickSel, setQuickSel] = usePersistedState<QuickSelection>("quick.homemade.v1", {});
+  // 按分组各自独立存储,切组互不影响
+  const [quickSelAlc, setQuickSelAlc] = usePersistedState<QuickSelection>(
+    "quick.homemade.alc.v1",
+    {},
+  );
+  const [quickSelNa, setQuickSelNa] = usePersistedState<QuickSelection>(
+    "quick.homemade.na.v1",
+    {},
+  );
+  const quickSel = group === "alcoholic" ? quickSelAlc : quickSelNa;
+  const setQuickSel = group === "alcoholic" ? setQuickSelAlc : setQuickSelNa;
   // Filter 面板多选筛选状态(与快捷筛选相互独立)
   const [selTypes, setSelTypes] = useState<string[]>([]);
   const [selTechniques, setSelTechniques] = useState<string[]>([]);
@@ -73,9 +89,15 @@ export default function HomemadeScreen() {
   const quickSections = Object.keys(quickSel);
   const quickTypes = useMemo(() => [...new Set(Object.values(quickSel).flat())], [quickSel]);
 
+  // 当前分组内的条目(智能归组:显式 abvGroup 优先,否则按类型→分区推断)
+  const groupPreps = useMemo(
+    () => preps.filter((p) => prepGroupOf(p, sections, types) === group),
+    [preps, sections, types, group],
+  );
+
   const filtered = useMemo(
     () => {
-      let base = filterPreps(preps, query, undefined, undefined, types);
+      let base = filterPreps(groupPreps, query, undefined, undefined, types);
       // 快捷筛选:分区(任一命中)+ 类型细化(与面板筛选取交集)
       if (quickSections.length > 0) {
         base = base.filter((p) => quickSections.includes(prepSectionOfIn(types, p.type)));
@@ -90,7 +112,7 @@ export default function HomemadeScreen() {
       }
       return base;
     },
-    [preps, query, selTypes, quickSections, quickTypes, types, selTechniques],
+    [groupPreps, query, selTypes, quickSections, quickTypes, types, selTechniques],
   );
 
   /** 成本函数(排序用):每 30ml 成本,退化为批次成本 */
@@ -116,23 +138,25 @@ export default function HomemadeScreen() {
     [filtered, sort, costOf, lang],
   );
 
-  // 分区筛选:仅显示库内实际存在的分区
+  // 分区筛选:仅显示当前分组内实际存在的分区
   const usedSections = useMemo(() => {
-    const present = new Set(preps.map((p) => prepSectionOfIn(types, p.type)));
-    return sections.filter((s) => present.has(s.key));
-  }, [preps, sections, types]);
+    const present = new Set(groupPreps.map((p) => prepSectionOfIn(types, p.type)));
+    return sections.filter(
+      (s) => present.has(s.key) && prepGroupOfSection(sections, s.key) === group,
+    );
+  }, [groupPreps, sections, types, group]);
 
-  // 类型选项(Filter 面板用):库内存在的全部类型
+  // 类型选项(Filter 面板用):当前分组内存在的全部类型
   const usedTypes = useMemo(() => {
-    const present = new Set(preps.map((p) => p.type));
+    const present = new Set(groupPreps.map((p) => p.type));
     return types.filter((pt) => present.has(pt.key));
-  }, [preps, types]);
+  }, [groupPreps, types]);
 
   /** 快捷筛选大分类:分区;子分类 = 该分区下库内存在的类型 */
   const quickParents: QuickParentOption[] = useMemo(
     () =>
       usedSections.map((s) => {
-        const present = new Set(preps.map((p) => p.type));
+        const present = new Set(groupPreps.map((p) => p.type));
         const children = types
           .filter((pt) => pt.section === s.key && present.has(pt.key))
           .map((pt) => ({ value: pt.key, label: lang === "en" ? pt.en : pt.zh }));
@@ -142,17 +166,17 @@ export default function HomemadeScreen() {
           children,
         };
       }),
-    [usedSections, preps, types, lang],
+    [usedSections, groupPreps, types, lang],
   );
 
-  // 工艺筛选:仅显示库内实际识别出的工艺(按 TECHNIQUES 声明顺序)
+  // 工艺筛选:仅显示当前分组内实际识别出的工艺(按 TECHNIQUES 声明顺序)
   const usedTechniques = useMemo(() => {
     const present = new Set<string>();
-    for (const p of preps) {
+    for (const p of groupPreps) {
       for (const k of detectPrepTechniques(p)) present.add(k);
     }
     return TECHNIQUES.filter((tk) => present.has(tk.key));
-  }, [preps]);
+  }, [groupPreps]);
 
   /** 筛选面板维度定义:类型 + 工艺(分区保留在快捷 chip 行) */
   const dimensions: FilterDimension[] = [
@@ -239,7 +263,10 @@ export default function HomemadeScreen() {
   // 按分区分组的行数据(分区标题 + 各分区内的 inset group)
   const rows = useMemo<ListRow[]>(() => {
     const out: ListRow[] = [];
-    for (const s of sections) {
+    const groupSections = sections.filter(
+      (s) => prepGroupOfSection(sections, s.key) === group,
+    );
+    for (const s of groupSections) {
       const items = sorted.filter((p) => prepSectionOfIn(types, p.type) === s.key);
       if (items.length === 0) continue;
       // 同名折叠:分区内同名自制品折叠为一组
@@ -261,8 +288,27 @@ export default function HomemadeScreen() {
         }
       });
     }
+    // 分区归属与推断分组不一致的条目(如手动覆盖 abvGroup)兜底展示
+    const shown = new Set(
+      out.flatMap((r) =>
+        r.kind === "item" ? [r.prep.id] : r.kind === "group" ? r.preps.map((p) => p.id) : [],
+      ),
+    );
+    const rest = sorted.filter((p) => !shown.has(p.id));
+    if (rest.length > 0) {
+      out.push({ kind: "header", key: "h-__rest", sectionKey: "misc", count: rest.length });
+      rest.forEach((p, idx) =>
+        out.push({
+          kind: "item",
+          key: p.id,
+          prep: p,
+          isFirst: idx === 0,
+          isLast: idx === rest.length - 1,
+        }),
+      );
+    }
     return out;
-  }, [sorted, sections, types]);
+  }, [sorted, sections, types, group]);
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
@@ -295,7 +341,47 @@ export default function HomemadeScreen() {
       <View className="px-5 pt-2 pb-1 flex-row items-end">
         <View className="flex-1">
           <Text className="text-3xl font-bold text-foreground">{t("hm.title")}</Text>
-          <Text className="text-sm text-muted mt-1">{t("hm.subtitle", { n: preps.length })}</Text>
+          <Text className="text-sm text-muted mt-1">{t("hm.subtitle", { n: groupPreps.length })}</Text>
+        </View>
+      </View>
+
+      {/* 顶层分组:含酒精 / 无酒精 */}
+      <View className="px-5 mt-2">
+        <View
+          className="flex-row bg-surface border border-border rounded-xl p-1"
+          style={{ gap: 4 }}
+        >
+          {PREP_GROUPS.map((g) => {
+            const active = group === g.key;
+            const count = preps.filter(
+              (p) => prepGroupOf(p, sections, types) === g.key,
+            ).length;
+            return (
+              <Pressable
+                key={g.key}
+                onPress={() => {
+                  setGroup(g.key);
+                  if (Platform.OS !== "web") {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }
+                }}
+                style={[
+                  styles.groupSeg,
+                  active && { backgroundColor: colors.primary },
+                ]}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.groupSegText,
+                    { color: active ? "#FFFFFF" : colors.muted },
+                  ]}
+                >
+                  {(lang === "en" ? g.en : g.zh) + (count > 0 ? ` ${count}` : "")}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       </View>
 
@@ -843,6 +929,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  groupSeg: {
+    flex: 1,
+    height: 34,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 4,
+  },
+  groupSegText: {
+    fontSize: 14,
+    fontWeight: "600",
+    lineHeight: 18,
   },
   chipText: {
     fontSize: 13,

@@ -18,7 +18,10 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import {
+  PREP_GROUPS,
+  guessPrepType,
   joinPrepIngredient,
+  prepGroupOfSection,
   splitPrepIngredientLine,
 } from "@/lib/homemade/types";
 import { useBottleStore } from "@/lib/bottles/store";
@@ -68,8 +71,18 @@ export default function HomemadeFormScreen() {
   const [shelfLife, setShelfLife] = useState(editing?.shelfLife ?? "");
   const [storage, setStorage] = useState(editing?.storage ?? "");
   const [notes, setNotes] = useState(editing?.notes ?? "");
+  /** 用户是否已手动选过类型(选过则不再自动推断覆盖) */
+  const [typeTouched, setTypeTouched] = useState(Boolean(editing) || Boolean(prefillType));
 
   const canSave = useMemo(() => name.trim().length > 0, [name]);
+
+  /** 名称/配料变化后智能推断类型(仅在用户未手动选择时) */
+  const autoGuessType = () => {
+    if (typeTouched) return;
+    const text = `${name} ${nameAlt} ${ingRows.map((r) => r.name).join(" ")}`;
+    const guessed = guessPrepType(text, typeList);
+    if (guessed && guessed !== type) setType(guessed);
+  };
 
   const updateIngRow = (rid: string, field: "name" | "amount", value: string) => {
     setIngRows((prev) => prev.map((r) => (r.id === rid ? { ...r, [field]: value } : r)));
@@ -164,6 +177,7 @@ export default function HomemadeFormScreen() {
             style={inputStyle}
             value={name}
             onChangeText={setName}
+            onBlur={autoGuessType}
             placeholder={lang === "en" ? "e.g. Ginger Syrup" : "如:姜糖浆 Ginger Syrup"}
             placeholderTextColor={colors.muted}
             returnKeyType="done"
@@ -174,50 +188,80 @@ export default function HomemadeFormScreen() {
             style={inputStyle}
             value={nameAlt}
             onChangeText={setNameAlt}
+            onBlur={autoGuessType}
             placeholder={lang === "en" ? "e.g. 姜糖浆" : "如:Ginger Syrup"}
             placeholderTextColor={colors.muted}
             returnKeyType="done"
           />
 
           {fieldLabel(t("hmform.type"))}
-          {sections.map((sec) => {
-            const types = typeList.filter((pt) => pt.section === sec.key);
-            if (types.length === 0) return null;
+          {PREP_GROUPS.map((grp) => {
+            const groupSections = sections.filter(
+              (sec) => prepGroupOfSection(sections, sec.key) === grp.key,
+            );
+            const hasAny = groupSections.some((sec) =>
+              typeList.some((pt) => pt.section === sec.key),
+            );
+            if (!hasAny) return null;
             return (
-              <View key={sec.key} style={{ marginBottom: 6 }}>
-                <Text
-                  className="text-xs text-muted mb-1.5"
-                  style={{ lineHeight: 16 }}
-                >
-                  {lang === "en" ? sec.en : sec.zh}
-                </Text>
-                <View style={styles.chipWrap}>
-                  {types.map((pt) => {
-                    const active = type === pt.key;
-                    return (
-                      <Pressable
-                        key={pt.key}
-                        onPress={() => setType(pt.key)}
-                        style={[
-                          styles.chip,
-                          {
-                            backgroundColor: active ? colors.primary : colors.surface,
-                            borderColor: active ? colors.primary : colors.border,
-                          },
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.chipText,
-                            { color: active ? "#FFFFFF" : colors.foreground },
-                          ]}
-                        >
-                          {lang === "en" ? pt.en : pt.zh}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
+              <View key={grp.key} style={{ marginBottom: 10 }}>
+                <View className="flex-row items-center mb-1.5" style={{ gap: 6 }}>
+                  <View
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: grp.key === "alcoholic" ? colors.warning : colors.success,
+                    }}
+                  />
+                  <Text className="text-[13px] font-semibold text-foreground" style={{ lineHeight: 18 }}>
+                    {lang === "en" ? grp.en : grp.zh}
+                  </Text>
                 </View>
+                {groupSections.map((sec) => {
+                  const types = typeList.filter((pt) => pt.section === sec.key);
+                  if (types.length === 0) return null;
+                  return (
+                    <View key={sec.key} style={{ marginBottom: 6 }}>
+                      <Text
+                        className="text-xs text-muted mb-1.5"
+                        style={{ lineHeight: 16 }}
+                      >
+                        {lang === "en" ? sec.en : sec.zh}
+                      </Text>
+                      <View style={styles.chipWrap}>
+                        {types.map((pt) => {
+                          const active = type === pt.key;
+                          return (
+                            <Pressable
+                              key={pt.key}
+                              onPress={() => {
+                                setType(pt.key);
+                                setTypeTouched(true);
+                              }}
+                              style={[
+                                styles.chip,
+                                {
+                                  backgroundColor: active ? colors.primary : colors.surface,
+                                  borderColor: active ? colors.primary : colors.border,
+                                },
+                              ]}
+                            >
+                              <Text
+                                style={[
+                                  styles.chipText,
+                                  { color: active ? "#FFFFFF" : colors.foreground },
+                                ]}
+                              >
+                                {lang === "en" ? pt.en : pt.zh}
+                              </Text>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    </View>
+                  );
+                })}
               </View>
             );
           })}

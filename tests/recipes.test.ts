@@ -221,17 +221,18 @@ describe("homemade preps", () => {
     }
     expect(prepSectionOf("syrup")).toBe("homemade-syrup");
     expect(prepSectionOf("liqueur")).toBe("homemade-liqueur");
-    expect(prepSectionOf("infusion")).toBe("flavored-liquid");
+    expect(prepSectionOf("infusion")).toBe("infused-spirit");
+    expect(prepSectionOf("bitters")).toBe("bitters-tincture");
     expect(prepSectionOf("fermented")).toBe("homemade-spirit");
     expect(prepSectionOf("unknown")).toBe("misc");
     expect(prepSectionLabel("homemade-liqueur", "zh")).toBe("自制利口酒");
-    expect(prepSectionLabel("homemade-liqueur", "en")).toBe("Homemade Liqueurs");
+    expect(prepSectionLabel("homemade-liqueur", "en")).toBe("House Liqueurs & Cordials");
   });
 
   it("filters preps by section and samples cover new sections", () => {
     const preps = buildSamplePreps();
     const sections = new Set(preps.map((p) => prepSectionOf(p.type)));
-    for (const key of ["homemade-syrup", "homemade-liqueur", "flavored-liquid", "homemade-spirit"]) {
+    for (const key of ["homemade-syrup", "homemade-liqueur", "homemade-spirit"]) {
       expect(sections.has(key)).toBe(true);
     }
     const liqueurs = filterPreps(preps, "", undefined, "homemade-liqueur");

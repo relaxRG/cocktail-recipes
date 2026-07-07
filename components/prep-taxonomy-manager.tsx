@@ -14,6 +14,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { useHomemadeStore } from "@/lib/homemade/store";
+import { PREP_GROUPS, PrepGroup, prepGroupOfSection } from "@/lib/homemade/types";
 
 /**
  * 自制库分区/类型管理板块(嵌入 Tags 页)。
@@ -29,6 +30,7 @@ export function PrepTaxonomyManager() {
     types,
     addSection,
     renameSection,
+    moveSection: moveSectionGroup,
     deleteSection,
     reorderSections,
     addType,
@@ -39,6 +41,7 @@ export function PrepTaxonomyManager() {
   } = useHomemadeStore();
 
   const [newSecName, setNewSecName] = useState("");
+  const [newSecGroup, setNewSecGroup] = useState<PrepGroup>("non_alcoholic");
   const [editingSec, setEditingSec] = useState<string | null>(null);
   const [editSecName, setEditSecName] = useState("");
   const [newTypeName, setNewTypeName] = useState<Record<string, string>>({});
@@ -67,7 +70,8 @@ export function PrepTaxonomyManager() {
   const handleAddSection = () => {
     const name = newSecName.trim();
     if (!name) return;
-    const created = lang === "en" ? addSection(name, "") : addSection("", name);
+    const created =
+      lang === "en" ? addSection(name, "", newSecGroup) : addSection("", name, newSecGroup);
     if (created) {
       setNewSecName("");
       haptic();
@@ -83,7 +87,7 @@ export function PrepTaxonomyManager() {
     setEditSecName("");
   };
 
-  const moveSection = (index: number, dir: -1 | 1) => {
+  const moveSectionOrder = (index: number, dir: -1 | 1) => {
     const to = index + dir;
     if (to < 0 || to >= sections.length) return;
     const keys = sections.map((s) => s.key);
@@ -154,12 +158,43 @@ export function PrepTaxonomyManager() {
         <Text className="text-xs text-muted mt-2.5" style={{ lineHeight: 16 }}>
           {t("psm.hint")}
         </Text>
+        {/* 新分区归属:含酒精 / 无酒精 */}
+        <View className="flex-row items-center mt-2.5" style={{ gap: 8 }}>
+          {PREP_GROUPS.map((g) => {
+            const active = newSecGroup === g.key;
+            return (
+              <Pressable
+                key={g.key}
+                onPress={() => setNewSecGroup(g.key)}
+                style={[
+                  styles.groupChip,
+                  {
+                    backgroundColor: active ? colors.primary : colors.background,
+                    borderColor: active ? colors.primary : colors.border,
+                  },
+                ]}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    lineHeight: 16,
+                    fontWeight: "500",
+                    color: active ? "#FFFFFF" : colors.foreground,
+                  }}
+                >
+                  {lang === "en" ? g.en : g.zh}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       {sections.map((sec, secIdx) => {
         const inSection = types.filter((x) => x.section === sec.key);
         const secLabel = lang === "en" ? sec.en : sec.zh;
         const isOpen = !!expanded[sec.key];
+        const secGroup = prepGroupOfSection(sections, sec.key);
         return (
           <View
             key={sec.key}
@@ -194,7 +229,39 @@ export function PrepTaxonomyManager() {
                 />
               ) : (
                 <View className="flex-1">
-                  <Text className="text-base font-semibold text-foreground">{secLabel}</Text>
+                  <View className="flex-row items-center" style={{ gap: 6 }}>
+                    <Text className="text-base font-semibold text-foreground">{secLabel}</Text>
+                    <Pressable
+                      onPress={() => {
+                        const next: PrepGroup =
+                          secGroup === "alcoholic" ? "non_alcoholic" : "alcoholic";
+                        moveSectionGroup(sec.key, next);
+                        haptic();
+                      }}
+                      hitSlop={6}
+                      style={({ pressed }) => [
+                        styles.secGroupTag,
+                        {
+                          backgroundColor:
+                            (secGroup === "alcoholic" ? colors.warning : colors.success) + "22",
+                        },
+                        pressed && { opacity: 0.6 },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          lineHeight: 14,
+                          fontWeight: "600",
+                          color: secGroup === "alcoholic" ? colors.warning : colors.success,
+                        }}
+                      >
+                        {lang === "en"
+                          ? PREP_GROUPS.find((g) => g.key === secGroup)?.en
+                          : PREP_GROUPS.find((g) => g.key === secGroup)?.zh}
+                      </Text>
+                    </Pressable>
+                  </View>
                   <Text className="text-xs text-muted mt-0.5">
                     {t("psm.typeCount", { n: inSection.length })}
                   </Text>
@@ -202,7 +269,7 @@ export function PrepTaxonomyManager() {
               )}
               <View className="flex-row items-center" style={{ gap: 12, marginLeft: 8 }}>
                 <Pressable
-                  onPress={() => moveSection(secIdx, -1)}
+                  onPress={() => moveSectionOrder(secIdx, -1)}
                   hitSlop={6}
                   disabled={secIdx === 0}
                   style={({ pressed }) => [pressed && { opacity: 0.6 }]}
@@ -210,7 +277,7 @@ export function PrepTaxonomyManager() {
                   <IconSymbol name="chevron.up" size={17} color={secIdx === 0 ? colors.border : colors.muted} />
                 </Pressable>
                 <Pressable
-                  onPress={() => moveSection(secIdx, 1)}
+                  onPress={() => moveSectionOrder(secIdx, 1)}
                   hitSlop={6}
                   disabled={secIdx === sections.length - 1}
                   style={({ pressed }) => [pressed && { opacity: 0.6 }]}
@@ -445,5 +512,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
     lineHeight: 17,
+  },
+  secGroupTag: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 7,
   },
 });

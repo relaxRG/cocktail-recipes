@@ -11,10 +11,13 @@ import React, {
 import { buildSamplePreps } from "./seed";
 import {
   HomemadePrep,
+  PREP_SECTION_MIGRATION,
+  PrepGroup,
   PrepSection,
   PrepType,
   buildDefaultPrepSections,
   buildDefaultPrepTypes,
+  classifyPrepGroup,
   normalizePrep,
   prepSectionOf,
 } from "./types";
@@ -23,6 +26,8 @@ const PREPS_KEY = "homemade.preps.v1";
 const PREPS_SEEDED_KEY = "homemade.seeded.v1";
 const SECTIONS_KEY = "homemade.sections.v1";
 const TYPES_KEY = "homemade.types.v1";
+/** v2 迁移标记:含酒精/无酒精分组体系 */
+const TAXONOMY_V2_KEY = "homemade.taxonomy.v2";
 
 interface HomemadeStore {
   ready: boolean;
@@ -32,23 +37,26 @@ interface HomemadeStore {
   addPrep: (
     p: Omit<
       HomemadePrep,
-      "id" | "createdAt" | "updatedAt" | "builtin" | "made" | "rating" | "sortIndex"
+      "id" | "createdAt" | "updatedAt" | "builtin" | "made" | "rating" | "sortIndex" | "abvGroup"
     > & {
       made?: boolean;
       rating?: number | null;
       sortIndex?: number | null;
+      abvGroup?: PrepGroup | null;
     },
   ) => HomemadePrep;
   updatePrep: (id: string, patch: Partial<HomemadePrep>) => void;
   deletePrep: (id: string) => void;
   togglePrepMade: (id: string) => void;
   setPrepRating: (id: string, rating: number | null) => void;
+  setPrepGroup: (id: string, group: PrepGroup | null) => void;
   reorderPreps: (orderedIds: string[]) => void;
   importSamples: () => number;
   getPrep: (id: string | undefined) => HomemadePrep | undefined;
   // Section management
-  addSection: (en: string, zh: string) => PrepSection | null;
+  addSection: (en: string, zh: string, group?: PrepGroup) => PrepSection | null;
   renameSection: (key: string, en: string, zh: string) => void;
+  moveSection: (key: string, group: PrepGroup) => void;
   deleteSection: (key: string) => void;
   reorderSections: (orderedKeys: string[]) => void;
   // Type management
@@ -69,6 +77,39 @@ function slugify(en: string): string {
   return base || `custom-${Date.now().toString(36)}`;
 }
 
+/**
+ * v2 迁移:旧五分区体系 → 含酒精/无酒精专业体系。
+ * - 旧 flavored-liquid 分区按类型拆分:infusion→infused-spirit,tincture/bitters→bitters-tincture,
+ *   juice/solution→juice-cordial(依赖新默认 PREP_TYPES 的 section 归属)
+ * - 自定义分区补 group 字段(按其内类型智能判定,默认 non_alcoholic)
+ * - 条目 abvGroup 保持 null(跟随类型推断),仅对无法归入新体系的自定义类型条目做关键词判定
+ */
+function migrateSectionsV2(stored: PrepSection[]): PrepSection[] {
+  const defaults = buildDefaultPrepSections();
+  const defaultKeys = new Set(defaults.map((s) => s.key));
+  const custom = stored.filter(
+    (s) => !defaultKeys.has(s.key) && !PREP_SECTION_MIGRATION[s.key] &&
+      !["homemade-syrup", "homemade-liqueur", "flavored-liquid", "homemade-spirit", "misc"].includes(s.key),
+  );
+  // 自定义分区保留在末尾,补 group(用分区名智能判定)
+  const migratedCustom = custom.map((s) =>
+    s.group === "alcoholic" || s.group === "non_alcoholic"
+      ? s
+      : { ...s, group: classifyPrepGroup({ name: `${s.en} ${s.zh}` }) },
+  );
+  return [...defaults, ...migratedCustom];
+}
+
+function migrateTypesV2(stored: PrepType[]): PrepType[] {
+  const defaults = buildDefaultPrepTypes();
+  const defaultKeys = new Set(defaults.map((t) => t.key));
+  // 自定义类型:分区若被迁移则映射到新分区,否则保留
+  const custom = stored
+    .filter((t) => !defaultKeys.has(t.key))
+    .map((t) => ({ ...t, section: PREP_SECTION_MIGRATION[t.section] ?? t.section }));
+  return [...defaults, ...custom];
+}
+
 export function HomemadeProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [preps, setPreps] = useState<HomemadePrep[]>([]);
@@ -78,21 +119,59 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const [raw, sRaw, tRaw] = await Promise.all([
+        const [raw, sRaw, tRaw, v2Flag] = await Promise.all([
           AsyncStorage.getItem(PREPS_KEY),
           AsyncStorage.getItem(SECTIONS_KEY),
           AsyncStorage.getItem(TYPES_KEY),
+          AsyncStorage.getItem(TAXONOMY_V2_KEY),
         ]);
-        if (raw) {
-          setPreps(JSON.parse(raw).map((p: HomemadePrep) => normalizePrep(p)));
-        }
+        const needMigrate = !v2Flag;
+        let nextSections = buildDefaultPrepSections();
+        let nextTypes = buildDefaultPrepTypes();
         if (sRaw) {
           const parsed: PrepSection[] = JSON.parse(sRaw);
-          if (Array.isArray(parsed) && parsed.length > 0) setSections(parsed);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            nextSections = needMigrate ? migrateSectionsV2(parsed) : parsed;
+          }
         }
         if (tRaw) {
           const parsed: PrepType[] = JSON.parse(tRaw);
-          if (Array.isArray(parsed) && parsed.length > 0) setTypes(parsed);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            nextTypes = needMigrate ? migrateTypesV2(parsed) : parsed;
+          }
+        }
+        setSections(nextSections);
+        setTypes(nextTypes);
+        if (raw) {
+          const list: HomemadePrep[] = JSON.parse(raw).map((p: HomemadePrep) =>
+            normalizePrep(p),
+          );
+          // 迁移时对"类型不在新体系中"的条目做关键词归组,其余跟随类型推断
+          const migrated = needMigrate
+            ? list.map((p) =>
+                nextTypes.some((t) => t.key === p.type) || p.abvGroup
+                  ? p
+                  : {
+                      ...p,
+                      abvGroup: classifyPrepGroup({
+                        name: p.name,
+                        nameAlt: p.nameAlt,
+                        ingredients: p.ingredients,
+                        recipe: p.recipe,
+                        notes: p.notes,
+                      }),
+                    },
+              )
+            : list;
+          setPreps(migrated);
+          if (needMigrate) {
+            AsyncStorage.setItem(PREPS_KEY, JSON.stringify(migrated)).catch(() => {});
+          }
+        }
+        if (needMigrate) {
+          AsyncStorage.setItem(SECTIONS_KEY, JSON.stringify(nextSections)).catch(() => {});
+          AsyncStorage.setItem(TYPES_KEY, JSON.stringify(nextTypes)).catch(() => {});
+          AsyncStorage.setItem(TAXONOMY_V2_KEY, "1").catch(() => {});
         }
       } catch (e) {
         console.warn("Failed to load homemade preps", e);
@@ -173,6 +252,18 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
     [preps, persist],
   );
 
+  /** 手动覆盖条目的酒精属性分组(null 恢复自动推断) */
+  const setPrepGroup = useCallback<HomemadeStore["setPrepGroup"]>(
+    (id, group) => {
+      persist(
+        preps.map((p) =>
+          p.id === id ? { ...p, abvGroup: group, updatedAt: Date.now() } : p,
+        ),
+      );
+    },
+    [preps, persist],
+  );
+
   /** 长按拖拽后按新顺序写入 sortIndex */
   const reorderPreps = useCallback<HomemadeStore["reorderPreps"]>(
     (orderedIds) => {
@@ -203,13 +294,18 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
 
   // ----- Section management -----
   const addSection = useCallback(
-    (en: string, zh: string): PrepSection | null => {
+    (en: string, zh: string, group?: PrepGroup): PrepSection | null => {
       const enT = en.trim();
       const zhT = zh.trim();
       if (!enT && !zhT) return null;
       let key = slugify(enT || zhT);
       while (sections.some((s) => s.key === key)) key = `${key}-1`;
-      const sec: PrepSection = { key, en: enT || zhT, zh: zhT || enT };
+      const sec: PrepSection = {
+        key,
+        en: enT || zhT,
+        zh: zhT || enT,
+        group: group ?? "non_alcoholic",
+      };
       persistSections([...sections, sec]);
       return sec;
     },
@@ -225,6 +321,14 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
             : s,
         ),
       );
+    },
+    [sections, persistSections],
+  );
+
+  /** 调整分区的含酒精/无酒精归属 */
+  const moveSection = useCallback(
+    (key: string, group: PrepGroup) => {
+      persistSections(sections.map((s) => (s.key === key ? { ...s, group } : s)));
     },
     [sections, persistSections],
   );
@@ -332,11 +436,13 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
       deletePrep,
       togglePrepMade,
       setPrepRating,
+      setPrepGroup,
       reorderPreps,
       importSamples,
       getPrep,
       addSection,
       renameSection,
+      moveSection,
       deleteSection,
       reorderSections,
       addType,
@@ -355,11 +461,13 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
       deletePrep,
       togglePrepMade,
       setPrepRating,
+      setPrepGroup,
       reorderPreps,
       importSamples,
       getPrep,
       addSection,
       renameSection,
+      moveSection,
       deleteSection,
       reorderSections,
       addType,
