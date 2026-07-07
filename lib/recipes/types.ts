@@ -70,6 +70,18 @@ export const CODEX_FAMILIES = [
 ] as const;
 export type CodexFamily = (typeof CODEX_FAMILIES)[number];
 
+/**
+ * Codex 家族按界面语言显示:值存储为 "中文 English" 混写(如 "古典 Old-Fashioned"),
+ * 中文界面取中文段,英文界面取英文段。
+ */
+export function codexFamilyLabel(family: string, lang: string): string {
+  const raw = (family ?? "").trim();
+  if (!raw) return "";
+  const m = raw.match(/^([\u4e00-\u9fa5·]+)\s+(.+)$/);
+  if (!m) return raw;
+  return lang === "en" ? m[2] : m[1];
+}
+
 /** 风味标签(可多选) */
 export const FLAVOR_TAGS = [
   "草本",

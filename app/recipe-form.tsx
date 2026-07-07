@@ -34,6 +34,7 @@ import {
   METHODS,
   STRENGTH_LABELS,
   STRENGTH_BAND_LABELS,
+  codexFamilyLabel,
   genId,
   localizedTagName,
   splitBilingualName,
@@ -454,7 +455,7 @@ export default function RecipeFormScreen() {
                   ]}
                 >
                   <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
-                    {fam}
+                    {codexFamilyLabel(fam, lang)}
                   </Text>
                 </Pressable>
               );

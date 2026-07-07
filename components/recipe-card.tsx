@@ -16,6 +16,7 @@ import {
   Recipe,
   STRENGTH_LABELS,
   STRENGTH_BAND_LABELS,
+  codexFamilyLabel,
   localizedTagName,
 } from "@/lib/recipes/types";
 
@@ -139,7 +140,7 @@ export function RecipeCard({
                   style={{ borderColor: colors.primary + "66", backgroundColor: colors.primary + "12" }}
                 >
                   <Text className="text-xs" style={{ color: colors.primary }}>
-                    {recipe.codexFamily.split(" ")[0]}
+                    {codexFamilyLabel(recipe.codexFamily, lang)}
                   </Text>
                 </View>
               ) : null}

@@ -29,7 +29,13 @@ import { estimateHomemadeIngredientCost } from "@/lib/homemade/cost";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
-import { CODEX_FAMILIES, Recipe, STRENGTH_LABELS, STRENGTHS } from "@/lib/recipes/types";
+import {
+  CODEX_FAMILIES,
+  Recipe,
+  STRENGTH_LABELS,
+  STRENGTHS,
+  codexFamilyLabel,
+} from "@/lib/recipes/types";
 
 type Filter = { type: "all" } | { type: "favorites" } | { type: "category"; id: string };
 
@@ -136,7 +142,7 @@ export default function RecipesScreen() {
     {
       key: "codex",
       title: t("fs.dim.codex"),
-      options: CODEX_FAMILIES.map((f) => ({ value: f, label: f.split(" ")[0] })),
+      options: CODEX_FAMILIES.map((f) => ({ value: f, label: codexFamilyLabel(f, lang) })),
       selected: selCodex,
       onToggle: (v) =>
         setSelCodex((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),

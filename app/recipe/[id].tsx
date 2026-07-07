@@ -15,7 +15,12 @@ import { useBottleStore } from "@/lib/bottles/store";
 import { matchPrep } from "@/lib/homemade/match";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
-import { STRENGTH_LABELS, STRENGTH_BAND_LABELS, localizedTagName } from "@/lib/recipes/types";
+import {
+  STRENGTH_LABELS,
+  STRENGTH_BAND_LABELS,
+  codexFamilyLabel,
+  localizedTagName,
+} from "@/lib/recipes/types";
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -194,7 +199,7 @@ export default function RecipeDetailScreen() {
                 style={{ borderColor: colors.primary, backgroundColor: colors.primary + "15" }}
               >
                 <Text className="text-xs font-medium" style={{ color: colors.primary }}>
-                  {recipe.codexFamily}
+                  {codexFamilyLabel(recipe.codexFamily, lang)}
                 </Text>
               </View>
             ) : null}

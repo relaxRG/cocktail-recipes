@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { TAG_NAME_DICT, localizedTagName, migrateTagNameEn } from "../lib/recipes/types";
+import {
+  CODEX_FAMILIES,
+  TAG_NAME_DICT,
+  codexFamilyLabel,
+  localizedTagName,
+  migrateTagNameEn,
+} from "../lib/recipes/types";
 import { parseRecipeText } from "../lib/recipes/parser";
 
 describe("杯型英文译名", () => {
@@ -51,5 +57,26 @@ describe("粘贴导入杯型识别", () => {
   it("全文含 served in a rocks glass 时推断为古典杯", () => {
     const r = parseRecipeText("Old Pal\nRye 30ml\nCampari 30ml\nServe in a rocks glass with ice");
     expect(r.glass).toBe("古典杯");
+  });
+});
+
+describe("Codex 家族按语言显示", () => {
+  it("中文界面取中文段,英文界面取英文段", () => {
+    expect(codexFamilyLabel("古典 Old-Fashioned", "zh")).toBe("古典");
+    expect(codexFamilyLabel("古典 Old-Fashioned", "en")).toBe("Old-Fashioned");
+    expect(codexFamilyLabel("马天尼 Martini", "en")).toBe("Martini");
+    expect(codexFamilyLabel("大吉利 Daiquiri", "en")).toBe("Daiquiri");
+    expect(codexFamilyLabel("高球 Highball", "zh")).toBe("高球");
+  });
+
+  it("全部六大家族英文界面均无中文", () => {
+    for (const fam of CODEX_FAMILIES) {
+      expect(/[\u4e00-\u9fa5]/.test(codexFamilyLabel(fam, "en"))).toBe(false);
+    }
+  });
+
+  it("空值与无空格值安全回退", () => {
+    expect(codexFamilyLabel("", "en")).toBe("");
+    expect(codexFamilyLabel("Custom", "en")).toBe("Custom");
   });
 });
