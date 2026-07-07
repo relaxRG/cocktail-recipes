@@ -9,7 +9,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { useBottleStore } from "@/lib/bottles/store";
-import { BOTTLE_CATEGORY_EN } from "@/lib/bottles/types";
+import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
 
 export default function BottleDetailScreen() {
   const colors = useColors();
@@ -17,6 +17,7 @@ export default function BottleDetailScreen() {
   const { t, lang } = useI18n();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getBottle, deleteBottle, setBottleRating } = useBottleStore();
+  const { categoryLabel } = useBottleTaxonomy();
   const bottle = getBottle(id);
 
   if (!bottle) {
@@ -52,7 +53,7 @@ export default function BottleDetailScreen() {
     { label: t("bottle.nameEn"), value: bottle.nameEn || "—" },
     {
       label: t("bottle.category"),
-      value: lang === "en" ? BOTTLE_CATEGORY_EN[bottle.category] ?? bottle.category : bottle.category,
+      value: categoryLabel(bottle.category, lang),
     },
     ...(bottle.style ? [{ label: t("bottle.style"), value: bottle.style }] : []),
     { label: t("bottle.brand"), value: bottle.brand || "—" },

@@ -21,6 +21,7 @@ import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-run
 import { RecipeProvider } from "@/lib/recipes/store";
 import { I18nProvider } from "@/lib/i18n";
 import { BottleProvider } from "@/lib/bottles/store";
+import { BottleTaxonomyProvider } from "@/lib/bottles/taxonomy";
 import { HomemadeProvider } from "@/lib/homemade/store";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
@@ -88,6 +89,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
       <I18nProvider>
       <RecipeProvider>
+          <BottleTaxonomyProvider>
           <BottleProvider>
           <HomemadeProvider>
             <Stack screenOptions={{ headerShown: false }}>
@@ -112,6 +114,7 @@ export default function RootLayout() {
             <StatusBar style="auto" />
           </HomemadeProvider>
           </BottleProvider>
+          </BottleTaxonomyProvider>
           </RecipeProvider>
           </I18nProvider>
         </QueryClientProvider>

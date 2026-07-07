@@ -11,7 +11,7 @@ import React, {
 
 import { genId } from "../recipes/types";
 
-import { buildDefaultBottles } from "./seed";
+import { CATEGORY_MIGRATION_V6 } from "./taxonomy";
 import { Bottle, migrateBottleCategory, normalizeBottle } from "./types";
 
 const BOTTLES_KEY = "cocktail.bottles";
@@ -33,7 +33,7 @@ interface BottleStore {
   getBottle: (id: string | undefined) => Bottle | undefined;
 }
 
-const SEED_VERSION = "5";
+const SEED_VERSION = "6";
 
 const BottleContext = createContext<BottleStore | null>(null);
 
@@ -92,40 +92,21 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
           );
           if (list.length !== before) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
         }
-        if (!seeded && list.length === 0) {
-          list = buildDefaultBottles();
-          await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
-          await AsyncStorage.setItem(BOTTLES_SEEDED_KEY, SEED_VERSION);
-        } else if (seeded && seeded !== SEED_VERSION) {
-          // 种子库升级:把新增的内置酒款合并进来(按 nameEn 去重,不覆盖用户数据)
-          const existingEn = new Set(
-            list.map((b) => b.nameEn.trim().toLowerCase()).filter(Boolean),
-          );
-          const existingZh = new Set(list.map((b) => b.nameZh.trim()).filter(Boolean));
-          const existingIds = new Set(list.map((b) => b.id));
-          // 为已有内置酒款回填新增的 style 字段(不覆盖用户已填写的值)
-          const seedByEn = new Map(
-            buildDefaultBottles().map((b) => [b.nameEn.trim().toLowerCase(), b]),
-          );
+        // v6 迁移:按用户要求删除全部内置种子酒款(仅种子,保留用户自建数据),
+        // 且不再进行任何初始 seed;同时旧分类名迁移(开胃酒→阿玛罗与开胃酒)。
+        if (seeded !== SEED_VERSION) {
+          const before = list.length;
+          list = list.filter((b) => !b.builtin);
+          let migrated = list.length !== before;
           list = list.map((b) => {
-            if (b.builtin && !b.style) {
-              const seed = seedByEn.get(b.nameEn.trim().toLowerCase());
-              if (seed?.style) return { ...b, style: seed.style };
+            const next = CATEGORY_MIGRATION_V6[b.category];
+            if (next) {
+              migrated = true;
+              return { ...b, category: next };
             }
             return b;
           });
-          const additions = buildDefaultBottles()
-            .filter(
-              (b) =>
-                !existingEn.has(b.nameEn.trim().toLowerCase()) &&
-                !existingZh.has(b.nameZh.trim()),
-            )
-            // 旧库可能已占用相同的 bottle-N id,冲突时重新分配唯一 id
-            .map((b) => (existingIds.has(b.id) ? { ...b, id: `${b.id}-v${SEED_VERSION}` } : b));
-          if (additions.length > 0) {
-            list = [...list, ...additions];
-            await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
-          }
+          if (migrated) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
           await AsyncStorage.setItem(BOTTLES_SEEDED_KEY, SEED_VERSION);
         }
         setBottles(list);

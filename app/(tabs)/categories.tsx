@@ -20,6 +20,8 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { BottleTaxonomyManager } from "@/components/bottle-taxonomy-manager";
+import { PrepTaxonomyManager } from "@/components/prep-taxonomy-manager";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { cn, displayNames } from "@/lib/utils";
@@ -27,14 +29,20 @@ import { useI18n } from "@/lib/i18n";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { CATEGORY_COLORS, TagGroup, TagKind } from "@/lib/recipes/types";
 
-type SectionKey = "category" | TagKind;
+type SectionKey = "category" | TagKind | "bottleCat" | "prepSec";
 
-const SECTION_KEYS: SectionKey[] = ["category", "spirit", "glass", "flavor"];
+const SECTION_KEYS: SectionKey[] = ["category", "spirit", "glass", "flavor", "bottleCat", "prepSec"];
+/** 独立管理板块(渲染专用管理组件,不走 rows/tag 逻辑) */
+const MANAGER_SECTIONS: SectionKey[] = ["bottleCat", "prepSec"];
+const isTagKind = (s: SectionKey): s is TagKind =>
+  s === "spirit" || s === "glass" || s === "flavor";
 const SECTION_LABEL_KEY = {
   category: "tags.section.category",
   spirit: "tags.section.spirit",
   glass: "tags.section.glass",
   flavor: "tags.section.flavor",
+  bottleCat: "tags.section.bottleCat",
+  prepSec: "tags.section.prepSection",
 } as const;
 
 interface RowData {
@@ -161,6 +169,7 @@ export default function CategoriesScreen() {
         count: recipes.filter((r) => r.categoryId === c.id).length,
       }));
     }
+    if (!isTagKind(section)) return [];
     return tags
       .filter((t) => t.kind === section)
       .map((t) => ({
@@ -179,13 +188,13 @@ export default function CategoriesScreen() {
   }, [section, categories, tags, recipes]);
 
   const groups: TagGroup[] = useMemo(
-    () => (section === "category" ? [] : tagGroupsOf(section)),
+    () => (isTagKind(section) ? tagGroupsOf(section) : []),
     [section, tagGroupsOf],
   );
 
   /** For tag sections: rows arranged as grouped blocks (each group + ungrouped tail) */
   const groupedBlocks = useMemo(() => {
-    if (section === "category") return null;
+    if (!isTagKind(section)) return null;
     const blocks: { group: TagGroup | null; items: RowData[] }[] = [];
     for (const g of groups) {
       blocks.push({ group: g, items: rows.filter((r) => r.groupId === g.id) });
@@ -203,7 +212,7 @@ export default function CategoriesScreen() {
   const applyOrder = useCallback(
     (orderedIds: string[]) => {
       if (section === "category") reorderCategories(orderedIds);
-      else reorderTags(section, orderedIds);
+      else if (isTagKind(section)) reorderTags(section, orderedIds);
     },
     [section, reorderCategories, reorderTags],
   );
@@ -242,10 +251,11 @@ export default function CategoriesScreen() {
   );
 
   const handleAdd = () => {
+    if (!isTagKind(section) && section !== "category") return;
     const created =
       section === "category"
         ? addCategory(newName, newColor)
-        : addTag(section, newName, newColor);
+        : addTag(section as TagKind, newName, newColor);
     if (created) {
       setNewName("");
       if (Platform.OS !== "web") {
@@ -308,7 +318,7 @@ export default function CategoriesScreen() {
   };
 
   const handleAddGroup = () => {
-    if (section === "category") return;
+    if (!isTagKind(section)) return;
     const created = addTagGroup(section, newGroupName);
     if (created) {
       setNewGroupName("");
@@ -329,7 +339,7 @@ export default function CategoriesScreen() {
   };
 
   const moveGroup = (index: number, dir: -1 | 1) => {
-    if (section === "category") return;
+    if (!isTagKind(section)) return;
     const to = index + dir;
     if (to < 0 || to >= groups.length) return;
     const ids = groups.map((g) => g.id);
@@ -392,7 +402,12 @@ export default function CategoriesScreen() {
 
       {/* Section switcher */}
       <View className="px-5 pb-3">
-        <View className="flex-row bg-surface border border-border rounded-xl p-1">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="bg-surface border border-border rounded-xl"
+          contentContainerStyle={{ padding: 4 }}
+        >
           {SECTION_KEYS.map((key) => {
             const active = section === key;
             return (
@@ -405,6 +420,7 @@ export default function CategoriesScreen() {
                 }}
                 style={[
                   styles.segment,
+                  styles.segmentScroll,
                   active && { backgroundColor: colors.primary },
                 ]}
               >
@@ -419,7 +435,7 @@ export default function CategoriesScreen() {
               </Pressable>
             );
           })}
-        </View>
+        </ScrollView>
       </View>
 
       <ScrollView
@@ -427,6 +443,12 @@ export default function CategoriesScreen() {
         keyboardShouldPersistTaps="handled"
         scrollEnabled={draggingId === null}
       >
+        {section === "bottleCat" ? (
+          <BottleTaxonomyManager />
+        ) : section === "prepSec" ? (
+          <PrepTaxonomyManager />
+        ) : (
+        <>
         {/* Add new */}
         <View className="bg-surface border border-border rounded-2xl p-4 mb-4">
           <View className="flex-row items-center" style={{ gap: 8 }}>
@@ -912,6 +934,8 @@ export default function CategoriesScreen() {
         <Text className="text-xs text-muted mt-2 px-1" style={{ lineHeight: 18 }}>
           {t("tags.hint")}
         </Text>
+        </>
+        )}
       </ScrollView>
     </ScreenContainer>
   );
@@ -954,10 +978,16 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     alignItems: "center",
   },
+  segmentScroll: {
+    flex: 0,
+    paddingHorizontal: 14,
+    minWidth: 76,
+  },
   segmentText: {
     fontSize: 14,
     fontWeight: "600",
     lineHeight: 18,
+    ...(Platform.OS === "web" ? ({ whiteSpace: "nowrap" } as object) : null),
   },
   langSeg: {
     paddingHorizontal: 12,

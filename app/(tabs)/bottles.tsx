@@ -29,14 +29,11 @@ import { useColors } from "@/hooks/use-colors";
 import { usePersistedState } from "@/hooks/use-persisted-state";
 import { useI18n } from "@/lib/i18n";
 import { filterBottles, useBottleStore } from "@/lib/bottles/store";
+import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
 import { sortBottles, BOTTLE_SORTS, BottleSort } from "@/lib/recipes/sort";
 import {
-  BOTTLE_CATEGORY_EN,
   BOTTLE_GROUPS,
-  BOTTLE_STYLES,
   Bottle,
-  bottleGroupOf,
-  categoriesOfGroup,
 } from "@/lib/bottles/types";
 
 export default function BottlesScreen() {
@@ -45,6 +42,12 @@ export default function BottlesScreen() {
   const router = useRouter();
   const { t, lang } = useI18n();
   const { ready, bottles, reorderBottles } = useBottleStore();
+  const {
+    categoryLabel,
+    stylesOf,
+    categoriesOfGroup: taxCategoriesOfGroup,
+    groupOf,
+  } = useBottleTaxonomy();
   const [query, setQuery] = useState("");
   const [group, setGroup] = useState<"bottles" | "materials">("bottles");
   // 快捷筛选(独立于 Filter 面板,持久化保留):类别 → 风格子分类;按分组分别存储
@@ -65,8 +68,8 @@ export default function BottlesScreen() {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const groupBottles = useMemo(
-    () => bottles.filter((b) => bottleGroupOf(b.category) === group),
-    [bottles, group],
+    () => bottles.filter((b) => groupOf(b.category) === group),
+    [bottles, group, groupOf],
   );
 
   // 快捷筛选解析:大分类(类别)与其下细化的风格集合
@@ -94,23 +97,39 @@ export default function BottlesScreen() {
       }),
     [filtered, sort, lang],
   );
-  const groupCategories = useMemo(() => categoriesOfGroup(group), [group]);
+  const groupCategories = useMemo(
+    () => taxCategoriesOfGroup(group),
+    [group, taxCategoriesOfGroup],
+  );
 
-  /** 快捷筛选大分类:分组内类别;子分类 = 该类别下库内出现过的风格(预设顺序优先) */
+  /** 风格显示名:英文界面显示 name,中文界面优先 zh */
+  const styleLabel = useCallback(
+    (cat: string, name: string) => {
+      if (lang === "en") return name;
+      const def = stylesOf(cat).find((s) => s.name === name);
+      return def?.zh ? def.zh : name;
+    },
+    [lang, stylesOf],
+  );
+
+  /** 快捷筛选大分类:分组内类别;子分类 = 分类体系内全部风格(体系顺序)+ 库内出现过的自定义风格 */
   const quickParents: QuickParentOption[] = useMemo(
     () =>
       groupCategories.map((cat) => {
         const scope = groupBottles.filter((b) => b.category === cat);
         const present = new Set(scope.filter((b) => b.style).map((b) => b.style));
-        const preset = (BOTTLE_STYLES[cat] ?? []).filter((s) => present.has(s));
+        const preset = stylesOf(cat).map((s) => s.name).filter((s) => present.has(s));
         const extras = [...present].filter((s) => !preset.includes(s)).sort();
         return {
           value: cat,
-          label: lang === "en" ? BOTTLE_CATEGORY_EN[cat] ?? cat : cat,
-          children: [...new Set([...preset, ...extras])].map((s) => ({ value: s, label: s })),
+          label: categoryLabel(cat, lang),
+          children: [...new Set([...preset, ...extras])].map((s) => ({
+            value: s,
+            label: styleLabel(cat, s),
+          })),
         };
       }),
-    [groupCategories, groupBottles, lang],
+    [groupCategories, groupBottles, lang, categoryLabel, stylesOf, styleLabel],
   );
 
   // 当前主分类下实际出现过的 style(预设顺序在前,库内自定义 style 追加在后)
@@ -122,10 +141,12 @@ export default function BottlesScreen() {
         : groupBottles;
     const present = new Set(scope.filter((b) => b.style).map((b) => b.style));
     const cats = selCategories.length > 0 ? selCategories : groupCategories;
-    const preset = cats.flatMap((c) => BOTTLE_STYLES[c] ?? []).filter((s) => present.has(s));
+    const preset = cats
+      .flatMap((c) => stylesOf(c).map((s) => s.name))
+      .filter((s) => present.has(s));
     const extras = [...present].filter((s) => !preset.includes(s)).sort();
     return [...new Set([...preset, ...extras])];
-  }, [groupBottles, selCategories, groupCategories]);
+  }, [groupBottles, selCategories, groupCategories, stylesOf]);
 
   /** 筛选面板维度定义 */
   const dimensions: FilterDimension[] = [
@@ -134,7 +155,7 @@ export default function BottlesScreen() {
       title: t("fs.dim.category"),
       options: groupCategories.map((c) => ({
         value: c,
-        label: lang === "en" ? BOTTLE_CATEGORY_EN[c] ?? c : c,
+        label: categoryLabel(c, lang),
       })),
       selected: selCategories,
       onToggle: (v) =>
@@ -143,7 +164,7 @@ export default function BottlesScreen() {
           // 类别变化时,清掉不再属于可选范围的风格
           setSelStyles((sPrev) => sPrev.filter((s) => {
             const cats = next.length > 0 ? next : groupCategories;
-            return cats.some((c) => (BOTTLE_STYLES[c] ?? []).includes(s)) ||
+            return cats.some((c) => stylesOf(c).some((d) => d.name === s)) ||
               groupBottles.some((b) => b.style === s && cats.includes(b.category));
           }));
           return next;
@@ -441,6 +462,7 @@ function BottleCard({
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
+  const { categoryLabel } = useBottleTaxonomy();
   return (
     <Pressable
       onPress={() => router.push({ pathname: "/bottle/[id]", params: { id: bottle.id } })}
@@ -468,7 +490,7 @@ function BottleCard({
                 style={[styles.badge, { backgroundColor: colors.primary + "22" }]}
               >
                 <Text style={[styles.badgeText, { color: colors.primary }]}>
-                  {lang === "en" ? BOTTLE_CATEGORY_EN[bottle.category] ?? bottle.category : bottle.category}
+                  {categoryLabel(bottle.category, lang)}
                 </Text>
               </View>
               {bottle.volume ? (

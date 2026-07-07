@@ -17,7 +17,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { BottleDraft, useBottleStore } from "@/lib/bottles/store";
-import { BOTTLE_CATEGORIES, BOTTLE_CATEGORY_EN, BOTTLE_STYLES } from "@/lib/bottles/types";
+import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
 
 export default function BottleFormScreen() {
   const colors = useColors();
@@ -32,15 +32,16 @@ export default function BottleFormScreen() {
       prefillStyle?: string;
     }>();
   const { getBottle, addBottle, updateBottle } = useBottleStore();
+  const { categories: taxCategories, categoryLabel, stylesOf } = useBottleTaxonomy();
   const editing = getBottle(id);
 
   const [nameZh, setNameZh] = useState(editing?.nameZh ?? prefillNameAlt ?? "");
   const [nameEn, setNameEn] = useState(editing?.nameEn ?? prefillName ?? "");
   const [category, setCategory] = useState(
     editing?.category ??
-      (categoryParam && (BOTTLE_CATEGORIES as readonly string[]).includes(categoryParam)
+      (categoryParam && taxCategories.some((c) => c.zh === categoryParam)
         ? categoryParam
-        : "金酒"),
+        : taxCategories[0]?.zh ?? "金酒"),
   );
   const [style, setStyle] = useState(editing?.style ?? prefillStyle ?? "");
   const [brand, setBrand] = useState(editing?.brand ?? "");
@@ -137,7 +138,7 @@ export default function BottleFormScreen() {
 
           <Text className="text-sm font-medium text-foreground mb-1.5">{t("bform.category")}</Text>
           <View className="flex-row flex-wrap mb-4" style={{ gap: 8 }}>
-            {BOTTLE_CATEGORIES.map((cat) => {
+            {taxCategories.map((c) => c.zh).map((cat) => {
               const active = category === cat;
               return (
                 <Pressable
@@ -157,20 +158,21 @@ export default function BottleFormScreen() {
                       { color: active ? "#FFFFFF" : colors.foreground },
                     ]}
                   >
-                    {lang === "en" ? BOTTLE_CATEGORY_EN[cat] ?? cat : cat}
+                    {categoryLabel(cat, lang)}
                   </Text>
                 </Pressable>
               );
             })}
           </View>
 
-          {(BOTTLE_STYLES[category]?.length ?? 0) > 0 && (
+          {stylesOf(category).length > 0 && (
             <>
               <Text className="text-sm font-medium text-foreground mb-1.5">
                 {t("bform.style")}
               </Text>
               <View className="flex-row flex-wrap mb-2" style={{ gap: 8 }}>
-                {(BOTTLE_STYLES[category] ?? []).map((s) => {
+                {stylesOf(category).map((d) => {
+                  const s = d.name;
                   const active = style === s;
                   return (
                     <Pressable
@@ -190,7 +192,7 @@ export default function BottleFormScreen() {
                           { color: active ? "#FFFFFF" : colors.foreground },
                         ]}
                       >
-                        {s}
+                        {lang === "zh" && d.zh ? d.zh : s}
                       </Text>
                     </Pressable>
                   );
