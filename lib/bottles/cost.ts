@@ -90,6 +90,10 @@ export function formatAmountAsMl(amount: string): string {
   if (ml === null) return text;
   // 含"片/个/颗/枝/块/条/只/适量/少许/半个"等非液体计量时不转换
   if (/片|个|颗|枝|块|条|只|适量|少许|叶|把|抹|圈|针/.test(text)) return text;
+  // 英文非液体计量词保留原文:slice/wedge/sprig/leaf/leaves/piece/cube/egg/pinch/twist/peel/wheel/top
+  if (/slice|wedge|sprig|lea(f|ves)|piece|cube|egg|pinch|twist|peel|wheel|whole|to\s*top|top\s*up/i.test(text)) {
+    return text;
+  }
   const rounded = Math.round(ml * 10) / 10;
   const display = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
   return `${display}ml`;
@@ -108,13 +112,61 @@ export function parseVolumeToMl(volume: string): number | null {
   return value;
 }
 
+/** 中英文配料同义词典:英文配料名 -> 中文等价词(用于匹配酒库) */
+const INGREDIENT_SYNONYMS: [RegExp, string][] = [
+  [/london\s*dry\s*gin|dry\s*gin|\bgin\b/i, "金酒"],
+  [/white\s*rum|light\s*rum/i, "白朗姆"],
+  [/dark\s*rum|aged\s*rum/i, "黑朗姆"],
+  [/\brum\b/i, "朗姆"],
+  [/\bvodka\b/i, "伏特加"],
+  [/bourbon|rye\s*whisk(e)?y/i, "波本威士忌"],
+  [/scotch|whisk(e)?y/i, "威士忌"],
+  [/blanco\s*tequila|silver\s*tequila|tequila/i, "龙舌兰"],
+  [/mezcal/i, "梅斯卡尔"],
+  [/cognac|brandy/i, "白兰地"],
+  [/campari/i, "金巴利"],
+  [/aperol/i, "阿佩罗"],
+  [/sweet\s*vermouth|rosso\s*vermouth/i, "甜味美思"],
+  [/dry\s*vermouth/i, "干味美思"],
+  [/vermouth/i, "味美思"],
+  [/triple\s*sec|cointreau|orange\s*liqueur|curacao/i, "橙皮利口酒"],
+  [/maraschino/i, "马拉斯奇诺樱桃利口酒"],
+  [/st[.\s-]*germain|elderflower/i, "接骨木花利口酒"],
+  [/kahlua|coffee\s*liqueur/i, "咖啡利口酒"],
+  [/baileys|irish\s*cream/i, "百利甜"],
+  [/amaretto/i, "杏仁利口酒"],
+  [/chartreuse/i, "查特酒"],
+  [/angostura|aromatic\s*bitters/i, "安高天娜苦精"],
+  [/orange\s*bitters/i, "橙味苦精"],
+  [/bitters/i, "苦精"],
+  [/lime\s*juice/i, "青柠汁"],
+  [/lemon\s*juice/i, "柠檬汁"],
+  [/simple\s*syrup|sugar\s*syrup/i, "糖浆"],
+  [/soda\s*water|club\s*soda/i, "苏打水"],
+  [/tonic/i, "汤力水"],
+  [/champagne|prosecco|sparkling\s*wine/i, "起泡酒"],
+];
+
+/** 将英文配料名转成中文等价词;中文原样返回 */
+export function normalizeIngredientName(name: string): string {
+  const t = name.trim();
+  // 含中文时直接使用
+  if (/[\u4e00-\u9fa5]/.test(t)) return t;
+  for (const [re, zh] of INGREDIENT_SYNONYMS) {
+    if (re.test(t)) return zh;
+  }
+  return t;
+}
+
 /**
  * 将配料名与酒库匹配:双向包含 + 去除常见修饰词。
  * 返回最优匹配(名称越长越具体,优先)。
  */
 export function matchBottle(ingredientName: string, bottles: Bottle[]): Bottle | null {
-  const name = ingredientName.trim().toLowerCase();
+  let name = ingredientName.trim().toLowerCase();
   if (!name) return null;
+  // 英文配料名 → 中文等价词(酒库以中文分类为主)
+  const normalized = normalizeIngredientName(ingredientName).toLowerCase();
 
   let best: Bottle | null = null;
   let bestScore = 0;
@@ -124,9 +176,13 @@ export function matchBottle(ingredientName: string, bottles: Bottle[]): Bottle |
       .filter((s) => s.length >= 2);
     for (const c of candidates) {
       let score = 0;
-      if (c === name) score = 1000;
-      else if (name.includes(c)) score = 100 + c.length;
-      else if (c.includes(name)) score = 50 + name.length;
+      for (const n of normalized === name ? [name] : [name, normalized]) {
+        let s = 0;
+        if (c === n) s = 1000;
+        else if (n.includes(c)) s = 100 + c.length;
+        else if (c.includes(n)) s = 50 + n.length;
+        if (s > score) score = s;
+      }
       if (score > bestScore) {
         bestScore = score;
         best = b;
@@ -136,15 +192,16 @@ export function matchBottle(ingredientName: string, bottles: Bottle[]): Bottle |
   // 类别兜底:配料名含"金酒/朗姆..."时匹配该分类中最便宜的酒款
   if (!best) {
     const categories = ["金酒", "朗姆", "伏特加", "威士忌", "龙舌兰", "白兰地", "味美思"];
+    const searchName = normalized;
     for (const cat of categories) {
-      if (name.includes(cat.toLowerCase())) {
+      if (searchName.includes(cat) || name.includes(cat)) {
         const inCat = bottles
           .filter((b) => b.category === cat && b.priceCny > 0)
           .sort((a, b) => a.priceCny - b.priceCny);
         if (inCat.length > 0) {
           // 若配料名带"甜/红/干/白"等修饰词,优先匹配备注或名称含该修饰词的酒款
-          const sweet = /甜|红|rosso|sweet/i.test(name);
-          const dry = /干|dry/i.test(name);
+          const sweet = /甜|红|rosso|sweet/i.test(name + searchName);
+          const dry = /干|dry/i.test(name + searchName);
           if (sweet) {
             const hit = inCat.find((b) => /甜|红|rosso|sweet/i.test(b.nameZh + b.nameEn + b.notes));
             if (hit) return hit;

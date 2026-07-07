@@ -28,21 +28,33 @@ const SECTION_KEYS = {
 
 /** 行内用量模式:数字+单位(ml/oz/dash/吧勺等)或"适量/少许" */
 const AMOUNT_RE =
-  /(\d+(?:\.\d+)?(?:\s*\/\s*\d+)?(?:\s+\d+\s*\/\s*\d+)?|[½¼¾⅓⅔]|\d+\s*[½¼¾⅓⅔])\s*(ml|毫升|cc|oz|盎司|cl|dash(?:es)?|抖|滴|tsp|茶匙|小勺|tbsp|汤匙|大勺|bar\s*spoon|吧勺|shot|splash|片|个|颗|枝|叶|块|条|只)|适量|少许|top(?:\s*up)?/i;
+  /(\d+(?:\.\d+)?(?:\s*\/\s*\d+)?(?:\s+\d+\s*\/\s*\d+)?|[½¼¾⅓⅔]|\d+\s*[½¼¾⅓⅔])\s*(ml|毫升|cc|oz|盎司|ounces?|cl|dash(?:es)?|抖|滴|drops?|tsp|茶匙|小勺|teaspoons?|tbsp|汤匙|大勺|tablespoons?|bar\s*spoons?|吧勺|shots?|splash(?:es)?|parts?|pinch(?:es)?|slices?|wedges?|sprigs?|lea(?:f|ves)|cubes?|pieces?|片|个|颗|枝|叶|块|条|只)\b|适量|少许|to\s*taste|top(?:\s*up)?|as\s*needed/i;
 
 /** 杯型关键词 */
-const GLASS_WORDS = [
-  "马天尼杯", "古典杯", "高球杯", "柯林杯", "库佩杯", "飓风杯", "子弹杯",
-  "岩石杯", "笛型杯", "郁金香杯", "провина",
+const GLASS_WORDS: [RegExp, string][] = [
+  [/马天尼杯|martini\s*glass/i, "马天尼杯"],
+  [/古典杯|老式杯|rocks\s*glass|old[\s-]*fashioned\s*glass|lowball/i, "古典杯"],
+  [/高球杯|highball/i, "高球杯"],
+  [/柯林杯|collins/i, "柯林杯"],
+  [/库佩杯|碟形杯|coupe/i, "库佩杯"],
+  [/飓风杯|hurricane/i, "飓风杯"],
+  [/子弹杯|shot\s*glass/i, "子弹杯"],
+  [/岩石杯/i, "岩石杯"],
+  [/笛型杯|香槟杯|flute/i, "笛型杯"],
+  [/郁金香杯|tulip/i, "郁金香杯"],
+  [/铜杯|copper\s*mug|mule\s*mug/i, "铜杯"],
+  [/提基杯|tiki/i, "提基杯"],
+  [/尼克诺拉杯|nick\s*(&|and)\s*nora/i, "尼克诺拉杯"],
+  [/葡萄酒杯|wine\s*glass/i, "葡萄酒杯"],
 ];
 
 /** 制作方法关键词 */
 const METHOD_WORDS: [RegExp, string][] = [
-  [/摇和|摇制|shake/i, "摇和"],
-  [/搅拌|搅和|stir/i, "搅拌"],
-  [/直调|build/i, "直调"],
-  [/分层|layer/i, "分层"],
-  [/搅打|blend/i, "搅打"],
+  [/摇和|摇制|shake|shaken/i, "摇和"],
+  [/搅拌|搅和|stir|stirred/i, "搅拌"],
+  [/直调|build|built/i, "直调"],
+  [/分层|layer(ed)?/i, "分层"],
+  [/搅打|blend(ed)?/i, "搅打"],
 ];
 
 /** 基酒关键词 */
@@ -184,8 +196,13 @@ export function parseRecipeText(text: string): ParsedRecipe {
   const allText = text;
   // 杯型/方法/基酒从全文推断(若未显式给出)
   if (!result.glass) {
-    const g = GLASS_WORDS.find((w) => allText.includes(w));
-    if (g) result.glass = g;
+    const g = GLASS_WORDS.find(([re]) => re.test(allText));
+    if (g) result.glass = g[1];
+  }
+  // 显式给出的英文杯型也归一化为中文标签(如 "coupe" -> 库佩杯)
+  if (result.glass && !/[\u4e00-\u9fa5]/.test(result.glass)) {
+    const g = GLASS_WORDS.find(([re]) => re.test(result.glass));
+    if (g) result.glass = g[1];
   }
   if (!result.method) {
     for (const [re, label] of METHOD_WORDS) {

@@ -7,6 +7,7 @@ import {
   estimateRecipeCost,
   formatAmountAsMl,
   matchBottle,
+  normalizeIngredientName,
   parseAmountToMl,
   parseVolumeToMl,
 } from "../lib/bottles/cost";
@@ -348,5 +349,102 @@ describe("recipe text parser", () => {
     const p = parseRecipeText("   \n  ");
     expect(p.name).toBe("");
     expect(p.ingredients.length).toBe(0);
+  });
+
+  it("parses English recipe text", () => {
+    const text = [
+      "Negroni",
+      "Ingredients:",
+      "1 oz Gin",
+      "1 oz Campari",
+      "1 oz Sweet Vermouth",
+      "Method:",
+      "Stir with ice and strain into a rocks glass.",
+      "Garnish:",
+      "Orange peel",
+    ].join("\n");
+    const p = parseRecipeText(text);
+    expect(p.name).toBe("Negroni");
+    expect(p.ingredients.length).toBe(3);
+    expect(p.ingredients[0]).toMatchObject({ name: "Gin", amount: "1 oz" });
+    expect(p.garnish).toBe("Orange peel");
+    expect(p.method).toBe("搅拌");
+    expect(p.glass).toBe("古典杯");
+    expect(p.baseSpirit).toBe("金酒");
+  });
+
+  it("parses English free-form text with part units", () => {
+    const text = [
+      "Daiquiri",
+      "2 parts White Rum",
+      "3/4 part Lime Juice",
+      "1/2 part Simple Syrup",
+      "Shake with ice and double strain into a coupe.",
+    ].join("\n");
+    const p = parseRecipeText(text);
+    expect(p.name).toBe("Daiquiri");
+    expect(p.ingredients.length).toBe(3);
+    expect(p.method).toBe("摇和");
+    expect(p.glass).toBe("库佩杯");
+    expect(p.baseSpirit).toBe("朗姆");
+  });
+});
+
+describe("bilingual support", () => {
+  it("normalizes English ingredient names to Chinese", () => {
+    expect(normalizeIngredientName("Gin")).toBe("金酒");
+    expect(normalizeIngredientName("Sweet Vermouth")).toBe("甜味美思");
+    expect(normalizeIngredientName("Lime Juice")).toBe("青柠汁");
+    expect(normalizeIngredientName("金酒")).toBe("金酒");
+  });
+
+  it("matches bottles for English ingredient names", () => {
+    const bottles = buildDefaultBottles();
+    expect(matchBottle("Gin", bottles)?.category).toBe("金酒");
+    expect(matchBottle("Campari", bottles)?.nameZh).toContain("金巴利");
+    const sweet = matchBottle("Sweet Vermouth", bottles);
+    expect(sweet).not.toBeNull();
+    expect(/甜|红|rosso/i.test((sweet?.nameZh ?? "") + (sweet?.nameEn ?? "") + (sweet?.notes ?? ""))).toBe(true);
+  });
+
+  it("estimates cost for a fully English recipe", () => {
+    const bottles = buildDefaultBottles();
+    const est = estimateRecipeCost(
+      [
+        { id: "i1", name: "Gin", amount: "1 oz" },
+        { id: "i2", name: "Campari", amount: "1 oz" },
+        { id: "i3", name: "Sweet Vermouth", amount: "1 oz" },
+      ],
+      bottles,
+    );
+    expect(est.estimatedCount).toBe(3);
+    expect(est.total).toBeGreaterThan(5);
+  });
+
+  it("formats English amounts as ml but keeps non-liquid words", () => {
+    expect(formatAmountAsMl("1 oz")).toBe("30ml");
+    expect(formatAmountAsMl("2 dashes")).toBe("1.8ml");
+    expect(formatAmountAsMl("1 slice")).toBe("1 slice");
+    expect(formatAmountAsMl("2 mint sprigs")).toBe("2 mint sprigs");
+  });
+
+  it("search matches across Chinese and English ingredient names", () => {
+    const recipes = buildSampleRecipes();
+    // 中文配料库,英文词搜索应能命中(gin -> 金酒)
+    const byEnglish = filterRecipes(recipes, "gin", {});
+    expect(byEnglish.some((r) => r.ingredients.some((i) => i.name.includes("金酒")))).toBe(true);
+
+    // 构造英文配料的配方,用中文搜索应能命中
+    const english = {
+      ...recipes[0],
+      id: "en-1",
+      name: "English Negroni",
+      ingredients: [
+        { id: "e1", name: "Gin", amount: "30ml" },
+        { id: "e2", name: "Campari", amount: "30ml" },
+      ],
+    };
+    const byChinese = filterRecipes([english], "金酒", {});
+    expect(byChinese.length).toBe(1);
   });
 });

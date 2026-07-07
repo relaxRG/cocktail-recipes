@@ -31,6 +31,16 @@ export function filterRecipes(
     if (r.codexFamily.toLowerCase().includes(q)) return true;
     if (r.source.toLowerCase().includes(q)) return true;
     if (r.flavors.some((f) => f.toLowerCase().includes(q))) return true;
-    return r.ingredients.some((i) => i.name.toLowerCase().includes(q));
+    // 中英文互认:英文搜索词归一化为中文后再匹配(如搜 gin 命中"金酒"),
+    // 配料若是英文也归一化后与搜索词比对(如搜"金酒"命中 Gin)
+    const qZh = normalizeIngredientName(q).toLowerCase();
+    return r.ingredients.some((i) => {
+      const n = i.name.toLowerCase();
+      if (n.includes(q)) return true;
+      if (qZh !== q && n.includes(qZh)) return true;
+      const nZh = normalizeIngredientName(i.name).toLowerCase();
+      return nZh !== n && (nZh.includes(q) || nZh.includes(qZh));
+    });
   });
 }
+import { normalizeIngredientName } from "../bottles/cost";
