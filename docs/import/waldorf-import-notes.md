@@ -97,3 +97,11 @@
 - global.css 加 Apple 风格: >=768px 时 #root>div max-width 560px 居中+阴影+径向渐变背景、系统字体栈、细滚动条。截图验证:1440px 下登录门居中但容器阴影未见(#root>div 可能不是直接子层,待验证已登录主界面)。
 - /api/auth/me 未登录 403→401 是模板正常行为。
 - 170 tests pass。TS 0 errors。上个检查点 9586e643。
+
+## 放弃网页版(2026-07-08)
+- 用户决定只要 App 版,不要网页版、不修网页 OAuth 登录问题。
+- 已修复: global.css 还原为仅 3 行 tailwind 指令(此前 Apple 风格 CSS 的 radial-gradient 简写导致 react-native-css-interop parseDeclaration 崩溃, Metro 报 Cannot read properties of undefined reading '0')。
+- 已移除: app/_layout.tsx 中 WebAuthGate(登录门),保留 SyncProvider(云端同步可选:me 页登录则同步)。
+- components/web-auth-gate.tsx 文件保留但未引用。sync 后端路由/表保留。
+- 重启 dev server 后无新崩溃。App web 预览恢复正常显示 447 配方。
+- 当前预览域名: 8081-ifz0mpj8uabc1h83acyj6-1a396481.sg1.manus.computer (二维码 expo-qr-code.png 已按此生成)。
