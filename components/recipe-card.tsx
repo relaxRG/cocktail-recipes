@@ -31,7 +31,7 @@ export function RecipeCard({
 }) {
   const colors = useColors();
   const { t, lang } = useI18n();
-  const { toggleFavorite, getCategory } = useRecipeStore();
+  const { toggleFavorite, toggleMade, getCategory } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
   const category = getCategory(recipe.categoryId);
@@ -72,6 +72,15 @@ export function RecipeCard({
     toggleFavorite(recipe.id);
   };
 
+  const handleMade = () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(
+        recipe.made ? Haptics.ImpactFeedbackStyle.Light : Haptics.ImpactFeedbackStyle.Medium,
+      );
+    }
+    toggleMade(recipe.id);
+  };
+
   return (
     <Pressable
       onPress={() => router.push(`/recipe/${recipe.id}`)}
@@ -98,17 +107,6 @@ export function RecipeCard({
               );
             })()}
             <View className="flex-row items-center flex-wrap mt-1.5" style={{ gap: 6 }}>
-              {recipe.made ? (
-                <View
-                  className="flex-row items-center px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: colors.success + "1E", gap: 3 }}
-                >
-                  <IconSymbol name="checkmark.circle.fill" size={11} color={colors.success} />
-                  <Text className="text-xs font-medium" style={{ color: colors.success }}>
-                    {t("made.badge")}
-                  </Text>
-                </View>
-              ) : null}
               {category ? (
                 <View
                   className="px-2 py-0.5 rounded-full"
@@ -156,17 +154,30 @@ export function RecipeCard({
               </Text>
             ) : null}
           </View>
-          <Pressable
-            onPress={handleFavorite}
-            hitSlop={10}
-            style={({ pressed }) => [pressed && { opacity: 0.6 }]}
-          >
-            <IconSymbol
-              name={recipe.favorite ? "star.fill" : "star"}
-              size={24}
-              color={recipe.favorite ? colors.primary : colors.muted}
-            />
-          </Pressable>
+          <View className="flex-row items-center" style={{ gap: 14 }}>
+            <Pressable
+              onPress={handleMade}
+              hitSlop={10}
+              style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+            >
+              <IconSymbol
+                name={recipe.made ? "checkmark.circle.fill" : "checkmark.circle"}
+                size={24}
+                color={recipe.made ? colors.success : colors.muted}
+              />
+            </Pressable>
+            <Pressable
+              onPress={handleFavorite}
+              hitSlop={10}
+              style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+            >
+              <IconSymbol
+                name={recipe.favorite ? "star.fill" : "star"}
+                size={24}
+                color={recipe.favorite ? colors.primary : colors.muted}
+              />
+            </Pressable>
+          </View>
         </View>
         {ingredientSummary ? (
           <Text className="text-sm text-muted mt-2.5" numberOfLines={1}>

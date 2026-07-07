@@ -601,10 +601,18 @@ function PrepRowInner({
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { types } = useHomemadeStore();
+  const { types, togglePrepMade } = useHomemadeStore();
   const names = displayNames(prep.name, prep.nameAlt, lang);
   const cost = useMemo(() => estimatePrepCost(prep, bottles), [prep, bottles]);
   const tech = useMemo(() => primaryTechnique(prep), [prep]);
+  const handleMade = () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(
+        prep.made ? Haptics.ImpactFeedbackStyle.Light : Haptics.ImpactFeedbackStyle.Medium,
+      );
+    }
+    togglePrepMade(prep.id);
+  };
   return (
     <Pressable
       onPress={() => router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })}
@@ -628,13 +636,6 @@ function PrepRowInner({
               </Text>
             ) : null}
             <View className="flex-row items-center mt-1.5" style={{ gap: 6, flexWrap: "wrap" }}>
-              {prep.made ? (
-                <View style={[styles.badge, { backgroundColor: colors.success + "1E" }]}>
-                  <Text style={[styles.badgeText, { color: colors.success }]}>
-                    {t("made.badge")}
-                  </Text>
-                </View>
-              ) : null}
               <View style={[styles.badge, { backgroundColor: colors.primary + "22" }]}>
                 <Text style={[styles.badgeText, { color: colors.primary }]}>
                   {prepTypeLabelIn(types, prep.type, lang)}
@@ -661,6 +662,17 @@ function PrepRowInner({
               ) : null}
             </View>
           </View>
+          <Pressable
+            onPress={handleMade}
+            hitSlop={10}
+            style={({ pressed }) => [{ marginRight: 10 }, pressed && { opacity: 0.6 }]}
+          >
+            <IconSymbol
+              name={prep.made ? "checkmark.circle.fill" : "checkmark.circle"}
+              size={22}
+              color={prep.made ? colors.success : colors.muted}
+            />
+          </Pressable>
           <IconSymbol name="chevron.right" size={16} color={colors.border} />
         </View>
       </View>
