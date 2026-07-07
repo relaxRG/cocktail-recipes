@@ -5,6 +5,7 @@ import { buildDefaultBottles } from "../lib/bottles/seed";
 import { normalizeBottle } from "../lib/bottles/types";
 import {
   estimateRecipeCost,
+  formatAmountAsMl,
   matchBottle,
   parseAmountToMl,
   parseVolumeToMl,
@@ -270,5 +271,19 @@ describe("cost estimation", () => {
     expect(bourbon?.cost).not.toBeNull();
     const egg = est2.items.find((i) => i.ingredient.name.includes("蛋白"));
     expect(egg?.cost).toBeNull();
+  });
+
+  it("formats amounts uniformly as ml", () => {
+    expect(formatAmountAsMl("1.5 oz")).toBe("45ml");
+    expect(formatAmountAsMl("1/2 oz")).toBe("15ml");
+    expect(formatAmountAsMl("2 dash")).toBe("1.8ml");
+    expect(formatAmountAsMl("1 吧勺")).toBe("5ml");
+    expect(formatAmountAsMl("45ml")).toBe("45ml");
+    expect(formatAmountAsMl("45")).toBe("45ml");
+    // 非液体计量保留原文
+    expect(formatAmountAsMl("1片")).toBe("1片");
+    expect(formatAmountAsMl("8-10片")).toBe("8-10片");
+    expect(formatAmountAsMl("适量")).toBe("适量");
+    expect(formatAmountAsMl("薄荷叶 8片")).toBe("薄荷叶 8片");
   });
 });

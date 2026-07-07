@@ -77,6 +77,24 @@ export function parseAmountToMl(amount: string): number | null {
   return value;
 }
 
+/**
+ * 将用量文本统一格式化为 ml 显示。
+ * 例:"1.5 oz" -> "45ml";"2 dash" -> "1.8ml";
+ * 无法换算的(如"适量"、"1片"、"8-10片")原样返回。
+ */
+export function formatAmountAsMl(amount: string): string {
+  const text = amount.trim();
+  if (!text) return text;
+  // 已经是纯 ml 写法时规范化输出
+  const ml = parseAmountToMl(text);
+  if (ml === null) return text;
+  // 含"片/个/颗/枝/块/条/只/适量/少许/半个"等非液体计量时不转换
+  if (/片|个|颗|枝|块|条|只|适量|少许|叶|把|抹|圈|针/.test(text)) return text;
+  const rounded = Math.round(ml * 10) / 10;
+  const display = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  return `${display}ml`;
+}
+
 /** 从规格文本解析瓶容量 ml,如 "700ml" / "1000ml" / "75cl" */
 export function parseVolumeToMl(volume: string): number | null {
   const text = volume.trim().toLowerCase();

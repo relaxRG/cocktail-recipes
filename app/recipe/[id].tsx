@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { estimateRecipeCost } from "@/lib/bottles/cost";
+import { estimateRecipeCost, formatAmountAsMl } from "@/lib/bottles/cost";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { STRENGTH_LABELS } from "@/lib/recipes/types";
@@ -184,7 +184,7 @@ export default function RecipeDetailScreen() {
                 }
               >
                 <Text className="text-base text-foreground flex-1 pr-3">{ing.name}</Text>
-                <Text className="text-base text-muted">{ing.amount}</Text>
+                <Text className="text-base text-muted">{formatAmountAsMl(ing.amount)}</Text>
               </View>
             ))
           )}
