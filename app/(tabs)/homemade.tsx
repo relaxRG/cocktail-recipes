@@ -19,6 +19,9 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { filterPreps, useHomemadeStore } from "@/lib/homemade/store";
+import { useBottleStore } from "@/lib/bottles/store";
+import { estimatePrepCost } from "@/lib/homemade/cost";
+import { Bottle } from "@/lib/bottles/types";
 import {
   HomemadePrep,
   PREP_SECTIONS,
@@ -38,6 +41,7 @@ export default function HomemadeScreen() {
   const router = useRouter();
   const { t, lang } = useI18n();
   const { ready, preps, importSamples } = useHomemadeStore();
+  const { bottles } = useBottleStore();
   const [query, setQuery] = useState("");
   const [section, setSection] = useState<string>("");
   const [type, setType] = useState<string>("");
@@ -253,7 +257,7 @@ export default function HomemadeScreen() {
                 </Text>
               </View>
             ) : (
-              <PrepRow prep={item.prep} isFirst={item.isFirst} isLast={item.isLast} />
+              <PrepRow prep={item.prep} isFirst={item.isFirst} isLast={item.isLast} bottles={bottles} />
             )
           }
         />
@@ -278,15 +282,18 @@ function PrepRow({
   prep,
   isFirst,
   isLast,
+  bottles,
 }: {
   prep: HomemadePrep;
   isFirst: boolean;
   isLast: boolean;
+  bottles: Bottle[];
 }) {
   const colors = useColors();
   const router = useRouter();
-  const { lang } = useI18n();
+  const { t, lang } = useI18n();
   const names = displayNames(prep.name, prep.nameAlt, lang);
+  const cost = useMemo(() => estimatePrepCost(prep, bottles), [prep, bottles]);
   return (
     <Pressable
       onPress={() => router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })}
@@ -319,6 +326,13 @@ function PrepRow({
                 <Text className="text-xs text-muted" numberOfLines={1}>
                   {prep.shelfLife}
                 </Text>
+              ) : null}
+              {cost.costPer30Ml !== null && cost.estimatedCount > 0 ? (
+                <View style={[styles.badge, { backgroundColor: colors.success + "22" }]}>
+                  <Text style={[styles.badgeText, { color: colors.success }]}>
+                    {t("hm.cost.perUnit", { n: cost.costPer30Ml.toFixed(1) })}
+                  </Text>
+                </View>
               ) : null}
             </View>
           </View>

@@ -18,6 +18,13 @@ import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib
 import { buildSamplePreps } from "../lib/homemade/seed";
 import { filterPreps } from "../lib/homemade/store";
 import { matchPrep, suggestPrep } from "../lib/homemade/match";
+import {
+  estimateHomemadeIngredientCost,
+  estimatePrepCost,
+  matchMaterial,
+  parseQuantity,
+  parseYieldToMl,
+} from "../lib/homemade/cost";
 import { suggestIngredients } from "../lib/suggest";
 import { displayNames } from "../lib/utils";
 import {
@@ -161,6 +168,52 @@ describe("homemade preps", () => {
     // Fallback when preferred name missing
     expect(displayNames("", "简单糖浆", "en")).toEqual({ primary: "简单糖浆", secondary: "" });
     expect(displayNames("Orgeat", "", "zh")).toEqual({ primary: "Orgeat", secondary: "" });
+  });
+
+  it("parses ingredient quantities in mixed units", () => {
+    expect(parseQuantity("500g white sugar 白砂糖")).toEqual({ qty: 500, unit: "g" });
+    expect(parseQuantity("1kg 冰糖")).toEqual({ qty: 1000, unit: "g" });
+    expect(parseQuantity("700ml London dry gin 伦敦干金")).toEqual({ qty: 700, unit: "ml" });
+    expect(parseQuantity("1L water 水")).toEqual({ qty: 1000, unit: "ml" });
+    expect(parseQuantity("2 vanilla beans 香草荚")).toEqual({ qty: 2, unit: "piece" });
+    expect(parseQuantity("适量盐")).toBeNull();
+  });
+
+  it("matches materials to Chinese market reference prices", () => {
+    expect(matchMaterial("500g white sugar 白砂糖")?.zh).toBe("白砂糖");
+    expect(matchMaterial("250g honey 蜂蜜")?.zh).toBe("蜂蜜");
+    expect(matchMaterial("100g fresh ginger juice 鲜姜汁")?.zh).toBe("鲜姜");
+    expect(matchMaterial("700ml vodka 伏特加")?.en).toBe("Vodka");
+    expect(matchMaterial("神秘材料xyz")).toBeNull();
+  });
+
+  it("estimates homemade prep batch and unit costs", () => {
+    const bottles = buildDefaultBottles();
+    const preps = buildSamplePreps();
+    const simple = preps.find((p) => /simple syrup/i.test(p.name))!;
+    const est = estimatePrepCost(simple, bottles);
+    expect(est.estimatedCount).toBeGreaterThan(0);
+    expect(est.batchCost).toBeGreaterThan(0);
+    // Simple syrup (500g sugar + 500ml water) should be cheap: < ¥10 per batch
+    expect(est.batchCost).toBeLessThan(10);
+    if (est.yieldMl) {
+      expect(est.costPer30Ml).not.toBeNull();
+      expect(est.costPer30Ml!).toBeGreaterThan(0);
+    }
+    expect(parseYieldToMl("~750ml")).toBe(750);
+    expect(parseYieldToMl("约1.5L")).toBe(1500);
+    expect(parseYieldToMl("")).toBeNull();
+  });
+
+  it("costs recipe ingredients via homemade prep unit cost", () => {
+    const bottles = buildDefaultBottles();
+    const preps = buildSamplePreps();
+    const hit = estimateHomemadeIngredientCost("Simple Syrup", "15ml", preps, bottles);
+    expect(hit).not.toBeNull();
+    expect(hit!.cost).toBeGreaterThan(0);
+    expect(hit!.amountMl).toBe(15);
+    // Unknown ingredient yields null
+    expect(estimateHomemadeIngredientCost("神秘材料xyz", "15ml", preps, bottles)).toBeNull();
   });
 });
 

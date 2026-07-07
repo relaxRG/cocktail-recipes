@@ -9,6 +9,8 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { useHomemadeStore } from "@/lib/homemade/store";
+import { useBottleStore } from "@/lib/bottles/store";
+import { estimatePrepCost } from "@/lib/homemade/cost";
 import { prepTypeLabel } from "@/lib/homemade/types";
 
 export default function HomemadeDetailScreen() {
@@ -17,6 +19,7 @@ export default function HomemadeDetailScreen() {
   const { t, lang } = useI18n();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getPrep, deletePrep } = useHomemadeStore();
+  const { bottles } = useBottleStore();
   const prep = getPrep(id);
 
   if (!prep) {
@@ -56,6 +59,7 @@ export default function HomemadeDetailScreen() {
   ];
 
   const names = displayNames(prep.name, prep.nameAlt, lang);
+  const cost = estimatePrepCost(prep, bottles);
 
   const sectionTitle = (label: string) => (
     <Text
@@ -142,8 +146,52 @@ export default function HomemadeDetailScreen() {
                   <Text className="text-[15px] text-foreground" style={{ lineHeight: 21 }}>
                     {ing}
                   </Text>
+                  {cost.items[idx]?.cost !== null && cost.items[idx]?.cost !== undefined ? (
+                    <Text className="text-xs text-muted mt-0.5" style={{ lineHeight: 16 }}>
+                      ≈ ¥{cost.items[idx].cost!.toFixed(1)}
+                      {cost.items[idx].ref ? ` · ${cost.items[idx].ref}` : ""}
+                    </Text>
+                  ) : null}
                 </View>
               ))}
+            </View>
+          </>
+        ) : null}
+
+        {/* Cost estimate card */}
+        {cost.estimatedCount > 0 ? (
+          <>
+            {sectionTitle(t("hm.cost.title"))}
+            <View className="bg-surface rounded-xl px-4 py-3">
+              <View className="flex-row items-center justify-between py-1">
+                <Text className="text-[15px] text-foreground">{t("hm.cost.batch")}</Text>
+                <Text className="text-[15px] font-semibold text-foreground">
+                  ≈ ¥{cost.batchCost.toFixed(1)}
+                </Text>
+              </View>
+              {cost.costPer100Ml !== null ? (
+                <View
+                  className="flex-row items-center justify-between py-1"
+                  style={{ borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}
+                >
+                  <Text className="text-[15px] text-foreground">{t("hm.cost.per100")}</Text>
+                  <Text className="text-[15px] text-muted">¥{cost.costPer100Ml.toFixed(2)}</Text>
+                </View>
+              ) : null}
+              {cost.costPer30Ml !== null ? (
+                <View
+                  className="flex-row items-center justify-between py-1"
+                  style={{ borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}
+                >
+                  <Text className="text-[15px] text-foreground">{t("hm.cost.per30")}</Text>
+                  <Text className="text-[15px] text-muted">¥{cost.costPer30Ml.toFixed(2)}</Text>
+                </View>
+              ) : null}
+              <Text className="text-xs text-muted mt-2" style={{ lineHeight: 17 }}>
+                {cost.yieldMl === null
+                  ? t("hm.cost.noYield")
+                  : t("hm.cost.note", { n: `${cost.estimatedCount}/${cost.totalCount}` })}
+              </Text>
             </View>
           </>
         ) : null}

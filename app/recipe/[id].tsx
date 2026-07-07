@@ -10,6 +10,7 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { estimateRecipeCost, formatAmountAsMl } from "@/lib/bottles/cost";
+import { estimateHomemadeIngredientCost } from "@/lib/homemade/cost";
 import { useBottleStore } from "@/lib/bottles/store";
 import { matchPrep } from "@/lib/homemade/match";
 import { useHomemadeStore } from "@/lib/homemade/store";
@@ -43,7 +44,18 @@ export default function RecipeDetailScreen() {
   }
 
   const category = getCategory(recipe.categoryId);
-  const costEst = estimateRecipeCost(recipe.ingredients, bottles);
+  const baseCostEst = estimateRecipeCost(recipe.ingredients, bottles);
+  // Fallback: cost un-matched ingredients via homemade prep unit cost
+  const hmCosts = baseCostEst.items.map((item) =>
+    item.cost === null && item.reason === "no_bottle"
+      ? estimateHomemadeIngredientCost(item.ingredient.name, item.ingredient.amount, preps, bottles)
+      : null,
+  );
+  const costEst = {
+    ...baseCostEst,
+    total: baseCostEst.total + hmCosts.reduce((s, h) => s + (h?.cost ?? 0), 0),
+    estimatedCount: baseCostEst.estimatedCount + hmCosts.filter((h) => h !== null).length,
+  };
 
   const handleFavorite = () => {
     if (Platform.OS !== "web") {
@@ -240,7 +252,9 @@ export default function RecipeDetailScreen() {
                   {costEst.estimatedCount > 0 ? `¥${costEst.total.toFixed(1)}` : "—"}
                 </Text>
               </View>
-              {costEst.items.map((item, idx) => (
+              {costEst.items.map((item, idx) => {
+                const hm = hmCosts[idx];
+                return (
                 <View
                   key={item.ingredient.id}
                   className="flex-row items-center justify-between py-2.5"
@@ -259,6 +273,13 @@ export default function RecipeDetailScreen() {
                         {displayNames(item.bottle.nameEn, item.bottle.nameZh, lang).primary} ¥{item.bottle.priceCny}/{item.bottle.volume} ×{" "}
                         {item.amountMl?.toFixed(0)}ml
                       </Text>
+                    ) : hm ? (
+                      <Text className="text-xs mt-0.5" numberOfLines={1} style={{ color: colors.primary }}>
+                        {t("detail.cost.homemade", {
+                          name: displayNames(hm.prep.name, hm.prep.nameAlt, lang).primary,
+                          p: hm.costPer30Ml.toFixed(1),
+                        })}
+                      </Text>
                     ) : (
                       <Text className="text-xs text-muted mt-0.5">
                         {item.reason === "no_bottle"
@@ -273,12 +294,17 @@ export default function RecipeDetailScreen() {
                   </View>
                   <Text
                     className="text-sm font-semibold"
-                    style={{ color: item.cost !== null ? colors.foreground : colors.muted }}
+                    style={{ color: item.cost !== null || hm ? colors.foreground : colors.muted }}
                   >
-                    {item.cost !== null ? `¥${item.cost.toFixed(1)}` : "—"}
+                    {item.cost !== null
+                      ? `¥${item.cost.toFixed(1)}`
+                      : hm
+                        ? `¥${hm.cost.toFixed(1)}`
+                        : "—"}
                   </Text>
                 </View>
-              ))}
+                );
+              })}
               <Text className="text-[11px] text-muted py-2.5" style={{ lineHeight: 15 }}>
                 {t("detail.cost.note")}
               </Text>

@@ -202,6 +202,23 @@ const dict = {
   "hm.shelfLife": { zh: "保存期限", en: "Shelf Life" },
   "hm.storage": { zh: "储存方式", en: "Storage" },
   "hm.yield": { zh: "产量", en: "Yield" },
+  "hm.cost.title": { zh: "成本估算", en: "Cost Estimate" },
+  "hm.cost.batch": { zh: "批次成本", en: "Batch Cost" },
+  "hm.cost.per100": { zh: "每 100ml", en: "Per 100ml" },
+  "hm.cost.per30": { zh: "每 30ml(1 oz)", en: "Per 30ml (1 oz)" },
+  "hm.cost.noYield": {
+    zh: "填写产量(如 ~750ml)后可计算单位成本。参考价来自淘宝/京东/盒马常见商品。",
+    en: "Add a yield (e.g. ~750ml) to get unit costs. Reference prices from Taobao/JD/Hema.",
+  },
+  "hm.cost.note": {
+    zh: "已估算 {n} 项原料,参考价来自淘宝/京东/盒马常见商品,仅供参考。",
+    en: "Estimated {n} ingredients. Reference prices from Taobao/JD/Hema, for reference only.",
+  },
+  "hm.cost.perUnit": { zh: "¥{n}/30ml", en: "¥{n}/30ml" },
+  "detail.cost.homemade": {
+    zh: "自制:{name} ¥{p}/30ml",
+    en: "Homemade: {name} ¥{p}/30ml",
+  },
   "hm.recipe": { zh: "配方做法", en: "Recipe" },
   "hm.usedIn": { zh: "用途", en: "Used In" },
   "hm.notFound": { zh: "自制原料不存在或已被删除", en: "Prep not found or deleted" },
