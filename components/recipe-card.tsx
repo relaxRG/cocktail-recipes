@@ -54,7 +54,22 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
               <View className="px-2 py-0.5 rounded-full bg-background border border-border">
                 <Text className="text-xs text-muted">{STRENGTH_LABELS[recipe.strength]}</Text>
               </View>
+              {recipe.codexFamily ? (
+                <View
+                  className="px-2 py-0.5 rounded-full border"
+                  style={{ borderColor: colors.primary + "66", backgroundColor: colors.primary + "12" }}
+                >
+                  <Text className="text-xs" style={{ color: colors.primary }}>
+                    {recipe.codexFamily.split(" ")[0]}
+                  </Text>
+                </View>
+              ) : null}
             </View>
+            {recipe.variantOf ? (
+              <Text className="text-xs text-muted mt-1.5" numberOfLines={1}>
+                变体 · {recipe.variantOf}
+              </Text>
+            ) : null}
           </View>
           <Pressable
             onPress={handleFavorite}

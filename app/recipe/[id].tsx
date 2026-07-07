@@ -112,14 +112,39 @@ export default function RecipeDetailScreen() {
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 + insets.bottom }}>
         <Text className="text-3xl font-bold text-foreground mt-2">{recipe.name}</Text>
-        {category ? (
-          <View className="flex-row mt-2">
-            <View className="px-2.5 py-1 rounded-full" style={{ backgroundColor: category.color + "22" }}>
-              <Text className="text-xs font-medium" style={{ color: category.color }}>
-                {category.name}
-              </Text>
-            </View>
+        {(category || recipe.codexFamily || recipe.flavors.length > 0) ? (
+          <View className="flex-row flex-wrap mt-2" style={{ gap: 6 }}>
+            {category ? (
+              <View className="px-2.5 py-1 rounded-full" style={{ backgroundColor: category.color + "22" }}>
+                <Text className="text-xs font-medium" style={{ color: category.color }}>
+                  {category.name}
+                </Text>
+              </View>
+            ) : null}
+            {recipe.codexFamily ? (
+              <View
+                className="px-2.5 py-1 rounded-full border"
+                style={{ borderColor: colors.primary, backgroundColor: colors.primary + "15" }}
+              >
+                <Text className="text-xs font-medium" style={{ color: colors.primary }}>
+                  {recipe.codexFamily}
+                </Text>
+              </View>
+            ) : null}
+            {recipe.flavors.map((tag) => (
+              <View
+                key={tag}
+                className="px-2.5 py-1 rounded-full bg-surface border border-border"
+              >
+                <Text className="text-xs text-muted">{tag}</Text>
+              </View>
+            ))}
           </View>
+        ) : null}
+        {recipe.variantOf ? (
+          <Text className="text-sm text-muted mt-2">
+            变体来源:{recipe.variantOf}
+          </Text>
         ) : null}
 
         {/* Meta grid */}

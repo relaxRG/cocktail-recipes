@@ -19,6 +19,8 @@ import { useColors } from "@/hooks/use-colors";
 import { RecipeDraft, useRecipeStore } from "@/lib/recipes/store";
 import {
   BASE_SPIRITS,
+  CODEX_FAMILIES,
+  FLAVOR_TAGS,
   GLASSES,
   Ingredient,
   METHODS,
@@ -74,6 +76,9 @@ export default function RecipeFormScreen() {
   const [glass, setGlass] = useState(editing?.glass ?? "");
   const [method, setMethod] = useState(editing?.method ?? "摇和");
   const [strength, setStrength] = useState<Strength>(editing?.strength ?? "medium");
+  const [variantOf, setVariantOf] = useState(editing?.variantOf ?? "");
+  const [codexFamily, setCodexFamily] = useState(editing?.codexFamily ?? "");
+  const [flavors, setFlavors] = useState<string[]>(editing?.flavors ?? []);
   const [ingredients, setIngredients] = useState<Ingredient[]>(
     editing?.ingredients?.length
       ? editing.ingredients
@@ -102,6 +107,12 @@ export default function RecipeFormScreen() {
     setIngredients((prev) => (prev.length > 1 ? prev.filter((i) => i.id !== iid) : prev));
   };
 
+  const toggleFlavor = (tag: string) => {
+    setFlavors((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
+  };
+
   const handleSave = () => {
     if (!canSave) return;
     const draft: RecipeDraft = {
@@ -111,6 +122,9 @@ export default function RecipeFormScreen() {
       glass,
       method,
       strength,
+      variantOf: variantOf.trim(),
+      codexFamily,
+      flavors,
       ingredients: ingredients.filter((i) => i.name.trim().length > 0),
       steps: steps.trim(),
       garnish: garnish.trim(),
@@ -210,6 +224,73 @@ export default function RecipeFormScreen() {
           {/* Base spirit */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">基酒</Text>
           <ChipGroup options={BASE_SPIRITS} value={baseSpirit} onChange={setBaseSpirit} />
+
+          {/* Codex family */}
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">
+            Codex 根源分类
+          </Text>
+          <Text className="text-xs text-muted mb-2" style={{ lineHeight: 16 }}>
+            按《Cocktail Codex》六大母配方归类,再点一次可取消
+          </Text>
+          <View style={styles.chipWrap}>
+            {CODEX_FAMILIES.map((fam) => {
+              const active = codexFamily === fam;
+              return (
+                <Pressable
+                  key={fam}
+                  onPress={() => setCodexFamily(active ? "" : fam)}
+                  style={[
+                    styles.chip,
+                    {
+                      backgroundColor: active ? colors.primary : colors.surface,
+                      borderColor: active ? colors.primary : colors.border,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
+                    {fam}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {/* Variant of */}
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">经典变体来源</Text>
+          <TextInput
+            className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
+            placeholder="是哪款经典鸡尾酒的变体?如:尼格罗尼"
+            placeholderTextColor={colors.muted}
+            value={variantOf}
+            onChangeText={setVariantOf}
+            returnKeyType="done"
+            style={{ lineHeight: 20 }}
+          />
+
+          {/* Flavor tags */}
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">风味标签(可多选)</Text>
+          <View style={styles.chipWrap}>
+            {FLAVOR_TAGS.map((tag) => {
+              const active = flavors.includes(tag);
+              return (
+                <Pressable
+                  key={tag}
+                  onPress={() => toggleFlavor(tag)}
+                  style={[
+                    styles.chip,
+                    {
+                      backgroundColor: active ? colors.primary : colors.surface,
+                      borderColor: active ? colors.primary : colors.border,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
+                    {tag}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
 
           {/* Method */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">制作方法</Text>

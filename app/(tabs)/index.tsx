@@ -19,6 +19,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { filterRecipes } from "@/lib/recipes/search";
 import { useRecipeStore } from "@/lib/recipes/store";
+import { CODEX_FAMILIES, FLAVOR_TAGS } from "@/lib/recipes/types";
 
 type Filter = { type: "all" } | { type: "favorites" } | { type: "category"; id: string };
 
@@ -28,14 +29,18 @@ export default function RecipesScreen() {
   const { ready, recipes, categories, importSamples } = useRecipeStore();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>({ type: "all" });
+  const [codexFilter, setCodexFilter] = useState<string>("");
+  const [flavorFilter, setFlavorFilter] = useState<string>("");
 
   const filtered = useMemo(
     () =>
       filterRecipes(recipes, query, {
         categoryId: filter.type === "category" ? filter.id : undefined,
         favoritesOnly: filter.type === "favorites",
+        codexFamily: codexFilter || undefined,
+        flavor: flavorFilter || undefined,
       }),
-    [recipes, query, filter],
+    [recipes, query, filter, codexFilter, flavorFilter],
   );
 
   const handleAdd = () => {
@@ -113,6 +118,41 @@ export default function RecipesScreen() {
                 onPress={() => setFilter({ type: "category", id: cat.id })}
               >
                 <Text style={chipTextStyle(active)}>{cat.name}</Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      </View>
+
+      {/* Codex + flavor secondary filter row */}
+      <View style={styles.chipRowWrap}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipRow}
+        >
+          {CODEX_FAMILIES.map((fam) => {
+            const active = codexFilter === fam;
+            return (
+              <Pressable
+                key={fam}
+                style={chipStyle(active)}
+                onPress={() => setCodexFilter(active ? "" : fam)}
+              >
+                <Text style={chipTextStyle(active)}>{fam.split(" ")[0]}</Text>
+              </Pressable>
+            );
+          })}
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          {FLAVOR_TAGS.map((tag) => {
+            const active = flavorFilter === tag;
+            return (
+              <Pressable
+                key={tag}
+                style={chipStyle(active)}
+                onPress={() => setFlavorFilter(active ? "" : tag)}
+              >
+                <Text style={chipTextStyle(active)}>{tag}</Text>
               </Pressable>
             );
           })}
@@ -201,6 +241,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     lineHeight: 18,
   },
+  divider: {
+    width: 1,
+    alignSelf: "stretch",
+    marginVertical: 4,
+  },
   fab: {
     position: "absolute",
     right: 20,
@@ -241,4 +286,3 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 });
-

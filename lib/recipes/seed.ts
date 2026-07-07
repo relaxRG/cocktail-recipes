@@ -15,13 +15,22 @@ export function buildSampleRecipes(): Recipe[] {
   const mk = (
     partial: Omit<
       Recipe,
-      "id" | "createdAt" | "updatedAt" | "favorite" | "notes"
-    > & { notes?: string; favorite?: boolean },
+      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors"
+    > & {
+      notes?: string;
+      favorite?: boolean;
+      variantOf?: string;
+      codexFamily?: string;
+      flavors?: string[];
+    },
     offset: number,
   ): Recipe => ({
     id: genId() + "-" + offset,
     favorite: partial.favorite ?? false,
     notes: partial.notes ?? "",
+    variantOf: partial.variantOf ?? "",
+    codexFamily: partial.codexFamily ?? "",
+    flavors: partial.flavors ?? [],
     createdAt: now + offset,
     updatedAt: now + offset,
     ...partial,
@@ -36,6 +45,8 @@ export function buildSampleRecipes(): Recipe[] {
         glass: "古典杯",
         method: "搅拌",
         strength: "strong",
+        codexFamily: "马天尼 Martini",
+        flavors: ["苦韵", "草本"],
         ingredients: [
           { id: "i1", name: "金酒", amount: "30ml" },
           { id: "i2", name: "金巴利", amount: "30ml" },
@@ -56,6 +67,8 @@ export function buildSampleRecipes(): Recipe[] {
         glass: "高球杯",
         method: "直调",
         strength: "light",
+        codexFamily: "高球 Highball",
+        flavors: ["草本", "酸爽", "柑橘"],
         ingredients: [
           { id: "i1", name: "白朗姆", amount: "45ml" },
           { id: "i2", name: "青柠汁", amount: "20ml" },
@@ -77,6 +90,9 @@ export function buildSampleRecipes(): Recipe[] {
         glass: "库佩杯",
         method: "摇和",
         strength: "medium",
+        variantOf: "边车 Sidecar",
+        codexFamily: "边车 Sidecar",
+        flavors: ["柑橘", "酸爽", "咸鲜"],
         ingredients: [
           { id: "i1", name: "龙舌兰", amount: "50ml" },
           { id: "i2", name: "橙皮利口酒", amount: "20ml" },
@@ -96,6 +112,8 @@ export function buildSampleRecipes(): Recipe[] {
         glass: "古典杯",
         method: "摇和",
         strength: "medium",
+        codexFamily: "大吉利 Daiquiri",
+        flavors: ["酸爽", "果味"],
         ingredients: [
           { id: "i1", name: "波本威士忌", amount: "45ml" },
           { id: "i2", name: "柠檬汁", amount: "25ml" },

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { filterRecipes } from "../lib/recipes/search";
 import { buildDefaultCategories, buildSampleRecipes } from "../lib/recipes/seed";
-import { genId } from "../lib/recipes/types";
+import { CODEX_FAMILIES, genId, normalizeRecipe } from "../lib/recipes/types";
 
 describe("recipes data layer", () => {
   it("generates unique ids", () => {
@@ -60,5 +60,51 @@ describe("recipes data layer", () => {
   it("returns all when query empty and no filters", () => {
     const recipes = buildSampleRecipes();
     expect(filterRecipes(recipes, "", {}).length).toBe(recipes.length);
+  });
+
+  it("filters by codex family", () => {
+    const recipes = buildSampleRecipes();
+    const result = filterRecipes(recipes, "", { codexFamily: "高球 Highball" });
+    expect(result.length).toBe(1);
+    expect(result[0].name).toContain("莫吉托");
+  });
+
+  it("filters by flavor tag", () => {
+    const recipes = buildSampleRecipes();
+    const result = filterRecipes(recipes, "", { flavor: "草本" });
+    expect(result.length).toBe(2);
+  });
+
+  it("searches by variantOf text", () => {
+    const recipes = buildSampleRecipes();
+    const result = filterRecipes(recipes, "边车", {});
+    expect(result.some((r) => r.name.includes("玛格丽特"))).toBe(true);
+  });
+
+  it("normalizes legacy recipes without new fields", () => {
+    const legacy = {
+      id: "old-1",
+      name: "旧配方",
+      categoryId: null,
+      baseSpirit: "金酒",
+      glass: "",
+      method: "摇和",
+      strength: "medium",
+      ingredients: [],
+      steps: "",
+      garnish: "",
+      notes: "",
+      favorite: false,
+      createdAt: 1,
+      updatedAt: 1,
+    } as any;
+    const normalized = normalizeRecipe(legacy);
+    expect(normalized.variantOf).toBe("");
+    expect(normalized.codexFamily).toBe("");
+    expect(normalized.flavors).toEqual([]);
+  });
+
+  it("exposes six codex families", () => {
+    expect(CODEX_FAMILIES.length).toBe(6);
   });
 });

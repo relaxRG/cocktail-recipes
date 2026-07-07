@@ -10,7 +10,7 @@ import React, {
 } from "react";
 
 import { buildDefaultCategories, buildSampleRecipes } from "./seed";
-import { Category, Recipe, genId } from "./types";
+import { Category, Recipe, genId, normalizeRecipe } from "./types";
 
 const RECIPES_KEY = "cocktail.recipes";
 const CATEGORIES_KEY = "cocktail.categories";
@@ -23,6 +23,9 @@ export interface RecipeDraft {
   glass: string;
   method: string;
   strength: Recipe["strength"];
+  variantOf: string;
+  codexFamily: string;
+  flavors: string[];
   ingredients: Recipe["ingredients"];
   steps: string;
   garnish: string;
@@ -62,7 +65,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           AsyncStorage.getItem(SEEDED_KEY),
         ]);
         let cats: Category[] = cRaw ? JSON.parse(cRaw) : [];
-        let recs: Recipe[] = rRaw ? JSON.parse(rRaw) : [];
+        const parsed: Recipe[] = rRaw ? JSON.parse(rRaw) : [];
+        const recs: Recipe[] = parsed.map((r) => normalizeRecipe(r));
         if (!seeded && cats.length === 0) {
           cats = buildDefaultCategories();
           await AsyncStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
