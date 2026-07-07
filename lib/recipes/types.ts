@@ -165,14 +165,14 @@ export const STRENGTH_LABELS: Record<Strength, string> = {
 };
 
 export const CATEGORY_COLORS = [
-  "#C0841A",
-  "#B0413E",
-  "#3E7A5E",
-  "#3D6B9E",
-  "#7B5EA7",
-  "#C26A3D",
-  "#8A8A3D",
-  "#B04E7F",
+  "#007AFF",
+  "#FF3B30",
+  "#34C759",
+  "#5856D6",
+  "#FF9500",
+  "#AF52DE",
+  "#00C7BE",
+  "#FF2D55",
 ] as const;
 
 export function genId(): string {
