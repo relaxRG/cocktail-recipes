@@ -18,10 +18,12 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { BottleTaxonomyManager } from "@/components/bottle-taxonomy-manager";
 import { PrepTaxonomyManager } from "@/components/prep-taxonomy-manager";
+import { ColorPickerPanel } from "@/components/color-picker";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { cn, displayNames } from "@/lib/utils";
@@ -117,7 +119,8 @@ function DraggableRow({
 export default function CategoriesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { t, lang, setLang } = useI18n();
+  const router = useRouter();
+  const { t, lang } = useI18n();
   const {
     categories,
     recipes,
@@ -365,38 +368,18 @@ export default function CategoriesScreen() {
 
   return (
     <ScreenContainer>
-      <View className="px-5 pt-2 pb-3">
-        <Text className="text-3xl font-bold text-foreground">{t("tags.title")}</Text>
-        <Text className="text-sm text-muted mt-1">
-          {t("tags.subtitle")}
-        </Text>
-      </View>
-
-      {/* Language setting */}
-      <View className="px-5 pb-3">
-        <View className="flex-row items-center bg-surface rounded-xl px-4 py-3">
-          <Text className="flex-1 text-base text-foreground">{t("common.language")}</Text>
-          <View className="flex-row bg-background rounded-lg p-0.5" style={{ gap: 2 }}>
-            {(["zh", "en"] as const).map((l) => (
-              <Pressable
-                key={l}
-                onPress={() => setLang(l)}
-                style={[
-                  styles.langSeg,
-                  lang === l && { backgroundColor: colors.primary },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.langSegText,
-                    { color: lang === l ? "#FFFFFF" : colors.muted },
-                  ]}
-                >
-                  {l === "zh" ? "中文" : "English"}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+      <View className="px-5 pt-2 pb-3 flex-row items-center" style={{ gap: 8 }}>
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => [{ padding: 4, marginLeft: -8 }, pressed && { opacity: 0.6 }]}
+        >
+          <IconSymbol name="chevron.left" size={26} color={colors.primary} />
+        </Pressable>
+        <View className="flex-1">
+          <Text className="text-3xl font-bold text-foreground">{t("tags.title")}</Text>
+          <Text className="text-sm text-muted mt-1">
+            {t("tags.subtitle")}
+          </Text>
         </View>
       </View>
 
@@ -475,17 +458,9 @@ export default function CategoriesScreen() {
             </Pressable>
           </View>
           <View className="flex-row mt-3" style={{ gap: 10 }}>
-            {CATEGORY_COLORS.map((c) => (
-              <Pressable key={c} onPress={() => setNewColor(c)} hitSlop={4}>
-                <View
-                  style={[
-                    styles.colorDot,
-                    { backgroundColor: c },
-                    newColor === c && { borderWidth: 2, borderColor: colors.foreground },
-                  ]}
-                />
-              </Pressable>
-            ))}
+            <View style={{ flex: 1 }}>
+              <ColorPickerPanel value={newColor} onChange={setNewColor} />
+            </View>
           </View>
           <Text className="text-xs text-muted mt-2.5" style={{ lineHeight: 16 }}>
             {t("tags.autofill.hint")}
@@ -701,17 +676,9 @@ export default function CategoriesScreen() {
                 </View>
                 {showPicker ? (
                   <View className="flex-row mt-3 pt-3 border-t border-border" style={{ gap: 10 }}>
-                    {CATEGORY_COLORS.map((c) => (
-                      <Pressable key={c} onPress={() => pickColor(item.id, c)} hitSlop={4}>
-                        <View
-                          style={[
-                            styles.colorDot,
-                            { backgroundColor: c },
-                            item.color === c && { borderWidth: 2, borderColor: colors.foreground },
-                          ]}
-                        />
-                      </Pressable>
-                    ))}
+                    <View style={{ flex: 1 }}>
+                      <ColorPickerPanel value={item.color} onChange={(c) => pickColor(item.id, c)} />
+                    </View>
                   </View>
                 ) : null}
               </View>
@@ -852,17 +819,9 @@ export default function CategoriesScreen() {
                             </View>
                             {showPicker ? (
                               <View className="flex-row mt-3 pt-3 border-t border-border" style={{ gap: 10 }}>
-                                {CATEGORY_COLORS.map((c) => (
-                                  <Pressable key={c} onPress={() => pickColor(item.id, c)} hitSlop={4}>
-                                    <View
-                                      style={[
-                                        styles.colorDot,
-                                        { backgroundColor: c },
-                                        item.color === c && { borderWidth: 2, borderColor: colors.foreground },
-                                      ]}
-                                    />
-                                  </Pressable>
-                                ))}
+                                <View style={{ flex: 1 }}>
+                                  <ColorPickerPanel value={item.color} onChange={(c) => pickColor(item.id, c)} />
+                                </View>
                               </View>
                             ) : null}
                             {showGroupPicker ? (

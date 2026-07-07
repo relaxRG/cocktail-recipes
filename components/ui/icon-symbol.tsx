@@ -34,6 +34,8 @@ const MAPPING = {
   "star": "star-border",
   "magnifyingglass": "search",
   "xmark.circle.fill": "cancel",
+  "doc.fill": "description",
+  "circle": "radio-button-unchecked",
   "pencil": "edit",
   "trash.fill": "delete",
   "chevron.left": "chevron-left",
@@ -44,6 +46,11 @@ const MAPPING = {
   "minus.circle.fill": "remove-circle",
   "plus.circle.fill": "add-circle",
   "sparkles": "auto-awesome",
+  "person.crop.circle.fill": "account-circle",
+  "tag.fill": "label",
+  "square.and.arrow.down.fill": "download",
+  "globe": "language",
+  "info.circle.fill": "info",
 } as IconMapping;
 
 /**
