@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
+import { BulkActionBar, BulkEditSheet } from "@/components/bulk-action-bar";
 import {
   QuickFilterChips,
   QuickParentOption,
@@ -60,7 +61,20 @@ export default function HomemadeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { ready, preps, importSamples, sections, types, reorderPreps } = useHomemadeStore();
+  const {
+    ready,
+    preps,
+    importSamples,
+    sections,
+    types,
+    reorderPreps,
+    deletePreps,
+    bulkUpdatePreps,
+  } = useHomemadeStore();
+  // 多选模式:批量删除/批量改类型
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkSheet, setBulkSheet] = useState<"type" | null>(null);
   const { bottles } = useBottleStore();
   const [query, setQuery] = useState("");
   // 顶层分组:含酒精 / 无酒精(类似酒库的基酒库/酒款库/原材料库)
@@ -324,6 +338,65 @@ export default function HomemadeScreen() {
     }
   };
 
+  /** 多选:可见条目 id 与操作回调 */
+  const visibleIds = useMemo(() => sorted.map((p) => p.id), [sorted]);
+
+  const toggleSelect = useCallback((id: string) => {
+    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }, []);
+
+  const exitSelectMode = useCallback(() => {
+    setSelectMode(false);
+    setSelectedIds([]);
+    setBulkSheet(null);
+  }, []);
+
+  const handleBulkDelete = useCallback(() => {
+    const n = selectedIds.length;
+    if (n === 0) return;
+    const doDelete = () => {
+      deletePreps(selectedIds);
+      if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      exitSelectMode();
+    };
+    if (Platform.OS === "web") {
+      // eslint-disable-next-line no-alert
+      if (window.confirm(t("sel.delete.confirmMsg").replace("{n}", String(n)))) doDelete();
+      return;
+    }
+    Alert.alert(
+      t("sel.delete.confirmTitle"),
+      t("sel.delete.confirmMsg").replace("{n}", String(n)),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        { text: t("common.delete"), style: "destructive", onPress: doDelete },
+      ],
+    );
+  }, [selectedIds, deletePreps, exitSelectMode, t]);
+
+  /** 批量改类型(分区/分组随类型隐含带出) */
+  const handleBulkApply = useCallback(
+    (keys: string[]) => {
+      if (bulkSheet === "type" && keys[0]) {
+        bulkUpdatePreps(selectedIds, { type: keys[0] });
+      }
+      setBulkSheet(null);
+      exitSelectMode();
+    },
+    [bulkSheet, selectedIds, bulkUpdatePreps, exitSelectMode],
+  );
+
+  /** 类型选项:全部类型,标签 = 类型名(分区名) */
+  const bulkTypeOptions = useMemo(
+    () =>
+      types.map((tp) => ({
+        key: tp.key,
+        label: `${lang === "en" ? tp.en : tp.zh} · ${prepSectionLabelIn(sections, tp.section, lang)}`,
+      })),
+    [types, sections, lang],
+  );
+
   const chipStyle = (active: boolean) => [
     styles.chip,
     {
@@ -343,6 +416,27 @@ export default function HomemadeScreen() {
           <Text className="text-3xl font-bold text-foreground">{t("hm.title")}</Text>
           <Text className="text-sm text-muted mt-1">{t("hm.subtitle", { n: groupPreps.length })}</Text>
         </View>
+        {groupPreps.length > 0 ? (
+          <Pressable
+            onPress={() => {
+              if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              if (selectMode) exitSelectMode();
+              else setSelectMode(true);
+            }}
+            style={({ pressed }) => [
+              styles.selectBtn,
+              {
+                backgroundColor: selectMode ? colors.primary : colors.surface,
+                borderColor: selectMode ? colors.primary : colors.border,
+              },
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <Text style={[styles.selectBtnText, { color: selectMode ? "#FFFFFF" : colors.muted }]}>
+              {selectMode ? t("sel.exit") : t("sel.enter")}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
 
       {/* 顶层分组:含酒精 / 无酒精 */}
@@ -483,6 +577,7 @@ export default function HomemadeScreen() {
           ) : null}
         </View>
       ) : manualMode ? (
+        selectMode ? null : (
         <View style={{ flex: 1 }}>
           <View style={[styles.reorderHint, { backgroundColor: colors.primary + "14" }]}>
             <IconSymbol name="line.3.horizontal" size={14} color={colors.primary} />
@@ -504,7 +599,8 @@ export default function HomemadeScreen() {
             }}
           />
         </View>
-      ) : (
+        )
+      ) : selectMode ? null : (
         <FlatList
           data={rows}
           keyExtractor={(item) => item.key}
@@ -546,7 +642,43 @@ export default function HomemadeScreen() {
         />
       )}
 
+      {/* 多选模式:平铺列表 + 勾选行 */}
+      {ready && sorted.length > 0 && selectMode ? (
+        <FlatList
+          data={sorted}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 4,
+            paddingBottom: 160 + insets.bottom,
+          }}
+          renderItem={({ item, index }) => {
+            const checked = selectedIds.includes(item.id);
+            return (
+              <Pressable onPress={() => toggleSelect(item.id)} style={styles.selRow}>
+                <View style={styles.selCheckWrap}>
+                  <IconSymbol
+                    name={checked ? "checkmark.circle.fill" : "circle"}
+                    size={24}
+                    color={checked ? colors.primary : colors.muted}
+                  />
+                </View>
+                <View style={{ flex: 1 }} pointerEvents="none">
+                  <PrepRowInner
+                    prep={item}
+                    isFirst={index === 0}
+                    isLast={index === sorted.length - 1}
+                    bottles={bottles}
+                  />
+                </View>
+              </Pressable>
+            );
+          }}
+        />
+      ) : null}
+
       {/* FAB */}
+      {!selectMode ? (
       <Pressable
         onPress={handleAdd}
         style={({ pressed }) => [
@@ -557,6 +689,41 @@ export default function HomemadeScreen() {
       >
         <IconSymbol name="plus" size={26} color="#FFFFFF" />
       </Pressable>
+      ) : (
+        <>
+          <BulkActionBar
+            count={selectedIds.length}
+            total={visibleIds.length}
+            onSelectAll={() => setSelectedIds(visibleIds)}
+            onClearAll={() => setSelectedIds([])}
+            actions={[
+              {
+                key: "type",
+                label: t("sel.setType"),
+                icon: "tag.fill",
+                onPress: () => setBulkSheet("type"),
+              },
+              {
+                key: "delete",
+                label: t("sel.delete"),
+                icon: "trash.fill",
+                destructive: true,
+                onPress: handleBulkDelete,
+              },
+            ]}
+          />
+          <BulkEditSheet
+            visible={bulkSheet !== null}
+            title={`${t("sel.sheet.title")} · ${t("fs.dim.type")}`}
+            options={bulkTypeOptions}
+            multi={false}
+            allowClear={false}
+            count={selectedIds.length}
+            onApply={handleBulkApply}
+            onClose={() => setBulkSheet(null)}
+          />
+        </>
+      )}
     </ScreenContainer>
   );
 }
@@ -1019,4 +1186,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 6,
   },
+  selectBtn: {
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 2,
+  },
+  selectBtnText: { fontSize: 13, fontWeight: "600", lineHeight: 17 },
+  selRow: { flexDirection: "row", alignItems: "center" },
+  selCheckWrap: { width: 34, alignItems: "flex-start", justifyContent: "center" },
 });

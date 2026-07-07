@@ -2,6 +2,7 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import {
+  Alert,
   FlatList,
   Platform,
   Pressable,
@@ -19,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
+import { BulkActionBar, BulkEditSheet } from "@/components/bulk-action-bar";
 import {
   QuickFilterChips,
   QuickParentOption,
@@ -41,7 +43,7 @@ export default function BottlesScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { ready, bottles, reorderBottles } = useBottleStore();
+  const { ready, bottles, reorderBottles, deleteBottles, bulkUpdateBottles } = useBottleStore();
   const {
     categoryLabel,
     stylesOf,
@@ -50,6 +52,10 @@ export default function BottlesScreen() {
   } = useBottleTaxonomy();
   const [query, setQuery] = useState("");
   const [group, setGroup] = useState<"spirits" | "bottles" | "materials">("spirits");
+  // 多选模式:批量删除/批量改分类/风格
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkSheet, setBulkSheet] = useState<"category" | "style" | null>(null);
   // 快捷筛选(独立于 Filter 面板,持久化保留):类别 → 风格子分类;按分组分别存储
   const [quickSelSpirits, setQuickSelSpirits] = usePersistedState<QuickSelection>(
     "quick.bottles.spirits.v1",
@@ -264,6 +270,77 @@ export default function BottlesScreen() {
     );
   };
 
+  /** 多选:可见条目 id */
+  const visibleIds = useMemo(() => sorted.map((b) => b.id), [sorted]);
+
+  const toggleSelect = useCallback((id: string) => {
+    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }, []);
+
+  const exitSelectMode = useCallback(() => {
+    setSelectMode(false);
+    setSelectedIds([]);
+    setBulkSheet(null);
+  }, []);
+
+  /** 批量删除(带确认) */
+  const handleBulkDelete = useCallback(() => {
+    const n = selectedIds.length;
+    if (n === 0) return;
+    const doDelete = () => {
+      deleteBottles(selectedIds);
+      if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      exitSelectMode();
+    };
+    if (Platform.OS === "web") {
+      // eslint-disable-next-line no-alert
+      if (window.confirm(t("sel.delete.confirmMsg").replace("{n}", String(n)))) doDelete();
+      return;
+    }
+    Alert.alert(
+      t("sel.delete.confirmTitle"),
+      t("sel.delete.confirmMsg").replace("{n}", String(n)),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        { text: t("common.delete"), style: "destructive", onPress: doDelete },
+      ],
+    );
+  }, [selectedIds, deleteBottles, exitSelectMode, t]);
+
+  /** 批量修改分类(单选,改分类时清空风格)/风格(单选) */
+  const handleBulkApply = useCallback(
+    (keys: string[]) => {
+      if (bulkSheet === "category") {
+        const cat = keys[0];
+        if (cat) bulkUpdateBottles(selectedIds, { category: cat, style: "" });
+      } else if (bulkSheet === "style") {
+        bulkUpdateBottles(selectedIds, { style: keys[0] ?? "" });
+      }
+      setBulkSheet(null);
+      exitSelectMode();
+    },
+    [bulkSheet, selectedIds, bulkUpdateBottles, exitSelectMode],
+  );
+
+  /** 批量改风格的选项:所选条目分类的并集下全部预设风格 */
+  const bulkStyleOptions = useMemo(() => {
+    const cats = [...new Set(
+      bottles.filter((b) => selectedIds.includes(b.id)).map((b) => b.category),
+    )];
+    const opts: { key: string; label: string }[] = [];
+    const seen = new Set<string>();
+    for (const cat of cats) {
+      for (const s of stylesOf(cat)) {
+        if (!seen.has(s.name)) {
+          seen.add(s.name);
+          opts.push({ key: s.name, label: styleLabel(cat, s.name) });
+        }
+      }
+    }
+    return opts;
+  }, [bottles, selectedIds, stylesOf, styleLabel]);
+
   const chipStyle = (active: boolean) => [
     styles.chip,
     {
@@ -279,14 +356,41 @@ export default function BottlesScreen() {
   return (
     <ScreenContainer>
       <View className="px-5 pt-2 pb-1">
-        <Text className="text-3xl font-bold text-foreground">{t("bottles.title")}</Text>
-        <Text className="text-sm text-muted mt-1">
-          {group === "materials"
-            ? t("bottles.subtitle.materials", { n: groupBottles.length })
-            : group === "spirits"
-              ? t("bottles.subtitle.spirits", { n: groupBottles.length })
-              : t("bottles.subtitle", { n: groupBottles.length })}
-        </Text>
+        <View className="flex-row items-end justify-between">
+          <View>
+            <Text className="text-3xl font-bold text-foreground">{t("bottles.title")}</Text>
+            <Text className="text-sm text-muted mt-1">
+              {group === "materials"
+                ? t("bottles.subtitle.materials", { n: groupBottles.length })
+                : group === "spirits"
+                  ? t("bottles.subtitle.spirits", { n: groupBottles.length })
+                  : t("bottles.subtitle", { n: groupBottles.length })}
+            </Text>
+          </View>
+          {groupBottles.length > 0 ? (
+            <Pressable
+              onPress={() => {
+                if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                if (selectMode) exitSelectMode();
+                else setSelectMode(true);
+              }}
+              style={({ pressed }) => [
+                styles.selectBtn,
+                {
+                  backgroundColor: selectMode ? colors.primary : colors.surface,
+                  borderColor: selectMode ? colors.primary : colors.border,
+                },
+                pressed && { opacity: 0.7 },
+              ]}
+            >
+              <Text
+                style={[styles.selectBtnText, { color: selectMode ? "#FFFFFF" : colors.muted }]}
+              >
+                {selectMode ? t("sel.exit") : t("sel.enter")}
+              </Text>
+            </Pressable>
+          ) : null}
+        </View>
       </View>
 
       {/* Group segmented control: 基酒库 / 酒款库 / 原材料库 */}
@@ -412,6 +516,7 @@ export default function BottlesScreen() {
           </Text>
         </View>
       ) : manualMode ? (
+        selectMode ? null : (
         <View style={{ flex: 1 }}>
           <View style={[styles.reorderHint, { backgroundColor: colors.primary + "14" }]}>
             <IconSymbol name="line.3.horizontal" size={14} color={colors.primary} />
@@ -433,7 +538,8 @@ export default function BottlesScreen() {
             }}
           />
         </View>
-      ) : (
+        )
+      ) : selectMode ? null : (
         <FlatList
           data={sorted}
           keyExtractor={(item) => item.id}
@@ -452,7 +558,42 @@ export default function BottlesScreen() {
         />
       )}
 
+      {/* 多选模式:平铺列表 + 勾选行 */}
+      {ready && sorted.length > 0 && selectMode ? (
+        <FlatList
+          data={sorted}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 4,
+            paddingBottom: 160 + insets.bottom,
+          }}
+          renderItem={({ item, index }) => {
+            const checked = selectedIds.includes(item.id);
+            return (
+              <Pressable onPress={() => toggleSelect(item.id)} style={styles.selRow}>
+                <View style={styles.selCheckWrap}>
+                  <IconSymbol
+                    name={checked ? "checkmark.circle.fill" : "circle"}
+                    size={24}
+                    color={checked ? colors.primary : colors.muted}
+                  />
+                </View>
+                <View style={{ flex: 1 }} pointerEvents="none">
+                  <BottleCard
+                    bottle={item}
+                    isFirst={index === 0}
+                    isLast={index === sorted.length - 1}
+                  />
+                </View>
+              </Pressable>
+            );
+          }}
+        />
+      ) : null}
+
       {/* FAB */}
+      {!selectMode ? (
       <Pressable
         onPress={handleAdd}
         style={({ pressed }) => [
@@ -466,6 +607,61 @@ export default function BottlesScreen() {
       >
         <IconSymbol name="plus" size={26} color="#FFFFFF" />
       </Pressable>
+      ) : (
+        <>
+          {/* 底部批量操作栏 */}
+          <BulkActionBar
+            count={selectedIds.length}
+            total={visibleIds.length}
+            onSelectAll={() => setSelectedIds(visibleIds)}
+            onClearAll={() => setSelectedIds([])}
+            actions={[
+              {
+                key: "category",
+                label: t("sel.setCategory"),
+                icon: "tag.fill",
+                onPress: () => setBulkSheet("category"),
+              },
+              {
+                key: "style",
+                label: t("sel.setStyle"),
+                icon: "sparkles",
+                onPress: () => setBulkSheet("style"),
+              },
+              {
+                key: "delete",
+                label: t("sel.delete"),
+                icon: "trash.fill",
+                destructive: true,
+                onPress: handleBulkDelete,
+              },
+            ]}
+          />
+          {/* 批量修改弹层:分类单选(全部分组的分类)/风格单选 */}
+          <BulkEditSheet
+            visible={bulkSheet !== null}
+            title={
+              bulkSheet === "category"
+                ? `${t("sel.sheet.title")} · ${t("fs.dim.category")}`
+                : `${t("sel.sheet.title")} · ${t("fs.dim.style")}`
+            }
+            options={
+              bulkSheet === "category"
+                ? [
+                    ...taxCategoriesOfGroup("spirits"),
+                    ...taxCategoriesOfGroup("bottles"),
+                    ...taxCategoriesOfGroup("materials"),
+                  ].map((cat) => ({ key: cat, label: categoryLabel(cat, lang) }))
+                : bulkStyleOptions
+            }
+            multi={false}
+            allowClear={bulkSheet === "style"}
+            count={selectedIds.length}
+            onApply={handleBulkApply}
+            onClose={() => setBulkSheet(null)}
+          />
+        </>
+      )}
     </ScreenContainer>
   );
 }
@@ -663,4 +859,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 6,
   },
+  selectBtn: {
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 2,
+  },
+  selectBtnText: { fontSize: 13, fontWeight: "600", lineHeight: 17 },
+  selRow: { flexDirection: "row", alignItems: "center" },
+  selCheckWrap: { width: 34, alignItems: "flex-start", justifyContent: "center" },
 });

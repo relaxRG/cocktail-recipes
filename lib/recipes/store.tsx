@@ -65,6 +65,8 @@ interface RecipeStore {
   addRecipe: (draft: RecipeDraft) => Recipe;
   updateRecipe: (id: string, draft: RecipeDraft) => void;
   deleteRecipe: (id: string) => void;
+  deleteRecipes: (ids: string[]) => void;
+  bulkUpdateRecipes: (ids: string[], patch: Partial<Recipe>) => void;
   toggleFavorite: (id: string) => void;
   toggleMade: (id: string) => void;
   setRating: (id: string, rating: number | null) => void;
@@ -235,6 +237,28 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
   const deleteRecipe = useCallback(
     (id: string) => {
       persistRecipes(recipesRef.current.filter((r) => r.id !== id));
+    },
+    [persistRecipes],
+  );
+
+  /** 批量删除配方 */
+  const deleteRecipes = useCallback(
+    (ids: string[]) => {
+      const set = new Set(ids);
+      persistRecipes(recipesRef.current.filter((r) => !set.has(r.id)));
+    },
+    [persistRecipes],
+  );
+
+  /** 批量更新配方字段(分类/风味标签等) */
+  const bulkUpdateRecipes = useCallback(
+    (ids: string[], patch: Partial<Recipe>) => {
+      const set = new Set(ids);
+      persistRecipes(
+        recipesRef.current.map((r) =>
+          set.has(r.id) ? { ...r, ...patch, updatedAt: Date.now() } : r,
+        ),
+      );
     },
     [persistRecipes],
   );
@@ -607,6 +631,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       addRecipe,
       updateRecipe,
       deleteRecipe,
+      deleteRecipes,
+      bulkUpdateRecipes,
       toggleFavorite,
       toggleMade,
       setRating,
@@ -644,6 +670,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       addRecipe,
       updateRecipe,
       deleteRecipe,
+      deleteRecipes,
+      bulkUpdateRecipes,
       toggleFavorite,
       toggleMade,
       setRating,

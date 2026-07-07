@@ -28,6 +28,8 @@ interface BottleStore {
   addBottle: (draft: BottleDraft) => Bottle;
   updateBottle: (id: string, draft: BottleDraft) => void;
   deleteBottle: (id: string) => void;
+  deleteBottles: (ids: string[]) => void;
+  bulkUpdateBottles: (ids: string[], patch: Partial<Bottle>) => void;
   setBottleRating: (id: string, rating: number | null) => void;
   reorderBottles: (orderedIds: string[]) => void;
   getBottle: (id: string | undefined) => Bottle | undefined;
@@ -163,6 +165,28 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
     [persist],
   );
 
+  /** 批量删除酒款 */
+  const deleteBottles = useCallback(
+    (ids: string[]) => {
+      const set = new Set(ids);
+      persist(bottlesRef.current.filter((b) => !set.has(b.id)));
+    },
+    [persist],
+  );
+
+  /** 批量更新酒款字段(分类/风格等) */
+  const bulkUpdateBottles = useCallback(
+    (ids: string[], patch: Partial<Bottle>) => {
+      const set = new Set(ids);
+      persist(
+        bottlesRef.current.map((b) =>
+          set.has(b.id) ? { ...b, ...patch, updatedAt: Date.now() } : b,
+        ),
+      );
+    },
+    [persist],
+  );
+
   /** 设置酒款评分(1-10 整数,null 清除) */
   const setBottleRating = useCallback(
     (id: string, rating: number | null) => {
@@ -204,11 +228,13 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
       addBottle,
       updateBottle,
       deleteBottle,
+      deleteBottles,
+      bulkUpdateBottles,
       setBottleRating,
       reorderBottles,
       getBottle,
     }),
-    [ready, bottles, addBottle, updateBottle, deleteBottle, setBottleRating, reorderBottles, getBottle],
+    [ready, bottles, addBottle, updateBottle, deleteBottle, deleteBottles, bulkUpdateBottles, setBottleRating, reorderBottles, getBottle],
   );
 
   return <BottleContext.Provider value={value}>{children}</BottleContext.Provider>;

@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import {
+  Alert,
   FlatList,
   Platform,
   Pressable,
@@ -22,6 +23,7 @@ import { RecipeCard } from "@/components/recipe-card";
 import { SwipeableRecipeRow } from "@/components/swipeable-recipe-row";
 import { ScreenContainer } from "@/components/screen-container";
 import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
+import { BulkActionBar, BulkEditSheet } from "@/components/bulk-action-bar";
 import {
   QuickFilterChips,
   QuickParentOption,
@@ -56,12 +58,25 @@ export default function RecipesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
-  const { ready, recipes, categories, importSamples, tagsOf, reorderRecipes } = useRecipeStore();
+  const {
+    ready,
+    recipes,
+    categories,
+    importSamples,
+    tagsOf,
+    reorderRecipes,
+    deleteRecipes,
+    bulkUpdateRecipes,
+  } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
   const flavorTags = tagsOf("flavor");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>({ type: "all" });
+  // 多选模式:批量删除/批量改分类/风味
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkSheet, setBulkSheet] = useState<"category" | "flavor" | null>(null);
   // 快捷筛选(独立于 Filter 面板,持久化保留):分类 → 基酒子分类
   const [quickSel, setQuickSel] = usePersistedState<QuickSelection>("quick.recipes.v1", {});
   // Filter 面板多选筛选状态(与快捷筛选相互独立)
@@ -283,6 +298,59 @@ export default function RecipesScreen() {
     router.push("/recipe-form");
   };
 
+  /** 多选:当前列表可见的全部配方 id(按筛选结果) */
+  const visibleIds = useMemo(() => sorted.map((r) => r.id), [sorted]);
+
+  const toggleSelect = useCallback((id: string) => {
+    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }, []);
+
+  const exitSelectMode = useCallback(() => {
+    setSelectMode(false);
+    setSelectedIds([]);
+    setBulkSheet(null);
+  }, []);
+
+  /** 批量删除(带确认) */
+  const handleBulkDelete = useCallback(() => {
+    const n = selectedIds.length;
+    if (n === 0) return;
+    const doDelete = () => {
+      deleteRecipes(selectedIds);
+      if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      exitSelectMode();
+    };
+    if (Platform.OS === "web") {
+      // web 端 Alert 不支持多按钮,直接用 confirm
+      // eslint-disable-next-line no-alert
+      if (window.confirm(t("sel.delete.confirmMsg").replace("{n}", String(n)))) doDelete();
+      return;
+    }
+    Alert.alert(
+      t("sel.delete.confirmTitle"),
+      t("sel.delete.confirmMsg").replace("{n}", String(n)),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        { text: t("common.delete"), style: "destructive", onPress: doDelete },
+      ],
+    );
+  }, [selectedIds, deleteRecipes, exitSelectMode, t]);
+
+  /** 批量修改分类/风味 */
+  const handleBulkApply = useCallback(
+    (keys: string[]) => {
+      if (bulkSheet === "category") {
+        bulkUpdateRecipes(selectedIds, { categoryId: keys[0] ?? null });
+      } else if (bulkSheet === "flavor") {
+        bulkUpdateRecipes(selectedIds, { flavors: keys });
+      }
+      setBulkSheet(null);
+      exitSelectMode();
+    },
+    [bulkSheet, selectedIds, bulkUpdateRecipes, exitSelectMode],
+  );
+
   const chipStyle = (active: boolean) => [
     styles.chip,
     {
@@ -307,6 +375,27 @@ export default function RecipesScreen() {
               : t("home.subtitle.empty")}
           </Text>
         </View>
+        {recipes.length > 0 ? (
+          <Pressable
+            onPress={() => {
+              if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              if (selectMode) exitSelectMode();
+              else setSelectMode(true);
+            }}
+            style={({ pressed }) => [
+              styles.selectBtn,
+              {
+                backgroundColor: selectMode ? colors.primary : colors.surface,
+                borderColor: selectMode ? colors.primary : colors.border,
+              },
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <Text style={[styles.selectBtnText, { color: selectMode ? "#FFFFFF" : colors.muted }]}>
+              {selectMode ? t("sel.exit") : t("sel.enter")}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
 
       {/* Search bar */}
@@ -419,6 +508,7 @@ export default function RecipesScreen() {
           </Pressable>
         </View>
       ) : manualMode ? (
+        selectMode ? null : (
         <View style={{ flex: 1 }}>
           {/* 手动排序提示条 */}
           <View style={[styles.reorderHint, { backgroundColor: colors.primary + "14" }]}>
@@ -448,7 +538,8 @@ export default function RecipesScreen() {
             }
           />
         </View>
-      ) : (
+        )
+      ) : selectMode ? null : (
         <FlatList
           data={grouped}
           keyExtractor={(g) => g.items[0].id}
@@ -484,7 +575,47 @@ export default function RecipesScreen() {
         />
       )}
 
+      {/* 多选模式:平铺列表 + 勾选行 */}
+      {ready && recipes.length > 0 && selectMode ? (
+        <FlatList
+          data={sorted}
+          keyExtractor={(r) => r.id}
+          renderItem={({ item, index }) => {
+            const checked = selectedIds.includes(item.id);
+            return (
+              <Pressable onPress={() => toggleSelect(item.id)} style={styles.selRow}>
+                <View style={styles.selCheckWrap}>
+                  <IconSymbol
+                    name={checked ? "checkmark.circle.fill" : "circle"}
+                    size={24}
+                    color={checked ? colors.primary : colors.muted}
+                  />
+                </View>
+                <View style={{ flex: 1 }} pointerEvents="none">
+                  <RecipeCard
+                    recipe={item}
+                    isFirst={index === 0}
+                    isLast={index === sorted.length - 1}
+                  />
+                </View>
+              </Pressable>
+            );
+          }}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 4,
+            paddingBottom: 160 + insets.bottom,
+          }}
+          ListEmptyComponent={
+            <View className="items-center pt-16 px-8">
+              <Text className="text-base text-muted text-center">{t("home.noMatch")}</Text>
+            </View>
+          }
+        />
+      ) : null}
+
       {/* Floating add button */}
+      {!selectMode ? (
       <Pressable
         onPress={handleAdd}
         style={({ pressed }) => [
@@ -495,6 +626,65 @@ export default function RecipesScreen() {
       >
         <IconSymbol name="plus" size={28} color="#FFFFFF" />
       </Pressable>
+      ) : (
+        <>
+          {/* 底部批量操作栏 */}
+          <BulkActionBar
+            count={selectedIds.length}
+            total={visibleIds.length}
+            onSelectAll={() => setSelectedIds(visibleIds)}
+            onClearAll={() => setSelectedIds([])}
+            actions={[
+              {
+                key: "category",
+                label: t("sel.setCategory"),
+                icon: "tag.fill",
+                onPress: () => setBulkSheet("category"),
+              },
+              {
+                key: "flavor",
+                label: t("sel.setFlavor"),
+                icon: "sparkles",
+                onPress: () => setBulkSheet("flavor"),
+              },
+              {
+                key: "delete",
+                label: t("sel.delete"),
+                icon: "trash.fill",
+                destructive: true,
+                onPress: handleBulkDelete,
+              },
+            ]}
+          />
+          {/* 批量修改弹层:分类单选/风味多选 */}
+          <BulkEditSheet
+            visible={bulkSheet !== null}
+            title={
+              bulkSheet === "category"
+                ? `${t("sel.sheet.title")} · ${t("form.category")}`
+                : `${t("sel.sheet.title")} · ${t("form.flavors")}`
+            }
+            options={
+              bulkSheet === "category"
+                ? categories.map((c) => ({
+                    key: c.id,
+                    label: displayNames(c.nameEn ?? "", c.name, lang).primary,
+                    color: c.color,
+                  }))
+                : flavorTags.map((tag) => ({
+                    key: tag.name,
+                    label: displayNames(tag.nameEn ?? "", tag.name, lang).primary,
+                    color: tag.color,
+                  }))
+            }
+            multi={bulkSheet === "flavor"}
+            allowClear
+            count={selectedIds.length}
+            onApply={handleBulkApply}
+            onClose={() => setBulkSheet(null)}
+          />
+        </>
+      )}
     </ScreenContainer>
   );
 }
@@ -503,6 +693,16 @@ const styles = StyleSheet.create({
   chipRowWrap: {
     marginBottom: 8,
   },
+  selectBtn: {
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 2,
+  },
+  selectBtnText: { fontSize: 13, fontWeight: "600", lineHeight: 17 },
+  selRow: { flexDirection: "row", alignItems: "center" },
+  selCheckWrap: { width: 34, alignItems: "flex-start", justifyContent: "center" },
   dragRow: {
     flexDirection: "row",
     alignItems: "stretch",

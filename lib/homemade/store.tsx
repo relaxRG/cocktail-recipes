@@ -47,6 +47,8 @@ interface HomemadeStore {
   ) => HomemadePrep;
   updatePrep: (id: string, patch: Partial<HomemadePrep>) => void;
   deletePrep: (id: string) => void;
+  deletePreps: (ids: string[]) => void;
+  bulkUpdatePreps: (ids: string[], patch: Partial<HomemadePrep>) => void;
   togglePrepMade: (id: string) => void;
   setPrepRating: (id: string, rating: number | null) => void;
   setPrepGroup: (id: string, group: PrepGroup | null) => void;
@@ -224,6 +226,26 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
   const deletePrep = useCallback<HomemadeStore["deletePrep"]>(
     (id) => {
       persist(preps.filter((p) => p.id !== id));
+    },
+    [preps, persist],
+  );
+
+  /** 批量删除自制品 */
+  const deletePreps = useCallback<HomemadeStore["deletePreps"]>(
+    (ids) => {
+      const set = new Set(ids);
+      persist(preps.filter((p) => !set.has(p.id)));
+    },
+    [preps, persist],
+  );
+
+  /** 批量更新自制品字段(类型/分组等) */
+  const bulkUpdatePreps = useCallback<HomemadeStore["bulkUpdatePreps"]>(
+    (ids, patch) => {
+      const set = new Set(ids);
+      persist(
+        preps.map((p) => (set.has(p.id) ? { ...p, ...patch, id: p.id, updatedAt: Date.now() } : p)),
+      );
     },
     [preps, persist],
   );
@@ -434,6 +456,8 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
       addPrep,
       updatePrep,
       deletePrep,
+      deletePreps,
+      bulkUpdatePreps,
       togglePrepMade,
       setPrepRating,
       setPrepGroup,
@@ -459,6 +483,8 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
       addPrep,
       updatePrep,
       deletePrep,
+      deletePreps,
+      bulkUpdatePreps,
       togglePrepMade,
       setPrepRating,
       setPrepGroup,
