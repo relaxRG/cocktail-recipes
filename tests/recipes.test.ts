@@ -35,6 +35,7 @@ import {
 } from "../lib/homemade/cost";
 import { suggestIngredients } from "../lib/suggest";
 import { displayNames } from "../lib/utils";
+import { analyzeUnknownIngredient, classifyIngredient, splitBilingualName } from "../lib/classify";
 import {
   PREP_SECTIONS,
   PREP_TYPES,
@@ -262,6 +263,60 @@ describe("homemade preps", () => {
     // Non-homemade ingredients yield no suggestion
     expect(suggestPrep("Angostura Bitters (bottled)")).toBeNull();
     expect(suggestPrep("Lime Juice")).toBeNull();
+  });
+
+  it("classifies unknown ingredients into bottle / material / homemade", () => {
+    // Spirits & mixers → bottle library with the right category
+    const vodka = classifyIngredient("Grey Goose Vodka");
+    expect(vodka?.library).toBe("bottle");
+    expect(vodka?.category).toBe("伏特加");
+    const whisky = classifyIngredient("高原骑士威士忌");
+    expect(whisky?.library).toBe("bottle");
+    expect(whisky?.category).toBe("威士忌");
+    const tonic = classifyIngredient("Fever Tree Tonic");
+    expect(tonic?.library).toBe("bottle");
+    expect(tonic?.category).toBe("软饮");
+    // Raw ingredients → material library with sub-category style
+    const sugar = classifyIngredient("Muscovado Sugar");
+    expect(sugar?.library).toBe("material");
+    expect(sugar?.style).toBe("Sugar & Sweetener");
+    const herb = classifyIngredient("鼠尾草叶");
+    expect(herb?.library).toBe("material");
+    expect(herb?.style).toBe("Herb");
+    // Homemade-style items → homemade library with prep type
+    const syrup = classifyIngredient("Rosemary Syrup");
+    expect(syrup?.library).toBe("homemade");
+    expect(syrup?.category).toBe("syrup");
+    const infusion = classifyIngredient("Chili-Infused Tequila");
+    expect(infusion?.library).toBe("homemade");
+    expect(infusion?.category).toBe("infusion");
+    // Unknown fallback → material with low confidence
+    const unknown = classifyIngredient("Dragon Pearl");
+    expect(unknown?.library).toBe("material");
+    expect(unknown!.confidence).toBeLessThan(0.5);
+  });
+
+  it("splits bilingual names into en/zh prefill", () => {
+    const r = splitBilingualName("Rosemary Syrup 迷迭香糖浆");
+    expect(r.en).toBe("Rosemary Syrup");
+    expect(r.zh).toBe("迷迭香糖浆");
+    const zhOnly = splitBilingualName("迷迭香糖浆");
+    expect(zhOnly.en).toBe("");
+    expect(zhOnly.zh).toBe("迷迭香糖浆");
+  });
+
+  it("analyzeUnknownIngredient skips ingredients already in a library", () => {
+    const bottles = buildDefaultBottles();
+    const preps = buildSamplePreps();
+    // Existing bottle / material / homemade entries → null (nothing to add)
+    expect(analyzeUnknownIngredient("Gin", bottles, preps)).toBeNull();
+    expect(analyzeUnknownIngredient("汤力水", bottles, preps)).toBeNull();
+    expect(analyzeUnknownIngredient("Simple Syrup", bottles, preps)).toBeNull();
+    // Truly unknown → classification suggestion
+    const c = analyzeUnknownIngredient("Batavia Arrack", bottles, preps);
+    expect(c).not.toBeNull();
+    const rosemary = analyzeUnknownIngredient("Rosemary Honey Syrup", bottles, preps);
+    expect(rosemary?.library).toBe("homemade");
   });
 
   it("live-suggests ingredients from bottles and homemade preps with language priority", () => {

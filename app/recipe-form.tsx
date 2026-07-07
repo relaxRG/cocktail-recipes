@@ -20,6 +20,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { matchPrep, suggestPrep } from "@/lib/homemade/match";
+import { analyzeUnknownIngredient } from "@/lib/classify";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useBottleStore } from "@/lib/bottles/store";
 import { displayNames } from "@/lib/utils";
@@ -497,6 +498,10 @@ export default function RecipeFormScreen() {
             const trimmed = ing.name.trim();
             const prep = trimmed.length >= 2 ? matchPrep(trimmed, preps) : null;
             const suggestion = !prep && trimmed.length >= 2 ? suggestPrep(trimmed) : null;
+            const classification =
+              !prep && !suggestion && trimmed.length >= 3
+                ? analyzeUnknownIngredient(trimmed, bottles, preps)
+                : null;
             const showSuggest =
               focusedIng === ing.id && trimmed.length > 0 && pickedIng[ing.id] !== ing.name;
             const liveSuggestions = showSuggest
@@ -619,6 +624,43 @@ export default function RecipeFormScreen() {
                     <IconSymbol name="plus.circle.fill" size={12} color={colors.success} />
                     <Text className="text-xs" style={{ color: colors.success, lineHeight: 16 }}>
                       {t("form.homemade.add")} · {displayNames(suggestion.name, suggestion.nameAlt, lang).primary}
+                    </Text>
+                  </Pressable>
+                ) : classification ? (
+                  <Pressable
+                    onPress={() => {
+                      if (classification.library === "homemade") {
+                        router.push({
+                          pathname: "/homemade-form",
+                          params: {
+                            prefillName: classification.name,
+                            prefillNameAlt: classification.nameAlt,
+                            prefillType: classification.category,
+                          },
+                        });
+                      } else {
+                        router.push({
+                          pathname: "/bottle-form",
+                          params: {
+                            category: classification.category,
+                            prefillName: classification.name,
+                            prefillNameAlt: classification.nameAlt,
+                            ...(classification.style ? { prefillStyle: classification.style } : {}),
+                          },
+                        });
+                      }
+                    }}
+                    style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
+                  >
+                    <IconSymbol name="plus.circle.fill" size={12} color={colors.success} />
+                    <Text className="text-xs" style={{ color: colors.success, lineHeight: 16 }}>
+                      {classification.library === "homemade"
+                        ? t("form.homemade.add")
+                        : classification.library === "material"
+                          ? t("form.smartAdd.material")
+                          : t("form.smartAdd.bottle")}
+                      {" · "}
+                      {displayNames(classification.name, classification.nameAlt, lang).primary}
                     </Text>
                   </Pressable>
                 ) : null}

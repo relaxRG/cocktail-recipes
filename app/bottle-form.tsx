@@ -23,19 +23,26 @@ export default function BottleFormScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { id, category: categoryParam } = useLocalSearchParams<{ id?: string; category?: string }>();
+  const { id, category: categoryParam, prefillName, prefillNameAlt, prefillStyle } =
+    useLocalSearchParams<{
+      id?: string;
+      category?: string;
+      prefillName?: string;
+      prefillNameAlt?: string;
+      prefillStyle?: string;
+    }>();
   const { getBottle, addBottle, updateBottle } = useBottleStore();
   const editing = getBottle(id);
 
-  const [nameZh, setNameZh] = useState(editing?.nameZh ?? "");
-  const [nameEn, setNameEn] = useState(editing?.nameEn ?? "");
+  const [nameZh, setNameZh] = useState(editing?.nameZh ?? prefillNameAlt ?? "");
+  const [nameEn, setNameEn] = useState(editing?.nameEn ?? prefillName ?? "");
   const [category, setCategory] = useState(
     editing?.category ??
       (categoryParam && (BOTTLE_CATEGORIES as readonly string[]).includes(categoryParam)
         ? categoryParam
         : "金酒"),
   );
-  const [style, setStyle] = useState(editing?.style ?? "");
+  const [style, setStyle] = useState(editing?.style ?? prefillStyle ?? "");
   const [brand, setBrand] = useState(editing?.brand ?? "");
   const [origin, setOrigin] = useState(editing?.origin ?? "");
   const [volume, setVolume] = useState(editing?.volume ?? "");
@@ -45,12 +52,12 @@ export default function BottleFormScreen() {
   );
   const [notes, setNotes] = useState(editing?.notes ?? "");
 
-  const canSave = nameZh.trim().length > 0;
+  const canSave = nameZh.trim().length > 0 || nameEn.trim().length > 0;
 
   const handleSave = () => {
     if (!canSave) return;
     const draft: BottleDraft = {
-      nameZh: nameZh.trim(),
+      nameZh: nameZh.trim() || nameEn.trim(),
       nameEn: nameEn.trim(),
       category,
       style: style.trim(),
