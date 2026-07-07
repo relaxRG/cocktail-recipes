@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { filterBottles } from "../lib/bottles/store";
+import { buildDefaultBottles } from "../lib/bottles/seed";
+import { normalizeBottle } from "../lib/bottles/types";
 import { filterRecipes } from "../lib/recipes/search";
 import { buildDefaultCategories, buildSampleRecipes } from "../lib/recipes/seed";
 import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib/recipes/types";
@@ -150,5 +153,41 @@ describe("recipes data layer", () => {
     const resultFlavors = result.filter((t) => t.kind === "flavor");
     expect(resultFlavors[0].name).toBe(flavors[flavors.length - 1].name);
     expect(resultFlavors[resultFlavors.length - 1].name).toBe(flavors[0].name);
+  });
+});
+
+describe("bottle database", () => {
+  it("builds default bottles with required fields", () => {
+    const bottles = buildDefaultBottles();
+    expect(bottles.length).toBeGreaterThanOrEqual(30);
+    const ids = new Set(bottles.map((b) => b.id));
+    expect(ids.size).toBe(bottles.length);
+    for (const b of bottles) {
+      expect(b.nameZh.length).toBeGreaterThan(0);
+      expect(b.nameEn.length).toBeGreaterThan(0);
+      expect(b.category.length).toBeGreaterThan(0);
+      expect(b.abv).toBeGreaterThanOrEqual(0);
+      expect(b.abv).toBeLessThanOrEqual(100);
+      expect(b.priceCny).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it("filters bottles by chinese name, english name and category", () => {
+    const bottles = buildDefaultBottles();
+    expect(filterBottles(bottles, "君度").length).toBe(1);
+    expect(filterBottles(bottles, "cointreau").length).toBe(1);
+    const gins = filterBottles(bottles, "", "金酒");
+    expect(gins.length).toBeGreaterThan(0);
+    expect(gins.every((b) => b.category === "金酒")).toBe(true);
+    // 组合:分类 + 关键词
+    expect(filterBottles(bottles, "hendrick", "金酒").length).toBe(1);
+  });
+
+  it("normalizes bottles with missing fields", () => {
+    const b = normalizeBottle({ id: "x1", nameZh: "测试酒" });
+    expect(b.category).toBe("其他");
+    expect(b.abv).toBe(0);
+    expect(b.priceCny).toBe(0);
+    expect(b.builtin).toBe(false);
   });
 });

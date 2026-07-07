@@ -36,6 +36,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="bottles"
+        options={{
+          title: "酒库",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="books.vertical.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="categories"
         options={{
           title: "分类",
