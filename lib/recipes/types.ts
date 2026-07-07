@@ -252,16 +252,16 @@ export const TAG_NAME_DICT: Record<string, string> = {
   香槟: "Champagne",
   其他: "Other",
   // 杯型
-  马天尼杯: "Martini",
-  古典杯: "Rocks",
-  高球杯: "Highball",
-  柯林杯: "Collins",
-  库佩杯: "Coupe",
-  飓风杯: "Hurricane",
-  子弹杯: "Shot",
-  尼克诺拉杯: "Nick & Nora",
-  郁金香杯: "Tulip",
-  笛型杯: "Flute",
+  马天尼杯: "Martini Glass",
+  古典杯: "Rocks Glass",
+  高球杯: "Highball Glass",
+  柯林杯: "Collins Glass",
+  库佩杯: "Coupe Glass",
+  飓风杯: "Hurricane Glass",
+  子弹杯: "Shot Glass",
+  尼克诺拉杯: "Nick & Nora Glass",
+  郁金香杯: "Tulip Glass",
+  笛型杯: "Flute Glass",
   提基杯: "Tiki Mug",
   铜杯: "Copper Mug",
   红酒杯: "Wine Glass",
@@ -326,9 +326,31 @@ export function autoFillTagNames(input: string): { name: string; nameEn: string 
   return zh ? { name: zh, nameEn: raw } : { name: raw, nameEn: raw };
 }
 
-/** 为旧标签数据补全英文名(仅当词典可查且 nameEn 为空) */
+/** 旧英文译名 → 新译名升级映射(词典修订后自动迁移已存数据) */
+const TAG_NAME_EN_UPGRADES: Record<string, string> = {
+  Martini: "Martini Glass",
+  Rocks: "Rocks Glass",
+  Highball: "Highball Glass",
+  Collins: "Collins Glass",
+  Coupe: "Coupe Glass",
+  Hurricane: "Hurricane Glass",
+  Shot: "Shot Glass",
+  "Nick & Nora": "Nick & Nora Glass",
+  Tulip: "Tulip Glass",
+  Flute: "Flute Glass",
+};
+
+/** 为旧标签数据补全英文名(词典可查且 nameEn 为空),并升级已修订的旧译名 */
 export function migrateTagNameEn<T extends { name: string; nameEn?: string }>(item: T): T {
-  if (item.nameEn) return item;
+  if (item.nameEn) {
+    // 仅当该中文名的词典译名已修订、且存量 nameEn 等于旧译名时才升级,
+    // 避免覆盖用户自定义的英文名
+    const upgraded = TAG_NAME_EN_UPGRADES[item.nameEn.trim()];
+    if (upgraded && TAG_NAME_DICT[item.name.trim()] === upgraded) {
+      return { ...item, nameEn: upgraded };
+    }
+    return item;
+  }
   const en = TAG_NAME_DICT[item.name.trim()];
   if (en) return { ...item, nameEn: en };
   if (!hasCJK(item.name)) return { ...item, nameEn: item.name };

@@ -30,22 +30,51 @@ const SECTION_KEYS = {
 const AMOUNT_RE =
   /(\d+(?:\.\d+)?(?:\s*\/\s*\d+)?(?:\s+\d+\s*\/\s*\d+)?|[½¼¾⅓⅔]|\d+\s*[½¼¾⅓⅔])\s*(ml|毫升|cc|oz|盎司|ounces?|cl|dash(?:es)?|抖|滴|drops?|tsp|茶匙|小勺|teaspoons?|tbsp|汤匙|大勺|tablespoons?|bar\s*spoons?|吧勺|shots?|splash(?:es)?|parts?|pinch(?:es)?|slices?|wedges?|sprigs?|lea(?:f|ves)|cubes?|pieces?|片|个|颗|枝|叶|块|条|只)\b|适量|少许|to\s*taste|top(?:\s*up)?|as\s*needed/i;
 
-/** 杯型关键词 */
+/**
+ * 杯型关键词(宽松模式:用于显式"杯型:"字段值归一化,英文可省略 glass 后缀)
+ */
 const GLASS_WORDS: [RegExp, string][] = [
+  [/马天尼杯|martini(\s*glass)?/i, "马天尼杯"],
+  [
+    /古典杯|老式杯|岩石杯|rocks(\s*glass)?|old[\s-]*fashioned\s*glass|\bdof\b|double\s*old[\s-]*fashioned|lowball/i,
+    "古典杯",
+  ],
+  [/高球杯|highball(\s*glass)?/i, "高球杯"],
+  [/柯林杯|collins(\s*glass)?/i, "柯林杯"],
+  [/库佩杯|碟形杯|coupe(tte)?(\s*glass)?/i, "库佩杯"],
+  [/飓风杯|hurricane(\s*glass)?/i, "飓风杯"],
+  [/子弹杯|shot\s*glass|shooter/i, "子弹杯"],
+  [/笛型杯|香槟杯|flute(\s*glass)?|champagne\s*flute/i, "笛型杯"],
+  [/郁金香杯|tulip(\s*glass)?/i, "郁金香杯"],
+  [/铜杯|copper\s*mug|mule\s*mug|moscow\s*mule\s*mug/i, "铜杯"],
+  [/提基杯|tiki(\s*mug)?/i, "提基杯"],
+  [/尼克诺拉杯|nick\s*(&|and)\s*nora(\s*glass)?/i, "尼克诺拉杯"],
+  [/朱莉普杯|julep\s*(cup|tin)/i, "朱莉普杯"],
+  [/红酒杯|葡萄酒杯|wine\s*glass|goblet/i, "红酒杯"],
+];
+
+/**
+ * 杯型关键词(严格模式:用于从全文推断,英文需带 glass/mug 等后缀,
+ * 避免 "Martini Rosso"、"Tulip syrup" 等配料名被误判为杯型)
+ */
+const GLASS_WORDS_STRICT: [RegExp, string][] = [
   [/马天尼杯|martini\s*glass/i, "马天尼杯"],
-  [/古典杯|老式杯|rocks\s*glass|old[\s-]*fashioned\s*glass|lowball/i, "古典杯"],
-  [/高球杯|highball/i, "高球杯"],
-  [/柯林杯|collins/i, "柯林杯"],
-  [/库佩杯|碟形杯|coupe/i, "库佩杯"],
-  [/飓风杯|hurricane/i, "飓风杯"],
+  [
+    /古典杯|老式杯|岩石杯|rocks\s*glass|old[\s-]*fashioned\s*glass|double\s*old[\s-]*fashioned|lowball/i,
+    "古典杯",
+  ],
+  [/高球杯|highball(\s*glass)?/i, "高球杯"],
+  [/柯林杯|collins(\s*glass)?/i, "柯林杯"],
+  [/库佩杯|碟形杯|coupe(tte)?(\s*glass)?/i, "库佩杯"],
+  [/飓风杯|hurricane(\s*glass)?/i, "飓风杯"],
   [/子弹杯|shot\s*glass/i, "子弹杯"],
-  [/岩石杯/i, "岩石杯"],
-  [/笛型杯|香槟杯|flute/i, "笛型杯"],
-  [/郁金香杯|tulip/i, "郁金香杯"],
+  [/笛型杯|香槟杯|flute(\s*glass)?|champagne\s*flute/i, "笛型杯"],
+  [/郁金香杯|tulip\s*glass/i, "郁金香杯"],
   [/铜杯|copper\s*mug|mule\s*mug/i, "铜杯"],
-  [/提基杯|tiki/i, "提基杯"],
-  [/尼克诺拉杯|nick\s*(&|and)\s*nora/i, "尼克诺拉杯"],
-  [/葡萄酒杯|wine\s*glass/i, "葡萄酒杯"],
+  [/提基杯|tiki\s*mug/i, "提基杯"],
+  [/尼克诺拉杯|nick\s*(&|and)\s*nora(\s*glass)?/i, "尼克诺拉杯"],
+  [/朱莉普杯|julep\s*(cup|tin)/i, "朱莉普杯"],
+  [/红酒杯|葡萄酒杯|wine\s*glass/i, "红酒杯"],
 ];
 
 /** 制作方法关键词 */
@@ -196,7 +225,7 @@ export function parseRecipeText(text: string): ParsedRecipe {
   const allText = text;
   // 杯型/方法/基酒从全文推断(若未显式给出)
   if (!result.glass) {
-    const g = GLASS_WORDS.find(([re]) => re.test(allText));
+    const g = GLASS_WORDS_STRICT.find(([re]) => re.test(allText));
     if (g) result.glass = g[1];
   }
   // 显式给出的英文杯型也归一化为中文标签(如 "coupe" -> 库佩杯)
