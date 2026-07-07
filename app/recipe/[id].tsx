@@ -18,8 +18,8 @@ import {
   stepsDisplayText,
 } from "@/lib/recipes/ingredient-display";
 import { useBottleStore } from "@/lib/bottles/store";
-import { matchPrep } from "@/lib/homemade/match";
 import { useHomemadeStore } from "@/lib/homemade/store";
+import { smartLinkIngredient } from "@/lib/recipes/smart-link";
 import { useRecipeStore } from "@/lib/recipes/store";
 import {
   STRENGTH_LABELS,
@@ -266,7 +266,16 @@ export default function RecipeDetailScreen() {
           ) : (
             recipe.ingredients.map((ing, idx) => (
               (() => {
-                const prep = matchPrep(ing.name, preps);
+                const link = smartLinkIngredient(ing.name, bottles, preps);
+                const linkLabel = link
+                  ? link.kind === "prep"
+                    ? t("detail.homemade.link", {
+                        name: displayNames(link.prep.name, link.prep.nameAlt, lang).primary,
+                      })
+                    : t("detail.bottle.link", {
+                        name: displayNames(link.bottle.nameEn, link.bottle.nameZh, lang).primary,
+                      })
+                  : null;
                 const inner = (
                   <View
                     className="flex-row items-center justify-between py-3"
@@ -280,11 +289,15 @@ export default function RecipeDetailScreen() {
                       <Text className="text-base text-foreground">
                         {ingredientDisplayName(ing.name, lang as "zh" | "en", bottles, preps)}
                       </Text>
-                      {prep ? (
+                      {linkLabel ? (
                         <View className="flex-row items-center mt-1" style={{ gap: 4 }}>
-                          <IconSymbol name="sparkles" size={12} color={colors.primary} />
+                          <IconSymbol
+                            name={link!.kind === "prep" ? "sparkles" : "link"}
+                            size={12}
+                            color={colors.primary}
+                          />
                           <Text className="text-xs" style={{ color: colors.primary }}>
-                            {t("detail.homemade.link", { name: displayNames(prep.name, prep.nameAlt, lang).primary })}
+                            {linkLabel}
                           </Text>
                           <IconSymbol name="chevron.right" size={11} color={colors.primary} />
                         </View>
@@ -293,11 +306,13 @@ export default function RecipeDetailScreen() {
                     <Text className="text-base text-muted">{formatAmountAsMl(ing.amount)}</Text>
                   </View>
                 );
-                return prep ? (
+                return link ? (
                   <Pressable
                     key={ing.id}
                     onPress={() =>
-                      router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })
+                      link.kind === "prep"
+                        ? router.push({ pathname: "/homemade/[id]", params: { id: link.prep.id } })
+                        : router.push({ pathname: "/bottle/[id]", params: { id: link.bottle.id } })
                     }
                     style={({ pressed }) => [pressed && { opacity: 0.6 }]}
                   >

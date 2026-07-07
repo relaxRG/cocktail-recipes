@@ -46,6 +46,7 @@ const MAPPING = {
   "minus.circle.fill": "remove-circle",
   "plus.circle.fill": "add-circle",
   "sparkles": "auto-awesome",
+  "link": "link",
   "person.crop.circle.fill": "account-circle",
   "tag.fill": "label",
   "square.and.arrow.down.fill": "download",

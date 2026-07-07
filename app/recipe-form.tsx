@@ -19,7 +19,8 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
-import { matchPrep, suggestPrep } from "@/lib/homemade/match";
+import { suggestPrep } from "@/lib/homemade/match";
+import { smartLinkIngredient } from "@/lib/recipes/smart-link";
 import { analyzeUnknownIngredient } from "@/lib/classify";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useBottleStore } from "@/lib/bottles/store";
@@ -607,10 +608,12 @@ export default function RecipeFormScreen() {
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.ingredients")}</Text>
           {ingredients.map((ing) => {
             const trimmed = ing.name.trim();
-            const prep = trimmed.length >= 2 ? matchPrep(trimmed, preps) : null;
-            const suggestion = !prep && trimmed.length >= 2 ? suggestPrep(trimmed) : null;
+            const link = trimmed.length >= 2 ? smartLinkIngredient(trimmed, bottles, preps) : null;
+            const prep = link?.kind === "prep" ? link.prep : null;
+            const linkedBottle = link?.kind === "bottle" ? link.bottle : null;
+            const suggestion = !link && trimmed.length >= 2 ? suggestPrep(trimmed) : null;
             const classification =
-              !prep && !suggestion && trimmed.length >= 3
+              !link && !suggestion && trimmed.length >= 3
                 ? analyzeUnknownIngredient(trimmed, bottles, preps)
                 : null;
             const showSuggest =
@@ -715,6 +718,21 @@ export default function RecipeFormScreen() {
                     <IconSymbol name="sparkles" size={12} color={colors.primary} />
                     <Text className="text-xs" style={{ color: colors.primary, lineHeight: 16 }}>
                       {t("form.homemade.matched", { name: displayNames(prep.name, prep.nameAlt, lang).primary })}
+                    </Text>
+                    <IconSymbol name="chevron.right" size={11} color={colors.primary} />
+                  </Pressable>
+                ) : linkedBottle ? (
+                  <Pressable
+                    onPress={() =>
+                      router.push({ pathname: "/bottle/[id]", params: { id: linkedBottle.id } })
+                    }
+                    style={({ pressed }) => [styles.prepHint, pressed && { opacity: 0.6 }]}
+                  >
+                    <IconSymbol name="link" size={12} color={colors.primary} />
+                    <Text className="text-xs" style={{ color: colors.primary, lineHeight: 16 }}>
+                      {t("form.bottle.matched", {
+                        name: displayNames(linkedBottle.nameEn, linkedBottle.nameZh, lang).primary,
+                      })}
                     </Text>
                     <IconSymbol name="chevron.right" size={11} color={colors.primary} />
                   </Pressable>

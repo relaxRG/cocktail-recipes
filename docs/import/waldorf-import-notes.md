@@ -110,3 +110,26 @@
 - 根因: sync/engine.ts setState 每次创建新 state 对象并通知订阅者,未登录时 SyncProvider effect 每次运行 disableSync→emit 新对象→SyncProvider setState→重渲染→effect 依赖 utils/pushMutation(每渲染新引用)再次运行→死循环。
 - 修复: engine.setState 仅在实际值变化时 emit;provider 中 pushMutation/utils 改用 ref,effect 依赖收敛为 [authLoading, isAuthenticated, user?.id, pushFn],未登录分支 setAccessAllowed 加条件。
 - 验证: 测试 169 通过,web 预览 / 与 /me 正常渲染,日志无新报错。
+
+## 智能配料链接功能(2026-07-08 进行中)
+任务: 配料自动链接酒库/自制库产品,应用到详情页与新建/编辑表单。
+已完成:
+- lib/recipes/smart-link.ts 已创建: smartLinkIngredient(name,bottles,preps) 多级匹配(精确→Waldorf别名→同义词→模糊matchPrep/matchBottle→规范名模糊),返回 {kind:"bottle",bottle}|{kind:"prep",prep}|null; smartLinkAll 批量。
+待做:
+1. 详情页 app/recipe/[id].tsx: 配料行现只用 matchPrep(preps) 链接自制品(约267行),改用 smartLinkIngredient 同时支持跳酒库 /bottle/[id](需确认酒库详情路由名: 查 app/bottle*)与自制 /homemade/[id]; 链接文案 detail.homemade.link 已有,需加 detail.bottle.link 翻译键(lib/i18n/translations.ts)。
+2. 表单 app/recipe-form.tsx: 配料行(608行起)已有 suggestIngredients(lib/suggest.ts)与 analyzeUnknownIngredient(lib/classify.ts); 增加实时匹配指示:输入配料名后用 smartLinkIngredient 显示"已链接到 XX"(绿色勾/图标),未匹配显示灰色提示。焦点行 focusedIngredientId state 已存在。
+3. 测试: tests/ 下加 smart-link.test.ts(引用相对路径导入,vitest 无 @/ 别名)。
+关键事实:
+- Ingredient 类型 {id,name,amount} 在 lib/recipes/types.ts,无需加字段(运行时动态匹配,不持久化链接)。
+- 成本估算 estimateRecipeCost(lib/bottles/cost.ts) 用 matchBottle;详情页 fallback estimateHomemadeIngredientCost。
+- 酒库详情路由需确认: ls app 查看 bottle 路由文件名。
+- 翻译文件 lib/i18n/translations.ts, key 风格 "detail.homemade.link": {zh,en}。
+- 169 测试通过为基线;沙盒内存高压,注意 drop_caches。
+
+### 智能链接功能完成(2026-07-08)
+- lib/recipes/smart-link.ts: smartLinkIngredient/smartLinkAll 多级匹配引擎
+- 详情页 app/recipe/[id].tsx: 配料行链接酒库(link图标+detail.bottle.link)与自制(sparkles+detail.homemade.link),可跳转 /bottle/[id] 或 /homemade/[id]
+- 表单 app/recipe-form.tsx: 输入配料实时显示"已链接酒库:{name}"(form.bottle.matched)或"已在自制库:{name}",点击可跳转;未匹配走 suggestPrep/classification 建议入库
+- icon-symbol.tsx 添加 "link": "link" 映射
+- 真实数据验证: 1883 配料匹配 1874 (99.5%), 酒库1665/自制209; 未匹配仅冷水/冰水/蛋/大方冰等通用词(合理)
+- 179 项测试通过(新增 tests/smart-link.test.ts 9项), TS 零错误
