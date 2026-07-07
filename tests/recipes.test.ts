@@ -105,7 +105,7 @@ describe("homemade preps", () => {
 
   it("merges raw-material cost library into bottle library with group split", () => {
     const bottles = buildDefaultBottles();
-    const materials = bottles.filter((b) => b.category === "原材料");
+    const materials = bottles.filter((b) => bottleGroupOf(b.category) === "materials");
     expect(materials.length).toBeGreaterThanOrEqual(40);
     for (const m of materials) {
       expect(m.priceCny).toBeGreaterThan(0);
@@ -116,11 +116,16 @@ describe("homemade preps", () => {
     expect(bottleGroupOf("金酒")).toBe("spirits");
     expect(bottleGroupOf("威士忌")).toBe("spirits");
     expect(bottleGroupOf("利口酒")).toBe("bottles");
-    expect(categoriesOfGroup("materials")).toEqual(["原材料"]);
+    expect(categoriesOfGroup("materials")).toContain("糖与甜味剂");
+    expect(categoriesOfGroup("materials")).toContain("新鲜果蔬");
+    expect(categoriesOfGroup("materials")).toContain("花卉");
+    expect(categoriesOfGroup("materials")).not.toContain("原材料");
     expect(categoriesOfGroup("bottles")).not.toContain("原材料");
     expect(categoriesOfGroup("bottles")).not.toContain("金酒");
     expect(categoriesOfGroup("spirits")).toContain("金酒");
-    expect(BOTTLE_CATEGORIES).toContain("原材料");
+    expect(BOTTLE_CATEGORIES).toContain("糖与甜味剂");
+    expect(BOTTLE_CATEGORIES).toContain("乳蛋");
+    expect(BOTTLE_CATEGORIES).not.toContain("原材料");
   });
 
   it("moves fresh juices out of bottle seed into homemade samples", () => {
@@ -291,10 +296,10 @@ describe("homemade preps", () => {
     // Raw ingredients → material library with sub-category style
     const sugar = classifyIngredient("Muscovado Sugar");
     expect(sugar?.library).toBe("material");
-    expect(sugar?.style).toBe("Sugar & Sweetener");
+    expect(sugar?.category).toBe("糖与甜味剂");
     const herb = classifyIngredient("鼠尾草叶");
     expect(herb?.library).toBe("material");
-    expect(herb?.style).toBe("Herb");
+    expect(herb?.category).toBe("香料与草本");
     // Homemade-style items → homemade library with prep type
     const syrup = classifyIngredient("Rosemary Syrup");
     expect(syrup?.library).toBe("homemade");

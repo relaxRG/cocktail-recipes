@@ -4,6 +4,7 @@
 //   - "homemade" → the homemade preps library (syrups, infusions, liqueurs made in-house…)
 // Returns prefill data so the user can add it to the right library in one tap.
 import { Bottle } from "./bottles/types";
+import { migrateMaterialBottleV8 } from "./bottles/taxonomy";
 import { HomemadePrep } from "./homemade/types";
 import { matchPrep, suggestPrep } from "./homemade/match";
 
@@ -144,23 +145,26 @@ export function classifyIngredient(ingredientName: string): IngredientClassifica
   // 4) Material cues (raw ingredients)
   for (const cue of MATERIAL_CUES) {
     if (cue.re.test(raw)) {
+      const moved = migrateMaterialBottleV8({ category: "原材料", name: en, nameZh: zh || ingredientName });
       return {
         library: "material",
         name: en || ingredientName.trim(),
         nameAlt: zh,
-        category: "原材料",
-        style: cue.style,
+        category: moved?.category ?? "酸类与添加剂",
+        style: moved?.style ?? cue.style,
         confidence: 0.7,
       };
     }
   }
 
   // 5) Weak fallback: unknown → material (most unknown recipe items are perishables)
+  const fallbackMoved = migrateMaterialBottleV8({ category: "原材料", name: en, nameZh: zh || ingredientName });
   return {
     library: "material",
     name: en || ingredientName.trim(),
     nameAlt: zh,
-    category: "原材料",
+    category: fallbackMoved?.category ?? "酸类与添加剂",
+    style: fallbackMoved?.style,
     confidence: 0.3,
   };
 }

@@ -8,6 +8,7 @@
  */
 import type { Bottle } from "./types";
 import { BOTTLE_CATEGORIES } from "./types";
+import { migrateMaterialBottleV8 } from "./taxonomy";
 import type { HomemadePrep } from "../homemade/types";
 
 interface WaldorfBottleRow {
@@ -58,29 +59,47 @@ const CATEGORY_MAP: Record<string, string> = {
   苦艾酒: "利口酒",
   糖浆: "糖浆",
   软饮: "软饮",
-  水果: "原材料",
-  果汁: "原材料",
-  香草香料: "原材料",
-  乳蛋: "原材料",
+  水果: "新鲜果蔬",
+  果汁: "新鲜果蔬",
+  香草香料: "香料与草本",
+  乳蛋: "乳蛋",
   其他: "其他",
 };
 
-function mapCategory(cat: string, kind: string): string {
-  if (kind === "fresh") return "原材料";
+function mapCategory(
+  cat: string,
+  kind: string,
+  nameZh: string,
+  nameEn: string,
+): { category: string; style: string } {
+  // 原材料(fresh 或旧材料大类):按名称关键词智能归入 v8 专业分类与子风格
+  const legacyMaterial =
+    kind === "fresh" || ["水果", "果汁", "香草香料", "乳蛋"].includes(cat);
+  if (legacyMaterial) {
+    const moved = migrateMaterialBottleV8({
+      category: "原材料",
+      name: nameEn,
+      nameZh,
+    });
+    if (moved) return { category: moved.category, style: moved.style ?? "" };
+  }
   const m = CATEGORY_MAP[cat];
-  if (m && (BOTTLE_CATEGORIES as readonly string[]).includes(m)) return m;
-  return "其他";
+  if (m && (BOTTLE_CATEGORIES as readonly string[]).includes(m))
+    return { category: m, style: "" };
+  return { category: "其他", style: "" };
 }
 
 /** 构建酒库条目(id 稳定,便于去重与幂等导入) */
 export function buildWaldorfBottles(): Bottle[] {
   const now = Date.now();
-  return DATA.bottles.map((b, i) => ({
+  return DATA.bottles.map((b, i) => {
+    const mapped = mapCategory(b.category, b.kind, b.nameZh, b.nameEn);
+    return {
     id: `waldorf-b-${i}`,
     nameZh: b.nameZh,
     nameEn: b.nameEn,
-    category: mapCategory(b.category, b.kind),
-    style: "",
+    category: mapped.category,
+    style: mapped.style,
     brand: "",
     origin: "",
     volume: b.volume || "",
@@ -92,7 +111,8 @@ export function buildWaldorfBottles(): Bottle[] {
     sortIndex: null,
     createdAt: now + i,
     updatedAt: now + i,
-  }));
+    };
+  });
 }
 
 /** 数据源自制分类 → PREP_TYPES key */

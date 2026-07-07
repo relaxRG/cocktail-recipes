@@ -16,7 +16,14 @@ export const BOTTLE_CATEGORIES = [
   "中式白酒",
   "糖浆",
   "软饮",
-  "原材料",
+  "糖与甜味剂",
+  "新鲜果蔬",
+  "香料与草本",
+  "花卉",
+  "茶与咖啡",
+  "坚果与谷物",
+  "乳蛋",
+  "酸类与添加剂",
   "其他",
 ] as const;
 export type BottleCategory = (typeof BOTTLE_CATEGORIES)[number];
@@ -44,19 +51,34 @@ const DEFAULT_SPIRIT_CATEGORIES = [
   "中式白酒",
 ];
 
+/** v8 材料库分类(静态默认;动态归属以 taxonomy 为准) */
+export const DEFAULT_MATERIAL_CATEGORIES = [
+  "糖与甜味剂",
+  "新鲜果蔬",
+  "香料与草本",
+  "花卉",
+  "茶与咖啡",
+  "坚果与谷物",
+  "乳蛋",
+  "酸类与添加剂",
+];
+
 export function bottleGroupOf(category: string): BottleGroupKey {
-  if (category === "原材料") return "materials";
+  if (category === "原材料" || DEFAULT_MATERIAL_CATEGORIES.includes(category))
+    return "materials";
   if (DEFAULT_SPIRIT_CATEGORIES.includes(category)) return "spirits";
   return "bottles";
 }
 
 /** 分组下的分类列表 */
 export function categoriesOfGroup(group: BottleGroupKey): string[] {
-  if (group === "materials") return ["原材料"];
+  if (group === "materials")
+    return BOTTLE_CATEGORIES.filter((c) => DEFAULT_MATERIAL_CATEGORIES.includes(c));
   if (group === "spirits")
     return BOTTLE_CATEGORIES.filter((c) => DEFAULT_SPIRIT_CATEGORIES.includes(c));
   return BOTTLE_CATEGORIES.filter(
-    (c) => c !== "原材料" && !DEFAULT_SPIRIT_CATEGORIES.includes(c),
+    (c) =>
+      !DEFAULT_MATERIAL_CATEGORIES.includes(c) && !DEFAULT_SPIRIT_CATEGORIES.includes(c),
   );
 }
 
@@ -80,6 +102,14 @@ export const BOTTLE_CATEGORY_EN: Record<string, string> = {
   软饮: "Soft Drinks",
   软饮糖浆: "Mixers/Syrups",
   原材料: "Raw Materials",
+  糖与甜味剂: "Sugars & Sweeteners",
+  新鲜果蔬: "Fresh Produce",
+  香料与草本: "Spices & Botanicals",
+  花卉: "Flowers & Florals",
+  茶与咖啡: "Tea & Coffee",
+  坚果与谷物: "Nuts & Grains",
+  乳蛋: "Dairy & Egg",
+  酸类与添加剂: "Acids & Additives",
   其他: "Others",
 };
 
@@ -114,6 +144,14 @@ export const BOTTLE_STYLES: Record<string, string[]> = {
     "Acid & Additive",
     "Herb",
   ],
+  糖与甜味剂: ["Refined Sugar", "Raw / Dark Sugar", "Sugar Cube", "Honey & Nectar", "Molasses & Concentrate"],
+  新鲜果蔬: ["Citrus", "Berries", "Tropical Fruit", "Stone / Pome Fruit", "Melon & Vegetable"],
+  香料与草本: ["Dried Spice", "Fresh Herb", "Bittering Botanical"],
+  花卉: ["Dried Flowers", "Fresh Edible Flowers", "Floral Water"],
+  茶与咖啡: ["Tea", "Coffee", "Cacao"],
+  坚果与谷物: ["Nut", "Grain / Seed"],
+  乳蛋: ["Milk / Cream", "Egg", "Butter / Cheese"],
+  酸类与添加剂: ["Powdered Acid", "Vinegar", "Salt & Mineral", "Texture / Clarifier"],
 };
 
 /**
@@ -164,6 +202,11 @@ export interface Bottle {
   rating: number | null;
   /** 手动排序序号:null 表示未手动排序(排在已排序项之后) */
   sortIndex: number | null;
+  /**
+   * 形态换算系数(可选):形态词 → 占整件商品的比例或克数系数,
+   * 覆盖内置 FORM_FACTORS。如 { "皮": 1/6, "片": 1/8 }。
+   */
+  formFactors?: Record<string, number>;
   createdAt: number;
   updatedAt: number;
 }

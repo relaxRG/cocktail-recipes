@@ -194,6 +194,20 @@ const dict = {
   "detail.cost.ice.shake": { zh: "摇和用冰 · 按摇冰设置自动计入", en: "Shaking ice · auto from ice settings" },
   "detail.cost.ice.stir": { zh: "搅拌用冰 · 按摇冰设置自动计入", en: "Stirring ice · auto from ice settings" },
   "detail.cost.ice.serve": { zh: "出品杯用冰 · 按冰款设置自动计入", en: "Serving ice · auto from ice settings" },
+  "detail.cost.garnish": { zh: "装饰", en: "Garnish" },
+  "detail.cost.garnish.orChosen": {
+    zh: "「或」取较高成本项计入",
+    en: "\"or\" — higher-cost option counted",
+  },
+  "detail.cost.garnish.orSkipped": { zh: "备选项(未计入)", en: "Alternative (not counted)" },
+  "detail.cost.form": {
+    zh: "{name} ¥{p}/个 × {f} × {c}",
+    en: "{name} ¥{p}/pc × {f} × {c}",
+  },
+  "detail.cost.autoAdded": {
+    zh: "已自动添加到原材料库(待补价格)",
+    en: "Auto-added to ingredient library (price pending)",
+  },
   // Ice settings
   "ice.title": { zh: "冰块成本设置", en: "Ice Cost Settings" },
   "ice.subtitle": {

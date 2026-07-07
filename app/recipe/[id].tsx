@@ -12,6 +12,8 @@ import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { formatAmountAsMl } from "@/lib/bottles/cost";
 import { estimateRecipeCostSmart } from "@/lib/recipes/smart-cost";
+import { estimateGarnishCost } from "@/lib/recipes/garnish-split";
+import { buildAutoAddDrafts } from "@/lib/recipes/auto-add";
 import { parseSource } from "@/lib/recipes/source-parse";
 import { useIceSettings } from "@/lib/ice/store";
 import { estimateIceCost } from "@/lib/ice/cost";
@@ -39,9 +41,32 @@ export default function RecipeDetailScreen() {
   const { t, lang } = useI18n();
   const { getRecipe, getCategory, toggleFavorite, toggleMade, setRating, deleteRecipe, tags } =
     useRecipeStore();
-  const { bottles } = useBottleStore();
+  const { bottles, addBottle } = useBottleStore();
   const { preps } = useHomemadeStore();
   const recipe = getRecipe(id);
+
+  // 缺失原材料自动入库:成本估算发现装饰/配料在库中无匹配时,智能归类后即时添加(每配方一次)
+  const autoAddedRef = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    if (!recipe || autoAddedRef.current === recipe.id) return;
+    const names: string[] = [];
+    if (recipe.garnish) {
+      names.push(...estimateGarnishCost(recipe.garnish, bottles, preps).unmatchedNames);
+    }
+    for (const ing of recipe.ingredients) {
+      if (!smartLinkIngredient(ing.name, bottles, preps)) names.push(ing.name);
+    }
+    if (names.length === 0) {
+      autoAddedRef.current = recipe.id;
+      return;
+    }
+    const drafts = buildAutoAddDrafts(names, bottles, preps);
+    if (drafts.length > 0) {
+      for (const d of drafts) addBottle(d);
+    }
+    autoAddedRef.current = recipe.id;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recipe?.id, recipe?.garnish, bottles.length]);
 
   if (!recipe) {
     return (
@@ -69,7 +94,11 @@ export default function RecipeDetailScreen() {
   const costEst = estimateRecipeCostSmart(recipe.ingredients, bottles, preps);
   const { ice: iceSettings } = useIceSettings();
   const iceCost = estimateIceCost(recipe.method, recipe.ice, iceSettings);
-  const grandTotal = costEst.total + iceCost.total;
+  // 装饰成本:连接词智能拆分(「或」取高、「与/及」累加),形态折叠计价
+  const garnishCost = recipe.garnish
+    ? estimateGarnishCost(recipe.garnish, bottles, preps)
+    : null;
+  const grandTotal = costEst.total + iceCost.total + (garnishCost?.total ?? 0);
 
   const handleFavorite = () => {
     if (Platform.OS !== "web") {
@@ -465,7 +494,9 @@ export default function RecipeDetailScreen() {
                   {t("detail.cost.total", { a: costEst.estimatedCount, b: costEst.totalCount })}
                 </Text>
                 <Text className="text-xl font-bold" style={{ color: colors.primary }}>
-                  {costEst.estimatedCount > 0 || iceCost.total > 0 ? `¥${grandTotal.toFixed(1)}` : "—"}
+                  {costEst.estimatedCount > 0 || iceCost.total > 0 || (garnishCost?.total ?? 0) > 0
+                    ? `¥${grandTotal.toFixed(1)}`
+                    : "—"}
                 </Text>
               </View>
               {costEst.items.map((item, idx) => {
@@ -547,6 +578,111 @@ export default function RecipeDetailScreen() {
                   <View key={item.ingredient.id}>{row}</View>
                 );
               })}
+              {garnishCost && garnishCost.groups.length > 0
+                ? garnishCost.groups.flatMap((g, gi) =>
+                    g.items.map((it, ii) => {
+                      const isOr = g.group.mode === "or";
+                      const counted = isOr ? it.chosen : it.est.cost !== null;
+                      const gLink = it.est.link;
+                      const gSmart = smartLinkDisplayName(gLink, lang as "zh" | "en");
+                      const gName =
+                        gSmart?.primary ??
+                        ingredientDisplayName(it.part.name, lang as "zh" | "en", bottles, preps);
+                      const fi = it.est.formInfo;
+                      const gBottle = gLink?.kind === "bottle" ? gLink.bottle : null;
+                      const inner = (
+                        <View
+                          className="flex-row items-center justify-between py-2.5"
+                          style={{
+                            borderTopWidth: StyleSheet.hairlineWidth,
+                            borderTopColor: colors.border,
+                            opacity: isOr && !it.chosen ? 0.55 : 1,
+                          }}
+                        >
+                          <View className="flex-1 pr-3">
+                            <View className="flex-row items-center" style={{ gap: 4 }}>
+                              <Text
+                                className="text-[11px] px-1.5 py-0.5 rounded"
+                                style={{ backgroundColor: colors.surface, color: colors.muted, overflow: "hidden" }}
+                              >
+                                {t("detail.cost.garnish")}
+                              </Text>
+                              <Text
+                                className="text-sm"
+                                numberOfLines={1}
+                                style={{ color: gLink ? colors.primary : colors.foreground, flexShrink: 1 }}
+                              >
+                                {it.part.amount ? `${it.part.amount} ` : ""}
+                                {gName}
+                              </Text>
+                              {gLink ? (
+                                <IconSymbol name="chevron.right" size={10} color={colors.primary} />
+                              ) : null}
+                            </View>
+                            {fi && gBottle ? (
+                              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                                {t("detail.cost.form", {
+                                  name: displayNames(gBottle.nameEn, gBottle.nameZh, lang).primary,
+                                  p: fi.piecePrice.toFixed(2),
+                                  f: fi.factor < 1 ? `1/${Math.round(1 / fi.factor)}` : String(fi.factor),
+                                  c: String(fi.count),
+                                })}
+                              </Text>
+                            ) : null}
+                            {isOr ? (
+                              <Text
+                                className="text-xs mt-0.5"
+                                style={{ color: it.chosen ? colors.warning : colors.muted }}
+                              >
+                                {it.chosen
+                                  ? t("detail.cost.garnish.orChosen")
+                                  : t("detail.cost.garnish.orSkipped")}
+                              </Text>
+                            ) : !gLink ? (
+                              <Text className="text-xs text-muted mt-0.5">
+                                {t("detail.cost.autoAdded")}
+                              </Text>
+                            ) : it.est.cost === null ? (
+                              <Text className="text-xs text-muted mt-0.5">
+                                {it.est.reason === "no_price"
+                                  ? t("detail.cost.noPrice")
+                                  : it.est.reason === "no_amount"
+                                    ? t("detail.cost.noAmount")
+                                    : t("detail.cost.noVolume")}
+                              </Text>
+                            ) : null}
+                          </View>
+                          <Text
+                            className="text-sm font-semibold"
+                            style={{
+                              color:
+                                it.est.cost !== null && counted ? colors.foreground : colors.muted,
+                              textDecorationLine: isOr && !it.chosen ? "line-through" : "none",
+                            }}
+                          >
+                            {it.est.cost !== null ? `¥${it.est.cost.toFixed(1)}` : "—"}
+                          </Text>
+                        </View>
+                      );
+                      const key = `garnish-${gi}-${ii}`;
+                      return gLink ? (
+                        <Pressable
+                          key={key}
+                          onPress={() =>
+                            gLink.kind === "prep"
+                              ? router.push({ pathname: "/homemade/[id]", params: { id: gLink.prep.id } })
+                              : router.push({ pathname: "/bottle/[id]", params: { id: gLink.bottle.id } })
+                          }
+                          style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                        >
+                          {inner}
+                        </Pressable>
+                      ) : (
+                        <View key={key}>{inner}</View>
+                      );
+                    }),
+                  )
+                : null}
               {iceCost.items.map((it, idx2) => (
                 <Pressable
                   key={`ice-${it.use}-${idx2}`}

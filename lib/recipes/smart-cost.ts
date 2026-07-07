@@ -14,6 +14,7 @@ import type { Ingredient } from "./types";
 import { parseAmountToMl, parseVolumeToMl } from "../bottles/cost";
 import { estimateHomemadeIngredientCost } from "../homemade/cost";
 import { smartLinkIngredient, type SmartLink } from "./smart-link";
+import { formCost, parseFormCount } from "./form-fold";
 
 export interface SmartIngredientCost {
   ingredient: Ingredient;
@@ -23,6 +24,8 @@ export interface SmartIngredientCost {
   reason: "no_match" | "no_amount" | "no_price" | "no_volume" | null;
   /** 按整瓶计成本(开瓶后易失效产品,如可乐/软饮/非现榨果汁);用量仍按真实份量显示 */
   wholeBottle?: boolean;
+  /** 形态折叠成本明细(柠檬皮/黄瓜片等按母条目单件价 × 系数计) */
+  formInfo?: { form: string; factor: number; piecePrice: number; count: number };
 }
 
 export interface SmartRecipeCost {
@@ -101,6 +104,22 @@ export function estimateIngredientCostSmart(
   const amountMl = parseAmountLoose(ing.amount);
 
   if (link.kind === "bottle") {
+    // 形态折叠:柠檬皮/黄瓜片等 → 母条目单件价 × 形态系数 × 数量
+    if (link.form) {
+      const count = parseFormCount(ing.amount);
+      const fc = formCost(link.bottle, link.form.key, link.form.factor, count);
+      if (fc) {
+        return {
+          ingredient: ing,
+          link,
+          amountMl: null,
+          cost: fc.cost,
+          reason: null,
+          formInfo: { form: link.form.key, factor: fc.factor, piecePrice: fc.piecePrice, count },
+        };
+      }
+      return { ingredient: ing, link, amountMl: null, cost: null, reason: "no_price" };
+    }
     // 易失效产品:按一整瓶价格计成本,用量保持真实份量不变
     if (isPerishableWholeBottle(link.bottle)) {
       if (link.bottle.priceCny > 0) {

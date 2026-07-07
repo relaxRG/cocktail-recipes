@@ -12,7 +12,7 @@ import React, {
 
 import { genId } from "../recipes/types";
 
-import { CATEGORY_MIGRATION_V6 } from "./taxonomy";
+import { CATEGORY_MIGRATION_V6, migrateMaterialBottleV8 } from "./taxonomy";
 import { Bottle, migrateBottleCategory, normalizeBottle } from "./types";
 import { buildWaldorfBottles } from "./waldorf-ingredients";
 
@@ -20,11 +20,47 @@ const BOTTLES_KEY = "cocktail.bottles";
 const BOTTLES_SEEDED_KEY = "cocktail.bottles.seeded";
 /** 《Waldorf》配料数据集导入标记 */
 const WALDORF_BOTTLES_FLAG = "cocktail.bottles.waldorf.v1";
+/** v8 原材料分类拆分迁移标记 */
+const MATERIAL_MIGRATED_V8_FLAG = "bottles.material.migrated.v8";
 
 export type BottleDraft = Omit<
   Bottle,
   "id" | "builtin" | "rating" | "sortIndex" | "createdAt" | "updatedAt"
 > & { rating?: number | null };
+
+/** 名称连接词拆分正则:顿号/逗号并列 + 或/与/及/和 + 英文 or/and/&/+ */
+const NAME_CONNECTOR_RE = /[、,,;;]|[或与及和]|\s+(?:or|and)\s+|\s*[&+]\s*/i;
+const NAME_SPLIT_RE = /[、,,;;]|或者|[或与及和]|\s+(?:or|and)\s+|\s*[&+]\s*/gi;
+
+/**
+ * 原材料库入库智能拆分:条目名含连接词(或/与/及/和/、等)时拆为多个独立草稿。
+ * 中英名逐段对齐(段数一致时一一对应;不一致时仅拆含连接词的一侧,另一侧共享)。
+ * 拆出的每条共享规格/价格/分类等其余字段。
+ */
+export function splitBottleDraft(draft: BottleDraft): BottleDraft[] {
+  const zh = (draft.nameZh || "").trim();
+  const en = (draft.nameEn || "").trim();
+  const zhHas = NAME_CONNECTOR_RE.test(zh);
+  const enHas = NAME_CONNECTOR_RE.test(en);
+  if (!zhHas && !enHas) return [draft];
+  const seg = (s: string) =>
+    s
+      .split(NAME_SPLIT_RE)
+      .map((x) => x.trim())
+      .filter((x) => x.replace(/[^a-zA-Z\u4e00-\u9fff]/g, "").length >= 1);
+  const zhParts = zhHas ? seg(zh) : [];
+  const enParts = enHas ? seg(en) : [];
+  const n = Math.max(zhParts.length, enParts.length);
+  if (n <= 1) return [draft];
+  const out: BottleDraft[] = [];
+  for (let i = 0; i < n; i++) {
+    const zhName = zhParts.length === n ? zhParts[i] : zhParts[i] ?? (i === 0 ? zh : "");
+    const enName = enParts.length === n ? enParts[i] : enParts[i] ?? (i === 0 ? en : "");
+    if (!zhName && !enName) continue;
+    out.push({ ...draft, nameZh: zhName ?? "", nameEn: enName ?? "" });
+  }
+  return out.length > 0 ? out : [draft];
+}
 
 interface BottleStore {
   ready: boolean;
@@ -143,6 +179,31 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
             notifySyncChange(WALDORF_BOTTLES_FLAG);
           }
         }
+        // v8:旧笼统"原材料"条目拆分到 8 个专业材料分类(一次性;后续新条目仍会即时迁移)
+        {
+          const v8Done = await AsyncStorage.getItem(MATERIAL_MIGRATED_V8_FLAG);
+          const hasLegacy = list.some((b) => b.category === "原材料");
+          if (!v8Done || hasLegacy) {
+            if (hasLegacy) {
+              list = list.map((b) => {
+                if (b.category !== "原材料") return b;
+                const moved = migrateMaterialBottleV8({
+                  category: b.category,
+                  style: b.style,
+                  name: b.nameEn,
+                  nameZh: b.nameZh,
+                });
+                return moved
+                  ? { ...b, category: moved.category, style: moved.style ?? b.style }
+                  : b;
+              });
+              await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+              notifySyncChange(BOTTLES_KEY);
+            }
+            await AsyncStorage.setItem(MATERIAL_MIGRATED_V8_FLAG, "1");
+            notifySyncChange(MATERIAL_MIGRATED_V8_FLAG);
+          }
+        }
         setBottles(list);
       } catch (e) {
         console.warn("Failed to load bottles", e);
@@ -164,18 +225,20 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
   const addBottle = useCallback(
     (draft: BottleDraft): Bottle => {
       const now = Date.now();
-      const bottle: Bottle = {
+      // 连接词智能拆分:条目名含「或/与/及/和」等时拆为多个独立条目分别入库
+      const drafts = splitBottleDraft(draft);
+      const created: Bottle[] = drafts.map((d, i) => ({
         id: genId(),
         builtin: false,
         rating: null,
         sortIndex: null,
-        createdAt: now,
-        updatedAt: now,
-        ...draft,
-        ...(draft.rating === undefined ? { rating: null } : {}),
-      };
-      persist([bottle, ...bottlesRef.current]);
-      return bottle;
+        createdAt: now + i,
+        updatedAt: now + i,
+        ...d,
+        ...(d.rating === undefined ? { rating: null } : {}),
+      }));
+      persist([...created, ...bottlesRef.current]);
+      return created[0];
     },
     [persist],
   );

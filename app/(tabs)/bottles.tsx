@@ -259,10 +259,6 @@ export default function BottlesScreen() {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    if (group === "materials") {
-      router.push({ pathname: "/bottle-form", params: { category: "原材料" } });
-      return;
-    }
     // 按当前分组预填首个分类,便于新增落在正确分组
     const first = groupCategories[0];
     router.push(

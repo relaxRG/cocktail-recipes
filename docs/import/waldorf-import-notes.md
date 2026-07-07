@@ -199,3 +199,50 @@
 11. 芳香点缀 aromatic_accent: 苦艾酒涮杯/floats/苦精表面/盐边
 输出格式: 陈酿烈酒基酒 (60ml) + 鲜榨柑橘酸度调节剂 (20ml) + 糖浆基甜度平衡剂 (15ml) + 芳香苦精调味剂 (2dash)
 判定信号: 智能配料匹配(bottles category/style) + 名称关键词 + 用量(ml/dash) + 位次
+
+## 原材料库分类重构设计(2026-07-08)
+参考:The Bartender's Pantry(十类非酒精材料框架, 1984858670)、Liquid Intelligence(sugar/acid/dairy 功能分类)、Cocktail Codex。
+决定的新分类(拆除笼统"原材料",group=materials):
+1. 糖与甜味剂 Sugars & Sweeteners — 白砂糖/红糖/蜂蜜/枫糖浆等;按重量(g)或体积计价
+2. 新鲜果蔬 Fresh Produce — 柑橘/浆果/黄瓜等新鲜果蔬;按重量(g)或按个计价
+3. 香料与草本 Spices & Botanicals — 干香料(肉桂/丁香)+新鲜香草(薄荷/迷迭香)统一为 botanical;子风格区分 Dried Spice / Fresh Herb / Bittering Botanical
+4. 茶与咖啡 Tea & Coffee — 浸萃风味源;按重量(g)计价
+5. 坚果与谷物 Nuts & Grains — 杏仁(orgeat)/可可碎等;按重量(g)计价
+6. 乳蛋 Dairy & Egg — 牛奶/奶油/鸡蛋;ml 或按枚计价
+7. 酸类与添加剂 Acids & Additives — 柠檬酸/盐/花水/酵母;按重量或体积计价
+迁移:旧 category="原材料" 按 style 映射到新分类;style 保留更细子风格。
+单位/成本:parsePackToUnit 已支持 g/ml/piece 三种基准;成本引擎按 类别默认单位 换算,g↔ml 密度近似、piece 按类均值。
+UI: bottles.tsx materials 分组改为 categoriesOfGroup("materials") 动态列表;bottle-form 新增按分类预填。
+引用点需改:types.ts(bottleGroupOf/categoriesOfGroup)、taxonomy.tsx(默认分类+迁移v8)、seed.ts(原材料条目改新分类)、waldorf-ingredients.ts(mapCategory)、classify.ts、homemade/cost.ts(matchMaterialBottle 改按 group)、bottles.tsx(handleAdd)。
+
+### 原材料分类修正(用户反馈)
+- 新增: 8. 花卉 Flowers & Florals — 干花(洋甘菊/木槿洛神/接骨木花/桂花/薰衣草)、食用鲜花、花水(橙花水/玫瑰水从酸类添加剂迁入);干花按g、花水按ml计价
+- "新鲜香草"不再独立,并入 香料与草本 的 Fresh Herb 子风格
+- "坚果茶咖"拆分: 茶与咖啡 Tea & Coffee 独立; 坚果与谷物 Nuts & Grains 独立
+
+### 原材料库最终设计(2026-07-08 用户确认方向)
+8大分类+子风格(style),全部严谨化;计价基准 g/ml/piece:
+1. 糖与甜味剂: 精制糖(白砂/细砂,g)|原糖与黑糖(德梅拉拉/黑糖,g)|方糖(piece)|蜂蜜与花蜜(g或ml)|糖蜜与浓缩汁(枫糖浆/龙舌兰蜜/糖蜜,ml)
+2. 新鲜果蔬: 柑橘类(g或piece)|浆果类(g)|热带水果(g或piece)|核果仁果(g或piece)|瓜果蔬菜(g或piece)
+3. 香料与草本: 干制香料(肉桂/丁香/豆蔻,g)|新鲜草本(薄荷/罗勒/迷迭香,g或束)|苦味草本(龙胆/金鸡纳,g)
+4. 花卉: 干花(洋甘菊/木槿/桂花,g)|新鲜食用花(piece或束)|花水花露(橙花水/玫瑰水,ml)
+5. 茶与咖啡: 茶叶(g)|咖啡(豆/粉,g)|可可(g)
+6. 坚果与谷物: 坚果(杏仁/榛子,g)|谷物籽实(燕麦/芝麻,g)
+7. 乳蛋: 奶与奶油(ml)|蛋类(piece)|黄油奶酪(g)
+8. 酸类与添加剂: 酸粉(柠檬酸/苹果酸,g)|醋类(ml)|盐与矿物(g)|质构澄清剂(琼脂/明胶/卵磷脂,g)
+形态折叠: 黄瓜片/块/条→黄瓜, 柠檬片/皮/角→柠檬; smart-link 增加形态词剥离层(片|块|条|角|皮|丝|瓣|段|圈|碎|末|泥|汁(慎)|扭条|twist|slice|wedge|wheel|peel|cube|spear|chunk),剥离后再匹配母条目;成本按母条目单价
+迁移: taxonomy v8 迁移,旧"原材料"分类按 style 关键词映射到新8类;bottles.tsx materials 组动态渲染
+
+### 原材料重构实施进度(v8)
+已完成:
+- taxonomy.tsx: DEFAULT_BOTTLE_CATEGORY_DEFS 已换8个材料分类(75-82行);DEFAULT_BOTTLE_STYLE_DEFS 已换严谨子风格(精制糖/原糖黑糖/方糖/蜂蜜花蜜/糖蜜浓缩汁;柑橘/浆果/热带/核仁果/瓜果蔬菜;干制香料/新鲜草本/苦味草本;干花/新鲜食用花/花水花露;茶/咖啡/可可;坚果/谷物籽实;奶与奶油/蛋类/黄油奶酪;酸粉/醋类/盐与矿物/质构澄清剂)
+- taxonomy.tsx: 新增 MATERIAL_CATEGORY_DEFS_V8 / V8_STYLE_TO_CATEGORY / V8_NAME_RULES / migrateMaterialBottleV8(name关键词优先→style映射→默认酸类添加剂)
+剩余步骤:
+1. taxonomy.tsx 加载 effect(398-419行): rawC 存在时注入 v8 —— 移除旧"原材料"分类,插入缺失的8个材料分类与子风格(migrateCategoriesV8 函数,更新 CATS_KEY/STYLES_KEY)
+2. lib/bottles/store.tsx: 加载 bottles 后对 category==="原材料" 条目跑 migrateMaterialBottleV8 并持久化(一次性,键 bottles.material.migrated.v8)
+3. waldorf-ingredients.ts: mapCategory 生成"原材料"处改为调 migrateMaterialBottleV8 逻辑或直接映射新分类
+4. bottles.tsx: materials 组渲染是否写死"原材料"(约55-95行 handleAdd/分组过滤),改 categoriesOfGroup("materials")
+5. 形态折叠: smart-link.ts 加形态词剥离层 FORM_WORDS(片|块|条|角|皮|丝|瓣|段|圈|碎|末|泥|扭条|twist|slice|wedge|wheel|peel|cube|spear|chunk|leaf?),剥离后再匹配;lib/bottles/cost.ts 或 smart-cost.ts 加形态换算系数表 FORM_FACTORS(柠檬皮1条=1/6个,柠檬片=1/8个,黄瓜片3片≈30g),系数可被 bottle.formFactors 字段覆盖(types.ts Bottle 加可选 formFactors?: Record<string,number>)
+6. classify.ts/homemade/cost.ts 中 "原材料" 引用更新
+7. 测试: tests/taxonomy-v8.test.ts + 更新受影响旧测试
+注意: smart-cost.ts isPerishable 等逻辑不受影响;seed.ts 中 mk 的原材料条目需改新分类名

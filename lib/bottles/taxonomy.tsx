@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { notifySyncChange } from "../sync/engine";
+import { bottleGroupOf as staticBottleGroupOf } from "./types";
 import React, {
   createContext,
   useCallback,
@@ -72,7 +73,14 @@ export const DEFAULT_BOTTLE_CATEGORY_DEFS: Omit<BottleCategoryDef, "id">[] = [
   { zh: "软饮", en: "Soft Drinks & Mixers", group: "bottles" },
   { zh: "糖浆", en: "Syrups & Cordials", group: "bottles" },
   // Raw materials
-  { zh: "原材料", en: "Raw Materials", group: "materials" },
+  { zh: "糖与甜味剂", en: "Sugars & Sweeteners", group: "materials" },
+  { zh: "新鲜果蔬", en: "Fresh Produce", group: "materials" },
+  { zh: "香料与草本", en: "Spices & Botanicals", group: "materials" },
+  { zh: "花卉", en: "Flowers & Florals", group: "materials" },
+  { zh: "茶与咖啡", en: "Tea & Coffee", group: "materials" },
+  { zh: "坚果与谷物", en: "Nuts & Grains", group: "materials" },
+  { zh: "乳蛋", en: "Dairy & Egg", group: "materials" },
+  { zh: "酸类与添加剂", en: "Acids & Additives", group: "materials" },
   { zh: "其他", en: "Others", group: "bottles" },
 ];
 
@@ -225,14 +233,42 @@ export const DEFAULT_BOTTLE_STYLE_DEFS: Omit<BottleStyleDef, "id">[] = [
   { name: "Cordial", zh: "康迪奥", category: "糖浆" },
   { name: "Shrub", zh: "果醋饮", category: "糖浆" },
   { name: "Cream / Foam", zh: "奶油/泡沫", category: "糖浆" },
-  // 原材料 Raw Materials
-  { name: "Sugar & Sweetener", zh: "糖与甜味剂", category: "原材料" },
-  { name: "Fruit & Citrus", zh: "水果柑橘", category: "原材料" },
-  { name: "Spice & Botanical", zh: "香料草本", category: "原材料" },
-  { name: "Nut / Tea / Coffee", zh: "坚果茶咖", category: "原材料" },
-  { name: "Dairy & Egg", zh: "乳制品蛋类", category: "原材料" },
-  { name: "Acid & Additive", zh: "酸剂添加剂", category: "原材料" },
-  { name: "Herb", zh: "新鲜香草", category: "原材料" },
+  // 糖与甜味剂 Sugars & Sweeteners(Liquid Intelligence: sugar 为平衡核心)
+  { name: "Refined Sugar", zh: "精制糖(白砂/细砂)", category: "糖与甜味剂" },
+  { name: "Raw / Dark Sugar", zh: "原糖与黑糖(德梅拉拉)", category: "糖与甜味剂" },
+  { name: "Sugar Cube", zh: "方糖", category: "糖与甜味剂" },
+  { name: "Honey & Nectar", zh: "蜂蜜与花蜜", category: "糖与甜味剂" },
+  { name: "Molasses & Concentrate", zh: "糖蜜与浓缩汁(枫糖/龙舌兰蜜)", category: "糖与甜味剂" },
+  // 新鲜果蔬 Fresh Produce
+  { name: "Citrus", zh: "柑橘类", category: "新鲜果蔬" },
+  { name: "Berries", zh: "浆果类", category: "新鲜果蔬" },
+  { name: "Tropical Fruit", zh: "热带水果", category: "新鲜果蔬" },
+  { name: "Stone / Pome Fruit", zh: "核果/仁果", category: "新鲜果蔬" },
+  { name: "Melon & Vegetable", zh: "瓜果蔬菜", category: "新鲜果蔬" },
+  // 香料与草本 Spices & Botanicals(干制+新鲜统一为 botanical)
+  { name: "Dried Spice", zh: "干制香料", category: "香料与草本" },
+  { name: "Fresh Herb", zh: "新鲜草本", category: "香料与草本" },
+  { name: "Bittering Botanical", zh: "苦味草本", category: "香料与草本" },
+  // 花卉 Flowers & Florals(干花/鲜花/花水计价方式不同)
+  { name: "Dried Flowers", zh: "干花", category: "花卉" },
+  { name: "Fresh Edible Flowers", zh: "新鲜食用花", category: "花卉" },
+  { name: "Floral Water", zh: "花水/花露", category: "花卉" },
+  // 茶与咖啡 Tea & Coffee(浸萃风味源)
+  { name: "Tea", zh: "茶叶", category: "茶与咖啡" },
+  { name: "Coffee", zh: "咖啡", category: "茶与咖啡" },
+  { name: "Cacao", zh: "可可", category: "茶与咖啡" },
+  // 坚果与谷物 Nuts & Grains(乳化/糖浆基底)
+  { name: "Nut", zh: "坚果", category: "坚果与谷物" },
+  { name: "Grain / Seed", zh: "谷物/籽实", category: "坚果与谷物" },
+  // 乳蛋 Dairy & Egg
+  { name: "Milk / Cream", zh: "奶与奶油", category: "乳蛋" },
+  { name: "Egg", zh: "蛋类", category: "乳蛋" },
+  { name: "Butter / Cheese", zh: "黄油奶酪", category: "乳蛋" },
+  // 酸类与添加剂 Acids & Additives(Liquid Intelligence: acid 为平衡核心)
+  { name: "Powdered Acid", zh: "酸粉(柠檬酸等)", category: "酸类与添加剂" },
+  { name: "Vinegar", zh: "醋类", category: "酸类与添加剂" },
+  { name: "Salt & Mineral", zh: "盐与矿物", category: "酸类与添加剂" },
+  { name: "Texture / Clarifier", zh: "质构/澄清剂", category: "酸类与添加剂" },
 ];
 
 const CATS_KEY = "bottles.taxonomy.categories.v1";
@@ -266,12 +302,123 @@ function migrateCategoriesV7(list: BottleCategoryDef[]): {
   return { next, changed };
 }
 
+/** v8:旧存储分类列表迁移——移除笼统"原材料",补齐 8 个专业材料分类 */
+function migrateCategoriesV8(list: BottleCategoryDef[]): {
+  next: BottleCategoryDef[];
+  changed: boolean;
+} {
+  let changed = false;
+  let next = list;
+  if (list.some((c) => c.zh === "原材料")) {
+    next = next.filter((c) => c.zh !== "原材料");
+    changed = true;
+  }
+  const existing = new Set(next.map((c) => c.zh));
+  const missing = DEFAULT_BOTTLE_CATEGORY_DEFS.filter(
+    (c) => c.group === "materials" && !existing.has(c.zh),
+  );
+  if (missing.length > 0) {
+    // 插在"其他"之前,保持材料分类连续
+    const othersIdx = next.findIndex((c) => c.zh === "其他");
+    const inserts = missing.map((c, i) => ({ id: `bcat-v8-${Date.now()}-${i}`, ...c }));
+    next =
+      othersIdx >= 0
+        ? [...next.slice(0, othersIdx), ...inserts, ...next.slice(othersIdx)]
+        : [...next, ...inserts];
+    changed = true;
+  }
+  return { next, changed };
+}
+
+/** v8:旧存储风格列表迁移——移除旧"原材料"子风格,补齐新材料分类子风格 */
+function migrateStylesV8(list: BottleStyleDef[]): {
+  next: BottleStyleDef[];
+  changed: boolean;
+} {
+  let changed = false;
+  let next = list;
+  if (list.some((s) => s.category === "原材料")) {
+    next = next.filter((s) => s.category !== "原材料");
+    changed = true;
+  }
+  const materialCats = new Set(
+    DEFAULT_BOTTLE_CATEGORY_DEFS.filter((c) => c.group === "materials").map((c) => c.zh),
+  );
+  const existing = new Set(next.map((s) => `${s.category}::${s.name}`));
+  const missing = DEFAULT_BOTTLE_STYLE_DEFS.filter(
+    (s) => materialCats.has(s.category) && !existing.has(`${s.category}::${s.name}`),
+  );
+  if (missing.length > 0) {
+    next = [...next, ...missing.map((s, i) => ({ id: `bsty-v8-${Date.now()}-${i}`, ...s }))];
+    changed = true;
+  }
+  return { next, changed };
+}
+
 function buildDefaultCategories(): BottleCategoryDef[] {
   return DEFAULT_BOTTLE_CATEGORY_DEFS.map((c, i) => ({ id: `bcat-${i}`, ...c }));
 }
 
 function buildDefaultStyles(): BottleStyleDef[] {
   return DEFAULT_BOTTLE_STYLE_DEFS.map((s, i) => ({ id: `bsty-${i}`, ...s }));
+}
+
+/** v8:旧笼统"原材料"分类拆分为 8 个专业材料分类 */
+export const MATERIAL_CATEGORY_DEFS_V8 = DEFAULT_BOTTLE_CATEGORY_DEFS.filter(
+  (c) => c.group === "materials",
+);
+
+/** 旧"原材料"style → 新分类 zh 映射(存量条目迁移) */
+export const V8_STYLE_TO_CATEGORY: Record<string, { category: string; style?: string }> = {
+  "Sugar & Sweetener": { category: "糖与甜味剂" },
+  "Fruit & Citrus": { category: "新鲜果蔬" },
+  "Spice & Botanical": { category: "香料与草本" },
+  "Nut / Tea / Coffee": { category: "坚果与谷物" },
+  "Dairy & Egg": { category: "乳蛋" },
+  "Acid & Additive": { category: "酸类与添加剂" },
+  Herb: { category: "香料与草本", style: "Fresh Herb" },
+};
+
+/** v8 关键词细分:按条目名重定向到更准确的分类/子风格 */
+const V8_NAME_RULES: { re: RegExp; category: string; style?: string }[] = [
+  { re: /茶|tea|抹茶|matcha/i, category: "茶与咖啡", style: "Tea" },
+  { re: /咖啡|coffee|espresso|浓缩/i, category: "茶与咖啡", style: "Coffee" },
+  { re: /可可|cacao|cocoa|巧克力|chocolate/i, category: "茶与咖啡", style: "Cacao" },
+  { re: /杏仁|almond|榛子|hazelnut|核桃|walnut|开心果|pistachio|椰(?!子水)/i, category: "坚果与谷物", style: "Nut" },
+  { re: /橙花水|玫瑰水|花水|花露|orange flower water|rose water/i, category: "花卉", style: "Floral Water" },
+  { re: /干.*花|洋甘菊|木槿|洛神|接骨木花|桂花|薰衣草|chamomile|hibiscus|elderflower|osmanthus|lavender/i, category: "花卉", style: "Dried Flowers" },
+  { re: /食用花|鲜花|edible flower/i, category: "花卉", style: "Fresh Edible Flowers" },
+  { re: /柠檬|青柠|橙|柚|橘|金橘|lemon|lime|orange|grapefruit|yuzu|kumquat/i, category: "新鲜果蔬", style: "Citrus" },
+  { re: /薄荷|罗勒|迷迭香|百里香|鼠尾草|紫苏|mint|basil|rosemary|thyme|sage|shiso/i, category: "香料与草本", style: "Fresh Herb" },
+  { re: /蜂蜜|honey/i, category: "糖与甜味剂", style: "Honey & Nectar" },
+  { re: /枫糖|maple|龙舌兰蜜|agave (nectar|syrup)|糖蜜|molasses/i, category: "糖与甜味剂", style: "Molasses & Concentrate" },
+  { re: /方糖|sugar cube/i, category: "糖与甜味剂", style: "Sugar Cube" },
+  { re: /红糖|黑糖|德梅拉拉|demerara|turbinado|muscovado/i, category: "糖与甜味剂", style: "Raw / Dark Sugar" },
+  { re: /砂糖|白糖|细砂|caster|granulated|糖粉|powdered sugar/i, category: "糖与甜味剂", style: "Refined Sugar" },
+  { re: /牛奶|奶油|cream|milk(?! punch)/i, category: "乳蛋", style: "Milk / Cream" },
+  { re: /蛋|egg/i, category: "乳蛋", style: "Egg" },
+  { re: /黄油|butter|奶酪|cheese/i, category: "乳蛋", style: "Butter / Cheese" },
+  { re: /柠檬酸|苹果酸|酒石酸|citric|malic|tartaric/i, category: "酸类与添加剂", style: "Powdered Acid" },
+  { re: /醋|vinegar|verjus/i, category: "酸类与添加剂", style: "Vinegar" },
+  { re: /盐|salt|矿物/i, category: "酸类与添加剂", style: "Salt & Mineral" },
+  { re: /琼脂|明胶|卵磷脂|agar|gelatin|lecithin|黄原胶|xanthan/i, category: "酸类与添加剂", style: "Texture / Clarifier" },
+];
+
+/** 迁移单个旧"原材料"条目到新分类;返回 null 表示无需迁移 */
+export function migrateMaterialBottleV8(bottle: {
+  category: string;
+  style?: string;
+  name?: string;
+  nameZh?: string;
+}): { category: string; style?: string } | null {
+  if (bottle.category !== "原材料") return null;
+  const hay = `${bottle.nameZh ?? ""} ${bottle.name ?? ""}`;
+  for (const rule of V8_NAME_RULES) {
+    if (rule.re.test(hay)) return { category: rule.category, style: rule.style };
+  }
+  const byStyle = bottle.style ? V8_STYLE_TO_CATEGORY[bottle.style] : undefined;
+  if (byStyle) return { category: byStyle.category, style: byStyle.style ?? bottle.style };
+  return { category: "酸类与添加剂" };
 }
 
 interface BottleTaxonomyStore {
@@ -311,12 +458,20 @@ export function BottleTaxonomyProvider({ children }: { children: React.ReactNode
         ]);
         if (rawC) {
           const parsed: BottleCategoryDef[] = JSON.parse(rawC);
-          const { next, changed } = migrateCategoriesV7(parsed);
-          setCategories(next);
-          if (changed) AsyncStorage.setItem(CATS_KEY, JSON.stringify(next)).catch(() => {});
+          const v7 = migrateCategoriesV7(parsed);
+          const v8 = migrateCategoriesV8(v7.next);
+          setCategories(v8.next);
+          if (v7.changed || v8.changed)
+            AsyncStorage.setItem(CATS_KEY, JSON.stringify(v8.next)).catch(() => {});
           notifySyncChange(CATS_KEY);
         }
-        if (rawS) setStyles(JSON.parse(rawS));
+        if (rawS) {
+          const parsedS: BottleStyleDef[] = JSON.parse(rawS);
+          const v8s = migrateStylesV8(parsedS);
+          setStyles(v8s.next);
+          if (v8s.changed)
+            AsyncStorage.setItem(STYLES_KEY, JSON.stringify(v8s.next)).catch(() => {});
+        }
       } catch (e) {
         console.warn("Failed to load bottle taxonomy", e);
       } finally {
@@ -468,7 +623,7 @@ export function BottleTaxonomyProvider({ children }: { children: React.ReactNode
   const groupOf = useCallback(
     (categoryZh: string) =>
       categories.find((c) => c.zh === categoryZh)?.group ??
-      (categoryZh === "原材料" ? "materials" : "bottles"),
+      staticBottleGroupOf(categoryZh),
     [categories],
   );
 

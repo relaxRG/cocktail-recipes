@@ -14,9 +14,10 @@ import type { HomemadePrep } from "../homemade/types";
 import { matchBottle, normalizeIngredientName } from "../bottles/cost";
 import { matchPrep } from "../homemade/match";
 import { resolveIngredientNames } from "./ingredient-display";
+import { stripForm } from "./form-fold";
 
 export type SmartLink =
-  | { kind: "bottle"; bottle: Bottle }
+  | { kind: "bottle"; bottle: Bottle; form?: { key: string; factor: number } }
   | { kind: "prep"; prep: HomemadePrep }
   | null;
 
@@ -81,10 +82,35 @@ export function smartLinkIngredient(
   }
 
   // 4) 模糊匹配:自制优先,其次酒库(matchBottle 含类别兜底)
+  // 4.5) 形态折叠优先于模糊匹配:"柠檬皮"应按"柠檬"母条目+皮系数计价,
+  //      而不是让模糊匹配把"柠檬皮"当普通液体配料命中"柠檬"。
+  const strippedEarly = stripForm(name);
+  if (strippedEarly.form && strippedEarly.base && norm(strippedEarly.base) !== norm(name)) {
+    const ebE = exactBottle(strippedEarly.base, bottles);
+    if (ebE)
+      return {
+        kind: "bottle",
+        bottle: ebE,
+        form: { key: strippedEarly.form, factor: strippedEarly.factor },
+      };
+  }
   const fp = matchPrep(name, preps);
   if (fp) return { kind: "prep", prep: fp };
   const fb = matchBottle(name, bottles);
-  if (fb) return { kind: "bottle", bottle: fb };
+  if (fb) {
+    // 模糊命中但原名带形态词且命中的正是母条目 → 附加形态信息
+    if (
+      strippedEarly.form &&
+      (norm(fb.nameZh) === norm(strippedEarly.base) || norm(fb.nameEn) === norm(strippedEarly.base))
+    ) {
+      return {
+        kind: "bottle",
+        bottle: fb,
+        form: { key: strippedEarly.form, factor: strippedEarly.factor },
+      };
+    }
+    return { kind: "bottle", bottle: fb };
+  }
 
   // 5) 规范名再走一轮模糊(处理 Waldorf 别名下的变体写法)
   if (resolved) {
@@ -95,6 +121,20 @@ export function smartLinkIngredient(
       const b2 = matchBottle(candidate, bottles);
       if (b2) return { kind: "bottle", bottle: b2 };
     }
+  }
+
+  // 6) 形态折叠:剥离末尾形态词("柠檬皮"→"柠檬")后重新精确/模糊匹配母条目
+  const stripped = strippedEarly;
+  if (stripped.form && stripped.base && norm(stripped.base) !== norm(name)) {
+    const normalizedBase = normalizeIngredientName(stripped.base);
+    if (normalizedBase && norm(normalizedBase) !== norm(stripped.base)) {
+      const eb3 = exactBottle(normalizedBase, bottles);
+      if (eb3)
+        return { kind: "bottle", bottle: eb3, form: { key: stripped.form, factor: stripped.factor } };
+    }
+    const fb2 = matchBottle(stripped.base, bottles);
+    if (fb2)
+      return { kind: "bottle", bottle: fb2, form: { key: stripped.form, factor: stripped.factor } };
   }
   return null;
 }

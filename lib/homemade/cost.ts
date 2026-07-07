@@ -3,7 +3,7 @@
 import { matchPrep } from "./match";
 import { parseAmountToMl } from "../bottles/cost";
 import { HomemadePrep } from "./types";
-import { Bottle } from "../bottles/types";
+import { Bottle, bottleGroupOf } from "../bottles/types";
 import { parseVolumeToMl } from "../bottles/cost";
 
 /**
@@ -214,7 +214,7 @@ export function parsePackToUnit(text: string): { qty: number; unit: "g" | "ml" |
 
 /**
  * Match an ingredient line against the bottle library's raw-material entries
- * (category "原材料"). Returns the material bottle with a parsable pack size & price.
+ * (materials group, v8 专业分类). Returns the material bottle with a parsable pack size & price.
  */
 export function matchMaterialBottle(line: string, bottles: Bottle[]): Bottle | null {
   const l = line.trim().toLowerCase();
@@ -222,7 +222,7 @@ export function matchMaterialBottle(line: string, bottles: Bottle[]): Bottle | n
   let best: Bottle | null = null;
   let bestLen = 0;
   for (const b of bottles) {
-    if (b.category !== "原材料" || b.priceCny <= 0) continue;
+    if (bottleGroupOf(b.category) !== "materials" || b.priceCny <= 0) continue;
     for (const c of [b.nameZh, b.nameEn]) {
       const cl = c.trim().toLowerCase();
       if (cl.length >= 2 && l.includes(cl) && cl.length > bestLen) {
