@@ -96,3 +96,29 @@ export function normalizePrep(p: Partial<HomemadePrep> & { id: string }): Homema
     updatedAt: p.updatedAt ?? Date.now(),
   };
 }
+
+/**
+ * Split a stored ingredient line like "200g white sugar 白砂糖" into
+ * { amount: "200g", name: "white sugar 白砂糖" } for structured editing.
+ * Lines without a leading quantity return an empty amount.
+ */
+const LEADING_QTY_RE =
+  /^((?:约|~|≈)?\s*\d+(?:[.\/]\d+)?(?:\s*[-–]\s*\d+(?:[.\/]\d+)?)?\s*(?:kg|g|克|千克|公斤|ml|毫升|l|升|oz|盎司|dash(?:es)?|滴|tsp|茶匙|tbsp|汤匙|bar\s?spoons?|吧勺|cups?|杯|drops?|个|枚|颗|粒|根|片|只|条|瓣|把|包|袋|听|罐|瓶)?\.?)\s+(.+)$/i;
+
+export function splitPrepIngredientLine(line: string): { amount: string; name: string } {
+  const trimmed = line.trim();
+  if (!trimmed) return { amount: "", name: "" };
+  const m = trimmed.match(LEADING_QTY_RE);
+  if (m && m[2]) {
+    return { amount: m[1].trim(), name: m[2].trim() };
+  }
+  return { amount: "", name: trimmed };
+}
+
+/** Re-join a structured ingredient row into the stored line format. */
+export function joinPrepIngredient(amount: string, name: string): string {
+  const a = amount.trim();
+  const n = name.trim();
+  if (a && n) return `${a} ${n}`;
+  return a || n;
+}

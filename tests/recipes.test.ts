@@ -38,12 +38,58 @@ import { displayNames } from "../lib/utils";
 import {
   PREP_SECTIONS,
   PREP_TYPES,
+  joinPrepIngredient,
   prepSectionLabel,
   prepSectionOf,
   prepTypeLabel,
+  splitPrepIngredientLine,
 } from "../lib/homemade/types";
 
 describe("homemade preps", () => {
+  it("splits stored ingredient lines into amount + name for structured editing", () => {
+    expect(splitPrepIngredientLine("200g white sugar 白砂糖")).toEqual({
+      amount: "200g",
+      name: "white sugar 白砂糖",
+    });
+    expect(splitPrepIngredientLine("100ml fresh ginger juice")).toEqual({
+      amount: "100ml",
+      name: "fresh ginger juice",
+    });
+    expect(splitPrepIngredientLine("1 vanilla bean")).toEqual({
+      amount: "1",
+      name: "vanilla bean",
+    });
+    expect(splitPrepIngredientLine("2根 香草荚")).toEqual({
+      amount: "2根",
+      name: "香草荚",
+    });
+    expect(splitPrepIngredientLine("约300ml 伏特加")).toEqual({
+      amount: "约300ml",
+      name: "伏特加",
+    });
+    // No leading quantity → whole line is the name
+    expect(splitPrepIngredientLine("Angostura bitters")).toEqual({
+      amount: "",
+      name: "Angostura bitters",
+    });
+    expect(splitPrepIngredientLine("")).toEqual({ amount: "", name: "" });
+  });
+
+  it("round-trips split + join back to the stored line format", () => {
+    const lines = [
+      "200g white sugar 白砂糖",
+      "100ml fresh ginger juice",
+      "1 vanilla bean",
+      "Angostura bitters",
+    ];
+    for (const line of lines) {
+      const { amount, name } = splitPrepIngredientLine(line);
+      expect(joinPrepIngredient(amount, name)).toBe(line);
+    }
+    expect(joinPrepIngredient("", "")).toBe("");
+    expect(joinPrepIngredient("50ml", "")).toBe("50ml");
+  });
+
   it("merges raw-material cost library into bottle library with group split", () => {
     const bottles = buildDefaultBottles();
     const materials = bottles.filter((b) => b.category === "原材料");

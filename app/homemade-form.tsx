@@ -17,7 +17,29 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { useHomemadeStore } from "@/lib/homemade/store";
-import { PREP_SECTIONS, PREP_TYPES } from "@/lib/homemade/types";
+import {
+  PREP_SECTIONS,
+  PREP_TYPES,
+  joinPrepIngredient,
+  splitPrepIngredientLine,
+} from "@/lib/homemade/types";
+import { useBottleStore } from "@/lib/bottles/store";
+import { suggestIngredients } from "@/lib/suggest";
+import { genId } from "@/lib/recipes/types";
+
+interface IngRow {
+  id: string;
+  name: string;
+  amount: string;
+}
+
+function toRows(lines: string[]): IngRow[] {
+  const rows = lines.map((line) => {
+    const { amount, name } = splitPrepIngredientLine(line);
+    return { id: genId(), name, amount };
+  });
+  return rows.length > 0 ? rows : [{ id: genId(), name: "", amount: "" }];
+}
 
 export default function HomemadeFormScreen() {
   const colors = useColors();
@@ -30,6 +52,7 @@ export default function HomemadeFormScreen() {
     prefillType?: string;
   }>();
   const { getPrep, addPrep, updatePrep } = useHomemadeStore();
+  const { bottles } = useBottleStore();
   const editing = getPrep(id);
 
   const [name, setName] = useState(editing?.name ?? prefillName ?? "");
@@ -37,9 +60,11 @@ export default function HomemadeFormScreen() {
   const [type, setType] = useState(
     editing?.type ?? (prefillType && PREP_TYPES.some((p) => p.key === prefillType) ? prefillType : "syrup"),
   );
-  const [ingredientsText, setIngredientsText] = useState(
-    editing ? editing.ingredients.join("\n") : "",
-  );
+  const [ingRows, setIngRows] = useState<IngRow[]>(() => toRows(editing?.ingredients ?? []));
+  /** Which ingredient row is focused (shows live suggestions) */
+  const [focusedIng, setFocusedIng] = useState<string | null>(null);
+  /** Rows where user picked a suggestion — suppress dropdown until text changes */
+  const [pickedIng, setPickedIng] = useState<Record<string, string>>({});
   const [recipe, setRecipe] = useState(editing?.recipe ?? "");
   const [yieldStr, setYieldStr] = useState(editing?.yield ?? "");
   const [shelfLife, setShelfLife] = useState(editing?.shelfLife ?? "");
@@ -48,11 +73,27 @@ export default function HomemadeFormScreen() {
 
   const canSave = useMemo(() => name.trim().length > 0, [name]);
 
+  const updateIngRow = (rid: string, field: "name" | "amount", value: string) => {
+    setIngRows((prev) => prev.map((r) => (r.id === rid ? { ...r, [field]: value } : r)));
+  };
+  const pickSuggestion = (rid: string, value: string) => {
+    updateIngRow(rid, "name", value);
+    setPickedIng((prev) => ({ ...prev, [rid]: value }));
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+  const addIngRow = () => {
+    setIngRows((prev) => [...prev, { id: genId(), name: "", amount: "" }]);
+  };
+  const removeIngRow = (rid: string) => {
+    setIngRows((prev) => (prev.length > 1 ? prev.filter((r) => r.id !== rid) : prev));
+  };
+
   const handleSave = () => {
     if (!canSave) return;
-    const ingredients = ingredientsText
-      .split(/\n|;|；/)
-      .map((s) => s.trim())
+    const ingredients = ingRows
+      .map((r) => joinPrepIngredient(r.amount, r.name))
       .filter(Boolean);
     const payload = {
       name: name.trim(),
@@ -184,18 +225,115 @@ export default function HomemadeFormScreen() {
           })}
 
           {fieldLabel(t("hmform.ingredients"))}
-          <TextInput
-            style={[...inputStyle, styles.multiline]}
-            value={ingredientsText}
-            onChangeText={setIngredientsText}
-            placeholder={
-              lang === "en"
-                ? "One per line, e.g.\n100g fresh ginger juice\n150g white sugar"
-                : "每行一条,如:\n100g 鲜姜汁\n150g 白砂糖"
-            }
-            placeholderTextColor={colors.muted}
-            multiline
-          />
+          {ingRows.map((row) => {
+            const trimmed = row.name.trim();
+            const showSuggest =
+              focusedIng === row.id && trimmed.length > 0 && pickedIng[row.id] !== row.name;
+            const liveSuggestions = showSuggest
+              ? suggestIngredients(trimmed, bottles, [], lang).filter((s) => s.value !== trimmed)
+              : [];
+            return (
+              <View key={row.id} style={{ marginBottom: 8 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <TextInput
+                    style={[...inputStyle, { flex: 3 }]}
+                    placeholder={t("hmform.ingredient.name")}
+                    placeholderTextColor={colors.muted}
+                    value={row.name}
+                    onChangeText={(v) => updateIngRow(row.id, "name", v)}
+                    onFocus={() => setFocusedIng(row.id)}
+                    onBlur={() => {
+                      // Delay so suggestion taps register before the list hides
+                      setTimeout(() => {
+                        setFocusedIng((cur) => (cur === row.id ? null : cur));
+                      }, 150);
+                    }}
+                    returnKeyType="done"
+                  />
+                  <TextInput
+                    style={[...inputStyle, { flex: 2 }]}
+                    placeholder={t("hmform.ingredient.amount")}
+                    placeholderTextColor={colors.muted}
+                    value={row.amount}
+                    onChangeText={(v) => updateIngRow(row.id, "amount", v)}
+                    returnKeyType="done"
+                  />
+                  <Pressable
+                    onPress={() => removeIngRow(row.id)}
+                    hitSlop={8}
+                    style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                  >
+                    <IconSymbol
+                      name="minus.circle.fill"
+                      size={24}
+                      color={ingRows.length > 1 ? colors.error : colors.border}
+                    />
+                  </Pressable>
+                </View>
+                {liveSuggestions.length > 0 ? (
+                  <View
+                    style={[
+                      styles.suggestBox,
+                      { backgroundColor: colors.surface, borderColor: colors.border },
+                    ]}
+                  >
+                    {liveSuggestions.map((s, sIdx) => (
+                      <Pressable
+                        key={s.key}
+                        onPress={() => pickSuggestion(row.id, s.value)}
+                        style={({ pressed }) => [
+                          styles.suggestRow,
+                          sIdx > 0 && {
+                            borderTopWidth: StyleSheet.hairlineWidth,
+                            borderTopColor: colors.border,
+                          },
+                          pressed && { opacity: 0.6 },
+                        ]}
+                      >
+                        <IconSymbol
+                          name={s.source === "homemade" ? "sparkles" : "wineglass.fill"}
+                          size={13}
+                          color={s.source === "homemade" ? colors.primary : colors.muted}
+                        />
+                        <Text
+                          className="text-sm text-foreground"
+                          numberOfLines={1}
+                          style={{ lineHeight: 18, flexShrink: 1 }}
+                        >
+                          {s.value}
+                        </Text>
+                        {s.secondary ? (
+                          <Text
+                            className="text-xs text-muted"
+                            numberOfLines={1}
+                            style={{ lineHeight: 16, flexShrink: 1 }}
+                          >
+                            {s.secondary}
+                          </Text>
+                        ) : null}
+                        <View style={{ flex: 1 }} />
+                        <Text className="text-[11px] text-muted" style={{ lineHeight: 14 }}>
+                          {s.source === "homemade" ? t("form.suggest.homemade") : t("form.suggest.bottle")}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                ) : null}
+              </View>
+            );
+          })}
+          <Pressable
+            onPress={addIngRow}
+            style={({ pressed }) => [styles.addRow, pressed && { opacity: 0.6 }]}
+          >
+            <IconSymbol name="plus.circle.fill" size={20} color={colors.primary} />
+            <Text
+              className="text-sm font-medium"
+              style={{ color: colors.primary, lineHeight: 20 }}
+            >
+              {t("form.addIngredient")}
+            </Text>
+          </Pressable>
 
           {fieldLabel(t("hmform.recipe"))}
           <TextInput
@@ -286,5 +424,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
     lineHeight: 18,
+  },
+  suggestBox: {
+    borderWidth: 1,
+    borderRadius: 12,
+    overflow: "hidden",
+    marginTop: 4,
+  },
+  suggestRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  addRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 4,
   },
 });

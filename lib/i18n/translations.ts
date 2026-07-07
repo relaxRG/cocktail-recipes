@@ -239,6 +239,8 @@ const dict = {
   "hmform.nameAlt": { zh: "别名/翻译", en: "Alt Name / Translation" },
   "hmform.type": { zh: "类型", en: "Type" },
   "hmform.ingredients": { zh: "原料", en: "Ingredients" },
+  "hmform.ingredient.name": { zh: "原料名称", en: "Ingredient" },
+  "hmform.ingredient.amount": { zh: "用量", en: "Amount" },
   "hmform.recipe": { zh: "配方做法", en: "Recipe / Method" },
   "hmform.yield": { zh: "产量", en: "Yield" },
   "hmform.shelfLife": { zh: "保存期限", en: "Shelf Life" },
