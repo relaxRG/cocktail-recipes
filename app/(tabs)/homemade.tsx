@@ -21,6 +21,7 @@ import { displayNames } from "@/lib/utils";
 import { filterPreps, useHomemadeStore } from "@/lib/homemade/store";
 import { useBottleStore } from "@/lib/bottles/store";
 import { estimatePrepCost } from "@/lib/homemade/cost";
+import { primaryTechnique, techniqueLabel, TECHNIQUES, detectPrepTechniques } from "@/lib/homemade/technique";
 import { Bottle } from "@/lib/bottles/types";
 import {
   HomemadePrep,
@@ -43,10 +44,15 @@ export default function HomemadeScreen() {
   const [query, setQuery] = useState("");
   const [section, setSection] = useState<string>("");
   const [type, setType] = useState<string>("");
+  const [technique, setTechnique] = useState<string>("");
 
   const filtered = useMemo(
-    () => filterPreps(preps, query, type || undefined, section || undefined, types),
-    [preps, query, type, section, types],
+    () => {
+      const base = filterPreps(preps, query, type || undefined, section || undefined, types);
+      if (!technique) return base;
+      return base.filter((p) => detectPrepTechniques(p).includes(technique));
+    },
+    [preps, query, type, section, types, technique],
   );
 
   // 分区筛选:仅显示库内实际存在的分区
@@ -62,6 +68,15 @@ export default function HomemadeScreen() {
       (pt) => present.has(pt.key) && (!section || pt.section === section),
     );
   }, [preps, section, types]);
+
+  // 工艺筛选:仅显示库内实际识别出的工艺(按 TECHNIQUES 声明顺序)
+  const usedTechniques = useMemo(() => {
+    const present = new Set<string>();
+    for (const p of preps) {
+      for (const k of detectPrepTechniques(p)) present.add(k);
+    }
+    return TECHNIQUES.filter((tk) => present.has(tk.key));
+  }, [preps]);
 
   // 按分区分组的行数据(分区标题 + 各分区内的 inset group)
   const rows = useMemo<ListRow[]>(() => {
@@ -226,6 +241,40 @@ export default function HomemadeScreen() {
         </View>
       ) : null}
 
+      {/* Technique filter: process-based refinement */}
+      {usedTechniques.length > 0 ? (
+        <View style={styles.subChipRowWrap}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipRow}
+          >
+            <Pressable
+              style={subChipStyle(technique === "", colors)}
+              onPress={() => setTechnique("")}
+            >
+              <Text style={subChipTextStyle(technique === "", colors)}>
+                {t("hm.technique.all")}
+              </Text>
+            </Pressable>
+            {usedTechniques.map((tk) => {
+              const active = technique === tk.key;
+              return (
+                <Pressable
+                  key={tk.key}
+                  style={subChipStyle(active, colors)}
+                  onPress={() => setTechnique(active ? "" : tk.key)}
+                >
+                  <Text style={subChipTextStyle(active, colors)}>
+                    {lang === "en" ? tk.en : tk.zh}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      ) : null}
+
       {ready && filtered.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8" style={{ marginTop: -40 }}>
           <Text style={{ fontSize: 48, lineHeight: 64 }}>🧪</Text>
@@ -309,6 +358,7 @@ function PrepRow({
   const { types } = useHomemadeStore();
   const names = displayNames(prep.name, prep.nameAlt, lang);
   const cost = useMemo(() => estimatePrepCost(prep, bottles), [prep, bottles]);
+  const tech = useMemo(() => primaryTechnique(prep), [prep]);
   return (
     <Pressable
       onPress={() => router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })}
@@ -337,6 +387,13 @@ function PrepRow({
                   {prepTypeLabelIn(types, prep.type, lang)}
                 </Text>
               </View>
+              {tech ? (
+                <View style={[styles.badge, { backgroundColor: colors.warning + "22" }]}>
+                  <Text style={[styles.badgeText, { color: colors.warning }]}>
+                    {techniqueLabel(tech, lang)}
+                  </Text>
+                </View>
+              ) : null}
               {prep.shelfLife ? (
                 <Text className="text-xs text-muted" numberOfLines={1}>
                   {prep.shelfLife}

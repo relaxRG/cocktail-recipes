@@ -227,6 +227,12 @@ const dict = {
   "hm.empty.add": { zh: "添加自制原料", en: "Add Homemade Prep" },
   "hm.noMatch": { zh: "没有匹配的自制原料", en: "No matching preps" },
   "hm.type.all": { zh: "全部类型", en: "All Types" },
+  "hm.technique.all": { zh: "全部工艺", en: "All Techniques" },
+  "hm.technique.title": { zh: "制作工艺", en: "Technique" },
+  "hm.technique.auto": {
+    zh: "根据名称与做法关键词自动识别,仅供参考。",
+    en: "Auto-detected from name & method keywords, for reference.",
+  },
   "detail.homemade.link": { zh: "自制库:{name}", en: "Homemade: {name}" },
   "form.homemade.matched": { zh: "已在自制库:{name}", en: "In Homemade Lab: {name}" },
   "form.homemade.add": { zh: "添加到自制库", en: "Add to Homemade Lab" },

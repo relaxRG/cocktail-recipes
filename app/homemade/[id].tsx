@@ -12,6 +12,7 @@ import { useHomemadeStore } from "@/lib/homemade/store";
 import { useBottleStore } from "@/lib/bottles/store";
 import { estimatePrepCost } from "@/lib/homemade/cost";
 import { prepTypeLabelIn } from "@/lib/homemade/types";
+import { detectPrepTechniques, techniqueDesc, techniqueLabel } from "@/lib/homemade/technique";
 
 export default function HomemadeDetailScreen() {
   const colors = useColors();
@@ -53,6 +54,17 @@ export default function HomemadeDetailScreen() {
 
   const infoRows: { label: string; value: string }[] = [
     { label: t("hmform.type"), value: prepTypeLabelIn(types, prep.type, lang) },
+    ...(() => {
+      const techs = detectPrepTechniques(prep);
+      return techs.length > 0
+        ? [
+            {
+              label: t("hm.technique.title"),
+              value: techs.map((k) => techniqueLabel(k, lang)).join(" · "),
+            },
+          ]
+        : [];
+    })(),
     ...(prep.yield ? [{ label: t("hm.yield"), value: prep.yield }] : []),
     ...(prep.shelfLife ? [{ label: t("hm.shelfLife"), value: prep.shelfLife }] : []),
     ...(prep.storage ? [{ label: t("hm.storage"), value: prep.storage }] : []),
@@ -60,6 +72,8 @@ export default function HomemadeDetailScreen() {
 
   const names = displayNames(prep.name, prep.nameAlt, lang);
   const cost = estimatePrepCost(prep, bottles);
+  const techs = detectPrepTechniques(prep);
+  const primaryTechDesc = techs.length > 0 ? techniqueDesc(techs[0], lang) : "";
 
   const sectionTitle = (label: string) => (
     <Text
@@ -119,12 +133,26 @@ export default function HomemadeDetailScreen() {
               }
             >
               <Text className="text-[15px] text-foreground">{row.label}</Text>
-              <Text className="text-[15px] text-muted" style={{ maxWidth: "65%" }}>
+              <Text className="text-[15px] text-muted" style={{ maxWidth: "65%", textAlign: "right" }}>
                 {row.value}
               </Text>
             </View>
           ))}
         </View>
+
+        {primaryTechDesc ? (
+          <View
+            className="rounded-xl px-4 py-2.5 mt-2"
+            style={{ backgroundColor: colors.warning + "14" }}
+          >
+            <Text className="text-xs" style={{ color: colors.warning, lineHeight: 17 }}>
+              {primaryTechDesc}
+            </Text>
+            <Text className="text-[10px] text-muted mt-1" style={{ lineHeight: 14 }}>
+              {t("hm.technique.auto")}
+            </Text>
+          </View>
+        ) : null}
 
         {prep.ingredients.length > 0 ? (
           <>
