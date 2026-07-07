@@ -650,6 +650,21 @@ export default function RecipesScreen() {
             onClearAll={() => setSelectedIds([])}
             actions={[
               {
+                key: "compare",
+                label: t("sel.compare"),
+                icon: "rectangle.split.2x1",
+                disabled: selectedIds.length < 2 || selectedIds.length > 6,
+                onPress: () => {
+                  if (selectedIds.length < 2 || selectedIds.length > 6) return;
+                  if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push({
+                    pathname: "/compare",
+                    params: { type: "recipe", ids: selectedIds.join(",") },
+                  });
+                  exitSelectMode();
+                },
+              },
+              {
                 key: "category",
                 label: t("sel.setCategory"),
                 icon: "tag.fill",

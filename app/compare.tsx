@@ -15,6 +15,8 @@ import { estimateRecipeCostSmart } from "@/lib/recipes/smart-cost";
 import { formatAmountAsMl } from "@/lib/bottles/cost";
 import { detectPrepTechniques, techniqueLabel } from "@/lib/homemade/technique";
 import { prepTypeLabelIn } from "@/lib/homemade/types";
+import { smartLinkIngredient, smartLinkDisplayName } from "@/lib/recipes/smart-link";
+import { structuralFormula } from "@/lib/recipes/structure";
 import {
   Recipe,
   STRENGTH_LABELS,
@@ -179,12 +181,78 @@ export default function CompareScreen() {
             label: t("compare.row.ingredientCount"),
             values: items.map((r) => String(r.ingredients.length)),
           },
+          // 配料三分区:名字用量全一致 / 名字一致用量不一致 / 名字用量都不一致(独有)
+          ...(() => {
+            const nameKey = (n: string) => {
+              const link = smartLinkIngredient(n, bottles, preps);
+              return smartLinkDisplayName(link, lang as "zh" | "en")?.primary ?? n.trim();
+            };
+            // 每份配方:规范名 → 用量(ml 格式化后)映射
+            const maps = items.map((r) => {
+              const m = new Map<string, string>();
+              for (const i of r.ingredients) {
+                m.set(nameKey(i.name), i.amount ? formatAmountAsMl(i.amount) : "");
+              }
+              return m;
+            });
+            const allNames = maps.length > 0 ? [...maps[0].keys()] : [];
+            // ① 名字都出现且用量一致
+            const sameBoth = allNames.filter((n) => {
+              if (!maps.every((m) => m.has(n))) return false;
+              const amt = maps[0].get(n);
+              return maps.every((m) => m.get(n) === amt);
+            });
+            // ② 名字都出现但用量不一致
+            const sameNameDiffAmt = allNames.filter(
+              (n) => maps.every((m) => m.has(n)) && !sameBoth.includes(n),
+            );
+            return [
+              {
+                label: t("compare.row.sameBoth"),
+                values: items.map((_, idx) =>
+                  sameBoth.length > 0
+                    ? sameBoth
+                        .map((n) => (maps[idx].get(n) ? `${n} ${maps[idx].get(n)}` : n))
+                        .join("\n")
+                    : null,
+                ),
+              },
+              {
+                label: t("compare.row.sameNameDiffAmount"),
+                values: items.map((_, idx) =>
+                  sameNameDiffAmt.length > 0
+                    ? sameNameDiffAmt
+                        .map((n) => (maps[idx].get(n) ? `${n} ${maps[idx].get(n)}` : n))
+                        .join("\n")
+                    : null,
+                ),
+              },
+              {
+                label: t("compare.row.diffBoth"),
+                values: items.map((_, idx) => {
+                  const uniq = [...maps[idx].keys()].filter(
+                    (n) => !maps.every((m) => m.has(n)),
+                  );
+                  return uniq.length > 0
+                    ? uniq
+                        .map((n) => (maps[idx].get(n) ? `${n} ${maps[idx].get(n)}` : n))
+                        .join("\n")
+                    : null;
+                }),
+              },
+            ];
+          })(),
           {
             label: t("compare.section.ingredients"),
             values: items.map((r) =>
               r.ingredients.length > 0
                 ? r.ingredients
-                    .map((i) => (i.amount ? `${i.name} ${formatAmountAsMl(i.amount)}` : i.name))
+                    .map((i) => {
+                      const link = smartLinkIngredient(i.name, bottles, preps);
+                      const name =
+                        smartLinkDisplayName(link, lang as "zh" | "en")?.primary ?? i.name;
+                      return i.amount ? `${name} ${formatAmountAsMl(i.amount)}` : name;
+                    })
                     .join("\n")
                 : null,
             ),
@@ -203,6 +271,14 @@ export default function CompareScreen() {
             values: items.map((r) => (r.glass ? localizedTagName(r.glass, "", lang) : null)),
           },
           { label: t("compare.row.garnish"), values: items.map((r) => r.garnish || null) },
+          {
+            label: t("compare.row.formula"),
+            values: items.map((r) =>
+              r.ingredients.length > 0
+                ? structuralFormula(r.ingredients, lang as "zh" | "en", formatAmountAsMl) || null
+                : null,
+            ),
+          },
           {
             label: t("compare.row.flavors"),
             values: items.map((r) =>
