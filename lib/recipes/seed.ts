@@ -15,7 +15,7 @@ export function buildSampleRecipes(): Recipe[] {
   const mk = (
     partial: Omit<
       Recipe,
-      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "source"
+      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "source" | "story" | "flavorDesc"
     > & {
       notes?: string;
       favorite?: boolean;
@@ -23,6 +23,8 @@ export function buildSampleRecipes(): Recipe[] {
       codexFamily?: string;
       flavors?: string[];
       source?: string;
+      story?: string;
+      flavorDesc?: string;
     },
     offset: number,
   ): Recipe => ({
@@ -33,6 +35,8 @@ export function buildSampleRecipes(): Recipe[] {
     codexFamily: partial.codexFamily ?? "",
     flavors: partial.flavors ?? [],
     source: partial.source ?? "",
+    story: partial.story ?? "",
+    flavorDesc: partial.flavorDesc ?? "",
     createdAt: now + offset,
     updatedAt: now + offset,
     ...partial,

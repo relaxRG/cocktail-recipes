@@ -38,6 +38,8 @@ export interface RecipeDraft {
   codexFamily: string;
   flavors: string[];
   source: string;
+  story: string;
+  flavorDesc: string;
   ingredients: Recipe["ingredients"];
   steps: string;
   garnish: string;

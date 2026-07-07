@@ -332,6 +332,16 @@ export default function RecipeDetailScreen() {
           </>
         ) : null}
 
+        {/* Flavor description */}
+        {recipe.flavorDesc ? (
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.flavorDesc")}</Text>
+            <View className="bg-surface rounded-xl p-4">
+              <Text className="text-base text-foreground leading-relaxed">{recipe.flavorDesc}</Text>
+            </View>
+          </>
+        ) : null}
+
         {/* Notes */}
         {recipe.notes ? (
           <>
@@ -341,6 +351,16 @@ export default function RecipeDetailScreen() {
               style={{ backgroundColor: colors.primary + "14" }}
             >
               <Text className="text-base text-foreground leading-relaxed">{recipe.notes}</Text>
+            </View>
+          </>
+        ) : null}
+
+        {/* Story */}
+        {recipe.story ? (
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.story")}</Text>
+            <View className="bg-surface rounded-xl p-4">
+              <Text className="text-base text-foreground leading-relaxed">{recipe.story}</Text>
             </View>
           </>
         ) : null}

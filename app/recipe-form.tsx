@@ -101,6 +101,8 @@ export default function RecipeFormScreen() {
   const [codexFamily, setCodexFamily] = useState(editing?.codexFamily ?? "");
   const [flavors, setFlavors] = useState<string[]>(editing?.flavors ?? []);
   const [source, setSource] = useState(editing?.source ?? "");
+  const [story, setStory] = useState(editing?.story ?? "");
+  const [flavorDesc, setFlavorDesc] = useState(editing?.flavorDesc ?? "");
   const [ingredients, setIngredients] = useState<Ingredient[]>(
     editing?.ingredients?.length
       ? editing.ingredients
@@ -228,6 +230,8 @@ export default function RecipeFormScreen() {
       codexFamily,
       flavors,
       source: source.trim(),
+      story: story.trim(),
+      flavorDesc: flavorDesc.trim(),
       ingredients: ingredients.filter((i) => i.name.trim().length > 0),
       steps: steps.trim(),
       garnish: garnish.trim(),
@@ -701,6 +705,18 @@ export default function RecipeFormScreen() {
             style={{ lineHeight: 20 }}
           />
 
+          {/* Flavor description */}
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.flavorDesc")}</Text>
+          <TextInput
+            className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
+            placeholder={t("form.flavorDesc.placeholder")}
+            placeholderTextColor={colors.muted}
+            value={flavorDesc}
+            onChangeText={setFlavorDesc}
+            multiline
+            style={{ minHeight: 70, textAlignVertical: "top", lineHeight: 22 }}
+          />
+
           {/* Notes */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.notes")}</Text>
           <TextInput
@@ -711,6 +727,18 @@ export default function RecipeFormScreen() {
             onChangeText={setNotes}
             multiline
             style={{ minHeight: 80, textAlignVertical: "top", lineHeight: 22 }}
+          />
+
+          {/* Story */}
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.story")}</Text>
+          <TextInput
+            className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
+            placeholder={t("form.story.placeholder")}
+            placeholderTextColor={colors.muted}
+            value={story}
+            onChangeText={setStory}
+            multiline
+            style={{ minHeight: 90, textAlignVertical: "top", lineHeight: 22 }}
           />
 
           {/* Source */}
