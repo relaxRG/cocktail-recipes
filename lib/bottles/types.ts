@@ -14,7 +14,8 @@ export const BOTTLE_CATEGORIES = [
   "葡萄酒",
   "清酒烧酒",
   "中式白酒",
-  "软饮糖浆",
+  "糖浆",
+  "软饮",
   "其他",
 ] as const;
 export type BottleCategory = (typeof BOTTLE_CATEGORIES)[number];
@@ -35,6 +36,8 @@ export const BOTTLE_CATEGORY_EN: Record<string, string> = {
   葡萄酒: "Wine",
   清酒烧酒: "Sake/Shochu",
   中式白酒: "Baijiu",
+  糖浆: "Syrups",
+  软饮: "Soft Drinks",
   软饮糖浆: "Mixers/Syrups",
   其他: "Others",
 };
@@ -58,8 +61,29 @@ export const BOTTLE_STYLES: Record<string, string[]> = {
   葡萄酒: ["Dry White", "Dry Red", "Sherry Fino", "Sherry Oloroso", "Sherry PX", "Port", "Madeira", "Sauternes"],
   清酒烧酒: ["Junmai", "Junmai Ginjo", "Junmai Daiginjo", "Nigori", "Umeshu", "Mugi Shochu", "Imo Shochu", "Kome Shochu", "Soju"],
   中式白酒: ["Sauce Aroma 酱香", "Strong Aroma 浓香", "Light Aroma 清香", "Rice Aroma 米香"],
+  糖浆: ["Syrup", "Cordial", "Shrub", "Cream/Foam"],
+  软饮: ["Soda", "Tonic", "Ginger Beer", "Ginger Ale", "Juice", "Sparkling Water", "Cola"],
   软饮糖浆: ["Syrup", "Juice", "Soda", "Tonic", "Ginger Beer", "Cordial", "Shrub"],
 };
+
+/**
+ * 旧分类 → 新分类迁移:v3 及以前的"软饮糖浆"合并分类拆分为"糖浆"与"软饮"。
+ * 按 style 判断归属:糖浆类(Syrup/Cordial/Shrub)归"糖浆",其余归"软饮"。
+ */
+export function migrateBottleCategory(b: Pick<Bottle, "category" | "style" | "nameEn" | "nameZh">): string {
+  if (b.category !== "软饮糖浆") return b.category;
+  const s = (b.style || "").toLowerCase();
+  const name = `${b.nameEn} ${b.nameZh}`.toLowerCase();
+  if (
+    s === "syrup" ||
+    s === "cordial" ||
+    s === "shrub" ||
+    /syrup|cordial|shrub|orgeat|grenadine|糖浆|椰浆|奶油|蛋白|cream|egg white/.test(name)
+  ) {
+    return "糖浆";
+  }
+  return "软饮";
+}
 
 /** 酒款(酒类数据库条目) */
 export interface Bottle {

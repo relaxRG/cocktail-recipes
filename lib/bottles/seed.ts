@@ -2,7 +2,7 @@ import { Bottle } from "./types";
 
 /**
  * 内置酒款数据集:覆盖市面常见的烈酒、利口酒、苦精、味美思、开胃酒、
- * 起泡酒、葡萄酒、清酒烧酒、中式白酒与软饮糖浆等 200+ 款。
+ * 起泡酒、葡萄酒、清酒烧酒、中式白酒、糖浆与软饮等 200+ 款。
  * 价格为中国电商/商超常见参考价(人民币),会随市场波动,仅供参考。
  */
 export function buildDefaultBottles(): Bottle[] {
@@ -231,32 +231,33 @@ export function buildDefaultBottles(): Bottle[] {
     mk("五粮液", "Wuliangye", "中式白酒", "五粮液", "中国", "500ml", 52, 1000, "浓香型代表", "Strong Aroma 浓香"),
     mk("茅台迎宾酒", "Moutai Yingbin", "中式白酒", "茅台", "中国", "500ml", 43, 120, "酱香入门,酱香拿铁既视感", "Sauce Aroma 酱香"),
     mk("桂林三花酒", "Guilin Sanhua Jiu", "中式白酒", "三花", "中国", "480ml", 52, 40, "米香型,清雅易调", "Rice Aroma 米香"),
-    // ============ 软饮糖浆 Mixers/Syrups ============
-    mk("怡泉汤力水", "Schweppes Tonic Water", "软饮糖浆", "Schweppes", "英国", "330ml", 0, 6, "金汤力标配", "Tonic"),
-    mk("芬味树汤力水", "Fever-Tree Indian Tonic", "软饮糖浆", "Fever-Tree", "英国", "200ml", 0, 12, "精品汤力,天然奎宁", "Tonic"),
-    mk("芬味树姜汁啤酒", "Fever-Tree Ginger Beer", "软饮糖浆", "Fever-Tree", "英国", "200ml", 0, 12, "Moscow Mule/Dark'n'Stormy", "Ginger Beer"),
-    mk("怡泉苏打水", "Schweppes Soda Water", "软饮糖浆", "Schweppes", "英国", "330ml", 0, 5, "高球/菲兹稀释", "Soda"),
-    mk("圣佩黎洛气泡水", "S.Pellegrino Sparkling Water", "软饮糖浆", "S.Pellegrino", "意大利", "500ml", 0, 10, "餐配气泡水,也可调酒"),
-    mk("怡泉干姜水", "Schweppes Ginger Ale", "软饮糖浆", "Schweppes", "英国", "330ml", 0, 6, "Highball/Horse's Neck"),
-    mk("可口可乐", "Coca-Cola", "软饮糖浆", "Coca-Cola", "美国", "330ml", 0, 3.5, "自由古巴必备", "Soda"),
-    mk("新奇士西柚汁", "Sunkist Grapefruit Juice", "软饮糖浆", "Sunkist", "美国", "1L", 0, 15, "Paloma/Greyhound", "Juice"),
-    mk("蔓越莓汁", "Ocean Spray Cranberry Juice", "软饮糖浆", "Ocean Spray", "美国", "1L", 0, 25, "大都会/海风", "Juice"),
-    mk("菠萝汁", "Del Monte Pineapple Juice", "软饮糖浆", "Del Monte", "美国", "1L", 0, 20, "Piña Colada/提基", "Juice"),
-    mk("番茄汁", "Campbell's Tomato Juice", "软饮糖浆", "Campbell's", "美国", "1L", 0, 25, "血腥玛丽", "Juice"),
-    mk("莫林原味糖浆", "Monin Pure Cane Syrup", "软饮糖浆", "Monin", "法国", "700ml", 0, 60, "标准单糖浆", "Syrup"),
-    mk("莫林红石榴糖浆", "Monin Grenadine", "软饮糖浆", "Monin", "法国", "700ml", 0, 60, "Tequila Sunrise/Jack Rose", "Syrup"),
-    mk("莫林杏仁糖浆", "Monin Orgeat", "软饮糖浆", "Monin", "法国", "700ml", 0, 70, "Mai Tai 必备杏仁糖浆", "Syrup"),
-    mk("莫林香草糖浆", "Monin Vanilla Syrup", "软饮糖浆", "Monin", "法国", "700ml", 0, 60, "甜品向鸡尾酒", "Syrup"),
-    mk("莫林百香果糖浆", "Monin Passion Fruit Syrup", "软饮糖浆", "Monin", "法国", "700ml", 0, 65, "Pornstar Martini", "Syrup"),
-    mk("蜂蜜糖浆(自制)", "Honey Syrup (Homemade)", "软饮糖浆", "自制", "—", "500ml", 0, 25, "蜂蜜1:1热水,Bee's Knees/Penicillin", "Syrup"),
-    mk("姜糖浆(自制)", "Ginger Syrup (Homemade)", "软饮糖浆", "自制", "—", "500ml", 0, 20, "鲜姜煮糖水,Penicillin", "Syrup"),
-    mk("德梅拉拉糖浆(自制)", "Demerara Syrup (Homemade)", "软饮糖浆", "自制", "—", "500ml", 0, 15, "2:1粗糖浆,Old Fashioned", "Syrup"),
-    mk("青柠汁(鲜榨)", "Fresh Lime Juice", "软饮糖浆", "鲜榨", "—", "500ml", 0, 15, "酸酒类灵魂,现榨最佳", "Juice"),
-    mk("柠檬汁(鲜榨)", "Fresh Lemon Juice", "软饮糖浆", "鲜榨", "—", "500ml", 0, 12, "威士忌酸/边车", "Juice"),
-    mk("橙汁(鲜榨)", "Fresh Orange Juice", "软饮糖浆", "鲜榨", "—", "1L", 0, 20, "含羞草/螺丝刀", "Juice"),
-    mk("椰浆", "Coco López Cream of Coconut", "软饮糖浆", "Coco López", "波多黎各", "425g", 0, 45, "Piña Colada 官方椰浆", "Soda"),
-    mk("安佳淡奶油", "Anchor Whipping Cream", "软饮糖浆", "Anchor", "新西兰", "250ml", 0, 15, "White Russian/Alexander"),
-    mk("蛋白(可用鹰嘴豆水替代)", "Egg White / Aquafaba", "软饮糖浆", "—", "—", "—", 0, 2, "酸酒泡沫,素食可用鹰嘴豆水"),
+    // ============ 糖浆 Syrups ============
+    mk("莫林原味糖浆", "Monin Pure Cane Syrup", "糖浆", "Monin", "法国", "700ml", 0, 60, "标准单糖浆", "Syrup"),
+    mk("莫林红石榴糖浆", "Monin Grenadine", "糖浆", "Monin", "法国", "700ml", 0, 60, "Tequila Sunrise/Jack Rose", "Syrup"),
+    mk("莫林杏仁糖浆", "Monin Orgeat", "糖浆", "Monin", "法国", "700ml", 0, 70, "Mai Tai 必备杏仁糖浆", "Syrup"),
+    mk("莫林香草糖浆", "Monin Vanilla Syrup", "糖浆", "Monin", "法国", "700ml", 0, 60, "甜品向鸡尾酒", "Syrup"),
+    mk("莫林百香果糖浆", "Monin Passion Fruit Syrup", "糖浆", "Monin", "法国", "700ml", 0, 65, "Pornstar Martini", "Syrup"),
+    mk("蜂蜜糖浆(自制)", "Honey Syrup (Homemade)", "糖浆", "自制", "—", "500ml", 0, 25, "蜂蜜1:1热水,Bee's Knees/Penicillin", "Syrup"),
+    mk("姜糖浆(自制)", "Ginger Syrup (Homemade)", "糖浆", "自制", "—", "500ml", 0, 20, "鲜姜煮糖水,Penicillin", "Syrup"),
+    mk("德梅拉拉糖浆(自制)", "Demerara Syrup (Homemade)", "糖浆", "自制", "—", "500ml", 0, 15, "2:1粗糖浆,Old Fashioned", "Syrup"),
+    mk("椰浆", "Coco López Cream of Coconut", "糖浆", "Coco López", "波多黎各", "425g", 0, 45, "Piña Colada 官方椰浆", "Cream/Foam"),
+    mk("安佳淡奶油", "Anchor Whipping Cream", "糖浆", "Anchor", "新西兰", "250ml", 0, 15, "White Russian/Alexander", "Cream/Foam"),
+    mk("蛋白(可用鹰嘴豆水替代)", "Egg White / Aquafaba", "糖浆", "—", "—", "—", 0, 2, "酸酒泡沫,素食可用鹰嘴豆水", "Cream/Foam"),
+    // ============ 软饮 Soft Drinks ============
+    mk("怡泉汤力水", "Schweppes Tonic Water", "软饮", "Schweppes", "英国", "330ml", 0, 6, "金汤力标配", "Tonic"),
+    mk("芬味树汤力水", "Fever-Tree Indian Tonic", "软饮", "Fever-Tree", "英国", "200ml", 0, 12, "精品汤力,天然奎宁", "Tonic"),
+    mk("芬味树姜汁啤酒", "Fever-Tree Ginger Beer", "软饮", "Fever-Tree", "英国", "200ml", 0, 12, "Moscow Mule/Dark'n'Stormy", "Ginger Beer"),
+    mk("怡泉苏打水", "Schweppes Soda Water", "软饮", "Schweppes", "英国", "330ml", 0, 5, "高球/菲兹稀释", "Soda"),
+    mk("圣佩黎洛气泡水", "S.Pellegrino Sparkling Water", "软饮", "S.Pellegrino", "意大利", "500ml", 0, 10, "餐配气泡水,也可调酒", "Sparkling Water"),
+    mk("怡泉干姜水", "Schweppes Ginger Ale", "软饮", "Schweppes", "英国", "330ml", 0, 6, "Highball/Horse's Neck", "Ginger Ale"),
+    mk("可口可乐", "Coca-Cola", "软饮", "Coca-Cola", "美国", "330ml", 0, 3.5, "自由古巴必备", "Cola"),
+    mk("新奇士西柚汁", "Sunkist Grapefruit Juice", "软饮", "Sunkist", "美国", "1L", 0, 15, "Paloma/Greyhound", "Juice"),
+    mk("蔓越莓汁", "Ocean Spray Cranberry Juice", "软饮", "Ocean Spray", "美国", "1L", 0, 25, "大都会/海风", "Juice"),
+    mk("菠萝汁", "Del Monte Pineapple Juice", "软饮", "Del Monte", "美国", "1L", 0, 20, "Piña Colada/提基", "Juice"),
+    mk("番茄汁", "Campbell's Tomato Juice", "软饮", "Campbell's", "美国", "1L", 0, 25, "血腥玛丽", "Juice"),
+    mk("青柠汁(鲜榨)", "Fresh Lime Juice", "软饮", "鲜榨", "—", "500ml", 0, 15, "酸酒类灵魂,现榨最佳", "Juice"),
+    mk("柠檬汁(鲜榨)", "Fresh Lemon Juice", "软饮", "鲜榨", "—", "500ml", 0, 12, "威士忌酸/边车", "Juice"),
+    mk("橙汁(鲜榨)", "Fresh Orange Juice", "软饮", "鲜榨", "—", "1L", 0, 20, "含羞草/螺丝刀", "Juice"),
     // ============ 其他 Others ============
     mk("君度黑标(君度与干邑)", "Cointreau Noir", "其他", "Cointreau", "法国", "700ml", 40, 300, "君度+人头马干邑"),
     mk("绿茶(冷泡)", "Cold Brew Green Tea", "其他", "自制", "—", "1L", 0, 5, "日式Highball变奏/茶酒"),

@@ -18,7 +18,18 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { filterPreps, useHomemadeStore } from "@/lib/homemade/store";
-import { HomemadePrep, PREP_TYPES, prepTypeLabel } from "@/lib/homemade/types";
+import {
+  HomemadePrep,
+  PREP_SECTIONS,
+  PREP_TYPES,
+  prepSectionLabel,
+  prepSectionOf,
+  prepTypeLabel,
+} from "@/lib/homemade/types";
+
+type ListRow =
+  | { kind: "header"; key: string; sectionKey: string; count: number }
+  | { kind: "item"; key: string; prep: HomemadePrep; isFirst: boolean; isLast: boolean };
 
 export default function HomemadeScreen() {
   const colors = useColors();
@@ -27,17 +38,47 @@ export default function HomemadeScreen() {
   const { t, lang } = useI18n();
   const { ready, preps, importSamples } = useHomemadeStore();
   const [query, setQuery] = useState("");
+  const [section, setSection] = useState<string>("");
   const [type, setType] = useState<string>("");
 
   const filtered = useMemo(
-    () => filterPreps(preps, query, type || undefined),
-    [preps, query, type],
+    () => filterPreps(preps, query, type || undefined, section || undefined),
+    [preps, query, type, section],
   );
 
+  // 分区筛选:仅显示库内实际存在的分区
+  const usedSections = useMemo(() => {
+    const present = new Set(preps.map((p) => prepSectionOf(p.type)));
+    return PREP_SECTIONS.filter((s) => present.has(s.key));
+  }, [preps]);
+
+  // 类型子筛选:选中分区后,显示该分区下库内存在的类型
   const usedTypes = useMemo(() => {
     const present = new Set(preps.map((p) => p.type));
-    return PREP_TYPES.filter((pt) => present.has(pt.key));
-  }, [preps]);
+    return PREP_TYPES.filter(
+      (pt) => present.has(pt.key) && (!section || pt.section === section),
+    );
+  }, [preps, section]);
+
+  // 按分区分组的行数据(分区标题 + 各分区内的 inset group)
+  const rows = useMemo<ListRow[]>(() => {
+    const out: ListRow[] = [];
+    for (const s of PREP_SECTIONS) {
+      const items = filtered.filter((p) => prepSectionOf(p.type) === s.key);
+      if (items.length === 0) continue;
+      out.push({ kind: "header", key: `h-${s.key}`, sectionKey: s.key, count: items.length });
+      items.forEach((p, idx) => {
+        out.push({
+          kind: "item",
+          key: p.id,
+          prep: p,
+          isFirst: idx === 0,
+          isLast: idx === items.length - 1,
+        });
+      });
+    }
+    return out;
+  }, [filtered]);
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
@@ -96,26 +137,69 @@ export default function HomemadeScreen() {
         </View>
       </View>
 
-      {/* Type filter */}
-      {usedTypes.length > 0 ? (
+      {/* Section filter */}
+      {usedSections.length > 0 ? (
         <View style={styles.chipRowWrap}>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.chipRow}
           >
-            <Pressable style={chipStyle(type === "")} onPress={() => setType("")}>
-              <Text style={chipTextStyle(type === "")}>{t("home.filter.all")}</Text>
+            <Pressable
+              style={chipStyle(section === "")}
+              onPress={() => {
+                setSection("");
+                setType("");
+              }}
+            >
+              <Text style={chipTextStyle(section === "")}>{t("home.filter.all")}</Text>
+            </Pressable>
+            {usedSections.map((s) => {
+              const active = section === s.key;
+              return (
+                <Pressable
+                  key={s.key}
+                  style={chipStyle(active)}
+                  onPress={() => {
+                    setSection(active ? "" : s.key);
+                    setType("");
+                  }}
+                >
+                  <Text style={chipTextStyle(active)}>{lang === "en" ? s.en : s.zh}</Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      ) : null}
+
+      {/* Type sub-filter within the selected section */}
+      {section && usedTypes.length > 1 ? (
+        <View style={styles.subChipRowWrap}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipRow}
+          >
+            <Pressable
+              style={subChipStyle(type === "", colors)}
+              onPress={() => setType("")}
+            >
+              <Text style={subChipTextStyle(type === "", colors)}>
+                {t("hm.type.all")}
+              </Text>
             </Pressable>
             {usedTypes.map((pt) => {
               const active = type === pt.key;
               return (
                 <Pressable
                   key={pt.key}
-                  style={chipStyle(active)}
+                  style={subChipStyle(active, colors)}
                   onPress={() => setType(active ? "" : pt.key)}
                 >
-                  <Text style={chipTextStyle(active)}>{lang === "en" ? pt.en : pt.zh}</Text>
+                  <Text style={subChipTextStyle(active, colors)}>
+                    {lang === "en" ? pt.en : pt.zh}
+                  </Text>
                 </Pressable>
               );
             })}
@@ -150,20 +234,27 @@ export default function HomemadeScreen() {
         </View>
       ) : (
         <FlatList
-          data={filtered}
-          keyExtractor={(item) => item.id}
+          data={rows}
+          keyExtractor={(item) => item.key}
           contentContainerStyle={{
             paddingHorizontal: 20,
             paddingTop: 4,
             paddingBottom: 90 + insets.bottom,
           }}
-          renderItem={({ item, index }) => (
-            <PrepRow
-              prep={item}
-              isFirst={index === 0}
-              isLast={index === filtered.length - 1}
-            />
-          )}
+          renderItem={({ item }) =>
+            item.kind === "header" ? (
+              <View style={styles.sectionHeader}>
+                <Text
+                  className="text-[13px] font-medium text-muted"
+                  style={{ textTransform: "uppercase", letterSpacing: 0.4, lineHeight: 18 }}
+                >
+                  {prepSectionLabel(item.sectionKey, lang)} · {item.count}
+                </Text>
+              </View>
+            ) : (
+              <PrepRow prep={item.prep} isFirst={item.isFirst} isLast={item.isLast} />
+            )
+          }
         />
       )}
 
@@ -247,9 +338,31 @@ function PrepRow({
   );
 }
 
+const subChipStyle = (
+  active: boolean,
+  colors: { primary: string; border: string },
+) => [
+  styles.subChip,
+  {
+    backgroundColor: active ? colors.primary + "1A" : "transparent",
+    borderColor: active ? colors.primary : colors.border,
+  },
+];
+
+const subChipTextStyle = (
+  active: boolean,
+  colors: { primary: string; muted: string },
+) => [
+  styles.subChipText,
+  { color: active ? colors.primary : colors.muted },
+];
+
 const styles = StyleSheet.create({
   chipRowWrap: {
     marginTop: 10,
+    marginBottom: 6,
+  },
+  subChipRowWrap: {
     marginBottom: 6,
   },
   chipRow: {
@@ -269,6 +382,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
     lineHeight: 18,
+  },
+  subChip: {
+    paddingHorizontal: 12,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  subChipText: {
+    fontSize: 12,
+    fontWeight: "500",
+    lineHeight: 16,
+  },
+  sectionHeader: {
+    paddingHorizontal: 16,
+    paddingTop: 18,
+    paddingBottom: 7,
   },
   badge: {
     paddingHorizontal: 8,

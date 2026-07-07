@@ -18,7 +18,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { filterBottles, useBottleStore } from "@/lib/bottles/store";
-import { BOTTLE_CATEGORIES, BOTTLE_CATEGORY_EN, Bottle } from "@/lib/bottles/types";
+import { BOTTLE_CATEGORIES, BOTTLE_CATEGORY_EN, BOTTLE_STYLES, Bottle } from "@/lib/bottles/types";
 
 export default function BottlesScreen() {
   const colors = useColors();
@@ -28,11 +28,23 @@ export default function BottlesScreen() {
   const { ready, bottles } = useBottleStore();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("");
+  const [style, setStyle] = useState<string>("");
 
   const filtered = useMemo(
-    () => filterBottles(bottles, query, category || undefined),
-    [bottles, query, category],
+    () => filterBottles(bottles, query, category || undefined, style || undefined),
+    [bottles, query, category, style],
   );
+
+  // 当前主分类下实际出现过的 style(预设顺序在前,库内自定义 style 追加在后)
+  const styleOptions = useMemo(() => {
+    if (!category) return [] as string[];
+    const present = new Set(
+      bottles.filter((b) => b.category === category && b.style).map((b) => b.style),
+    );
+    const preset = (BOTTLE_STYLES[category] ?? []).filter((s) => present.has(s));
+    const extras = [...present].filter((s) => !preset.includes(s)).sort();
+    return [...preset, ...extras];
+  }, [bottles, category]);
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
@@ -93,25 +105,58 @@ export default function BottlesScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.chipRow}
         >
-          <Pressable style={chipStyle(category === "")} onPress={() => setCategory("")}>
-            <Text style={chipTextStyle(category === "")}>{t("home.filter.all")}</Text>
-          </Pressable>
-          {BOTTLE_CATEGORIES.map((cat) => {
-            const active = category === cat;
-            return (
-              <Pressable
-                key={cat}
-                style={chipStyle(active)}
-                onPress={() => setCategory(active ? "" : cat)}
-              >
-                <Text style={chipTextStyle(active)}>
-                  {lang === "en" ? BOTTLE_CATEGORY_EN[cat] ?? cat : cat}
-                </Text>
-              </Pressable>
-            );
-          })}
+            <Pressable style={chipStyle(category === "")} onPress={() => setCategory("")}>
+              {/* 切换主分类时清空子分类 */}
+              <Text style={chipTextStyle(category === "")}>{t("home.filter.all")}</Text>
+            </Pressable>
+            {BOTTLE_CATEGORIES.map((cat) => {
+              const active = category === cat;
+              return (
+                <Pressable
+                  key={cat}
+                  style={chipStyle(active)}
+                  onPress={() => {
+                    setCategory(active ? "" : cat);
+                    setStyle("");
+                  }}
+                >
+                  <Text style={chipTextStyle(active)}>
+                    {lang === "en" ? BOTTLE_CATEGORY_EN[cat] ?? cat : cat}
+                  </Text>
+                </Pressable>
+              );
+            })}
         </ScrollView>
       </View>
+
+      {/* Style sub-category filter (visible when a main category is selected) */}
+      {category && styleOptions.length > 0 ? (
+        <View style={styles.subChipRowWrap}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipRow}
+          >
+            <Pressable style={subChipStyle(style === "", colors)} onPress={() => setStyle("")}>
+              <Text style={subChipTextStyle(style === "", colors)}>
+                {t("bottles.style.all")}
+              </Text>
+            </Pressable>
+            {styleOptions.map((s) => {
+              const active = style === s;
+              return (
+                <Pressable
+                  key={s}
+                  style={subChipStyle(active, colors)}
+                  onPress={() => setStyle(active ? "" : s)}
+                >
+                  <Text style={subChipTextStyle(active, colors)}>{s}</Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      ) : null}
 
       {ready && filtered.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8" style={{ marginTop: -40 }}>
@@ -250,9 +295,31 @@ function BottleCard({
   );
 }
 
+const subChipStyle = (
+  active: boolean,
+  colors: { primary: string; surface: string; border: string },
+) => [
+  styles.subChip,
+  {
+    backgroundColor: active ? colors.primary + "1A" : "transparent",
+    borderColor: active ? colors.primary : colors.border,
+  },
+];
+
+const subChipTextStyle = (
+  active: boolean,
+  colors: { primary: string; muted: string },
+) => [
+  styles.subChipText,
+  { color: active ? colors.primary : colors.muted },
+];
+
 const styles = StyleSheet.create({
   chipRowWrap: {
     marginTop: 10,
+    marginBottom: 6,
+  },
+  subChipRowWrap: {
     marginBottom: 6,
   },
   chipRow: {
@@ -272,6 +339,19 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
     lineHeight: 18,
+  },
+  subChip: {
+    paddingHorizontal: 12,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  subChipText: {
+    fontSize: 12,
+    fontWeight: "500",
+    lineHeight: 16,
   },
   badge: {
     paddingHorizontal: 8,

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { filterBottles } from "../lib/bottles/store";
 import { buildDefaultBottles } from "../lib/bottles/seed";
-import { BOTTLE_CATEGORIES, normalizeBottle } from "../lib/bottles/types";
+import { BOTTLE_CATEGORIES, migrateBottleCategory, normalizeBottle } from "../lib/bottles/types";
 import {
   estimateRecipeCost,
   formatAmountAsMl,
@@ -17,7 +17,13 @@ import { parseRecipeText, splitIngredientLine, looksLikeIngredientLine } from ".
 import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib/recipes/types";
 import { buildSamplePreps } from "../lib/homemade/seed";
 import { filterPreps } from "../lib/homemade/store";
-import { PREP_TYPES, prepTypeLabel } from "../lib/homemade/types";
+import {
+  PREP_SECTIONS,
+  PREP_TYPES,
+  prepSectionLabel,
+  prepSectionOf,
+  prepTypeLabel,
+} from "../lib/homemade/types";
 
 describe("homemade preps", () => {
   it("builds sample preps with required fields and unique ids", () => {
@@ -55,6 +61,34 @@ describe("homemade preps", () => {
     expect(prepTypeLabel("syrup", "zh")).toBe("糖浆");
     expect(prepTypeLabel("syrup", "en")).toBe("Syrup");
     expect(prepTypeLabel("unknown-key", "en")).toBe("unknown-key");
+  });
+
+  it("groups prep types into process sections", () => {
+    const sectionKeys = new Set(PREP_SECTIONS.map((s) => s.key));
+    for (const pt of PREP_TYPES) {
+      expect(sectionKeys.has(pt.section)).toBe(true);
+    }
+    expect(prepSectionOf("syrup")).toBe("homemade-syrup");
+    expect(prepSectionOf("liqueur")).toBe("homemade-liqueur");
+    expect(prepSectionOf("infusion")).toBe("flavored-liquid");
+    expect(prepSectionOf("fermented")).toBe("homemade-spirit");
+    expect(prepSectionOf("unknown")).toBe("misc");
+    expect(prepSectionLabel("homemade-liqueur", "zh")).toBe("自制利口酒");
+    expect(prepSectionLabel("homemade-liqueur", "en")).toBe("Homemade Liqueurs");
+  });
+
+  it("filters preps by section and samples cover new sections", () => {
+    const preps = buildSamplePreps();
+    const sections = new Set(preps.map((p) => prepSectionOf(p.type)));
+    for (const key of ["homemade-syrup", "homemade-liqueur", "flavored-liquid", "homemade-spirit"]) {
+      expect(sections.has(key)).toBe(true);
+    }
+    const liqueurs = filterPreps(preps, "", undefined, "homemade-liqueur");
+    expect(liqueurs.length).toBeGreaterThanOrEqual(2);
+    expect(liqueurs.every((p) => prepSectionOf(p.type) === "homemade-liqueur")).toBe(true);
+    // section + type combined
+    const syrupsOnly = filterPreps(preps, "", "syrup", "homemade-syrup");
+    expect(syrupsOnly.every((p) => p.type === "syrup")).toBe(true);
   });
 });
 
@@ -257,7 +291,7 @@ describe("bottle database", () => {
     for (const c of [
       "金酒", "朗姆", "伏特加", "威士忌", "龙舌兰", "白兰地",
       "利口酒", "苦精", "味美思", "开胃酒", "起泡酒", "葡萄酒",
-      "清酒烧酒", "中式白酒", "软饮糖浆",
+      "清酒烧酒", "中式白酒", "糖浆", "软饮",
     ]) {
       expect(cats.has(c)).toBe(true);
     }
@@ -270,6 +304,35 @@ describe("bottle database", () => {
       expect(b.nameZh.length).toBeGreaterThan(0);
       expect(b.nameEn.length).toBeGreaterThan(0);
     }
+  });
+
+  it("migrates legacy 软饮糖浆 category into 糖浆 or 软饮", () => {
+    expect(
+      migrateBottleCategory({ category: "软饮糖浆", style: "Syrup", nameEn: "Monin Grenadine", nameZh: "莫林红石榴糖浆" }),
+    ).toBe("糖浆");
+    expect(
+      migrateBottleCategory({ category: "软饮糖浆", style: "Tonic", nameEn: "Schweppes Tonic Water", nameZh: "怡泉汤力水" }),
+    ).toBe("软饮");
+    expect(
+      migrateBottleCategory({ category: "软饮糖浆", style: "", nameEn: "Anchor Whipping Cream", nameZh: "安佳淡奶油" }),
+    ).toBe("糖浆");
+    expect(
+      migrateBottleCategory({ category: "软饮糖浆", style: "", nameEn: "Coca-Cola", nameZh: "可口可乐" }),
+    ).toBe("软饮");
+    // non-legacy categories are untouched
+    expect(
+      migrateBottleCategory({ category: "金酒", style: "London Dry", nameEn: "Beefeater", nameZh: "必富达金酒" }),
+    ).toBe("金酒");
+  });
+
+  it("filters bottles by style sub-category", () => {
+    const bottles = buildDefaultBottles();
+    const londonDry = filterBottles(bottles, "", "金酒", "London Dry");
+    expect(londonDry.length).toBeGreaterThanOrEqual(3);
+    expect(londonDry.every((b) => b.category === "金酒" && b.style === "London Dry")).toBe(true);
+    const bourbons = filterBottles(bottles, "", "威士忌", "Bourbon");
+    expect(bourbons.length).toBeGreaterThanOrEqual(1);
+    expect(bourbons.every((b) => b.style === "Bourbon")).toBe(true);
   });
 });
 

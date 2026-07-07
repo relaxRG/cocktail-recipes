@@ -9,7 +9,7 @@ import React, {
 } from "react";
 
 import { buildSamplePreps } from "./seed";
-import { HomemadePrep, normalizePrep } from "./types";
+import { HomemadePrep, normalizePrep, prepSectionOf } from "./types";
 
 const PREPS_KEY = "homemade.preps.v1";
 const PREPS_SEEDED_KEY = "homemade.seeded.v1";
@@ -117,10 +117,12 @@ export function filterPreps(
   preps: HomemadePrep[],
   query: string,
   type?: string,
+  section?: string,
 ): HomemadePrep[] {
   const q = query.trim().toLowerCase();
   return preps.filter((p) => {
     if (type && p.type !== type) return false;
+    if (section && prepSectionOf(p.type) !== section) return false;
     if (!q) return true;
     return (
       p.name.toLowerCase().includes(q) ||
@@ -131,4 +133,3 @@ export function filterPreps(
     );
   });
 }
-

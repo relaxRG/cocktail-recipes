@@ -12,7 +12,7 @@ import React, {
 import { genId } from "../recipes/types";
 
 import { buildDefaultBottles } from "./seed";
-import { Bottle, normalizeBottle } from "./types";
+import { Bottle, migrateBottleCategory, normalizeBottle } from "./types";
 
 const BOTTLES_KEY = "cocktail.bottles";
 const BOTTLES_SEEDED_KEY = "cocktail.bottles.seeded";
@@ -28,7 +28,7 @@ interface BottleStore {
   getBottle: (id: string | undefined) => Bottle | undefined;
 }
 
-const SEED_VERSION = "3";
+const SEED_VERSION = "4";
 
 const BottleContext = createContext<BottleStore | null>(null);
 
@@ -61,6 +61,19 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
             return b;
           });
           if (changed) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+        }
+        // v4 迁移:旧分类"软饮糖浆"拆分为"糖浆"与"软饮"
+        {
+          let migrated = false;
+          list = list.map((b) => {
+            const next = migrateBottleCategory(b);
+            if (next !== b.category) {
+              migrated = true;
+              return { ...b, category: next };
+            }
+            return b;
+          });
+          if (migrated) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
         }
         if (!seeded && list.length === 0) {
           list = buildDefaultBottles();
@@ -168,15 +181,17 @@ export function useBottleStore(): BottleStore {
   return ctx;
 }
 
-/** 酒款搜索过滤:支持中英文名、品牌、分类、产地模糊匹配 + 分类筛选 */
+/** 酒款搜索过滤:支持中英文名、品牌、分类、产地模糊匹配 + 分类/风格筛选 */
 export function filterBottles(
   bottles: Bottle[],
   query: string,
   category?: string,
+  style?: string,
 ): Bottle[] {
   const q = query.trim().toLowerCase();
   return bottles.filter((b) => {
     if (category && b.category !== category) return false;
+    if (style && b.style !== style) return false;
     if (!q) return true;
     return (
       b.nameZh.toLowerCase().includes(q) ||

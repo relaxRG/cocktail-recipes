@@ -17,7 +17,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { useHomemadeStore } from "@/lib/homemade/store";
-import { PREP_TYPES } from "@/lib/homemade/types";
+import { PREP_SECTIONS, PREP_TYPES } from "@/lib/homemade/types";
 
 export default function HomemadeFormScreen() {
   const colors = useColors();
@@ -134,33 +134,47 @@ export default function HomemadeFormScreen() {
           />
 
           {fieldLabel(t("hmform.type"))}
-          <View style={styles.chipWrap}>
-            {PREP_TYPES.map((pt) => {
-              const active = type === pt.key;
-              return (
-                <Pressable
-                  key={pt.key}
-                  onPress={() => setType(pt.key)}
-                  style={[
-                    styles.chip,
-                    {
-                      backgroundColor: active ? colors.primary : colors.surface,
-                      borderColor: active ? colors.primary : colors.border,
-                    },
-                  ]}
+          {PREP_SECTIONS.map((sec) => {
+            const types = PREP_TYPES.filter((pt) => pt.section === sec.key);
+            if (types.length === 0) return null;
+            return (
+              <View key={sec.key} style={{ marginBottom: 6 }}>
+                <Text
+                  className="text-xs text-muted mb-1.5"
+                  style={{ lineHeight: 16 }}
                 >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      { color: active ? "#FFFFFF" : colors.foreground },
-                    ]}
-                  >
-                    {lang === "en" ? pt.en : pt.zh}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
+                  {lang === "en" ? sec.en : sec.zh}
+                </Text>
+                <View style={styles.chipWrap}>
+                  {types.map((pt) => {
+                    const active = type === pt.key;
+                    return (
+                      <Pressable
+                        key={pt.key}
+                        onPress={() => setType(pt.key)}
+                        style={[
+                          styles.chip,
+                          {
+                            backgroundColor: active ? colors.primary : colors.surface,
+                            borderColor: active ? colors.primary : colors.border,
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.chipText,
+                            { color: active ? "#FFFFFF" : colors.foreground },
+                          ]}
+                        >
+                          {lang === "en" ? pt.en : pt.zh}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+            );
+          })}
 
           {fieldLabel(t("hmform.ingredients"))}
           <TextInput
@@ -267,4 +281,3 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 });
-
