@@ -451,6 +451,7 @@ const dict = {
   "fs.dim.section": { zh: "分区", en: "Section" },
   "fs.dim.type": { zh: "类型", en: "Type" },
   "fs.dim.technique": { zh: "工艺", en: "Technique" },
+  "fs.dim.baseSpirit": { zh: "基酒", en: "Base Spirit" },
   "sort.default": { zh: "默认顺序", en: "Default" },
   "sort.name": { zh: "名称 A-Z", en: "Name A-Z" },
   "sort.abvAsc": { zh: "酒精度 低→高", en: "ABV Low → High" },

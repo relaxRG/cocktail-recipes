@@ -37,6 +37,7 @@ import { filterPreps, useHomemadeStore } from "@/lib/homemade/store";
 import { useBottleStore } from "@/lib/bottles/store";
 import { estimatePrepCost } from "@/lib/homemade/cost";
 import { primaryTechnique, techniqueLabel, TECHNIQUES, detectPrepTechniques } from "@/lib/homemade/technique";
+import { BASE_SPIRITS, detectPrepBaseSpirits } from "@/lib/homemade/base-spirit";
 import { groupPrepsByName } from "@/lib/recipes/grouping";
 import { sortPreps, PREP_SORTS, PrepSort } from "@/lib/recipes/sort";
 import { Bottle } from "@/lib/bottles/types";
@@ -94,6 +95,7 @@ export default function HomemadeScreen() {
   // Filter 面板多选筛选状态(与快捷筛选相互独立)
   const [selTypes, setSelTypes] = useState<string[]>([]);
   const [selTechniques, setSelTechniques] = useState<string[]>([]);
+  const [selBaseSpirits, setSelBaseSpirits] = useState<string[]>([]);
   const [sort, setSort] = useState<PrepSort>("default");
   const [sheetOpen, setSheetOpen] = useState(false);
   /** 已展开的同名组 key 集合 */
@@ -101,7 +103,23 @@ export default function HomemadeScreen() {
 
   // 快捷筛选解析:选中分区与其下细化的类型集合
   const quickSections = Object.keys(quickSel);
-  const quickTypes = useMemo(() => [...new Set(Object.values(quickSel).flat())], [quickSel]);
+  // 虚拟父分类 key(非分区):基酒/工艺,单独解析
+  const VIRTUAL_PARENTS = ["__base", "__tech"];
+  const quickBaseSel = quickSel["__base"] ?? [];
+  const quickTechSel = quickSel["__tech"] ?? [];
+  const realQuickSections = quickSections.filter((k) => !VIRTUAL_PARENTS.includes(k));
+  const quickTypes = useMemo(
+    () =>
+      [
+        ...new Set(
+          Object.entries(quickSel)
+            .filter(([k]) => !VIRTUAL_PARENTS.includes(k))
+            .flatMap(([, v]) => v),
+        ),
+      ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [quickSel],
+  );
 
   // 当前分组内的条目(智能归组:显式 abvGroup 优先,否则按类型→分区推断)
   const groupPreps = useMemo(
@@ -113,10 +131,27 @@ export default function HomemadeScreen() {
     () => {
       let base = filterPreps(groupPreps, query, undefined, undefined, types);
       // 快捷筛选:分区(任一命中)+ 类型细化(与面板筛选取交集)
-      if (quickSections.length > 0) {
-        base = base.filter((p) => quickSections.includes(prepSectionOfIn(types, p.type)));
+      if (realQuickSections.length > 0) {
+        base = base.filter((p) => realQuickSections.includes(prepSectionOfIn(types, p.type)));
       }
       if (quickTypes.length > 0) base = base.filter((p) => quickTypes.includes(p.type));
+      // 快捷筛选:基酒/工艺虚拟分类(选中父类无子项=有该维度识别结果即可)
+      if (quickBaseSel.length > 0) {
+        base = base.filter((p) => {
+          const ks = detectPrepBaseSpirits(p);
+          return quickBaseSel.some((k) => ks.includes(k));
+        });
+      } else if (quickSections.includes("__base")) {
+        base = base.filter((p) => detectPrepBaseSpirits(p).length > 0);
+      }
+      if (quickTechSel.length > 0) {
+        base = base.filter((p) => {
+          const ks = detectPrepTechniques(p);
+          return quickTechSel.some((k) => ks.includes(k));
+        });
+      } else if (quickSections.includes("__tech")) {
+        base = base.filter((p) => detectPrepTechniques(p).length > 0);
+      }
       if (selTypes.length > 0) base = base.filter((p) => selTypes.includes(p.type));
       if (selTechniques.length > 0) {
         base = base.filter((p) => {
@@ -124,9 +159,16 @@ export default function HomemadeScreen() {
           return selTechniques.some((k) => tks.includes(k));
         });
       }
+      if (selBaseSpirits.length > 0) {
+        base = base.filter((p) => {
+          const ks = detectPrepBaseSpirits(p);
+          return selBaseSpirits.some((k) => ks.includes(k));
+        });
+      }
       return base;
     },
-    [groupPreps, query, selTypes, quickSections, quickTypes, types, selTechniques],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [groupPreps, query, selTypes, quickSel, quickTypes, types, selTechniques, selBaseSpirits],
   );
 
   /** 成本函数(排序用):每 30ml 成本,退化为批次成本 */
@@ -166,10 +208,29 @@ export default function HomemadeScreen() {
     return types.filter((pt) => present.has(pt.key));
   }, [groupPreps, types]);
 
+  // 工艺筛选:仅显示当前分组内实际识别出的工艺(按 TECHNIQUES 声明顺序)
+  const usedTechniques = useMemo(() => {
+    const present = new Set<string>();
+    for (const p of groupPreps) {
+      for (const k of detectPrepTechniques(p)) present.add(k);
+    }
+    return TECHNIQUES.filter((tk) => present.has(tk.key));
+  }, [groupPreps]);
+
+  // 基酒筛选:仅含酒精分组显示,且仅列出库内实际识别出的基酒
+  const usedBaseSpirits = useMemo(() => {
+    if (group !== "alcoholic") return [];
+    const present = new Set<string>();
+    for (const p of groupPreps) {
+      for (const k of detectPrepBaseSpirits(p)) present.add(k);
+    }
+    return BASE_SPIRITS.filter((s) => present.has(s.key));
+  }, [groupPreps, group]);
+
   /** 快捷筛选大分类:分区;子分类 = 该分区下库内存在的类型 */
   const quickParents: QuickParentOption[] = useMemo(
-    () =>
-      usedSections.map((s) => {
+    () => {
+      const sectionParents = usedSections.map((s) => {
         const present = new Set(groupPreps.map((p) => p.type));
         const children = types
           .filter((pt) => pt.section === s.key && present.has(pt.key))
@@ -179,18 +240,34 @@ export default function HomemadeScreen() {
           label: lang === "en" ? s.en : s.zh,
           children,
         };
-      }),
-    [usedSections, groupPreps, types, lang],
+      });
+      if (group !== "alcoholic") return sectionParents;
+      // 含酒精分组:前置「基酒」「工艺」两个虚拟父分类
+      const virtualParents: QuickParentOption[] = [];
+      if (usedBaseSpirits.length > 0) {
+        virtualParents.push({
+          value: "__base",
+          label: t("fs.dim.baseSpirit"),
+          children: usedBaseSpirits.map((s) => ({
+            value: s.key,
+            label: lang === "en" ? s.en : s.zh,
+          })),
+        });
+      }
+      if (usedTechniques.length > 0) {
+        virtualParents.push({
+          value: "__tech",
+          label: t("fs.dim.technique"),
+          children: usedTechniques.map((tk) => ({
+            value: tk.key,
+            label: lang === "en" ? tk.en : tk.zh,
+          })),
+        });
+      }
+      return [...virtualParents, ...sectionParents];
+    },
+    [usedSections, groupPreps, types, lang, group, usedBaseSpirits, usedTechniques, t],
   );
-
-  // 工艺筛选:仅显示当前分组内实际识别出的工艺(按 TECHNIQUES 声明顺序)
-  const usedTechniques = useMemo(() => {
-    const present = new Set<string>();
-    for (const p of groupPreps) {
-      for (const k of detectPrepTechniques(p)) present.add(k);
-    }
-    return TECHNIQUES.filter((tk) => present.has(tk.key));
-  }, [groupPreps]);
 
   /** 筛选面板维度定义:类型 + 工艺(分区保留在快捷 chip 行) */
   const dimensions: FilterDimension[] = [
@@ -205,6 +282,23 @@ export default function HomemadeScreen() {
       onToggle: (v) =>
         setSelTypes((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
     },
+    ...(group === "alcoholic" && usedBaseSpirits.length > 0
+      ? [
+          {
+            key: "baseSpirit",
+            title: t("fs.dim.baseSpirit"),
+            options: usedBaseSpirits.map((s) => ({
+              value: s.key,
+              label: lang === "en" ? s.en : s.zh,
+            })),
+            selected: selBaseSpirits,
+            onToggle: (v: string) =>
+              setSelBaseSpirits((prev) =>
+                prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v],
+              ),
+          } as FilterDimension,
+        ]
+      : []),
     {
       key: "technique",
       title: t("fs.dim.technique"),
@@ -218,11 +312,12 @@ export default function HomemadeScreen() {
     },
   ];
 
-  const activeFilterCount = selTypes.length + selTechniques.length;
+  const activeFilterCount = selTypes.length + selTechniques.length + selBaseSpirits.length;
 
   const clearAll = () => {
     setSelTypes([]);
     setSelTechniques([]);
+    setSelBaseSpirits([]);
     setSort("default");
   };
 
