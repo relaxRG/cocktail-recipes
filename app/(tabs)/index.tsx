@@ -16,14 +16,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RecipeCard } from "@/components/recipe-card";
 import { RecipeGroupCard } from "@/components/recipe-group-card";
 import { ScreenContainer } from "@/components/screen-container";
+import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { filterRecipes } from "@/lib/recipes/search";
 import { groupRecipesByName } from "@/lib/recipes/grouping";
+import { sortRecipes, RECIPE_SORTS, RecipeSort } from "@/lib/recipes/sort";
+import { estimateRecipeCost } from "@/lib/bottles/cost";
+import { estimateHomemadeIngredientCost } from "@/lib/homemade/cost";
+import { useBottleStore } from "@/lib/bottles/store";
+import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
-import { CODEX_FAMILIES } from "@/lib/recipes/types";
+import { CODEX_FAMILIES, Recipe, STRENGTH_LABELS, STRENGTHS } from "@/lib/recipes/types";
 
 type Filter = { type: "all" } | { type: "favorites" } | { type: "category"; id: string };
 
@@ -32,25 +38,133 @@ export default function RecipesScreen() {
   const insets = useSafeAreaInsets();
   const { t, lang, setLang } = useI18n();
   const { ready, recipes, categories, importSamples, tagsOf } = useRecipeStore();
+  const { bottles } = useBottleStore();
+  const { preps } = useHomemadeStore();
   const flavorTags = tagsOf("flavor");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>({ type: "all" });
-  const [codexFilter, setCodexFilter] = useState<string>("");
-  const [flavorFilter, setFlavorFilter] = useState<string>("");
+  // 多选筛选状态
+  const [selCategories, setSelCategories] = useState<string[]>([]);
+  const [selCodex, setSelCodex] = useState<string[]>([]);
+  const [selFlavors, setSelFlavors] = useState<string[]>([]);
+  const [selStrengths, setSelStrengths] = useState<string[]>([]);
+  const [sort, setSort] = useState<RecipeSort>("default");
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const filtered = useMemo(
     () =>
       filterRecipes(recipes, query, {
-        categoryId: filter.type === "category" ? filter.id : undefined,
         favoritesOnly: filter.type === "favorites",
-        codexFamily: codexFilter || undefined,
-        flavor: flavorFilter || undefined,
+        categoryIds:
+          filter.type === "category" ? [filter.id] : selCategories.length > 0 ? selCategories : undefined,
+        codexFamilies: selCodex.length > 0 ? selCodex : undefined,
+        flavors: selFlavors.length > 0 ? selFlavors : undefined,
+        strengths: selStrengths.length > 0 ? selStrengths : undefined,
       }),
-    [recipes, query, filter, codexFilter, flavorFilter],
+    [recipes, query, filter, selCategories, selCodex, selFlavors, selStrengths],
+  );
+
+  /** 成本函数(排序用),与卡片口径一致 */
+  const costOf = useMemo(() => {
+    const cache = new Map<string, number | null>();
+    return (r: Recipe): number | null => {
+      if (cache.has(r.id)) return cache.get(r.id)!;
+      let v: number | null = null;
+      if (r.ingredients.length > 0) {
+        const base = estimateRecipeCost(r.ingredients, bottles);
+        let total = base.total;
+        let count = base.estimatedCount;
+        for (const item of base.items) {
+          if (item.cost === null && item.reason === "no_bottle") {
+            const hm = estimateHomemadeIngredientCost(
+              item.ingredient.name,
+              item.ingredient.amount,
+              preps,
+              bottles,
+            );
+            if (hm) {
+              total += hm.cost;
+              count += 1;
+            }
+          }
+        }
+        v = count > 0 ? total : null;
+      }
+      cache.set(r.id, v);
+      return v;
+    };
+  }, [bottles, preps]);
+
+  /** 排序后再同名折叠 */
+  const sorted = useMemo(
+    () =>
+      sortRecipes(filtered, sort, {
+        costOf,
+        nameOf: (r) => displayNames(r.nameEn, r.name, lang).primary,
+      }),
+    [filtered, sort, costOf, lang],
   );
 
   /** 同名折叠:同一鸡尾酒的多个版本折叠为一组 */
-  const grouped = useMemo(() => groupRecipesByName(filtered), [filtered]);
+  const grouped = useMemo(() => groupRecipesByName(sorted), [sorted]);
+
+  /** 筛选面板维度定义 */
+  const dimensions: FilterDimension[] = [
+    {
+      key: "category",
+      title: t("fs.dim.category"),
+      options: categories.map((c) => ({
+        value: c.id,
+        label: displayNames(c.nameEn ?? "", c.name, lang).primary,
+        color: c.color,
+      })),
+      selected: selCategories,
+      onToggle: (v) =>
+        setSelCategories((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
+    },
+    {
+      key: "strength",
+      title: t("fs.dim.strength"),
+      options: STRENGTHS.map((s) => ({
+        value: s,
+        label: lang === "en" ? t(`strength.${s}` as "strength.light") : STRENGTH_LABELS[s],
+      })),
+      selected: selStrengths,
+      onToggle: (v) =>
+        setSelStrengths((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
+    },
+    {
+      key: "codex",
+      title: t("fs.dim.codex"),
+      options: CODEX_FAMILIES.map((f) => ({ value: f, label: f.split(" ")[0] })),
+      selected: selCodex,
+      onToggle: (v) =>
+        setSelCodex((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
+    },
+    {
+      key: "flavor",
+      title: t("fs.dim.flavor"),
+      options: flavorTags.map((tag) => ({
+        value: tag.name,
+        label: displayNames(tag.nameEn ?? "", tag.name, lang).primary,
+        color: tag.color,
+      })),
+      selected: selFlavors,
+      onToggle: (v) =>
+        setSelFlavors((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
+    },
+  ];
+
+  const activeFilterCount =
+    selCategories.length + selCodex.length + selFlavors.length + selStrengths.length;
+
+  const clearAll = () => {
+    setSelCategories([]);
+    setSelCodex([]);
+    setSelFlavors([]);
+    setSelStrengths([]);
+    setSort("default");
+  };
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
@@ -126,6 +240,28 @@ export default function RecipesScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.chipRow}
         >
+          {/* 筛选与排序入口 */}
+          <Pressable
+            style={[
+              styles.chip,
+              styles.filterBtn,
+              {
+                backgroundColor: activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.surface,
+                borderColor: activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.border,
+              },
+            ]}
+            onPress={() => setSheetOpen(true)}
+          >
+            <IconSymbol
+              name="slider.horizontal.3"
+              size={14}
+              color={activeFilterCount > 0 || sort !== "default" ? "#FFFFFF" : colors.muted}
+            />
+            <Text style={chipTextStyle(activeFilterCount > 0 || sort !== "default")}>
+              {t("fs.filterBtn")}
+              {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
+            </Text>
+          </Pressable>
           <Pressable style={chipStyle(filter.type === "all")} onPress={() => setFilter({ type: "all" })}>
             <Text style={chipTextStyle(filter.type === "all")}>{t("home.filter.all")}</Text>
           </Pressable>
@@ -136,7 +272,8 @@ export default function RecipesScreen() {
             <Text style={chipTextStyle(filter.type === "favorites")}>{t("home.filter.favorites")}</Text>
           </Pressable>
           {categories.map((cat) => {
-            const active = filter.type === "category" && filter.id === cat.id;
+            const active =
+              (filter.type === "category" && filter.id === cat.id) || selCategories.includes(cat.id);
             return (
               <Pressable
                 key={cat.id}
@@ -144,7 +281,13 @@ export default function RecipesScreen() {
                   chipStyle(active),
                   active && { backgroundColor: cat.color, borderColor: cat.color },
                 ]}
-                onPress={() => setFilter({ type: "category", id: cat.id })}
+                onPress={() => {
+                  // chip 快捷单选与面板多选联动:点击切换该分类的选中状态
+                  setFilter({ type: "all" });
+                  setSelCategories((prev) =>
+                    prev.includes(cat.id) ? prev.filter((x) => x !== cat.id) : [...prev, cat.id],
+                  );
+                }}
               >
                 <Text style={chipTextStyle(active)}>
                   {displayNames(cat.nameEn ?? "", cat.name, lang).primary}
@@ -155,45 +298,17 @@ export default function RecipesScreen() {
         </ScrollView>
       </View>
 
-      {/* Codex + flavor secondary filter row */}
-      <View style={styles.chipRowWrap}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipRow}
-        >
-          {CODEX_FAMILIES.map((fam) => {
-            const active = codexFilter === fam;
-            return (
-              <Pressable
-                key={fam}
-                style={chipStyle(active)}
-                onPress={() => setCodexFilter(active ? "" : fam)}
-              >
-                <Text style={chipTextStyle(active)}>{fam.split(" ")[0]}</Text>
-              </Pressable>
-            );
-          })}
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          {flavorTags.map((tag) => {
-            const active = flavorFilter === tag.name;
-            return (
-              <Pressable
-                key={tag.id}
-                style={[
-                  chipStyle(active),
-                  active && { backgroundColor: tag.color, borderColor: tag.color },
-                ]}
-                onPress={() => setFlavorFilter(active ? "" : tag.name)}
-              >
-                <Text style={chipTextStyle(active)}>
-                  {displayNames(tag.nameEn ?? "", tag.name, lang).primary}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
+      {/* 筛选与排序面板 */}
+      <FilterSortSheet
+        visible={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        dimensions={dimensions}
+        sortOptions={RECIPE_SORTS.map((s) => ({ value: s, label: t(`sort.${s}`) }))}
+        sortValue={sort}
+        onSortChange={(v) => setSort(v as RecipeSort)}
+        onClearAll={clearAll}
+        resultCount={filtered.length}
+      />
 
       {/* Recipe list */}
       {ready && recipes.length === 0 ? (
@@ -290,6 +405,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
     lineHeight: 18,
+  },
+  filterBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   langBtn: {
     paddingHorizontal: 12,

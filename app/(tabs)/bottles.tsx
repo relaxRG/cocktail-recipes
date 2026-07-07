@@ -14,10 +14,12 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { filterBottles, useBottleStore } from "@/lib/bottles/store";
+import { sortBottles, BOTTLE_SORTS, BottleSort } from "@/lib/recipes/sort";
 import {
   BOTTLE_CATEGORY_EN,
   BOTTLE_GROUPS,
@@ -35,31 +37,89 @@ export default function BottlesScreen() {
   const { ready, bottles } = useBottleStore();
   const [query, setQuery] = useState("");
   const [group, setGroup] = useState<"bottles" | "materials">("bottles");
-  const [category, setCategory] = useState<string>("");
-  const [style, setStyle] = useState<string>("");
+  // 多选筛选状态(统一筛选面板)
+  const [selCategories, setSelCategories] = useState<string[]>([]);
+  const [selStyles, setSelStyles] = useState<string[]>([]);
+  const [sort, setSort] = useState<BottleSort>("default");
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const groupBottles = useMemo(
     () => bottles.filter((b) => bottleGroupOf(b.category) === group),
     [bottles, group],
   );
   const filtered = useMemo(
-    () => filterBottles(groupBottles, query, category || undefined, style || undefined),
-    [groupBottles, query, category, style],
+    () => {
+      let base = filterBottles(groupBottles, query, undefined, undefined);
+      if (selCategories.length > 0) base = base.filter((b) => selCategories.includes(b.category));
+      if (selStyles.length > 0) base = base.filter((b) => selStyles.includes(b.style));
+      return base;
+    },
+    [groupBottles, query, selCategories, selStyles],
+  );
+
+  /** 排序后的列表 */
+  const sorted = useMemo(
+    () =>
+      sortBottles(filtered, sort, {
+        nameOf: (b) => (lang === "en" && b.nameEn ? b.nameEn : b.nameZh || b.nameEn),
+      }),
+    [filtered, sort, lang],
   );
   const groupCategories = useMemo(() => categoriesOfGroup(group), [group]);
 
   // 当前主分类下实际出现过的 style(预设顺序在前,库内自定义 style 追加在后)
   const styleOptions = useMemo(() => {
-    // 原材料库只有单一分类,直接以分组内条目展示 style 子分类
-    const effCategory = category || (group === "materials" ? "原材料" : "");
-    if (!effCategory) return [] as string[];
-    const present = new Set(
-      bottles.filter((b) => b.category === effCategory && b.style).map((b) => b.style),
-    );
-    const preset = (BOTTLE_STYLES[effCategory] ?? []).filter((s) => present.has(s));
+    // 面板中风格选项范围:已选类别下的风格;未选类别时为当前分组全部风格
+    const scope =
+      selCategories.length > 0
+        ? groupBottles.filter((b) => selCategories.includes(b.category))
+        : groupBottles;
+    const present = new Set(scope.filter((b) => b.style).map((b) => b.style));
+    const cats = selCategories.length > 0 ? selCategories : groupCategories;
+    const preset = cats.flatMap((c) => BOTTLE_STYLES[c] ?? []).filter((s) => present.has(s));
     const extras = [...present].filter((s) => !preset.includes(s)).sort();
-    return [...preset, ...extras];
-  }, [bottles, category, group]);
+    return [...new Set([...preset, ...extras])];
+  }, [groupBottles, selCategories, groupCategories]);
+
+  /** 筛选面板维度定义 */
+  const dimensions: FilterDimension[] = [
+    {
+      key: "category",
+      title: t("fs.dim.category"),
+      options: groupCategories.map((c) => ({
+        value: c,
+        label: lang === "en" ? BOTTLE_CATEGORY_EN[c] ?? c : c,
+      })),
+      selected: selCategories,
+      onToggle: (v) =>
+        setSelCategories((prev) => {
+          const next = prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v];
+          // 类别变化时,清掉不再属于可选范围的风格
+          setSelStyles((sPrev) => sPrev.filter((s) => {
+            const cats = next.length > 0 ? next : groupCategories;
+            return cats.some((c) => (BOTTLE_STYLES[c] ?? []).includes(s)) ||
+              groupBottles.some((b) => b.style === s && cats.includes(b.category));
+          }));
+          return next;
+        }),
+    },
+    {
+      key: "style",
+      title: t("fs.dim.style"),
+      options: styleOptions.map((s) => ({ value: s, label: s })),
+      selected: selStyles,
+      onToggle: (v) =>
+        setSelStyles((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
+    },
+  ];
+
+  const activeFilterCount = selCategories.length + selStyles.length;
+
+  const clearAll = () => {
+    setSelCategories([]);
+    setSelStyles([]);
+    setSort("default");
+  };
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
@@ -109,8 +169,8 @@ export default function BottlesScreen() {
                 onPress={() => {
                   if (group !== g.key) {
                     setGroup(g.key);
-                    setCategory("");
-                    setStyle("");
+                    setSelCategories([]);
+                    setSelStyles([]);
                     if (Platform.OS !== "web") {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     }
@@ -160,68 +220,71 @@ export default function BottlesScreen() {
       </View>
 
       {/* Category filter */}
-      {groupCategories.length > 1 ? (
-        <View style={styles.chipRowWrap}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chipRow}
+      <View style={styles.chipRowWrap}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipRow}
+        >
+          {/* 筛选与排序入口 */}
+          <Pressable
+            style={[
+              styles.chip,
+              styles.filterBtn,
+              {
+                backgroundColor:
+                  activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.surface,
+                borderColor:
+                  activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.border,
+              },
+            ]}
+            onPress={() => setSheetOpen(true)}
           >
-            <Pressable style={chipStyle(category === "")} onPress={() => setCategory("")}>
-              {/* 切换主分类时清空子分类 */}
-              <Text style={chipTextStyle(category === "")}>{t("home.filter.all")}</Text>
-            </Pressable>
-            {groupCategories.map((cat) => {
-              const active = category === cat;
-              return (
-                <Pressable
-                  key={cat}
-                  style={chipStyle(active)}
-                  onPress={() => {
-                    setCategory(active ? "" : cat);
-                    setStyle("");
-                  }}
-                >
-                  <Text style={chipTextStyle(active)}>
-                    {lang === "en" ? BOTTLE_CATEGORY_EN[cat] ?? cat : cat}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-      ) : (
-        <View style={{ height: 6 }} />
-      )}
+            <IconSymbol
+              name="slider.horizontal.3"
+              size={14}
+              color={activeFilterCount > 0 || sort !== "default" ? "#FFFFFF" : colors.muted}
+            />
+            <Text style={chipTextStyle(activeFilterCount > 0 || sort !== "default")}>
+              {t("fs.filterBtn")}
+              {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
+            </Text>
+          </Pressable>
+          <Pressable style={chipStyle(selCategories.length === 0)} onPress={() => setSelCategories([])}>
+            <Text style={chipTextStyle(selCategories.length === 0)}>{t("home.filter.all")}</Text>
+          </Pressable>
+          {groupCategories.map((cat) => {
+            const active = selCategories.includes(cat);
+            return (
+              <Pressable
+                key={cat}
+                style={chipStyle(active)}
+                onPress={() =>
+                  setSelCategories((prev) =>
+                    prev.includes(cat) ? prev.filter((x) => x !== cat) : [...prev, cat],
+                  )
+                }
+              >
+                <Text style={chipTextStyle(active)}>
+                  {lang === "en" ? BOTTLE_CATEGORY_EN[cat] ?? cat : cat}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      </View>
 
-      {/* Style sub-category filter (visible when a main category is selected) */}
-      {(category || group === "materials") && styleOptions.length > 0 ? (
-        <View style={styles.subChipRowWrap}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chipRow}
-          >
-            <Pressable style={subChipStyle(style === "", colors)} onPress={() => setStyle("")}>
-              <Text style={subChipTextStyle(style === "", colors)}>
-                {t("bottles.style.all")}
-              </Text>
-            </Pressable>
-            {styleOptions.map((s) => {
-              const active = style === s;
-              return (
-                <Pressable
-                  key={s}
-                  style={subChipStyle(active, colors)}
-                  onPress={() => setStyle(active ? "" : s)}
-                >
-                  <Text style={subChipTextStyle(active, colors)}>{s}</Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-      ) : null}
+      {/* 统一筛选与排序面板 */}
+      <FilterSortSheet
+        visible={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        dimensions={dimensions}
+        sortOptions={BOTTLE_SORTS.map((s) => ({ value: s, label: t(`sort.${s}` as "sort.default") }))}
+        sortValue={sort}
+        onSortChange={(v) => setSort(v as BottleSort)}
+        onClearAll={clearAll}
+        resultCount={filtered.length}
+      />
 
       {ready && filtered.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8" style={{ marginTop: -40 }}>
@@ -235,7 +298,7 @@ export default function BottlesScreen() {
         </View>
       ) : (
         <FlatList
-          data={filtered}
+          data={sorted}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{
             paddingHorizontal: 20,
@@ -246,7 +309,7 @@ export default function BottlesScreen() {
             <BottleCard
               bottle={item}
               isFirst={index === 0}
-              isLast={index === filtered.length - 1}
+              isLast={index === sorted.length - 1}
             />
           )}
         />
@@ -360,25 +423,6 @@ function BottleCard({
   );
 }
 
-const subChipStyle = (
-  active: boolean,
-  colors: { primary: string; surface: string; border: string },
-) => [
-  styles.subChip,
-  {
-    backgroundColor: active ? colors.primary + "1A" : "transparent",
-    borderColor: active ? colors.primary : colors.border,
-  },
-];
-
-const subChipTextStyle = (
-  active: boolean,
-  colors: { primary: string; muted: string },
-) => [
-  styles.subChipText,
-  { color: active ? colors.primary : colors.muted },
-];
-
 const styles = StyleSheet.create({
   chipRowWrap: {
     marginTop: 10,
@@ -417,18 +461,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     lineHeight: 18,
   },
-  subChip: {
-    paddingHorizontal: 12,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 1,
+  filterBtn: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-  },
-  subChipText: {
-    fontSize: 12,
-    fontWeight: "500",
-    lineHeight: 16,
+    gap: 4,
   },
   badge: {
     paddingHorizontal: 8,

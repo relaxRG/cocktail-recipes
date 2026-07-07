@@ -6,6 +6,9 @@ export interface Ingredient {
 
 export type Strength = "light" | "medium" | "strong";
 
+/** 全部烈度值(筛选面板等场景使用) */
+export const STRENGTHS: Strength[] = ["light", "medium", "strong"];
+
 /** 细化烈度档位:按成品酒精度(ABV)区间划分 */
 export type StrengthBand =
   | "lt10" // <10%

@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -23,6 +24,7 @@ import { useBottleStore } from "@/lib/bottles/store";
 import { estimatePrepCost } from "@/lib/homemade/cost";
 import { primaryTechnique, techniqueLabel, TECHNIQUES, detectPrepTechniques } from "@/lib/homemade/technique";
 import { groupPrepsByName } from "@/lib/recipes/grouping";
+import { sortPreps, PREP_SORTS, PrepSort } from "@/lib/recipes/sort";
 import { Bottle } from "@/lib/bottles/types";
 import {
   HomemadePrep,
@@ -45,18 +47,50 @@ export default function HomemadeScreen() {
   const { bottles } = useBottleStore();
   const [query, setQuery] = useState("");
   const [section, setSection] = useState<string>("");
-  const [type, setType] = useState<string>("");
-  const [technique, setTechnique] = useState<string>("");
+  // 多选筛选状态(统一筛选面板)
+  const [selTypes, setSelTypes] = useState<string[]>([]);
+  const [selTechniques, setSelTechniques] = useState<string[]>([]);
+  const [sort, setSort] = useState<PrepSort>("default");
+  const [sheetOpen, setSheetOpen] = useState(false);
   /** 已展开的同名组 key 集合 */
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const filtered = useMemo(
     () => {
-      const base = filterPreps(preps, query, type || undefined, section || undefined, types);
-      if (!technique) return base;
-      return base.filter((p) => detectPrepTechniques(p).includes(technique));
+      let base = filterPreps(preps, query, undefined, section || undefined, types);
+      if (selTypes.length > 0) base = base.filter((p) => selTypes.includes(p.type));
+      if (selTechniques.length > 0) {
+        base = base.filter((p) => {
+          const tks = detectPrepTechniques(p);
+          return selTechniques.some((k) => tks.includes(k));
+        });
+      }
+      return base;
     },
-    [preps, query, type, section, types, technique],
+    [preps, query, selTypes, section, types, selTechniques],
+  );
+
+  /** 成本函数(排序用):每 30ml 成本,退化为批次成本 */
+  const costOf = useMemo(() => {
+    const cache = new Map<string, number | null>();
+    return (p: HomemadePrep): number | null => {
+      if (cache.has(p.id)) return cache.get(p.id)!;
+      const est = estimatePrepCost(p, bottles);
+      const v =
+        est && est.estimatedCount > 0 ? (est.costPer30Ml ?? est.batchCost ?? null) : null;
+      cache.set(p.id, v);
+      return v;
+    };
+  }, [bottles]);
+
+  /** 排序后的列表(排序作用于分区内分组前的条目) */
+  const sorted = useMemo(
+    () =>
+      sortPreps(filtered, sort, {
+        costOf,
+        nameOf: (p) => displayNames(p.name, p.nameAlt, lang).primary,
+      }),
+    [filtered, sort, costOf, lang],
   );
 
   // 分区筛选:仅显示库内实际存在的分区
@@ -82,11 +116,45 @@ export default function HomemadeScreen() {
     return TECHNIQUES.filter((tk) => present.has(tk.key));
   }, [preps]);
 
+  /** 筛选面板维度定义:类型 + 工艺(分区保留在快捷 chip 行) */
+  const dimensions: FilterDimension[] = [
+    {
+      key: "type",
+      title: t("fs.dim.type"),
+      options: usedTypes.map((pt) => ({
+        value: pt.key,
+        label: lang === "en" ? pt.en : pt.zh,
+      })),
+      selected: selTypes,
+      onToggle: (v) =>
+        setSelTypes((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
+    },
+    {
+      key: "technique",
+      title: t("fs.dim.technique"),
+      options: usedTechniques.map((tk) => ({
+        value: tk.key,
+        label: lang === "en" ? tk.en : tk.zh,
+      })),
+      selected: selTechniques,
+      onToggle: (v) =>
+        setSelTechniques((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
+    },
+  ];
+
+  const activeFilterCount = selTypes.length + selTechniques.length;
+
+  const clearAll = () => {
+    setSelTypes([]);
+    setSelTechniques([]);
+    setSort("default");
+  };
+
   // 按分区分组的行数据(分区标题 + 各分区内的 inset group)
   const rows = useMemo<ListRow[]>(() => {
     const out: ListRow[] = [];
     for (const s of sections) {
-      const items = filtered.filter((p) => prepSectionOfIn(types, p.type) === s.key);
+      const items = sorted.filter((p) => prepSectionOfIn(types, p.type) === s.key);
       if (items.length === 0) continue;
       // 同名折叠:分区内同名自制品折叠为一组
       const groups = groupPrepsByName(items);
@@ -108,7 +176,7 @@ export default function HomemadeScreen() {
       });
     }
     return out;
-  }, [filtered, sections, types]);
+  }, [sorted, sections, types]);
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
@@ -191,11 +259,35 @@ export default function HomemadeScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.chipRow}
           >
+            {/* 筛选与排序入口 */}
+            <Pressable
+              style={[
+                styles.chip,
+                styles.filterBtn,
+                {
+                  backgroundColor:
+                    activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.surface,
+                  borderColor:
+                    activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.border,
+                },
+              ]}
+              onPress={() => setSheetOpen(true)}
+            >
+              <IconSymbol
+                name="slider.horizontal.3"
+                size={14}
+                color={activeFilterCount > 0 || sort !== "default" ? "#FFFFFF" : colors.muted}
+              />
+              <Text style={chipTextStyle(activeFilterCount > 0 || sort !== "default")}>
+                {t("fs.filterBtn")}
+                {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
+              </Text>
+            </Pressable>
             <Pressable
               style={chipStyle(section === "")}
               onPress={() => {
                 setSection("");
-                setType("");
+                setSelTypes([]);
               }}
             >
               <Text style={chipTextStyle(section === "")}>{t("home.filter.all")}</Text>
@@ -208,7 +300,7 @@ export default function HomemadeScreen() {
                   style={chipStyle(active)}
                   onPress={() => {
                     setSection(active ? "" : s.key);
-                    setType("");
+                    setSelTypes([]);
                   }}
                 >
                   <Text style={chipTextStyle(active)}>{lang === "en" ? s.en : s.zh}</Text>
@@ -219,73 +311,17 @@ export default function HomemadeScreen() {
         </View>
       ) : null}
 
-      {/* Type sub-filter within the selected section */}
-      {section && usedTypes.length > 1 ? (
-        <View style={styles.subChipRowWrap}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chipRow}
-          >
-            <Pressable
-              style={subChipStyle(type === "", colors)}
-              onPress={() => setType("")}
-            >
-              <Text style={subChipTextStyle(type === "", colors)}>
-                {t("hm.type.all")}
-              </Text>
-            </Pressable>
-            {usedTypes.map((pt) => {
-              const active = type === pt.key;
-              return (
-                <Pressable
-                  key={pt.key}
-                  style={subChipStyle(active, colors)}
-                  onPress={() => setType(active ? "" : pt.key)}
-                >
-                  <Text style={subChipTextStyle(active, colors)}>
-                    {lang === "en" ? pt.en : pt.zh}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-      ) : null}
-
-      {/* Technique filter: process-based refinement */}
-      {usedTechniques.length > 0 ? (
-        <View style={styles.subChipRowWrap}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chipRow}
-          >
-            <Pressable
-              style={subChipStyle(technique === "", colors)}
-              onPress={() => setTechnique("")}
-            >
-              <Text style={subChipTextStyle(technique === "", colors)}>
-                {t("hm.technique.all")}
-              </Text>
-            </Pressable>
-            {usedTechniques.map((tk) => {
-              const active = technique === tk.key;
-              return (
-                <Pressable
-                  key={tk.key}
-                  style={subChipStyle(active, colors)}
-                  onPress={() => setTechnique(active ? "" : tk.key)}
-                >
-                  <Text style={subChipTextStyle(active, colors)}>
-                    {lang === "en" ? tk.en : tk.zh}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-      ) : null}
+      {/* 统一筛选与排序面板:类型 + 工艺多选、排序 */}
+      <FilterSortSheet
+        visible={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        dimensions={dimensions}
+        sortOptions={PREP_SORTS.map((s) => ({ value: s, label: t(`sort.${s}` as "sort.default") }))}
+        sortValue={sort}
+        onSortChange={(v) => setSort(v as PrepSort)}
+        onClearAll={clearAll}
+        resultCount={filtered.length}
+      />
 
       {ready && filtered.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8" style={{ marginTop: -40 }}>
@@ -629,6 +665,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
     lineHeight: 18,
+  },
+  filterBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   subChip: {
     paddingHorizontal: 12,

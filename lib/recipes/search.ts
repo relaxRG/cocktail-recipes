@@ -12,16 +12,33 @@ export function filterRecipes(
     favoritesOnly?: boolean;
     codexFamily?: string;
     flavor?: string;
+    /** 多选:分类 id 集合(与 categoryId 二选一,优先生效) */
+    categoryIds?: string[];
+    /** 多选:Codex 家族集合 */
+    codexFamilies?: string[];
+    /** 多选:风味标签集合(命中任一即通过) */
+    flavors?: string[];
+    /** 多选:烈度集合 */
+    strengths?: string[];
   },
 ): Recipe[] {
   const q = query.trim().toLowerCase();
   return recipes.filter((r) => {
     if (filter.favoritesOnly && !r.favorite) return false;
-    if (filter.categoryId !== undefined && filter.categoryId !== null) {
+    if (filter.categoryIds && filter.categoryIds.length > 0) {
+      if (r.categoryId === null || !filter.categoryIds.includes(r.categoryId)) return false;
+    } else if (filter.categoryId !== undefined && filter.categoryId !== null) {
       if (r.categoryId !== filter.categoryId) return false;
     }
-    if (filter.codexFamily && r.codexFamily !== filter.codexFamily) return false;
-    if (filter.flavor && !r.flavors.includes(filter.flavor)) return false;
+    if (filter.codexFamilies && filter.codexFamilies.length > 0) {
+      if (!filter.codexFamilies.includes(r.codexFamily)) return false;
+    } else if (filter.codexFamily && r.codexFamily !== filter.codexFamily) return false;
+    if (filter.flavors && filter.flavors.length > 0) {
+      if (!filter.flavors.some((f) => r.flavors.includes(f))) return false;
+    } else if (filter.flavor && !r.flavors.includes(filter.flavor)) return false;
+    if (filter.strengths && filter.strengths.length > 0) {
+      if (!filter.strengths.includes(r.strength)) return false;
+    }
     if (!q) return true;
     if (r.name.toLowerCase().includes(q)) return true;
     if (r.nameEn.toLowerCase().includes(q)) return true;
