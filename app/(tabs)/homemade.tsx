@@ -17,28 +17,40 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
-import { filterBottles, useBottleStore } from "@/lib/bottles/store";
-import { BOTTLE_CATEGORIES, BOTTLE_CATEGORY_EN, Bottle } from "@/lib/bottles/types";
+import { filterPreps, useHomemadeStore } from "@/lib/homemade/store";
+import { HomemadePrep, PREP_TYPES, prepTypeLabel } from "@/lib/homemade/types";
 
-export default function BottlesScreen() {
+export default function HomemadeScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { ready, bottles } = useBottleStore();
+  const { ready, preps, importSamples } = useHomemadeStore();
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<string>("");
+  const [type, setType] = useState<string>("");
 
   const filtered = useMemo(
-    () => filterBottles(bottles, query, category || undefined),
-    [bottles, query, category],
+    () => filterPreps(preps, query, type || undefined),
+    [preps, query, type],
   );
+
+  const usedTypes = useMemo(() => {
+    const present = new Set(preps.map((p) => p.type));
+    return PREP_TYPES.filter((pt) => present.has(pt.key));
+  }, [preps]);
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    router.push("/bottle-form");
+    router.push("/homemade-form");
+  };
+
+  const handleImport = () => {
+    const n = importSamples();
+    if (Platform.OS !== "web" && n > 0) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
   };
 
   const chipStyle = (active: boolean) => [
@@ -56,10 +68,8 @@ export default function BottlesScreen() {
   return (
     <ScreenContainer>
       <View className="px-5 pt-2 pb-1">
-        <Text className="text-3xl font-bold text-foreground">{t("bottles.title")}</Text>
-        <Text className="text-sm text-muted mt-1">
-          {t("bottles.subtitle", { n: bottles.length })}
-        </Text>
+        <Text className="text-3xl font-bold text-foreground">{t("hm.title")}</Text>
+        <Text className="text-sm text-muted mt-1">{t("hm.subtitle", { n: preps.length })}</Text>
       </View>
 
       {/* Search */}
@@ -71,7 +81,7 @@ export default function BottlesScreen() {
           <IconSymbol name="magnifyingglass" size={18} color={colors.muted} />
           <TextInput
             className="flex-1 ml-2 text-base text-foreground"
-            placeholder={t("bottles.search.placeholder")}
+            placeholder={t("hm.search.placeholder")}
             placeholderTextColor={colors.muted}
             value={query}
             onChangeText={setQuery}
@@ -86,42 +96,57 @@ export default function BottlesScreen() {
         </View>
       </View>
 
-      {/* Category filter */}
-      <View style={styles.chipRowWrap}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipRow}
-        >
-          <Pressable style={chipStyle(category === "")} onPress={() => setCategory("")}>
-            <Text style={chipTextStyle(category === "")}>{t("home.filter.all")}</Text>
-          </Pressable>
-          {BOTTLE_CATEGORIES.map((cat) => {
-            const active = category === cat;
-            return (
-              <Pressable
-                key={cat}
-                style={chipStyle(active)}
-                onPress={() => setCategory(active ? "" : cat)}
-              >
-                <Text style={chipTextStyle(active)}>
-                  {lang === "en" ? BOTTLE_CATEGORY_EN[cat] ?? cat : cat}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
+      {/* Type filter */}
+      {usedTypes.length > 0 ? (
+        <View style={styles.chipRowWrap}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipRow}
+          >
+            <Pressable style={chipStyle(type === "")} onPress={() => setType("")}>
+              <Text style={chipTextStyle(type === "")}>{t("home.filter.all")}</Text>
+            </Pressable>
+            {usedTypes.map((pt) => {
+              const active = type === pt.key;
+              return (
+                <Pressable
+                  key={pt.key}
+                  style={chipStyle(active)}
+                  onPress={() => setType(active ? "" : pt.key)}
+                >
+                  <Text style={chipTextStyle(active)}>{lang === "en" ? pt.en : pt.zh}</Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      ) : null}
 
       {ready && filtered.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8" style={{ marginTop: -40 }}>
-          <Text style={{ fontSize: 48, lineHeight: 64 }}>🍾</Text>
+          <Text style={{ fontSize: 48, lineHeight: 64 }}>🧪</Text>
           <Text className="text-xl font-semibold text-foreground mt-3">
-            {bottles.length === 0 ? t("bottles.empty.title") : t("bottles.noMatch.title")}
+            {preps.length === 0 ? t("hm.empty.title") : t("hm.noMatch")}
           </Text>
-          <Text className="text-sm text-muted text-center mt-2 leading-relaxed">
-            {bottles.length === 0 ? t("bottles.empty.desc") : t("bottles.noMatch.desc")}
-          </Text>
+          {preps.length === 0 ? (
+            <>
+              <Text className="text-sm text-muted text-center mt-2 leading-relaxed">
+                {t("hm.empty.desc")}
+              </Text>
+              <Pressable
+                onPress={handleImport}
+                style={({ pressed }) => [
+                  styles.importBtn,
+                  { backgroundColor: colors.primary },
+                  pressed && { opacity: 0.85 },
+                ]}
+              >
+                <IconSymbol name="sparkles" size={16} color="#FFFFFF" />
+                <Text style={styles.importBtnText}>{t("hm.empty.import")}</Text>
+              </Pressable>
+            </>
+          ) : null}
         </View>
       ) : (
         <FlatList
@@ -133,8 +158,8 @@ export default function BottlesScreen() {
             paddingBottom: 90 + insets.bottom,
           }}
           renderItem={({ item, index }) => (
-            <BottleCard
-              bottle={item}
+            <PrepRow
+              prep={item}
               isFirst={index === 0}
               isLast={index === filtered.length - 1}
             />
@@ -147,10 +172,7 @@ export default function BottlesScreen() {
         onPress={handleAdd}
         style={({ pressed }) => [
           styles.fab,
-          {
-            backgroundColor: colors.primary,
-            bottom: 20 + (Platform.OS === "web" ? 0 : 0),
-          },
+          { backgroundColor: colors.primary, bottom: 20 },
           pressed && { transform: [{ scale: 0.95 }], opacity: 0.9 },
         ]}
       >
@@ -160,21 +182,21 @@ export default function BottlesScreen() {
   );
 }
 
-function BottleCard({
-  bottle,
+function PrepRow({
+  prep,
   isFirst,
   isLast,
 }: {
-  bottle: Bottle;
+  prep: HomemadePrep;
   isFirst: boolean;
   isLast: boolean;
 }) {
   const colors = useColors();
   const router = useRouter();
-  const { t, lang } = useI18n();
+  const { lang } = useI18n();
   return (
     <Pressable
-      onPress={() => router.push({ pathname: "/bottle/[id]", params: { id: bottle.id } })}
+      onPress={() => router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })}
       style={({ pressed }) => [pressed && { opacity: 0.7 }]}
     >
       <View
@@ -187,56 +209,31 @@ function BottleCard({
         <View className="flex-row items-center">
           <View className="flex-1 pr-2">
             <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
-              {lang === "en" && bottle.nameEn ? bottle.nameEn : bottle.nameZh}
+              {prep.name}
             </Text>
-            {(lang === "en" ? bottle.nameZh : bottle.nameEn) ? (
+            {prep.nameAlt ? (
               <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                {lang === "en" ? bottle.nameZh : bottle.nameEn}
+                {prep.nameAlt}
               </Text>
             ) : null}
             <View className="flex-row items-center mt-1.5" style={{ gap: 6, flexWrap: "wrap" }}>
-              <View
-                style={[styles.badge, { backgroundColor: colors.primary + "22" }]}
-              >
+              <View style={[styles.badge, { backgroundColor: colors.primary + "22" }]}>
                 <Text style={[styles.badgeText, { color: colors.primary }]}>
-                  {lang === "en" ? BOTTLE_CATEGORY_EN[bottle.category] ?? bottle.category : bottle.category}
+                  {prepTypeLabel(prep.type, lang)}
                 </Text>
               </View>
-              {bottle.volume ? (
-                <Text className="text-xs text-muted">{bottle.volume}</Text>
+              {prep.shelfLife ? (
+                <Text className="text-xs text-muted" numberOfLines={1}>
+                  {prep.shelfLife}
+                </Text>
               ) : null}
-              {bottle.style ? (
-                <View style={[styles.badge, { backgroundColor: colors.muted + "22" }]}>
-                  <Text style={[styles.badgeText, { color: colors.muted }]}>{bottle.style}</Text>
-                </View>
-              ) : null}
-              <Text className="text-xs text-muted">{bottle.abv}% vol</Text>
             </View>
           </View>
-          <View className="items-end">
-            {bottle.priceCny > 0 ? (
-              <>
-                <Text className="text-lg font-bold text-foreground">
-                  ¥{bottle.priceCny}
-                </Text>
-                <Text className="text-[10px] text-muted">{t("bottles.price.ref")}</Text>
-              </>
-            ) : (
-              <Text className="text-xs text-muted">{t("bottles.price.unknown")}</Text>
-            )}
-          </View>
-          <View style={{ marginLeft: 8 }}>
-            <IconSymbol name="chevron.right" size={16} color={colors.border} />
-          </View>
+          <IconSymbol name="chevron.right" size={16} color={colors.border} />
         </View>
       </View>
       {!isLast ? (
-        <View
-          className="bg-surface"
-          style={{
-            height: StyleSheet.hairlineWidth,
-          }}
-        >
+        <View className="bg-surface" style={{ height: StyleSheet.hairlineWidth }}>
           <View
             style={{
               height: StyleSheet.hairlineWidth,
@@ -282,6 +279,21 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "600",
     lineHeight: 15,
+  },
+  importBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 18,
+    height: 42,
+    borderRadius: 21,
+    marginTop: 16,
+  },
+  importBtnText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "600",
+    lineHeight: 20,
   },
   fab: {
     position: "absolute",

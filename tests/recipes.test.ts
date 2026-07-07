@@ -15,6 +15,48 @@ import { filterRecipes } from "../lib/recipes/search";
 import { buildDefaultCategories, buildSampleRecipes } from "../lib/recipes/seed";
 import { parseRecipeText, splitIngredientLine, looksLikeIngredientLine } from "../lib/recipes/parser";
 import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib/recipes/types";
+import { buildSamplePreps } from "../lib/homemade/seed";
+import { filterPreps } from "../lib/homemade/store";
+import { PREP_TYPES, prepTypeLabel } from "../lib/homemade/types";
+
+describe("homemade preps", () => {
+  it("builds sample preps with required fields and unique ids", () => {
+    const preps = buildSamplePreps();
+    expect(preps.length).toBeGreaterThanOrEqual(5);
+    const ids = new Set(preps.map((p) => p.id));
+    expect(ids.size).toBe(preps.length);
+    const typeKeys = new Set(PREP_TYPES.map((t) => t.key));
+    for (const p of preps) {
+      expect(p.name.length).toBeGreaterThan(0);
+      expect(typeKeys.has(p.type)).toBe(true);
+      expect(p.ingredients.length).toBeGreaterThan(0);
+      expect(p.recipe.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("filters preps by query (bilingual) and type", () => {
+    const preps = buildSamplePreps();
+    // English & Chinese search both hit simple syrup
+    const en = filterPreps(preps, "simple syrup");
+    expect(en.length).toBeGreaterThanOrEqual(1);
+    const zh = filterPreps(preps, "糖浆");
+    expect(zh.length).toBeGreaterThanOrEqual(1);
+    // ingredient search
+    const ging = filterPreps(preps, "ginger");
+    expect(ging.length).toBeGreaterThanOrEqual(1);
+    // type filter
+    const syrups = filterPreps(preps, "", "syrup");
+    expect(syrups.every((p) => p.type === "syrup")).toBe(true);
+    // combined
+    expect(filterPreps(preps, "不存在xyz").length).toBe(0);
+  });
+
+  it("resolves prep type labels bilingually", () => {
+    expect(prepTypeLabel("syrup", "zh")).toBe("糖浆");
+    expect(prepTypeLabel("syrup", "en")).toBe("Syrup");
+    expect(prepTypeLabel("unknown-key", "en")).toBe("unknown-key");
+  });
+});
 
 describe("recipes data layer", () => {
   it("generates unique ids", () => {

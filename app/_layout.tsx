@@ -21,6 +21,7 @@ import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-run
 import { RecipeProvider } from "@/lib/recipes/store";
 import { I18nProvider } from "@/lib/i18n";
 import { BottleProvider } from "@/lib/bottles/store";
+import { HomemadeProvider } from "@/lib/homemade/store";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -88,6 +89,7 @@ export default function RootLayout() {
       <I18nProvider>
       <RecipeProvider>
           <BottleProvider>
+          <HomemadeProvider>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="recipe/[id]" />
@@ -100,9 +102,15 @@ export default function RootLayout() {
                 name="bottle-form"
                 options={{ presentation: "modal" }}
               />
+              <Stack.Screen name="homemade/[id]" />
+              <Stack.Screen
+                name="homemade-form"
+                options={{ presentation: "modal" }}
+              />
               <Stack.Screen name="oauth/callback" />
             </Stack>
             <StatusBar style="auto" />
+          </HomemadeProvider>
           </BottleProvider>
           </RecipeProvider>
           </I18nProvider>

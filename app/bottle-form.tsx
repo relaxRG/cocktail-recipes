@@ -17,7 +17,7 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { BottleDraft, useBottleStore } from "@/lib/bottles/store";
-import { BOTTLE_CATEGORIES, BOTTLE_CATEGORY_EN } from "@/lib/bottles/types";
+import { BOTTLE_CATEGORIES, BOTTLE_CATEGORY_EN, BOTTLE_STYLES } from "@/lib/bottles/types";
 
 export default function BottleFormScreen() {
   const colors = useColors();
@@ -30,6 +30,7 @@ export default function BottleFormScreen() {
   const [nameZh, setNameZh] = useState(editing?.nameZh ?? "");
   const [nameEn, setNameEn] = useState(editing?.nameEn ?? "");
   const [category, setCategory] = useState(editing?.category ?? "金酒");
+  const [style, setStyle] = useState(editing?.style ?? "");
   const [brand, setBrand] = useState(editing?.brand ?? "");
   const [origin, setOrigin] = useState(editing?.origin ?? "");
   const [volume, setVolume] = useState(editing?.volume ?? "");
@@ -47,6 +48,7 @@ export default function BottleFormScreen() {
       nameZh: nameZh.trim(),
       nameEn: nameEn.trim(),
       category,
+      style: style.trim(),
       brand: brand.trim(),
       origin: origin.trim(),
       volume: volume.trim(),
@@ -149,6 +151,42 @@ export default function BottleFormScreen() {
               );
             })}
           </View>
+
+          {(BOTTLE_STYLES[category]?.length ?? 0) > 0 && (
+            <>
+              <Text className="text-sm font-medium text-foreground mb-1.5">
+                {t("bform.style")}
+              </Text>
+              <View className="flex-row flex-wrap mb-2" style={{ gap: 8 }}>
+                {(BOTTLE_STYLES[category] ?? []).map((s) => {
+                  const active = style === s;
+                  return (
+                    <Pressable
+                      key={s}
+                      onPress={() => setStyle(active ? "" : s)}
+                      style={[
+                        styles.chip,
+                        {
+                          backgroundColor: active ? colors.primary : colors.surface,
+                          borderColor: active ? colors.primary : colors.border,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.chipText,
+                          { color: active ? "#FFFFFF" : colors.foreground },
+                        ]}
+                      >
+                        {s}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              {field("", style, setStyle, lang === "en" ? "Or type a custom style…" : "或自行填写风格…")}
+            </>
+          )}
 
           {field(t("bform.brand"), brand, setBrand, "e.g. Cointreau")}
           {field(t("bform.origin"), origin, setOrigin, lang === "en" ? "e.g. France" : "例如:法国")}

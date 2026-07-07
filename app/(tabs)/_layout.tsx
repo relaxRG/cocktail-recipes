@@ -45,6 +45,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="homemade"
+        options={{
+          title: t("tab.homemade"),
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="flask.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="categories"
         options={{
           title: t("tab.tags"),
