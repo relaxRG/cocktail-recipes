@@ -113,9 +113,13 @@ describe("homemade preps", () => {
       expect(m.abv).toBe(0);
     }
     expect(bottleGroupOf("原材料")).toBe("materials");
-    expect(bottleGroupOf("金酒")).toBe("bottles");
+    expect(bottleGroupOf("金酒")).toBe("spirits");
+    expect(bottleGroupOf("威士忌")).toBe("spirits");
+    expect(bottleGroupOf("利口酒")).toBe("bottles");
     expect(categoriesOfGroup("materials")).toEqual(["原材料"]);
     expect(categoriesOfGroup("bottles")).not.toContain("原材料");
+    expect(categoriesOfGroup("bottles")).not.toContain("金酒");
+    expect(categoriesOfGroup("spirits")).toContain("金酒");
     expect(BOTTLE_CATEGORIES).toContain("原材料");
   });
 

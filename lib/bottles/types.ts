@@ -22,23 +22,42 @@ export const BOTTLE_CATEGORIES = [
 export type BottleCategory = (typeof BOTTLE_CATEGORIES)[number];
 
 /**
- * 顶层分组:酒款库(spirits & mixers)与原材料库(raw materials)。
- * 原材料 = "原材料" 分类;其余分类归酒款库。
+ * 顶层分组:基酒库(base spirits)、酒款库(modifiers & mixers)与原材料库(raw materials)。
+ * 动态归属以 lib/bottles/taxonomy 为准,此处为静态默认(旧代码/测试兼容)。
  */
-export const BOTTLE_GROUPS: { key: "bottles" | "materials"; zh: string; en: string }[] = [
+export type BottleGroupKey = "spirits" | "bottles" | "materials";
+
+export const BOTTLE_GROUPS: { key: BottleGroupKey; zh: string; en: string }[] = [
+  { key: "spirits", zh: "基酒库", en: "Base Spirits" },
   { key: "bottles", zh: "酒款库", en: "Bottles" },
   { key: "materials", zh: "原材料库", en: "Raw Materials" },
 ];
 
-export function bottleGroupOf(category: string): "bottles" | "materials" {
-  return category === "原材料" ? "materials" : "bottles";
+const DEFAULT_SPIRIT_CATEGORIES = [
+  "金酒",
+  "伏特加",
+  "朗姆",
+  "威士忌",
+  "龙舌兰",
+  "白兰地",
+  "清酒烧酒",
+  "中式白酒",
+];
+
+export function bottleGroupOf(category: string): BottleGroupKey {
+  if (category === "原材料") return "materials";
+  if (DEFAULT_SPIRIT_CATEGORIES.includes(category)) return "spirits";
+  return "bottles";
 }
 
 /** 分组下的分类列表 */
-export function categoriesOfGroup(group: "bottles" | "materials"): string[] {
-  return group === "materials"
-    ? ["原材料"]
-    : BOTTLE_CATEGORIES.filter((c) => c !== "原材料");
+export function categoriesOfGroup(group: BottleGroupKey): string[] {
+  if (group === "materials") return ["原材料"];
+  if (group === "spirits")
+    return BOTTLE_CATEGORIES.filter((c) => DEFAULT_SPIRIT_CATEGORIES.includes(c));
+  return BOTTLE_CATEGORIES.filter(
+    (c) => c !== "原材料" && !DEFAULT_SPIRIT_CATEGORIES.includes(c),
+  );
 }
 
 /** 酒款分类英文映射(界面语言为英文时显示) */

@@ -31,9 +31,17 @@
 - tsc 0 错误,vitest 153 通过
 
 ### 待办
-1. 截图验证 /bulk-import 页面渲染 + 端到端小样本测试(文本粘贴识别)
-2. 写 vitest 测试(extractFileText 纯函数部分或 schema 容错)可选
-3. todo.md 勾选 + checkpoint + 交付
+(全部完成,已交付 checkpoint 04a533ab)
+
+## 新一轮(2026-07-08):酒库三分组
+- 需求:酒款库拆分为"基酒库(spirits)/酒款库(bottles)/原材料库(materials)"
+- BottleCategoryDef.group: "bottles"|"materials" → 增加 "spirits"
+- 默认归属:金酒/伏特加/朗姆/威士忌/龙舌兰/白兰地/清酒烧酒/中式白酒→spirits;
+  利口酒/味美思/阿玛罗开胃酒/苦精/加强酒/起泡酒/葡萄酒→bottles;
+  果汁/软饮/糖浆/原材料/其他→materials
+- taxonomy 存储需迁移(旧自定义分类 group 若为 bottles 且属基酒类默认名单→spirits)
+- bottles.tsx 顶部分组 segment 由两个改三个;快捷筛选按分组过滤分类
+- 已完成:酒单页语言切换按钮/自制页管理分区按钮已移除(功能在"我的"页),tsc 0 错,153 测试过
 
 ## Store API 签名(已确认)
 - useBottleStore(): { bottles, addBottle(draft: BottleDraft): Bottle, ... }

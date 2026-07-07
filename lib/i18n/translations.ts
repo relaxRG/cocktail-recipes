@@ -83,6 +83,11 @@ const dict = {
   "tags.prepCount": { zh: "{n} 份自制", en: "{n} preps" },
   "tags.group.bottles": { zh: "酒款库", en: "Bottles" },
   "tags.group.materials": { zh: "原材料库", en: "Raw Materials" },
+  "tags.group.spirits": { zh: "基酒库", en: "Base Spirits" },
+  "bottles.subtitle.spirits": {
+    zh: "{n} 款基酒 · 中英文名、度数与参考价",
+    en: "{n} base spirits · names, ABV & prices",
+  },
   "tags.new.placeholder": { zh: "新{s}名称", en: "New {s} name" },
   "tags.empty": { zh: "还没有{s}标签,在上方创建一个吧", en: "No {s} tags yet. Create one above" },
   "tags.count": { zh: "{n} 份配方", en: "{n} recipes" },

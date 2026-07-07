@@ -55,7 +55,7 @@ type Filter = { type: "all" } | { type: "favorites" };
 export default function RecipesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { t, lang, setLang } = useI18n();
+  const { t, lang } = useI18n();
   const { ready, recipes, categories, importSamples, tagsOf, reorderRecipes } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
@@ -307,19 +307,6 @@ export default function RecipesScreen() {
               : t("home.subtitle.empty")}
           </Text>
         </View>
-        <Pressable
-          onPress={() => setLang(lang === "zh" ? "en" : "zh")}
-          hitSlop={8}
-          style={({ pressed }) => [
-            styles.langBtn,
-            { backgroundColor: colors.surface, borderColor: colors.border },
-            pressed && { opacity: 0.6 },
-          ]}
-        >
-          <Text style={[styles.langBtnText, { color: colors.primary }]}>
-            {lang === "zh" ? "EN" : "中"}
-          </Text>
-        </Pressable>
       </View>
 
       {/* Search bar */}
@@ -563,18 +550,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-  },
-  langBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-    marginBottom: 2,
-  },
-  langBtnText: {
-    fontSize: 13,
-    fontWeight: "600",
-    lineHeight: 18,
   },
   divider: {
     width: 1,

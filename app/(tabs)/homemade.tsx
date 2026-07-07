@@ -297,20 +297,6 @@ export default function HomemadeScreen() {
           <Text className="text-3xl font-bold text-foreground">{t("hm.title")}</Text>
           <Text className="text-sm text-muted mt-1">{t("hm.subtitle", { n: preps.length })}</Text>
         </View>
-        <Pressable
-          onPress={() => router.push("/prep-sections")}
-          hitSlop={8}
-          style={({ pressed }) => [
-            styles.manageBtn,
-            { backgroundColor: colors.surface, borderColor: colors.border },
-            pressed && { opacity: 0.7 },
-          ]}
-        >
-          <IconSymbol name="slider.horizontal.3" size={15} color={colors.primary} />
-          <Text className="text-xs font-semibold" style={{ color: colors.primary, lineHeight: 16 }}>
-            {t("psm.manage")}
-          </Text>
-        </Pressable>
       </View>
 
       {/* Search */}
@@ -919,16 +905,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     lineHeight: 20,
-  },
-  manageBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginBottom: 2,
   },
   fab: {
     position: "absolute",

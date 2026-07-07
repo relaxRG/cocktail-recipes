@@ -20,6 +20,9 @@ import React, {
  * 仍存储中文分类名与风格名字符串,保证旧数据兼容。
  */
 
+/** 顶层分组:基酒库 / 酒款库 / 原材料库 */
+export type BottleGroup = "spirits" | "bottles" | "materials";
+
 export interface BottleCategoryDef {
   /** 稳定 id */
   id: string;
@@ -27,8 +30,8 @@ export interface BottleCategoryDef {
   zh: string;
   /** 英文名(界面英文时优先显示) */
   en: string;
-  /** 顶层分组:酒款库 / 原材料库 */
-  group: "bottles" | "materials";
+  /** 顶层分组:基酒库 / 酒款库 / 原材料库 */
+  group: BottleGroup;
 }
 
 export interface BottleStyleDef {
@@ -45,15 +48,15 @@ export interface BottleStyleDef {
 /** 专业默认大分类体系(zh 为存储值) */
 export const DEFAULT_BOTTLE_CATEGORY_DEFS: Omit<BottleCategoryDef, "id">[] = [
   // 六大基酒 Base Spirits
-  { zh: "金酒", en: "Gin", group: "bottles" },
-  { zh: "伏特加", en: "Vodka", group: "bottles" },
-  { zh: "朗姆", en: "Rum", group: "bottles" },
-  { zh: "威士忌", en: "Whiskey", group: "bottles" },
-  { zh: "龙舌兰", en: "Agave Spirits", group: "bottles" },
-  { zh: "白兰地", en: "Brandy", group: "bottles" },
+  { zh: "金酒", en: "Gin", group: "spirits" },
+  { zh: "伏特加", en: "Vodka", group: "spirits" },
+  { zh: "朗姆", en: "Rum", group: "spirits" },
+  { zh: "威士忌", en: "Whiskey", group: "spirits" },
+  { zh: "龙舌兰", en: "Agave Spirits", group: "spirits" },
+  { zh: "白兰地", en: "Brandy", group: "spirits" },
   // 其他烈酒 Other Spirits
-  { zh: "清酒烧酒", en: "Sake & Shochu", group: "bottles" },
-  { zh: "中式白酒", en: "Baijiu", group: "bottles" },
+  { zh: "清酒烧酒", en: "Sake & Shochu", group: "spirits" },
+  { zh: "中式白酒", en: "Baijiu", group: "spirits" },
   // Modifiers
   { zh: "利口酒", en: "Liqueurs", group: "bottles" },
   { zh: "味美思", en: "Vermouth", group: "bottles" },
@@ -234,6 +237,34 @@ export const DEFAULT_BOTTLE_STYLE_DEFS: Omit<BottleStyleDef, "id">[] = [
 const CATS_KEY = "bottles.taxonomy.categories.v1";
 const STYLES_KEY = "bottles.taxonomy.styles.v1";
 
+/** v7:默认应归入基酒库(spirits)的分类 zh 名单(仅迁移旧存储) */
+const DEFAULT_SPIRITS_ZH = new Set([
+  "金酒",
+  "伏特加",
+  "朗姆",
+  "威士忌",
+  "龙舌兰",
+  "白兰地",
+  "清酒烧酒",
+  "中式白酒",
+]);
+
+/** 旧存储(两分组)迁移到三分组:默认基酒名单从 bottles 提升为 spirits */
+function migrateCategoriesV7(list: BottleCategoryDef[]): {
+  next: BottleCategoryDef[];
+  changed: boolean;
+} {
+  let changed = false;
+  const next = list.map((c) => {
+    if (c.group === "bottles" && DEFAULT_SPIRITS_ZH.has(c.zh)) {
+      changed = true;
+      return { ...c, group: "spirits" as const };
+    }
+    return c;
+  });
+  return { next, changed };
+}
+
 function buildDefaultCategories(): BottleCategoryDef[] {
   return DEFAULT_BOTTLE_CATEGORY_DEFS.map((c, i) => ({ id: `bcat-${i}`, ...c }));
 }
@@ -246,7 +277,7 @@ interface BottleTaxonomyStore {
   ready: boolean;
   categories: BottleCategoryDef[];
   styles: BottleStyleDef[];
-  addCategory: (zh: string, en: string, group: "bottles" | "materials") => BottleCategoryDef | null;
+  addCategory: (zh: string, en: string, group: BottleGroup) => BottleCategoryDef | null;
   renameCategory: (id: string, zh: string, en: string) => void;
   deleteCategory: (id: string) => void;
   reorderCategories: (orderedIds: string[]) => void;
@@ -259,8 +290,8 @@ interface BottleTaxonomyStore {
   /** 某分类下的风格列表 */
   stylesOf: (categoryZh: string) => BottleStyleDef[];
   /** 分组下的分类 zh 名列表 */
-  categoriesOfGroup: (group: "bottles" | "materials") => string[];
-  groupOf: (categoryZh: string) => "bottles" | "materials";
+  categoriesOfGroup: (group: BottleGroup) => string[];
+  groupOf: (categoryZh: string) => BottleGroup;
 }
 
 const Ctx = createContext<BottleTaxonomyStore | null>(null);
@@ -277,7 +308,12 @@ export function BottleTaxonomyProvider({ children }: { children: React.ReactNode
           AsyncStorage.getItem(CATS_KEY),
           AsyncStorage.getItem(STYLES_KEY),
         ]);
-        if (rawC) setCategories(JSON.parse(rawC));
+        if (rawC) {
+          const parsed: BottleCategoryDef[] = JSON.parse(rawC);
+          const { next, changed } = migrateCategoriesV7(parsed);
+          setCategories(next);
+          if (changed) AsyncStorage.setItem(CATS_KEY, JSON.stringify(next)).catch(() => {});
+        }
         if (rawS) setStyles(JSON.parse(rawS));
       } catch (e) {
         console.warn("Failed to load bottle taxonomy", e);
@@ -302,7 +338,7 @@ export function BottleTaxonomyProvider({ children }: { children: React.ReactNode
   }, []);
 
   const addCategory = useCallback(
-    (zh: string, en: string, group: "bottles" | "materials"): BottleCategoryDef | null => {
+    (zh: string, en: string, group: BottleGroup): BottleCategoryDef | null => {
       const z = zh.trim();
       if (!z) return null;
       if (catsRef.current.some((c) => c.zh === z)) return null;
@@ -420,7 +456,7 @@ export function BottleTaxonomyProvider({ children }: { children: React.ReactNode
   );
 
   const categoriesOfGroup = useCallback(
-    (group: "bottles" | "materials") =>
+    (group: BottleGroup) =>
       categories.filter((c) => c.group === group).map((c) => c.zh),
     [categories],
   );

@@ -49,8 +49,12 @@ export default function BottlesScreen() {
     groupOf,
   } = useBottleTaxonomy();
   const [query, setQuery] = useState("");
-  const [group, setGroup] = useState<"bottles" | "materials">("bottles");
+  const [group, setGroup] = useState<"spirits" | "bottles" | "materials">("spirits");
   // 快捷筛选(独立于 Filter 面板,持久化保留):类别 → 风格子分类;按分组分别存储
+  const [quickSelSpirits, setQuickSelSpirits] = usePersistedState<QuickSelection>(
+    "quick.bottles.spirits.v1",
+    {},
+  );
   const [quickSelBottles, setQuickSelBottles] = usePersistedState<QuickSelection>(
     "quick.bottles.bottles.v1",
     {},
@@ -59,8 +63,18 @@ export default function BottlesScreen() {
     "quick.bottles.materials.v1",
     {},
   );
-  const quickSel = group === "materials" ? quickSelMaterials : quickSelBottles;
-  const setQuickSel = group === "materials" ? setQuickSelMaterials : setQuickSelBottles;
+  const quickSel =
+    group === "materials"
+      ? quickSelMaterials
+      : group === "spirits"
+        ? quickSelSpirits
+        : quickSelBottles;
+  const setQuickSel =
+    group === "materials"
+      ? setQuickSelMaterials
+      : group === "spirits"
+        ? setQuickSelSpirits
+        : setQuickSelBottles;
   // Filter 面板多选筛选状态(与快捷筛选相互独立)
   const [selCategories, setSelCategories] = useState<string[]>([]);
   const [selStyles, setSelStyles] = useState<string[]>([]);
@@ -239,10 +253,14 @@ export default function BottlesScreen() {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
+    if (group === "materials") {
+      router.push({ pathname: "/bottle-form", params: { category: "原材料" } });
+      return;
+    }
+    // 按当前分组预填首个分类,便于新增落在正确分组
+    const first = groupCategories[0];
     router.push(
-      group === "materials"
-        ? { pathname: "/bottle-form", params: { category: "原材料" } }
-        : "/bottle-form",
+      first ? { pathname: "/bottle-form", params: { category: first } } : "/bottle-form",
     );
   };
 
@@ -265,11 +283,13 @@ export default function BottlesScreen() {
         <Text className="text-sm text-muted mt-1">
           {group === "materials"
             ? t("bottles.subtitle.materials", { n: groupBottles.length })
-            : t("bottles.subtitle", { n: groupBottles.length })}
+            : group === "spirits"
+              ? t("bottles.subtitle.spirits", { n: groupBottles.length })
+              : t("bottles.subtitle", { n: groupBottles.length })}
         </Text>
       </View>
 
-      {/* Group segmented control: 酒款库 / 原材料库 */}
+      {/* Group segmented control: 基酒库 / 酒款库 / 原材料库 */}
       <View className="px-5 mt-2">
         <View
           className="flex-row bg-surface border border-border rounded-xl p-1"

@@ -39,7 +39,7 @@ export function BottleTaxonomyManager() {
   } = useBottleTaxonomy();
 
   const [newCatName, setNewCatName] = useState("");
-  const [newCatGroup, setNewCatGroup] = useState<"bottles" | "materials">("bottles");
+  const [newCatGroup, setNewCatGroup] = useState<"spirits" | "bottles" | "materials">("spirits");
   const [editingCat, setEditingCat] = useState<string | null>(null);
   const [editCatZh, setEditCatZh] = useState("");
   const [editCatEn, setEditCatEn] = useState("");
@@ -160,7 +160,7 @@ export function BottleTaxonomyManager() {
         </View>
         {/* 新分类归属分组 */}
         <View className="flex-row mt-3" style={{ gap: 8 }}>
-          {(["bottles", "materials"] as const).map((g) => {
+          {(["spirits", "bottles", "materials"] as const).map((g) => {
             const active = newCatGroup === g;
             return (
               <Pressable
@@ -175,7 +175,13 @@ export function BottleTaxonomyManager() {
                 ]}
               >
                 <Text style={[styles.groupChipText, { color: active ? "#FFFFFF" : colors.foreground }]}>
-                  {t(g === "bottles" ? "tags.group.bottles" : "tags.group.materials")}
+                  {t(
+                    g === "materials"
+                      ? "tags.group.materials"
+                      : g === "spirits"
+                        ? "tags.group.spirits"
+                        : "tags.group.bottles",
+                  )}
                 </Text>
               </Pressable>
             );
@@ -244,7 +250,14 @@ export function BottleTaxonomyManager() {
                     </Text>
                   </Text>
                   <Text className="text-xs text-muted mt-0.5">
-                    {t(cat.group === "bottles" ? "tags.group.bottles" : "tags.group.materials")} ·{" "}
+                    {t(
+                      cat.group === "materials"
+                        ? "tags.group.materials"
+                        : cat.group === "spirits"
+                          ? "tags.group.spirits"
+                          : "tags.group.bottles",
+                    )}{" "}
+                    ·{" "}
                     {t("tags.bottleCount", { n: nBottles })} · {catStyles.length} styles
                   </Text>
                 </View>
