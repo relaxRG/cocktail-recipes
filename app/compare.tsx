@@ -33,6 +33,8 @@ interface CompareRow {
   /** 数值行可高亮最优列(如成本最低) */
   highlightMin?: boolean;
   numeric?: (number | null)[];
+  /** 差异行:非空值以警示色高亮(如用量不同) */
+  emphasize?: boolean;
 }
 
 interface CompareSection {
@@ -92,6 +94,64 @@ export default function CompareScreen() {
               label: t("compare.row.ingredientCount"),
               values: items.map((p) => String(p.ingredients.length)),
             },
+            // 自制配料三分区:名量全同 / 名同量异 / 各自独有(解析 "名 用量" 文本)
+            ...(() => {
+              const parse = (line: string): [string, string] => {
+                const s = line.trim();
+                // 用量通常在结尾:数字+单位 或 常见量词
+                const m = s.match(/^(.*?)[\s:：]+([\d.]+\s*\S*|适量|少许|数滴|半个|一个)$/);
+                return m ? [m[1].trim(), formatAmountAsMl(m[2].trim())] : [s, ""];
+              };
+              const maps = items.map((p) => {
+                const m = new Map<string, string>();
+                for (const line of p.ingredients) {
+                  const [n, a] = parse(line);
+                  if (n) m.set(n, a);
+                }
+                return m;
+              });
+              const allNames = maps.length > 0 ? [...maps[0].keys()] : [];
+              const sameBoth = allNames.filter((n) => {
+                if (!maps.every((m) => m.has(n))) return false;
+                const amt = maps[0].get(n);
+                return maps.every((m) => m.get(n) === amt);
+              });
+              const sameNameDiffAmt = allNames.filter(
+                (n) => maps.every((m) => m.has(n)) && !sameBoth.includes(n),
+              );
+              const fmt = (m: Map<string, string>, n: string) =>
+                m.get(n) ? `${n} ${m.get(n)}` : n;
+              return [
+                {
+                  label: t("compare.row.sameBoth"),
+                  values: items.map((_, idx) =>
+                    sameBoth.length > 0
+                      ? sameBoth.map((n) => fmt(maps[idx], n)).join("\n")
+                      : null,
+                  ),
+                },
+                {
+                  label: t("compare.row.sameNameDiffAmount"),
+                  emphasize: true,
+                  values: items.map((_, idx) =>
+                    sameNameDiffAmt.length > 0
+                      ? sameNameDiffAmt.map((n) => fmt(maps[idx], n)).join("\n")
+                      : null,
+                  ),
+                },
+                {
+                  label: t("compare.row.diffBoth"),
+                  values: items.map((_, idx) => {
+                    const uniq = [...maps[idx].keys()].filter(
+                      (n) => !maps.every((m) => m.has(n)),
+                    );
+                    return uniq.length > 0
+                      ? uniq.map((n) => fmt(maps[idx], n)).join("\n")
+                      : null;
+                  }),
+                },
+              ];
+            })(),
             {
               label: t("compare.section.ingredients"),
               values: items.map((p) => (p.ingredients.length > 0 ? p.ingredients.join("\n") : null)),
@@ -219,6 +279,7 @@ export default function CompareScreen() {
               },
               {
                 label: t("compare.row.sameNameDiffAmount"),
+                emphasize: true,
                 values: items.map((_, idx) =>
                   sameNameDiffAmt.length > 0
                     ? sameNameDiffAmt
@@ -415,7 +476,9 @@ export default function CompareScreen() {
                                       ? colors.muted
                                       : best === ci
                                         ? colors.success
-                                        : colors.foreground,
+                                        : row.emphasize
+                                          ? colors.warning
+                                          : colors.foreground,
                                   fontWeight: best === ci ? "700" : "400",
                                   textAlign: "center",
                                 }}
