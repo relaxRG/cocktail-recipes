@@ -296,6 +296,12 @@ export const TAG_NAME_DICT: Record<string, string> = {
   餐后: "Digestif",
   热饮: "Hot",
   提基: "Tiki",
+  // 制作方法
+  摇和: "Shake",
+  搅拌: "Stir",
+  直调: "Build",
+  分层: "Layer",
+  搅打: "Blend",
 };
 
 /** 反向词典(en 小写 -> zh) */
@@ -327,6 +333,27 @@ export function migrateTagNameEn<T extends { name: string; nameEn?: string }>(it
   if (en) return { ...item, nameEn: en };
   if (!hasCJK(item.name)) return { ...item, nameEn: item.name };
   return item;
+}
+
+/**
+ * 按界面语言返回标签/分类等名称的本地化显示。
+ * - lang=en:优先 nameEn,其次查词典翻译中文名,查不到回退原名
+ * - lang=zh:优先中文 name,查不到回退英文
+ */
+export function localizedTagName(
+  name: string | null | undefined,
+  nameEn: string | null | undefined,
+  lang: string,
+): string {
+  const zh = (name ?? "").trim();
+  const en = (nameEn ?? "").trim();
+  if (lang === "en") {
+    if (en) return en;
+    if (zh && TAG_NAME_DICT[zh]) return TAG_NAME_DICT[zh];
+    return zh;
+  }
+  if (zh) return zh;
+  return en;
 }
 
 /** 构建默认标签集合(首次启动时初始化,之后完全由用户管理) */

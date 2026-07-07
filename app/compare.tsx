@@ -18,6 +18,7 @@ import {
   Recipe,
   STRENGTH_LABELS,
   STRENGTH_BAND_LABELS,
+  localizedTagName,
 } from "@/lib/recipes/types";
 
 const COL_WIDTH = 168;
@@ -158,7 +159,10 @@ export default function CompareScreen() {
               return c ? displayNames(c.nameEn ?? "", c.name, lang).primary : null;
             }),
           },
-          { label: t("compare.row.spirit"), values: items.map((r) => r.baseSpirit || null) },
+          {
+            label: t("compare.row.spirit"),
+            values: items.map((r) => (r.baseSpirit ? localizedTagName(r.baseSpirit, "", lang) : null)),
+          },
           {
             label: t("compare.row.abv"),
             values: items.map((r) =>
@@ -207,13 +211,20 @@ export default function CompareScreen() {
         rows: [
           {
             label: t("compare.row.method"),
-            values: items.map((r) => r.method || null),
+            values: items.map((r) => (r.method ? localizedTagName(r.method, "", lang) : null)),
           },
-          { label: t("compare.row.glass"), values: items.map((r) => r.glass || null) },
+          {
+            label: t("compare.row.glass"),
+            values: items.map((r) => (r.glass ? localizedTagName(r.glass, "", lang) : null)),
+          },
           { label: t("compare.row.garnish"), values: items.map((r) => r.garnish || null) },
           {
             label: t("compare.row.flavors"),
-            values: items.map((r) => (r.flavors.length > 0 ? r.flavors.join(" · ") : null)),
+            values: items.map((r) =>
+              r.flavors.length > 0
+                ? r.flavors.map((f) => localizedTagName(f, "", lang)).join(" · ")
+                : null,
+            ),
           },
           {
             label: t("compare.row.steps"),

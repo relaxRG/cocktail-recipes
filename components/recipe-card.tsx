@@ -12,7 +12,12 @@ import { estimateHomemadeIngredientCost } from "@/lib/homemade/cost";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
-import { Recipe, STRENGTH_LABELS, STRENGTH_BAND_LABELS } from "@/lib/recipes/types";
+import {
+  Recipe,
+  STRENGTH_LABELS,
+  STRENGTH_BAND_LABELS,
+  localizedTagName,
+} from "@/lib/recipes/types";
 
 export function RecipeCard({
   recipe,
@@ -109,12 +114,14 @@ export function RecipeCard({
                   style={{ backgroundColor: category.color + "22" }}
                 >
                   <Text className="text-xs font-medium" style={{ color: category.color }}>
-                    {category.name}
+                    {localizedTagName(category.name, category.nameEn, lang)}
                   </Text>
                 </View>
               ) : null}
               <View className="px-2 py-0.5 rounded-full bg-background border border-border">
-                <Text className="text-xs text-muted">{recipe.baseSpirit}</Text>
+                <Text className="text-xs text-muted">
+                  {localizedTagName(recipe.baseSpirit, "", lang)}
+                </Text>
               </View>
               <View className="px-2 py-0.5 rounded-full bg-background border border-border">
                 <Text className="text-xs text-muted">

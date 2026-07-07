@@ -35,6 +35,7 @@ import {
   STRENGTH_LABELS,
   STRENGTH_BAND_LABELS,
   genId,
+  localizedTagName,
   splitBilingualName,
 } from "@/lib/recipes/types";
 
@@ -43,11 +44,14 @@ function ChipGroup({
   value,
   onChange,
   colorsMap,
+  labelOf,
 }: {
   options: readonly string[];
   value: string;
   onChange: (v: string) => void;
   colorsMap?: Record<string, string>;
+  /** 可选:将选项值映射为本地化显示文本(值本身仍作为存储主键) */
+  labelOf?: (v: string) => string;
 }) {
   const colors = useColors();
   return (
@@ -67,7 +71,9 @@ function ChipGroup({
               },
             ]}
           >
-            <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>{opt}</Text>
+            <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
+              {labelOf ? labelOf(opt) : opt}
+            </Text>
           </Pressable>
         );
       })}
@@ -401,7 +407,7 @@ export default function RecipeFormScreen() {
                   ]}
                 >
                   <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
-                    {cat.name}
+                    {displayNames(cat.nameEn ?? "", cat.name, lang).primary}
                   </Text>
                 </Pressable>
               );
@@ -416,6 +422,10 @@ export default function RecipeFormScreen() {
               value={baseSpirit}
               onChange={setBaseSpirit}
               colorsMap={spiritColors}
+              labelOf={(v) => {
+                const tag = spiritTags.find((tg) => tg.name === v);
+                return localizedTagName(v, tag?.nameEn, lang);
+              }}
             />
           ) : (
             <Text className="text-xs text-muted">{t("form.noSpirit")}</Text>
@@ -525,7 +535,12 @@ export default function RecipeFormScreen() {
 
           {/* Method */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.method")}</Text>
-          <ChipGroup options={METHODS} value={method} onChange={setMethod} />
+          <ChipGroup
+            options={METHODS}
+            value={method}
+            onChange={setMethod}
+            labelOf={(v) => localizedTagName(v, "", lang)}
+          />
 
           {/* Strength: auto-computed from ingredients + method */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.strength")}</Text>
@@ -537,7 +552,9 @@ export default function RecipeFormScreen() {
               <>
                 <View className="flex-row items-center" style={{ gap: 8 }}>
                   <Text className="text-base font-semibold text-foreground" style={{ lineHeight: 22 }}>
-                    {STRENGTH_LABELS[abvEstimate.strength]}
+                    {lang === "en"
+                      ? t(`strength.${abvEstimate.strength}` as "strength.light")
+                      : STRENGTH_LABELS[abvEstimate.strength]}
                     {" · "}
                     {STRENGTH_BAND_LABELS[abvEstimate.band][lang]}
                   </Text>
@@ -564,6 +581,10 @@ export default function RecipeFormScreen() {
               value={glass}
               onChange={setGlass}
               colorsMap={glassColors}
+              labelOf={(v) => {
+                const tag = glassTags.find((tg) => tg.name === v);
+                return localizedTagName(v, tag?.nameEn, lang);
+              }}
             />
           ) : (
             <Text className="text-xs text-muted">{t("form.noGlass")}</Text>

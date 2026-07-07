@@ -15,7 +15,7 @@ import { useBottleStore } from "@/lib/bottles/store";
 import { matchPrep } from "@/lib/homemade/match";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
-import { STRENGTH_LABELS, STRENGTH_BAND_LABELS } from "@/lib/recipes/types";
+import { STRENGTH_LABELS, STRENGTH_BAND_LABELS, localizedTagName } from "@/lib/recipes/types";
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -101,7 +101,10 @@ export default function RecipeDetailScreen() {
   const metaItems = [
     { label: t("detail.meta.spirit"), value: tagLabel("spirit", recipe.baseSpirit) },
     { label: t("detail.meta.glass"), value: tagLabel("glass", recipe.glass) || "—" },
-    { label: t("detail.meta.method"), value: recipe.method || "—" },
+    {
+      label: t("detail.meta.method"),
+      value: recipe.method ? localizedTagName(recipe.method, "", lang) : "—",
+    },
     {
       label: t("detail.meta.strength"),
       value:
