@@ -146,12 +146,6 @@ export default function HomemadeDetailScreen() {
                   <Text className="text-[15px] text-foreground" style={{ lineHeight: 21 }}>
                     {ing}
                   </Text>
-                  {cost.items[idx]?.cost !== null && cost.items[idx]?.cost !== undefined ? (
-                    <Text className="text-xs text-muted mt-0.5" style={{ lineHeight: 16 }}>
-                      ≈ ¥{cost.items[idx].cost!.toFixed(1)}
-                      {cost.items[idx].ref ? ` · ${cost.items[idx].ref}` : ""}
-                    </Text>
-                  ) : null}
                 </View>
               ))}
             </View>
@@ -159,38 +153,110 @@ export default function HomemadeDetailScreen() {
         ) : null}
 
         {/* Cost estimate card */}
-        {cost.estimatedCount > 0 ? (
+        {prep.ingredients.length > 0 ? (
           <>
             {sectionTitle(t("hm.cost.title"))}
-            <View className="bg-surface rounded-xl px-4 py-3">
-              <View className="flex-row items-center justify-between py-1">
-                <Text className="text-[15px] text-foreground">{t("hm.cost.batch")}</Text>
-                <Text className="text-[15px] font-semibold text-foreground">
-                  ≈ ¥{cost.batchCost.toFixed(1)}
+            <View className="bg-surface rounded-xl px-4 pb-1">
+              {/* Total header row — same layout as recipe detail cost card */}
+              <View
+                className="flex-row items-center justify-between py-3.5"
+                style={{ borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }}
+              >
+                <Text className="text-sm text-muted">
+                  {t("detail.cost.total", { a: cost.estimatedCount, b: cost.totalCount })}
+                </Text>
+                <Text className="text-xl font-bold" style={{ color: colors.primary }}>
+                  {cost.estimatedCount > 0 ? `¥${cost.batchCost.toFixed(1)}` : "—"}
                 </Text>
               </View>
-              {cost.costPer100Ml !== null ? (
+              {/* Per-ingredient rows; tap rows matched to library entries to edit price */}
+              {cost.items.map((item, idx) => {
+                const matName =
+                  item.materialEn || item.materialZh
+                    ? displayNames(item.materialEn ?? "", item.materialZh ?? "", lang).primary
+                    : null;
+                const row = (
+                  <View
+                    className="flex-row items-center justify-between py-2.5"
+                    style={
+                      idx > 0
+                        ? { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }
+                        : undefined
+                    }
+                  >
+                    <View className="flex-1 pr-3">
+                      <Text className="text-sm text-foreground" numberOfLines={1}>
+                        {item.line}
+                      </Text>
+                      {item.cost !== null && matName ? (
+                        <View className="flex-row items-center mt-0.5">
+                          <Text
+                            className="text-xs"
+                            numberOfLines={1}
+                            style={{ color: item.bottleId ? colors.primary : colors.muted }}
+                          >
+                            {matName}
+                            {item.ref ? ` ${item.ref}` : ""}
+                          </Text>
+                          {item.bottleId ? (
+                            <IconSymbol
+                              name="chevron.right"
+                              size={11}
+                              color={colors.primary}
+                              style={{ marginLeft: 2 }}
+                            />
+                          ) : null}
+                        </View>
+                      ) : item.cost === null ? (
+                        <Text className="text-xs text-muted mt-0.5">
+                          {t("hm.cost.noEstimate")}
+                        </Text>
+                      ) : null}
+                    </View>
+                    <Text
+                      className="text-sm font-semibold"
+                      style={{ color: item.cost !== null ? colors.foreground : colors.muted }}
+                    >
+                      {item.cost !== null ? `¥${item.cost.toFixed(1)}` : "—"}
+                    </Text>
+                  </View>
+                );
+                return item.bottleId ? (
+                  <Pressable
+                    key={`${item.line}-${idx}`}
+                    onPress={() =>
+                      router.push({ pathname: "/bottle/[id]", params: { id: item.bottleId! } })
+                    }
+                    style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+                  >
+                    {row}
+                  </Pressable>
+                ) : (
+                  <View key={`${item.line}-${idx}`}>{row}</View>
+                );
+              })}
+              {/* Unit costs */}
+              {cost.costPer100Ml !== null || cost.costPer30Ml !== null ? (
                 <View
-                  className="flex-row items-center justify-between py-1"
+                  className="flex-row items-center justify-between py-2.5"
                   style={{ borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}
                 >
-                  <Text className="text-[15px] text-foreground">{t("hm.cost.per100")}</Text>
-                  <Text className="text-[15px] text-muted">¥{cost.costPer100Ml.toFixed(2)}</Text>
+                  {cost.costPer100Ml !== null ? (
+                    <Text className="text-xs text-muted">
+                      {t("hm.cost.per100")} ¥{cost.costPer100Ml.toFixed(2)}
+                    </Text>
+                  ) : (
+                    <View />
+                  )}
+                  {cost.costPer30Ml !== null ? (
+                    <Text className="text-xs font-semibold" style={{ color: colors.primary }}>
+                      {t("hm.cost.per30")} ¥{cost.costPer30Ml.toFixed(2)}
+                    </Text>
+                  ) : null}
                 </View>
               ) : null}
-              {cost.costPer30Ml !== null ? (
-                <View
-                  className="flex-row items-center justify-between py-1"
-                  style={{ borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}
-                >
-                  <Text className="text-[15px] text-foreground">{t("hm.cost.per30")}</Text>
-                  <Text className="text-[15px] text-muted">¥{cost.costPer30Ml.toFixed(2)}</Text>
-                </View>
-              ) : null}
-              <Text className="text-xs text-muted mt-2" style={{ lineHeight: 17 }}>
-                {cost.yieldMl === null
-                  ? t("hm.cost.noYield")
-                  : t("hm.cost.note", { n: `${cost.estimatedCount}/${cost.totalCount}` })}
+              <Text className="text-[11px] text-muted py-2.5" style={{ lineHeight: 15 }}>
+                {cost.yieldMl === null ? t("hm.cost.noYield") : t("hm.cost.tapHint")}
               </Text>
             </View>
           </>

@@ -215,6 +215,15 @@ const dict = {
     en: "Estimated {n} ingredients. Reference prices from Taobao/JD/Hema, for reference only.",
   },
   "hm.cost.perUnit": { zh: "¥{n}/30ml", en: "¥{n}/30ml" },
+  "hm.cost.noEstimate": { zh: "暂无法估算", en: "No estimate" },
+  "hm.cost.tapHint": {
+    zh: "点击蓝色明细行可跳转原材料/酒款修改参考价;估算仅供参考。",
+    en: "Tap blue rows to edit reference prices in the library. Estimates are for reference only.",
+  },
+  "bottles.subtitle.materials": {
+    zh: "{n} 种原材料 · 中国电商参考价,可编辑",
+    en: "{n} raw materials · China market prices, editable",
+  },
   "detail.cost.homemade": {
     zh: "自制:{name} ¥{p}/30ml",
     en: "Homemade: {name} ¥{p}/30ml",

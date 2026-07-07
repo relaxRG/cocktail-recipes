@@ -28,7 +28,7 @@ interface BottleStore {
   getBottle: (id: string | undefined) => Bottle | undefined;
 }
 
-const SEED_VERSION = "4";
+const SEED_VERSION = "5";
 
 const BottleContext = createContext<BottleStore | null>(null);
 
@@ -74,6 +74,18 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
             return b;
           });
           if (migrated) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+        }
+        // v5 迁移:内置鲜榨果汁条目移入自制库,从酒库移除
+        {
+          const before = list.length;
+          list = list.filter(
+            (b) =>
+              !(
+                b.builtin &&
+                /^fresh (lime|lemon|orange) juice$/i.test(b.nameEn.trim())
+              ),
+          );
+          if (list.length !== before) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
         }
         if (!seeded && list.length === 0) {
           list = buildDefaultBottles();

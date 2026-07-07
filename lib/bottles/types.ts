@@ -16,9 +16,30 @@ export const BOTTLE_CATEGORIES = [
   "中式白酒",
   "糖浆",
   "软饮",
+  "原材料",
   "其他",
 ] as const;
 export type BottleCategory = (typeof BOTTLE_CATEGORIES)[number];
+
+/**
+ * 顶层分组:酒款库(spirits & mixers)与原材料库(raw materials)。
+ * 原材料 = "原材料" 分类;其余分类归酒款库。
+ */
+export const BOTTLE_GROUPS: { key: "bottles" | "materials"; zh: string; en: string }[] = [
+  { key: "bottles", zh: "酒款库", en: "Bottles" },
+  { key: "materials", zh: "原材料库", en: "Raw Materials" },
+];
+
+export function bottleGroupOf(category: string): "bottles" | "materials" {
+  return category === "原材料" ? "materials" : "bottles";
+}
+
+/** 分组下的分类列表 */
+export function categoriesOfGroup(group: "bottles" | "materials"): string[] {
+  return group === "materials"
+    ? ["原材料"]
+    : BOTTLE_CATEGORIES.filter((c) => c !== "原材料");
+}
 
 /** 酒款分类英文映射(界面语言为英文时显示) */
 export const BOTTLE_CATEGORY_EN: Record<string, string> = {
@@ -39,6 +60,7 @@ export const BOTTLE_CATEGORY_EN: Record<string, string> = {
   糖浆: "Syrups",
   软饮: "Soft Drinks",
   软饮糖浆: "Mixers/Syrups",
+  原材料: "Raw Materials",
   其他: "Others",
 };
 
@@ -62,8 +84,17 @@ export const BOTTLE_STYLES: Record<string, string[]> = {
   清酒烧酒: ["Junmai", "Junmai Ginjo", "Junmai Daiginjo", "Nigori", "Umeshu", "Mugi Shochu", "Imo Shochu", "Kome Shochu", "Soju"],
   中式白酒: ["Sauce Aroma 酱香", "Strong Aroma 浓香", "Light Aroma 清香", "Rice Aroma 米香"],
   糖浆: ["Syrup", "Cordial", "Shrub", "Cream/Foam"],
-  软饮: ["Soda", "Tonic", "Ginger Beer", "Ginger Ale", "Juice", "Sparkling Water", "Cola"],
+  软饮: ["Soda", "Tonic", "Ginger Beer", "Ginger Ale", "Sparkling Water", "Cola"],
   软饮糖浆: ["Syrup", "Juice", "Soda", "Tonic", "Ginger Beer", "Cordial", "Shrub"],
+  原材料: [
+    "Sugar & Sweetener",
+    "Fruit & Citrus",
+    "Spice & Botanical",
+    "Nut / Tea / Coffee",
+    "Dairy & Egg",
+    "Acid & Additive",
+    "Herb",
+  ],
 };
 
 /**

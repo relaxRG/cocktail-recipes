@@ -23,13 +23,18 @@ export default function BottleFormScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id, category: categoryParam } = useLocalSearchParams<{ id?: string; category?: string }>();
   const { getBottle, addBottle, updateBottle } = useBottleStore();
   const editing = getBottle(id);
 
   const [nameZh, setNameZh] = useState(editing?.nameZh ?? "");
   const [nameEn, setNameEn] = useState(editing?.nameEn ?? "");
-  const [category, setCategory] = useState(editing?.category ?? "金酒");
+  const [category, setCategory] = useState(
+    editing?.category ??
+      (categoryParam && (BOTTLE_CATEGORIES as readonly string[]).includes(categoryParam)
+        ? categoryParam
+        : "金酒"),
+  );
   const [style, setStyle] = useState(editing?.style ?? "");
   const [brand, setBrand] = useState(editing?.brand ?? "");
   const [origin, setOrigin] = useState(editing?.origin ?? "");

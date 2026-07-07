@@ -121,6 +121,8 @@ export interface PrepIngredientCost {
   cost: number | null;
   /** Reference price display */
   ref: string | null;
+  /** Matched bottle-library entry id (raw material or spirit) for tap-to-edit price */
+  bottleId: string | null;
 }
 
 export interface PrepCostEstimate {
@@ -192,14 +194,78 @@ function convertQty(
 }
 
 /**
+ * Parse a pack size string like "1kg" / "500g" / "500ml" / "1L" / "10枚" / "1根"
+ * to a base quantity + unit for per-unit pricing.
+ */
+export function parsePackToUnit(text: string): { qty: number; unit: "g" | "ml" | "piece" } | null {
+  const t = (text || "").trim().toLowerCase();
+  if (!t) return null;
+  const m = t.match(/(\d+(?:\.\d+)?)\s*(kg|千克|公斤|g|克|ml|毫升|l|升|个|枚|颗|根|片|只|pieces?|pcs?)/);
+  if (!m) return null;
+  const value = Number(m[1]);
+  if (!isFinite(value) || value <= 0) return null;
+  const unit = m[2];
+  if (/^(kg|千克|公斤)$/.test(unit)) return { qty: value * 1000, unit: "g" };
+  if (/^(g|克)$/.test(unit)) return { qty: value, unit: "g" };
+  if (/^(l|升)$/.test(unit)) return { qty: value * 1000, unit: "ml" };
+  if (/^(ml|毫升)$/.test(unit)) return { qty: value, unit: "ml" };
+  return { qty: value, unit: "piece" };
+}
+
+/**
+ * Match an ingredient line against the bottle library's raw-material entries
+ * (category "原材料"). Returns the material bottle with a parsable pack size & price.
+ */
+export function matchMaterialBottle(line: string, bottles: Bottle[]): Bottle | null {
+  const l = line.trim().toLowerCase();
+  if (!l) return null;
+  let best: Bottle | null = null;
+  let bestLen = 0;
+  for (const b of bottles) {
+    if (b.category !== "原材料" || b.priceCny <= 0) continue;
+    for (const c of [b.nameZh, b.nameEn]) {
+      const cl = c.trim().toLowerCase();
+      if (cl.length >= 2 && l.includes(cl) && cl.length > bestLen) {
+        if (parsePackToUnit(b.volume)) {
+          best = b;
+          bestLen = cl.length;
+        }
+      }
+    }
+  }
+  return best;
+}
+
+/**
  * Estimate homemade prep batch cost from its ingredient lines.
- * Tries the bottle library first for spirit lines (uses user's actual bottle prices),
- * then falls back to the Chinese-market material price table.
+ * Priority: 1) bottle-library raw materials (user-editable prices) →
+ * 2) bottle-library spirits → 3) built-in Chinese-market reference table.
  */
 export function estimatePrepCost(prep: HomemadePrep, bottles: Bottle[]): PrepCostEstimate {
   const items: PrepIngredientCost[] = prep.ingredients.map((line) => {
     const parsed = parseQuantity(line);
-    // 1) Try matching user's bottle library for alcohol lines with ml quantities
+    // 1) Raw-material entries in the bottle library (merged cost library, user editable)
+    if (parsed) {
+      const mat = matchMaterialBottle(line, bottles);
+      if (mat) {
+        const pack = parsePackToUnit(mat.volume)!;
+        const pricePerUnit = mat.priceCny / pack.qty;
+        const converted = convertQty(parsed.qty, parsed.unit, pack.unit);
+        if (converted !== null) {
+          return {
+            line,
+            materialEn: mat.nameEn || mat.nameZh,
+            materialZh: mat.nameZh || mat.nameEn,
+            quantity: parsed.qty,
+            unit: parsed.unit,
+            cost: pricePerUnit * converted,
+            ref: `¥${mat.priceCny}/${mat.volume}`,
+            bottleId: mat.id,
+          };
+        }
+      }
+    }
+    // 2) Try matching user's bottle library for alcohol lines with ml quantities
     if (parsed && parsed.unit === "ml") {
       const bottle = matchBottleForPrepLine(line, bottles);
       if (bottle && bottle.priceCny > 0) {
@@ -213,21 +279,22 @@ export function estimatePrepCost(prep: HomemadePrep, bottles: Bottle[]): PrepCos
             unit: "ml",
             cost: (bottle.priceCny / volumeMl) * parsed.qty,
             ref: `¥${bottle.priceCny}/${bottle.volume}`,
+            bottleId: bottle.id,
           };
         }
       }
     }
-    // 2) Material reference price table
+    // 3) Built-in material reference price table
     const mp = matchMaterial(line);
     if (!mp) {
-      return { line, materialEn: null, materialZh: null, quantity: parsed?.qty ?? null, unit: parsed?.unit ?? null, cost: null, ref: null };
+      return { line, materialEn: null, materialZh: null, quantity: parsed?.qty ?? null, unit: parsed?.unit ?? null, cost: null, ref: null, bottleId: null };
     }
     if (!parsed) {
-      return { line, materialEn: mp.en, materialZh: mp.zh, quantity: null, unit: null, cost: null, ref: mp.ref };
+      return { line, materialEn: mp.en, materialZh: mp.zh, quantity: null, unit: null, cost: null, ref: mp.ref, bottleId: null };
     }
     const converted = convertQty(parsed.qty, parsed.unit, mp.unit);
     if (converted === null) {
-      return { line, materialEn: mp.en, materialZh: mp.zh, quantity: parsed.qty, unit: parsed.unit, cost: null, ref: mp.ref };
+      return { line, materialEn: mp.en, materialZh: mp.zh, quantity: parsed.qty, unit: parsed.unit, cost: null, ref: mp.ref, bottleId: null };
     }
     return {
       line,
@@ -237,6 +304,7 @@ export function estimatePrepCost(prep: HomemadePrep, bottles: Bottle[]): PrepCos
       unit: parsed.unit,
       cost: mp.pricePerUnit * converted,
       ref: mp.ref,
+      bottleId: null,
     };
   });
 

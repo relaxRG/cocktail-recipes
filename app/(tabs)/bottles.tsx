@@ -18,7 +18,14 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { filterBottles, useBottleStore } from "@/lib/bottles/store";
-import { BOTTLE_CATEGORIES, BOTTLE_CATEGORY_EN, BOTTLE_STYLES, Bottle } from "@/lib/bottles/types";
+import {
+  BOTTLE_CATEGORY_EN,
+  BOTTLE_GROUPS,
+  BOTTLE_STYLES,
+  Bottle,
+  bottleGroupOf,
+  categoriesOfGroup,
+} from "@/lib/bottles/types";
 
 export default function BottlesScreen() {
   const colors = useColors();
@@ -27,30 +34,42 @@ export default function BottlesScreen() {
   const { t, lang } = useI18n();
   const { ready, bottles } = useBottleStore();
   const [query, setQuery] = useState("");
+  const [group, setGroup] = useState<"bottles" | "materials">("bottles");
   const [category, setCategory] = useState<string>("");
   const [style, setStyle] = useState<string>("");
 
-  const filtered = useMemo(
-    () => filterBottles(bottles, query, category || undefined, style || undefined),
-    [bottles, query, category, style],
+  const groupBottles = useMemo(
+    () => bottles.filter((b) => bottleGroupOf(b.category) === group),
+    [bottles, group],
   );
+  const filtered = useMemo(
+    () => filterBottles(groupBottles, query, category || undefined, style || undefined),
+    [groupBottles, query, category, style],
+  );
+  const groupCategories = useMemo(() => categoriesOfGroup(group), [group]);
 
   // 当前主分类下实际出现过的 style(预设顺序在前,库内自定义 style 追加在后)
   const styleOptions = useMemo(() => {
-    if (!category) return [] as string[];
+    // 原材料库只有单一分类,直接以分组内条目展示 style 子分类
+    const effCategory = category || (group === "materials" ? "原材料" : "");
+    if (!effCategory) return [] as string[];
     const present = new Set(
-      bottles.filter((b) => b.category === category && b.style).map((b) => b.style),
+      bottles.filter((b) => b.category === effCategory && b.style).map((b) => b.style),
     );
-    const preset = (BOTTLE_STYLES[category] ?? []).filter((s) => present.has(s));
+    const preset = (BOTTLE_STYLES[effCategory] ?? []).filter((s) => present.has(s));
     const extras = [...present].filter((s) => !preset.includes(s)).sort();
     return [...preset, ...extras];
-  }, [bottles, category]);
+  }, [bottles, category, group]);
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    router.push("/bottle-form");
+    router.push(
+      group === "materials"
+        ? { pathname: "/bottle-form", params: { category: "原材料" } }
+        : "/bottle-form",
+    );
   };
 
   const chipStyle = (active: boolean) => [
@@ -70,8 +89,50 @@ export default function BottlesScreen() {
       <View className="px-5 pt-2 pb-1">
         <Text className="text-3xl font-bold text-foreground">{t("bottles.title")}</Text>
         <Text className="text-sm text-muted mt-1">
-          {t("bottles.subtitle", { n: bottles.length })}
+          {group === "materials"
+            ? t("bottles.subtitle.materials", { n: groupBottles.length })
+            : t("bottles.subtitle", { n: groupBottles.length })}
         </Text>
+      </View>
+
+      {/* Group segmented control: 酒款库 / 原材料库 */}
+      <View className="px-5 mt-2">
+        <View
+          className="flex-row bg-surface border border-border rounded-xl p-1"
+          style={{ gap: 4 }}
+        >
+          {BOTTLE_GROUPS.map((g) => {
+            const active = group === g.key;
+            return (
+              <Pressable
+                key={g.key}
+                onPress={() => {
+                  if (group !== g.key) {
+                    setGroup(g.key);
+                    setCategory("");
+                    setStyle("");
+                    if (Platform.OS !== "web") {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }
+                  }
+                }}
+                style={[
+                  styles.segment,
+                  active && { backgroundColor: colors.primary },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.segmentText,
+                    { color: active ? "#FFFFFF" : colors.muted },
+                  ]}
+                >
+                  {lang === "en" ? g.en : g.zh}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       {/* Search */}
@@ -99,17 +160,18 @@ export default function BottlesScreen() {
       </View>
 
       {/* Category filter */}
-      <View style={styles.chipRowWrap}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipRow}
-        >
+      {groupCategories.length > 1 ? (
+        <View style={styles.chipRowWrap}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipRow}
+          >
             <Pressable style={chipStyle(category === "")} onPress={() => setCategory("")}>
               {/* 切换主分类时清空子分类 */}
               <Text style={chipTextStyle(category === "")}>{t("home.filter.all")}</Text>
             </Pressable>
-            {BOTTLE_CATEGORIES.map((cat) => {
+            {groupCategories.map((cat) => {
               const active = category === cat;
               return (
                 <Pressable
@@ -126,11 +188,14 @@ export default function BottlesScreen() {
                 </Pressable>
               );
             })}
-        </ScrollView>
-      </View>
+          </ScrollView>
+        </View>
+      ) : (
+        <View style={{ height: 6 }} />
+      )}
 
       {/* Style sub-category filter (visible when a main category is selected) */}
-      {category && styleOptions.length > 0 ? (
+      {(category || group === "materials") && styleOptions.length > 0 ? (
         <View style={styles.subChipRowWrap}>
           <ScrollView
             horizontal
@@ -318,6 +383,18 @@ const styles = StyleSheet.create({
   chipRowWrap: {
     marginTop: 10,
     marginBottom: 6,
+  },
+  segment: {
+    flex: 1,
+    height: 32,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  segmentText: {
+    fontSize: 13,
+    fontWeight: "600",
+    lineHeight: 18,
   },
   subChipRowWrap: {
     marginBottom: 6,

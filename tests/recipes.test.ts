@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import { filterBottles } from "../lib/bottles/store";
 import { buildDefaultBottles } from "../lib/bottles/seed";
-import { BOTTLE_CATEGORIES, migrateBottleCategory, normalizeBottle } from "../lib/bottles/types";
+import {
+  BOTTLE_CATEGORIES,
+  bottleGroupOf,
+  categoriesOfGroup,
+  migrateBottleCategory,
+  normalizeBottle,
+} from "../lib/bottles/types";
 import {
   estimateRecipeCost,
   formatAmountAsMl,
@@ -22,6 +28,8 @@ import {
   estimateHomemadeIngredientCost,
   estimatePrepCost,
   matchMaterial,
+  matchMaterialBottle,
+  parsePackToUnit,
   parseQuantity,
   parseYieldToMl,
 } from "../lib/homemade/cost";
@@ -36,6 +44,76 @@ import {
 } from "../lib/homemade/types";
 
 describe("homemade preps", () => {
+  it("merges raw-material cost library into bottle library with group split", () => {
+    const bottles = buildDefaultBottles();
+    const materials = bottles.filter((b) => b.category === "原材料");
+    expect(materials.length).toBeGreaterThanOrEqual(40);
+    for (const m of materials) {
+      expect(m.priceCny).toBeGreaterThan(0);
+      expect(parsePackToUnit(m.volume)).not.toBeNull();
+      expect(m.abv).toBe(0);
+    }
+    expect(bottleGroupOf("原材料")).toBe("materials");
+    expect(bottleGroupOf("金酒")).toBe("bottles");
+    expect(categoriesOfGroup("materials")).toEqual(["原材料"]);
+    expect(categoriesOfGroup("bottles")).not.toContain("原材料");
+    expect(BOTTLE_CATEGORIES).toContain("原材料");
+  });
+
+  it("moves fresh juices out of bottle seed into homemade samples", () => {
+    const bottles = buildDefaultBottles();
+    expect(
+      bottles.some((b) => /^fresh (lime|lemon|orange) juice$/i.test(b.nameEn.trim())),
+    ).toBe(false);
+    const preps = buildSamplePreps();
+    const juices = preps.filter((p) => p.type === "juice");
+    expect(juices.length).toBeGreaterThanOrEqual(3);
+    expect(juices.some((p) => /lime/i.test(p.name))).toBe(true);
+    expect(juices.some((p) => /lemon/i.test(p.name))).toBe(true);
+    expect(juices.some((p) => /orange/i.test(p.name))).toBe(true);
+  });
+
+  it("parses pack sizes for material pricing", () => {
+    expect(parsePackToUnit("1kg")).toEqual({ qty: 1000, unit: "g" });
+    expect(parsePackToUnit("500g")).toEqual({ qty: 500, unit: "g" });
+    expect(parsePackToUnit("500ml")).toEqual({ qty: 500, unit: "ml" });
+    expect(parsePackToUnit("1L")).toEqual({ qty: 1000, unit: "ml" });
+    expect(parsePackToUnit("10枚")).toEqual({ qty: 10, unit: "piece" });
+    expect(parsePackToUnit("1根")).toEqual({ qty: 1, unit: "piece" });
+    expect(parsePackToUnit("")).toBeNull();
+  });
+
+  it("prefers bottle-library material prices over built-in table in prep cost", () => {
+    const bottles = buildDefaultBottles();
+    const sugar = bottles.find((b) => b.nameEn === "White Sugar")!;
+    expect(sugar).toBeTruthy();
+    const hit = matchMaterialBottle("200g white sugar 白砂糖", bottles);
+    expect(hit?.id).toBe(sugar.id);
+    const prep = {
+      id: "p1",
+      name: "Simple Syrup",
+      nameAlt: "单糖浆",
+      type: "syrup",
+      ingredients: ["200g white sugar 白砂糖", "200g hot water 热水"],
+      recipe: "stir",
+      yield: "~300ml",
+      shelfLife: "",
+      storage: "",
+      notes: "",
+      builtin: false,
+      createdAt: 0,
+      updatedAt: 0,
+    };
+    const est = estimatePrepCost(prep as any, bottles);
+    const sugarItem = est.items[0];
+    expect(sugarItem.bottleId).toBe(sugar.id);
+    expect(sugarItem.cost).toBeCloseTo((sugar.priceCny / 1000) * 200, 5);
+    // After user edits the library price, the estimate follows
+    const edited = bottles.map((b) => (b.id === sugar.id ? { ...b, priceCny: 16 } : b));
+    const est2 = estimatePrepCost(prep as any, edited);
+    expect(est2.items[0].cost).toBeCloseTo(3.2, 5);
+  });
+
   it("builds sample preps with required fields and unique ids", () => {
     const preps = buildSamplePreps();
     expect(preps.length).toBeGreaterThanOrEqual(5);
