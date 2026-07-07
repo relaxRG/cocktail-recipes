@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -11,12 +12,14 @@ import {
   View,
 } from "react-native";
 import * as Haptics from "expo-haptics";
+import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { RecipeDraft, useRecipeStore } from "@/lib/recipes/store";
+import { parseRecipeText } from "@/lib/recipes/parser";
 import {
   CODEX_FAMILIES,
   Ingredient,
@@ -96,6 +99,7 @@ export default function RecipeFormScreen() {
   const [steps, setSteps] = useState(editing?.steps ?? "");
   const [garnish, setGarnish] = useState(editing?.garnish ?? "");
   const [notes, setNotes] = useState(editing?.notes ?? "");
+  const [importHint, setImportHint] = useState("");
 
   const canSave = name.trim().length > 0;
 
@@ -120,6 +124,73 @@ export default function RecipeFormScreen() {
     setFlavors((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
+  };
+
+  /** 将解析结果填充到表单;仅覆盖解析到内容的字段 */
+  const applyParsed = (text: string) => {
+    const p = parseRecipeText(text);
+    const gotSomething =
+      p.name || p.ingredients.length > 0 || p.steps || p.glass || p.garnish || p.source;
+    if (!gotSomething) {
+      setImportHint("未能从剪贴板内容中识别出配方信息,请检查复制的文字");
+      return;
+    }
+    if (p.name) setName(p.name);
+    if (p.ingredients.length > 0) setIngredients(p.ingredients);
+    if (p.steps) setSteps(p.steps);
+    if (p.garnish) setGarnish(p.garnish);
+    if (p.source) setSource(p.source);
+    if (p.variantOf) setVariantOf(p.variantOf);
+    // 杯型/基酒:仅当解析结果能对应到已有标签时才选中,否则原样填入
+    if (p.glass) {
+      const hit = glassNames.find((g) => p.glass.includes(g) || g.includes(p.glass));
+      setGlass(hit ?? p.glass);
+    }
+    if (p.method && (METHODS as readonly string[]).includes(p.method)) setMethod(p.method);
+    if (p.baseSpirit) {
+      const hit = spiritNames.find((s) => p.baseSpirit.includes(s) || s.includes(p.baseSpirit));
+      if (hit) setBaseSpirit(hit);
+    }
+    const parts: string[] = [];
+    if (p.name) parts.push("酒名");
+    if (p.ingredients.length > 0) parts.push(`${p.ingredients.length} 项配料`);
+    if (p.steps) parts.push("做法");
+    if (p.glass) parts.push("杯型");
+    if (p.garnish) parts.push("装饰");
+    setImportHint(`已识别并填入:${parts.join("、")},请核对后保存`);
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  };
+
+  const handlePasteImport = async () => {
+    try {
+      const text = await Clipboard.getStringAsync();
+      if (!text || !text.trim()) {
+        setImportHint("剪贴板为空,请先复制配方文字");
+        return;
+      }
+      const hasContent =
+        name.trim() || ingredients.some((i) => i.name.trim()) || steps.trim();
+      if (hasContent) {
+        if (Platform.OS === "web") {
+          // eslint-disable-next-line no-alert
+          if (typeof window !== "undefined" && !window.confirm("导入将覆盖已填写的内容,继续吗?")) {
+            return;
+          }
+          applyParsed(text);
+          return;
+        }
+        Alert.alert("粘贴导入", "导入将覆盖已填写的内容,继续吗?", [
+          { text: "取消", style: "cancel" },
+          { text: "导入", onPress: () => applyParsed(text) },
+        ]);
+        return;
+      }
+      applyParsed(text);
+    } catch {
+      setImportHint("读取剪贴板失败,请手动粘贴到对应字段");
+    }
   };
 
   const handleSave = () => {
@@ -178,6 +249,34 @@ export default function RecipeFormScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
           keyboardShouldPersistTaps="handled"
         >
+          {/* Paste import */}
+          <Pressable
+            onPress={handlePasteImport}
+            style={({ pressed }) => [
+              styles.importBtn,
+              {
+                backgroundColor: colors.primary + "14",
+                borderColor: colors.primary + "55",
+              },
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <IconSymbol name="doc.on.clipboard" size={18} color={colors.primary} />
+            <View style={{ flex: 1 }}>
+              <Text className="text-sm font-semibold" style={{ color: colors.primary, lineHeight: 19 }}>
+                粘贴导入配方
+              </Text>
+              <Text className="text-xs text-muted mt-0.5" style={{ lineHeight: 16 }}>
+                复制配方文字后点这里,自动识别酒名、配料用量与做法
+              </Text>
+            </View>
+          </Pressable>
+          {importHint ? (
+            <Text className="text-xs mt-2" style={{ color: colors.primary, lineHeight: 16 }}>
+              {importHint}
+            </Text>
+          ) : null}
+
           {/* Name */}
           <Text className="text-sm font-medium text-muted mt-3 mb-1.5">酒名 *</Text>
           <TextInput
@@ -488,7 +587,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingVertical: 8,
+    paddingVertical: 6,
+  },
+  importBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderRadius: 14,
+    borderWidth: 1,
   },
   saveBtn: {
     paddingVertical: 14,

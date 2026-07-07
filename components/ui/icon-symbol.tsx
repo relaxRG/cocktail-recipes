@@ -22,6 +22,7 @@ const MAPPING = {
   "folder.fill": "folder",
   "plus": "add",
   "line.3.horizontal": "drag-handle",
+  "doc.on.clipboard": "content-paste",
   "books.vertical.fill": "local-bar",
   "star.fill": "star",
   "star": "star-border",

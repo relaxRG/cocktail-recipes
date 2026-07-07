@@ -12,6 +12,7 @@ import {
 } from "../lib/bottles/cost";
 import { filterRecipes } from "../lib/recipes/search";
 import { buildDefaultCategories, buildSampleRecipes } from "../lib/recipes/seed";
+import { parseRecipeText, splitIngredientLine, looksLikeIngredientLine } from "../lib/recipes/parser";
 import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib/recipes/types";
 
 describe("recipes data layer", () => {
@@ -285,5 +286,67 @@ describe("cost estimation", () => {
     expect(formatAmountAsMl("8-10片")).toBe("8-10片");
     expect(formatAmountAsMl("适量")).toBe("适量");
     expect(formatAmountAsMl("薄荷叶 8片")).toBe("薄荷叶 8片");
+  });
+});
+
+describe("recipe text parser", () => {
+  it("detects and splits ingredient lines", () => {
+    expect(looksLikeIngredientLine("金酒 45ml")).toBe(true);
+    expect(looksLikeIngredientLine("- 青柠汁 3/4 oz")).toBe(true);
+    expect(looksLikeIngredientLine("将所有材料摇和后滤入杯中即可享用")).toBe(false);
+
+    expect(splitIngredientLine("金酒 45ml")).toEqual({ name: "金酒", amount: "45ml" });
+    expect(splitIngredientLine("- 金巴利 30 ml")).toEqual({ name: "金巴利", amount: "30 ml" });
+    expect(splitIngredientLine("2 dash 安高天娜苦精")).toEqual({
+      name: "安高天娜苦精",
+      amount: "2 dash",
+    });
+  });
+
+  it("parses sectioned recipe text", () => {
+    const text = [
+      "金色黄昏",
+      "配料:",
+      "金酒 45ml",
+      "柠檬汁 20ml",
+      "蜂蜜糖浆 15ml",
+      "做法:",
+      "1. 摇酒壶加冰",
+      "2. 摇和15秒后滤入库佩杯",
+      "装饰:",
+      "柠檬皮",
+      "来源:自创",
+    ].join("\n");
+    const p = parseRecipeText(text);
+    expect(p.name).toBe("金色黄昏");
+    expect(p.ingredients.length).toBe(3);
+    expect(p.ingredients[0]).toMatchObject({ name: "金酒", amount: "45ml" });
+    expect(p.steps).toContain("摇酒壶加冰");
+    expect(p.garnish).toBe("柠檬皮");
+    expect(p.source).toBe("自创");
+    expect(p.glass).toBe("库佩杯");
+    expect(p.method).toBe("摇和");
+    expect(p.baseSpirit).toBe("金酒");
+  });
+
+  it("parses unsectioned free-form text", () => {
+    const text = [
+      "玛格丽特",
+      "龙舌兰 50ml",
+      "君度 20ml",
+      "青柠汁 15ml",
+      "杯口抹盐,摇和后滤入马天尼杯。",
+    ].join("\n");
+    const p = parseRecipeText(text);
+    expect(p.name).toBe("玛格丽特");
+    expect(p.ingredients.length).toBe(3);
+    expect(p.steps).toContain("杯口抹盐");
+    expect(p.baseSpirit).toBe("龙舌兰");
+  });
+
+  it("handles empty input gracefully", () => {
+    const p = parseRecipeText("   \n  ");
+    expect(p.name).toBe("");
+    expect(p.ingredients.length).toBe(0);
   });
 });
