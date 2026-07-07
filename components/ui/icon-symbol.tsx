@@ -50,6 +50,7 @@ const MAPPING = {
   "tag.fill": "label",
   "square.and.arrow.down.fill": "download",
   "globe": "language",
+  "icloud.fill": "cloud",
   "info.circle.fill": "info",
 } as IconMapping;
 

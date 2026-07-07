@@ -3,7 +3,29 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { z } from "zod";
 import { invokeLLM } from "./_core/llm";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
+import {
+  getAppConfigValue,
+  getSyncData,
+  setAppConfigValue,
+  upsertSyncData,
+} from "./db";
+
+const OWNER_KEY = "ownerOpenId";
+
+/**
+ * 访问控制:应用为私人使用。
+ * 第一个登录的用户自动成为 owner;之后仅 owner 可访问同步数据。
+ */
+async function ensureOwner(user: { id: number; openId: string }) {
+  const owner = await getAppConfigValue(OWNER_KEY);
+  if (!owner) {
+    await setAppConfigValue(OWNER_KEY, user.openId);
+    return true;
+  }
+  return owner === user.openId;
+}
 
 /** 批量导入:从文件 base64 提取纯文本(xlsx/docx/csv/txt;pdf 走 LLM file_url) */
 async function extractFileText(
@@ -176,6 +198,41 @@ export const appRouter = router({
         const content = (input.text ?? "").trim();
         if (!content) return { items: [] as BulkImportItem[] };
         return { items: await llmExtract(content.slice(0, 100_000)) };
+      }),
+  }),
+  sync: router({
+    /** 检查当前登录用户是否有访问权(是否 owner) */
+    access: protectedProcedure.query(async ({ ctx }) => {
+      const allowed = await ensureOwner(ctx.user);
+      return { allowed } as const;
+    }),
+    /** 拉取云端全部同步数据 */
+    pull: protectedProcedure.query(async ({ ctx }) => {
+      const allowed = await ensureOwner(ctx.user);
+      if (!allowed) throw new TRPCError({ code: "FORBIDDEN", message: "Private app" });
+      const entries = await getSyncData(ctx.user.id);
+      return { entries } as const;
+    }),
+    /** 推送本地改动(last-write-wins per key) */
+    push: protectedProcedure
+      .input(
+        z.object({
+          entries: z
+            .array(
+              z.object({
+                storageKey: z.string().max(128),
+                value: z.string().max(15_000_000),
+                clientUpdatedAt: z.number(),
+              }),
+            )
+            .max(40),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        const allowed = await ensureOwner(ctx.user);
+        if (!allowed) throw new TRPCError({ code: "FORBIDDEN", message: "Private app" });
+        await upsertSyncData(ctx.user.id, input.entries);
+        return { success: true, count: input.entries.length } as const;
       }),
   }),
 });

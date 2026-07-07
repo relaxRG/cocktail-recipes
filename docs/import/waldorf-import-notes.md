@@ -83,3 +83,17 @@
 - 测试: 169 passed(waldorf-ingredients.test.ts 10项新测试)
 - 截图验证: 酒单447配方正常; 酒库基酒库179款(伏特加/龙舌兰/朗姆/金酒等,中英名+参考价)
 - 价格覆盖率: 468/481
+
+## 私密网页版阶段(2026-07-08)
+- DB: 新表 sync_data(userId,storageKey,value,clientUpdatedAt 唯一索引 user+key) 与 app_config(configKey unique)。迁移已用 webdev_execute_sql 应用。
+- server/db.ts: getSyncData/upsertSyncData(LWW)/getAppConfigValue/setAppConfigValue。
+- server/routers.ts: sync 路由(access/pull/push, protectedProcedure),ensureOwner:第一个登录用户 openId 写入 app_config.ownerOpenId,之后仅 owner 放行,否则 FORBIDDEN。
+- lib/sync/engine.ts: SYNC_KEYS 18个键;notifySyncChange(key)→脏键 debounce 3s push;runInitialSync 按 clientUpdatedAt LWW 合并,云端新→覆盖本地并 web reload;本地新→分批(8/批)上传。时间戳键前缀 sync.ts.。
+- lib/sync/provider.tsx: SyncProvider(useAuth 驱动;pull 失败 FORBIDDEN→accessAllowed=false);login 动态 import constants/oauth startOAuthLogin。
+- components/web-auth-gate.tsx: web 未登录→登录页;非 owner→拒绝页;native 不拦截。
+- app/_layout.tsx: I18nProvider > SyncProvider > WebAuthGate > RecipeProvider...
+- stores 已接 notifySyncChange(脚本 scripts/wire-sync-notify.py,相对路径导入 ../sync/engine 以兼容 vitest 无 @/ 别名)。
+- me.tsx 加了云端同步卡片(icloud.fill→cloud 映射已加)。translations.ts 加 gate.*/sync.* 键。
+- global.css 加 Apple 风格: >=768px 时 #root>div max-width 560px 居中+阴影+径向渐变背景、系统字体栈、细滚动条。截图验证:1440px 下登录门居中但容器阴影未见(#root>div 可能不是直接子层,待验证已登录主界面)。
+- /api/auth/me 未登录 403→401 是模板正常行为。
+- 170 tests pass。TS 0 errors。上个检查点 9586e643。

@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { notifySyncChange } from "../sync/engine";
 import React, {
   createContext,
   useCallback,
@@ -147,7 +148,9 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         if (!seeded && cats.length === 0) {
           cats = buildDefaultCategories();
           await AsyncStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
+          notifySyncChange(CATEGORIES_KEY);
           await AsyncStorage.setItem(SEEDED_KEY, "1");
+          notifySyncChange(SEEDED_KEY);
         }
         // 《The Waldorf Astoria Bar Book》数据集:首次加载时一次性合入(按英文名去重)
         if (!waldorfDone) {
@@ -166,11 +169,14 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           if (newCats.length > 0) {
             cats = [...cats, ...newCats];
             await AsyncStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
+            notifySyncChange(CATEGORIES_KEY);
           }
           await AsyncStorage.setItem(WALDORF_DATASET_KEY, "1");
+          notifySyncChange(WALDORF_DATASET_KEY);
         }
         if (migrated) {
           AsyncStorage.setItem(RECIPES_KEY, JSON.stringify(recs)).catch(() => {});
+          notifySyncChange(RECIPES_KEY);
         }
         let tagList: TagItem[] = (tRaw ? (JSON.parse(tRaw) as TagItem[]) : []).map((t) =>
           migrateTagNameEn(t),
@@ -178,6 +184,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         if (!tRaw) {
           tagList = buildDefaultTags();
           await AsyncStorage.setItem(TAGS_KEY, JSON.stringify(tagList));
+          notifySyncChange(TAGS_KEY);
         }
         const groupList: TagGroup[] = (gRaw ? (JSON.parse(gRaw) as TagGroup[]) : []).map(
           (g) => migrateTagNameEn(g),
@@ -198,16 +205,19 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
   const persistRecipes = useCallback((next: Recipe[]) => {
     setRecipes(next);
     AsyncStorage.setItem(RECIPES_KEY, JSON.stringify(next)).catch(() => {});
+    notifySyncChange(RECIPES_KEY);
   }, []);
 
   const persistCategories = useCallback((next: Category[]) => {
     setCategories(next);
     AsyncStorage.setItem(CATEGORIES_KEY, JSON.stringify(next)).catch(() => {});
+    notifySyncChange(CATEGORIES_KEY);
   }, []);
 
   const persistTags = useCallback((next: TagItem[]) => {
     setTags(next);
     AsyncStorage.setItem(TAGS_KEY, JSON.stringify(next)).catch(() => {});
+    notifySyncChange(TAGS_KEY);
   }, []);
 
   const tagGroupsRef = useRef<TagGroup[]>([]);
@@ -215,6 +225,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
   const persistTagGroups = useCallback((next: TagGroup[]) => {
     setTagGroups(next);
     AsyncStorage.setItem(TAG_GROUPS_KEY, JSON.stringify(next)).catch(() => {});
+    notifySyncChange(TAG_GROUPS_KEY);
   }, []);
 
   const addRecipe = useCallback(

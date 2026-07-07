@@ -4,6 +4,22 @@ export type Lang = "zh" | "en";
 const dict = {
   // Tabs
   "tab.recipes": { zh: "酒单", en: "Recipes" },
+  // 私密访问门与云端同步
+  "gate.title": { zh: "鸡尾酒配方手册", en: "Cocktail Recipe Book" },
+  "gate.subtitle": { zh: "私人调酒工作台 · 配方、酒库与自制库云端同步", en: "Your private bartending workspace with cloud sync" },
+  "gate.login": { zh: "登录使用", en: "Sign In" },
+  "gate.private": { zh: "此应用为私人使用,仅限所有者访问", en: "This app is private and owner-only" },
+  "gate.denied.title": { zh: "无访问权限", en: "Access Denied" },
+  "gate.denied.subtitle": { zh: "此应用为私人应用,当前账号无权访问", en: "This is a private app. Your account is not authorized" },
+  "gate.switchAccount": { zh: "退出并切换账号", en: "Sign out & switch account" },
+  "sync.title": { zh: "云端同步", en: "Cloud Sync" },
+  "sync.on": { zh: "已开启 · 数据自动同步", en: "On · data syncs automatically" },
+  "sync.off": { zh: "登录后自动同步数据", en: "Sign in to sync your data" },
+  "sync.syncing": { zh: "同步中…", en: "Syncing…" },
+  "sync.lastSynced": { zh: "上次同步", en: "Last synced" },
+  "sync.login": { zh: "登录", en: "Sign In" },
+  "sync.logout": { zh: "退出登录", en: "Sign Out" },
+  "sync.error": { zh: "同步遇到问题,稍后自动重试", en: "Sync issue, will retry automatically" },
   "tab.bottles": { zh: "酒库", en: "Bottles" },
   "tab.tags": { zh: "分类", en: "Tags" },
   "tab.me": { zh: "我的", en: "Me" },

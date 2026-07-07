@@ -20,6 +20,8 @@ import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { RecipeProvider } from "@/lib/recipes/store";
 import { I18nProvider } from "@/lib/i18n";
+import { SyncProvider } from "@/lib/sync/provider";
+import { WebAuthGate } from "@/components/web-auth-gate";
 import { BottleProvider } from "@/lib/bottles/store";
 import { BottleTaxonomyProvider } from "@/lib/bottles/taxonomy";
 import { HomemadeProvider } from "@/lib/homemade/store";
@@ -88,6 +90,8 @@ export default function RootLayout() {
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
       <I18nProvider>
+      <SyncProvider>
+      <WebAuthGate>
       <RecipeProvider>
           <BottleTaxonomyProvider>
           <BottleProvider>
@@ -116,6 +120,8 @@ export default function RootLayout() {
           </BottleProvider>
           </BottleTaxonomyProvider>
           </RecipeProvider>
+          </WebAuthGate>
+          </SyncProvider>
           </I18nProvider>
         </QueryClientProvider>
       </trpc.Provider>

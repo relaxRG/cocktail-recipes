@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { notifySyncChange } from "../sync/engine";
 import React, {
   createContext,
   useCallback,
@@ -172,6 +173,7 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
           finalList = migrated;
           if (needMigrate) {
             AsyncStorage.setItem(PREPS_KEY, JSON.stringify(migrated)).catch(() => {});
+            notifySyncChange(PREPS_KEY);
           }
         }
         // 《Waldorf》自制配料数据集:首次加载时一次性合入(按中/英名去重,幂等)
@@ -191,15 +193,20 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
             if (fresh.length > 0) {
               finalList = [...finalList, ...fresh];
               AsyncStorage.setItem(PREPS_KEY, JSON.stringify(finalList)).catch(() => {});
+              notifySyncChange(PREPS_KEY);
             }
             AsyncStorage.setItem(WALDORF_PREPS_FLAG, "1").catch(() => {});
+            notifySyncChange(WALDORF_PREPS_FLAG);
           }
         }
         setPreps(finalList);
         if (needMigrate) {
           AsyncStorage.setItem(SECTIONS_KEY, JSON.stringify(nextSections)).catch(() => {});
+          notifySyncChange(SECTIONS_KEY);
           AsyncStorage.setItem(TYPES_KEY, JSON.stringify(nextTypes)).catch(() => {});
+          notifySyncChange(TYPES_KEY);
           AsyncStorage.setItem(TAXONOMY_V2_KEY, "1").catch(() => {});
+          notifySyncChange(TAXONOMY_V2_KEY);
         }
       } catch (e) {
         console.warn("Failed to load homemade preps", e);
@@ -212,16 +219,19 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
   const persist = useCallback((list: HomemadePrep[]) => {
     setPreps(list);
     AsyncStorage.setItem(PREPS_KEY, JSON.stringify(list)).catch(() => {});
+    notifySyncChange(PREPS_KEY);
   }, []);
 
   const persistSections = useCallback((list: PrepSection[]) => {
     setSections(list);
     AsyncStorage.setItem(SECTIONS_KEY, JSON.stringify(list)).catch(() => {});
+    notifySyncChange(SECTIONS_KEY);
   }, []);
 
   const persistTypes = useCallback((list: PrepType[]) => {
     setTypes(list);
     AsyncStorage.setItem(TYPES_KEY, JSON.stringify(list)).catch(() => {});
+    notifySyncChange(TYPES_KEY);
   }, []);
 
   const addPrep = useCallback<HomemadeStore["addPrep"]>(
@@ -331,6 +341,7 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
     if (fresh.length > 0) {
       persist([...fresh, ...preps]);
       AsyncStorage.setItem(PREPS_SEEDED_KEY, "1").catch(() => {});
+      notifySyncChange(PREPS_SEEDED_KEY);
     }
     return fresh.length;
   }, [preps, persist]);

@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { notifySyncChange } from "../sync/engine";
 import React, {
   createContext,
   useCallback,
@@ -71,6 +72,7 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
             return b;
           });
           if (changed) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+          notifySyncChange(BOTTLES_KEY);
         }
         // v4 迁移:旧分类"软饮糖浆"拆分为"糖浆"与"软饮"
         {
@@ -84,6 +86,7 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
             return b;
           });
           if (migrated) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+          notifySyncChange(BOTTLES_KEY);
         }
         // v5 迁移:内置鲜榨果汁条目移入自制库,从酒库移除
         {
@@ -96,6 +99,7 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
               ),
           );
           if (list.length !== before) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+          notifySyncChange(BOTTLES_KEY);
         }
         // v6 迁移:按用户要求删除全部内置种子酒款(仅种子,保留用户自建数据),
         // 且不再进行任何初始 seed;同时旧分类名迁移(开胃酒→阿玛罗与开胃酒)。
@@ -112,7 +116,9 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
             return b;
           });
           if (migrated) await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+          notifySyncChange(BOTTLES_KEY);
           await AsyncStorage.setItem(BOTTLES_SEEDED_KEY, SEED_VERSION);
+          notifySyncChange(BOTTLES_SEEDED_KEY);
         }
         // 《Waldorf》配料数据集:首次加载时一次性合入(按中/英名去重,幂等)
         {
@@ -131,8 +137,10 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
             if (fresh.length > 0) {
               list = [...list, ...fresh];
               await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+              notifySyncChange(BOTTLES_KEY);
             }
             await AsyncStorage.setItem(WALDORF_BOTTLES_FLAG, "1");
+            notifySyncChange(WALDORF_BOTTLES_FLAG);
           }
         }
         setBottles(list);
@@ -150,6 +158,7 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
   const persist = useCallback((next: Bottle[]) => {
     setBottles(next);
     AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(next)).catch(() => {});
+    notifySyncChange(BOTTLES_KEY);
   }, []);
 
   const addBottle = useCallback(

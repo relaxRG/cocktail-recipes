@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { notifySyncChange } from "../sync/engine";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { Lang, TranslationKey, translate } from "./translations";
@@ -25,6 +26,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
     AsyncStorage.setItem(STORAGE_KEY, next).catch(() => {});
+    notifySyncChange(STORAGE_KEY);
   }, []);
 
   const t = useCallback(

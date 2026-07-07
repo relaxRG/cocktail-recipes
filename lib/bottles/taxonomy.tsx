@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { notifySyncChange } from "../sync/engine";
 import React, {
   createContext,
   useCallback,
@@ -313,6 +314,7 @@ export function BottleTaxonomyProvider({ children }: { children: React.ReactNode
           const { next, changed } = migrateCategoriesV7(parsed);
           setCategories(next);
           if (changed) AsyncStorage.setItem(CATS_KEY, JSON.stringify(next)).catch(() => {});
+          notifySyncChange(CATS_KEY);
         }
         if (rawS) setStyles(JSON.parse(rawS));
       } catch (e) {
@@ -331,10 +333,12 @@ export function BottleTaxonomyProvider({ children }: { children: React.ReactNode
   const persistCats = useCallback((next: BottleCategoryDef[]) => {
     setCategories(next);
     AsyncStorage.setItem(CATS_KEY, JSON.stringify(next)).catch(() => {});
+    notifySyncChange(CATS_KEY);
   }, []);
   const persistStyles = useCallback((next: BottleStyleDef[]) => {
     setStyles(next);
     AsyncStorage.setItem(STYLES_KEY, JSON.stringify(next)).catch(() => {});
+    notifySyncChange(STYLES_KEY);
   }, []);
 
   const addCategory = useCallback(

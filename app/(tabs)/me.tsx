@@ -9,6 +9,7 @@ import { useI18n } from "@/lib/i18n";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useHomemadeStore } from "@/lib/homemade/store";
+import { useSync } from "@/lib/sync/provider";
 
 /** "我的"个人中心页:数据总览、标签管理与批量导入入口、语言设置 */
 export default function MeScreen() {
@@ -18,9 +19,36 @@ export default function MeScreen() {
   const { recipes } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
+  const { syncState, isAuthenticated, user, login, logout } = useSync();
 
   const tap = () => {
     if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const syncStatusText = !isAuthenticated
+    ? t("sync.off")
+    : syncState.syncing
+      ? t("sync.syncing")
+      : syncState.error
+        ? t("sync.error")
+        : t("sync.on");
+
+  const handleAccountPress = () => {
+    tap();
+    if (!isAuthenticated) {
+      login();
+      return;
+    }
+    if (Platform.OS === "web") {
+      if (typeof window !== "undefined" && window.confirm(`${t("sync.logout")}?`)) {
+        void logout();
+      }
+    } else {
+      Alert.alert(t("sync.logout"), user?.email ?? "", [
+        { text: t("common.cancel"), style: "cancel" },
+        { text: t("sync.logout"), style: "destructive", onPress: () => void logout() },
+      ]);
+    }
   };
 
   const stats = [
@@ -35,6 +63,31 @@ export default function MeScreen() {
         <View className="px-5 pt-2 pb-4">
           <Text className="text-3xl font-bold text-foreground">{t("me.title")}</Text>
           <Text className="text-sm text-muted mt-1">{t("me.subtitle")}</Text>
+        </View>
+
+        {/* 云端同步账号 */}
+        <View className="px-5 pb-4">
+          <Pressable
+            onPress={handleAccountPress}
+            style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+          >
+            <View className="flex-row items-center bg-surface rounded-2xl border border-border px-4 py-3.5">
+              <View style={[styles.iconWrap, { backgroundColor: "#0A84FF" }]}>
+                <IconSymbol name="icloud.fill" size={18} color="#FFFFFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-foreground">
+                  {isAuthenticated && user?.name ? user.name : t("sync.title")}
+                </Text>
+                <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                  {syncStatusText}
+                </Text>
+              </View>
+              <Text style={{ color: colors.primary, fontSize: 14, fontWeight: "600" }}>
+                {isAuthenticated ? t("sync.logout") : t("sync.login")}
+              </Text>
+            </View>
+          </Pressable>
         </View>
 
         {/* 数据总览 */}
