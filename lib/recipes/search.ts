@@ -20,6 +20,10 @@ export function filterRecipes(
     flavors?: string[];
     /** 多选:烈度集合 */
     strengths?: string[];
+    /** 多选:饮用时长集合(短饮/长饮) */
+    durations?: string[];
+    /** 多选:饮用场合集合(餐前酒/餐后酒等) */
+    occasions?: string[];
     /** 多选:基酒集合(快捷筛选子分类用) */
     baseSpirits?: string[];
   },
@@ -43,6 +47,12 @@ export function filterRecipes(
     } else if (filter.flavor && !r.flavors.includes(filter.flavor)) return false;
     if (filter.strengths && filter.strengths.length > 0) {
       if (!filter.strengths.includes(r.strength)) return false;
+    }
+    if (filter.durations && filter.durations.length > 0) {
+      if (!filter.durations.includes(r.drinkDuration)) return false;
+    }
+    if (filter.occasions && filter.occasions.length > 0) {
+      if (!filter.occasions.includes(r.occasion)) return false;
     }
     if (!q) return true;
     if (r.name.toLowerCase().includes(q)) return true;

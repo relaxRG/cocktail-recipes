@@ -148,3 +148,26 @@
   - 待办: 详情页 [id].tsx 64-75行改用 estimateRecipeCostSmart; 成本区渲染(396-490行)已用 cLink/cSmart 智能名
   - 诊断脚本: scripts/diag-cost.ts (旧) / diag-cost2.ts (新,待运行)
 - 详情页成本区当前结构: costEst.items.map 内 row 变量 + cLink 智能链接 + Pressable 跳转 (415-490行)
+
+## 2026-07-08 新维度:饮用时长+饮用场合
+资料依据: IBA官方分类(Before Dinner/After Dinner/All Day/Longdrink), 维基"餐前酒和餐后酒", 知乎/搜狐中文调酒资料(按饮用时间场合分:餐前/餐后/晚餐/睡前/派对)
+设计:
+- duration 维度(tag kind="duration"): 短饮 Short Drink / 长饮 Long Drink
+- occasion 维度(tag kind="occasion"): 餐前酒 Aperitif / 餐后酒 Digestif / 全天酒 All Day / 佐餐酒 With Dinner / 睡前酒 Nightcap / 派对酒 Party
+- 均为可自定义标签(标签管理),配方字段 drinkDuration / occasion (string, 存标签name)
+- 自动归类规则: 现有 categoryId(短饮/长饮/餐前酒/餐后酒等) + codexFamily + ABV + 成分特征
+
+### 新维度实现进度(types.ts 已完成)
+- TagKind 增加 "duration"|"occasion"; TAG_KIND_LABELS 增补; Recipe 增 drinkDuration/occasion 字段(normalizeRecipe/默认值已补)
+- DRINK_DURATIONS=[短饮,长饮], OCCASIONS=[餐前酒,餐后酒,全天酒,佐餐酒,睡前酒,派对酒], buildDefaultTags 已生成
+- TAG_NAME_DICT 增补: 短饮→Short Drink,长饮→Long Drink,餐前酒→Aperitif,餐后酒→Digestif,全天酒→All Day,佐餐酒→With Dinner,睡前酒→Nightcap,派对酒→Party
+- 待办: store.tsx 老用户注入新kind默认标签(tagList 里无 duration/occasion 时追加); waldorf.ts/seed.ts 补字段;
+  自动归类(cat-waldorf-short→短饮 等映射+ABV/杯型推断); recipe-form 两个选择区; 详情页显示; 首页筛选; tags.tsx 管理页新增两个 section
+
+### 新维度进度2(已完成部分)
+- types.ts / seed.ts / waldorf.ts / store.tsx(RecipeDraft待确认) 均补 drinkDuration/occasion 字段, TS 0 errors
+- classify.ts 归类引擎已建: inferDrinkDuration(cat-waldorf-short/long → 直接; 杯型LONG/SHORT_GLASSES; LENGTHENERS软饮→长饮; 兜底方法), inferOccasion(cat-waldorf-aperitif/digestif直接; DIGESTIF_INGREDIENTS奶油咖啡→餐后; APERITIF_INGREDIENTS苦味加强酒+abv≤25→餐前,金巴利/阿佩罗恒餐前,高酒精其他→睡前; tiki/椰浆→派对; na→全天; abv≥30→睡前; 其余全天)
+- store.tsx 加载迁移: classifyRecipe(rec) 补全存量; 老用户 tags 注入 duration/occasion 默认标签
+- tags.tsx 管理页已接入两个新 section + i18n(tags.section.duration/occasion)
+- 表单页结构: state 在 ~114 行(flavors), draft 提交在 ~259 行, flavors chips 区在 482-539, Codex 区在 441-467; ChipGroup 组件可复用(options/value/onChange/labelOf)
+- 待办: recipe-form 加 duration/occasion 单选 ChipGroup(state+draft+编辑回填); RecipeDraft 接口补可选字段; 详情页显示两个徽章; 首页筛选面板接入; i18n form.duration/form.occasion/detail 词条; 单元测试 classify.test.ts

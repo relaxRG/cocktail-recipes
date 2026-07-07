@@ -33,16 +33,18 @@ import { CATEGORY_COLORS, TagGroup, TagKind } from "@/lib/recipes/types";
 
 type SectionKey = "category" | TagKind | "bottleCat" | "prepSec";
 
-const SECTION_KEYS: SectionKey[] = ["category", "spirit", "glass", "flavor", "bottleCat", "prepSec"];
+const SECTION_KEYS: SectionKey[] = ["category", "spirit", "glass", "flavor", "duration", "occasion", "bottleCat", "prepSec"];
 /** 独立管理板块(渲染专用管理组件,不走 rows/tag 逻辑) */
 const MANAGER_SECTIONS: SectionKey[] = ["bottleCat", "prepSec"];
 const isTagKind = (s: SectionKey): s is TagKind =>
-  s === "spirit" || s === "glass" || s === "flavor";
+  s === "spirit" || s === "glass" || s === "flavor" || s === "duration" || s === "occasion";
 const SECTION_LABEL_KEY = {
   category: "tags.section.category",
   spirit: "tags.section.spirit",
   glass: "tags.section.glass",
   flavor: "tags.section.flavor",
+  duration: "tags.section.duration",
+  occasion: "tags.section.occasion",
   bottleCat: "tags.section.bottleCat",
   prepSec: "tags.section.prepSection",
 } as const;
@@ -186,7 +188,11 @@ export default function CategoriesScreen() {
             ? recipes.filter((r) => r.baseSpirit === t.name).length
             : section === "glass"
               ? recipes.filter((r) => r.glass === t.name).length
-              : recipes.filter((r) => r.flavors.includes(t.name)).length,
+              : section === "duration"
+                ? recipes.filter((r) => r.drinkDuration === t.name).length
+                : section === "occasion"
+                  ? recipes.filter((r) => r.occasion === t.name).length
+                  : recipes.filter((r) => r.flavors.includes(t.name)).length,
       }));
   }, [section, categories, tags, recipes]);
 

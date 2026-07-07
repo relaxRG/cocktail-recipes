@@ -118,6 +118,10 @@ export interface Recipe {
   codexFamily: string;
   /** 风味标签,多选 */
   flavors: string[];
+  /** 饮用时长标签(长饮/短饮等,存标签中文名);空字符串表示未选择 */
+  drinkDuration: string;
+  /** 饮用场合标签(餐前酒/餐后酒等,存标签中文名);空字符串表示未选择 */
+  occasion: string;
   /** 引用来源:书籍、网站、调酒师等,如"Cocktail Codex, p.120" */
   source: string;
   /** 配方故事:历史、来历、创作背景 */
@@ -162,6 +166,8 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
     variantOf: "",
     codexFamily: "",
     flavors: [],
+    drinkDuration: "",
+    occasion: "",
     source: "",
     story: "",
     flavorDesc: "",
@@ -180,6 +186,8 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
   base.variantOf = r.variantOf ?? "";
   base.codexFamily = r.codexFamily ?? "";
   base.flavors = Array.isArray(r.flavors) ? r.flavors : [];
+  base.drinkDuration = r.drinkDuration ?? "";
+  base.occasion = r.occasion ?? "";
   base.source = r.source ?? "";
   base.story = r.story ?? "";
   base.flavorDesc = r.flavorDesc ?? "";
@@ -228,8 +236,8 @@ export interface Category {
   createdAt: number;
 }
 
-/** 可自定义标签的种类:基酒 / 杯型 / 风味 */
-export type TagKind = "spirit" | "glass" | "flavor";
+/** 可自定义标签的种类:基酒 / 杯型 / 风味 / 饮用时长 / 饮用场合 */
+export type TagKind = "spirit" | "glass" | "flavor" | "duration" | "occasion";
 
 /** 通用自定义标签(基酒、杯型、风味) */
 export interface TagItem {
@@ -258,6 +266,8 @@ export const TAG_KIND_LABELS: Record<TagKind, string> = {
   spirit: "基酒",
   glass: "杯型",
   flavor: "风味",
+  duration: "饮用时长",
+  occasion: "饮用场合",
 };
 
 /** 常用标签中英对照词典(zh -> en),用于自动补全译名与旧数据迁移 */
@@ -328,6 +338,16 @@ export const TAG_NAME_DICT: Record<string, string> = {
   餐后: "Digestif",
   热饮: "Hot",
   提基: "Tiki",
+  // 饮用时长
+  短饮: "Short Drink",
+  长饮: "Long Drink",
+  // 饮用场合(IBA 分类 + 传统 apéritif/digestif 体系)
+  餐前酒: "Aperitif",
+  餐后酒: "Digestif",
+  全天酒: "All Day",
+  佐餐酒: "With Dinner",
+  睡前酒: "Nightcap",
+  派对酒: "Party",
   // 制作方法
   摇和: "Shake",
   搅拌: "Stir",
@@ -439,8 +459,30 @@ export function buildDefaultTags(): TagItem[] {
     ...FLAVOR_TAGS.map((n, idx) =>
       mk("flavor", n, CATEGORY_COLORS[(idx + 5) % CATEGORY_COLORS.length]),
     ),
+    ...DRINK_DURATIONS.map((n, idx) =>
+      mk("duration", n, CATEGORY_COLORS[(idx + 1) % CATEGORY_COLORS.length]),
+    ),
+    ...OCCASIONS.map((n, idx) =>
+      mk("occasion", n, CATEGORY_COLORS[(idx + 4) % CATEGORY_COLORS.length]),
+    ),
   ];
 }
+
+/** 饮用时长默认标签:短饮(无冰快饮,3-4口)/长饮(加冰慢饮,大容量) */
+export const DRINK_DURATIONS = ["短饮", "长饮"] as const;
+
+/**
+ * 饮用场合默认标签,依据 IBA 官方分类(Before/After Dinner、All Day、Longdrink)
+ * 与传统 apéritif/digestif 体系,补充中文调酒常用的佐餐/睡前/派对场景。
+ */
+export const OCCASIONS = [
+  "餐前酒",
+  "餐后酒",
+  "全天酒",
+  "佐餐酒",
+  "睡前酒",
+  "派对酒",
+] as const;
 
 export const BASE_SPIRITS = [
   "金酒",

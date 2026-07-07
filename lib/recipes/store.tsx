@@ -12,6 +12,7 @@ import React, {
 
 import { buildDefaultCategories, buildSampleRecipes } from "./seed";
 import { estimateRecipeAbv } from "./abv";
+import { classifyRecipe } from "./classify";
 import {
   WALDORF_DATASET_KEY,
   buildWaldorfCategories,
@@ -55,6 +56,10 @@ export interface RecipeDraft {
   variantOf: string;
   codexFamily: string;
   flavors: string[];
+  /** 饮用时长(短饮/长饮),空字符串未选择 */
+  drinkDuration?: string;
+  /** 饮用场合(餐前酒/餐后酒等),空字符串未选择 */
+  occasion?: string;
   source: string;
   story: string;
   flavorDesc: string;
@@ -143,6 +148,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
               migrated = true;
             }
           }
+          // 旧数据迁移:自动归类饮用时长(短饮/长饮)与饮用场合(餐前/餐后等)
+          if (classifyRecipe(rec)) migrated = true;
           return rec;
         });
         if (!seeded && cats.length === 0) {
@@ -185,6 +192,18 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           tagList = buildDefaultTags();
           await AsyncStorage.setItem(TAGS_KEY, JSON.stringify(tagList));
           notifySyncChange(TAGS_KEY);
+        } else if (!tagList.some((t) => t.kind === "duration") || !tagList.some((t) => t.kind === "occasion")) {
+          // 老用户升级:注入新增维度(饮用时长/饮用场合)的默认标签
+          const defaults = buildDefaultTags().filter(
+            (d) =>
+              (d.kind === "duration" || d.kind === "occasion") &&
+              !tagList.some((t) => t.kind === d.kind),
+          );
+          if (defaults.length > 0) {
+            tagList = [...tagList, ...defaults];
+            await AsyncStorage.setItem(TAGS_KEY, JSON.stringify(tagList));
+            notifySyncChange(TAGS_KEY);
+          }
         }
         const groupList: TagGroup[] = (gRaw ? (JSON.parse(gRaw) as TagGroup[]) : []).map(
           (g) => migrateTagNameEn(g),
@@ -243,6 +262,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         abv: null,
         nameEn: "",
         ice: "",
+        drinkDuration: "",
+        occasion: "",
         ...draft,
         ...(draft.strengthBand === undefined ? { strengthBand: "" as const } : {}),
         ...(draft.abv === undefined ? { abv: null } : {}),

@@ -83,6 +83,8 @@ export default function RecipesScreen() {
   const [selCodex, setSelCodex] = useState<string[]>([]);
   const [selFlavors, setSelFlavors] = useState<string[]>([]);
   const [selStrengths, setSelStrengths] = useState<string[]>([]);
+  const [selDurations, setSelDurations] = useState<string[]>([]);
+  const [selOccasions, setSelOccasions] = useState<string[]>([]);
   const [sort, setSort] = useState<RecipeSort>("default");
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -107,10 +109,12 @@ export default function RecipesScreen() {
         codexFamilies: selCodex.length > 0 ? selCodex : undefined,
         flavors: selFlavors.length > 0 ? selFlavors : undefined,
         strengths: selStrengths.length > 0 ? selStrengths : undefined,
+        durations: selDurations.length > 0 ? selDurations : undefined,
+        occasions: selOccasions.length > 0 ? selOccasions : undefined,
       });
       return base;
     },
-    [recipes, query, filter, quickCategoryIds, quickSpirits, selCategories, selCodex, selFlavors, selStrengths],
+    [recipes, query, filter, quickCategoryIds, quickSpirits, selCategories, selCodex, selFlavors, selStrengths, selDurations, selOccasions],
   );
 
   /** 成本函数(排序用),与卡片口径一致 */
@@ -250,6 +254,30 @@ export default function RecipesScreen() {
         setSelCodex((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
     },
     {
+      key: "duration",
+      title: t("fs.dim.duration"),
+      options: tagsOf("duration").map((tag) => ({
+        value: tag.name,
+        label: displayNames(tag.nameEn ?? "", tag.name, lang).primary,
+        color: tag.color,
+      })),
+      selected: selDurations,
+      onToggle: (v) =>
+        setSelDurations((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
+    },
+    {
+      key: "occasion",
+      title: t("fs.dim.occasion"),
+      options: tagsOf("occasion").map((tag) => ({
+        value: tag.name,
+        label: displayNames(tag.nameEn ?? "", tag.name, lang).primary,
+        color: tag.color,
+      })),
+      selected: selOccasions,
+      onToggle: (v) =>
+        setSelOccasions((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v])),
+    },
+    {
       key: "flavor",
       title: t("fs.dim.flavor"),
       options: flavorTags.map((tag) => ({
@@ -264,13 +292,16 @@ export default function RecipesScreen() {
   ];
 
   const activeFilterCount =
-    selCategories.length + selCodex.length + selFlavors.length + selStrengths.length;
+    selCategories.length + selCodex.length + selFlavors.length + selStrengths.length +
+    selDurations.length + selOccasions.length;
 
   const clearAll = () => {
     setSelCategories([]);
     setSelCodex([]);
     setSelFlavors([]);
     setSelStrengths([]);
+    setSelDurations([]);
+    setSelOccasions([]);
     setSort("default");
   };
 

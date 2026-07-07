@@ -65,6 +65,8 @@ export function buildWaldorfRecipes(): Recipe[] {
     variantOf: "",
     codexFamily: r.codexFamily,
     flavors: [],
+    drinkDuration: "",
+    occasion: "",
     source: r.source,
     story: r.story,
     flavorDesc: "",

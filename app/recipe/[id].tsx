@@ -184,7 +184,7 @@ export default function RecipeDetailScreen() {
             </>
           );
         })()}
-        {(category || recipe.codexFamily || recipe.flavors.length > 0) ? (
+        {(category || recipe.codexFamily || recipe.flavors.length > 0 || recipe.drinkDuration || recipe.occasion) ? (
           <View className="flex-row flex-wrap mt-2" style={{ gap: 6 }}>
             {category ? (
               <View className="px-2.5 py-1 rounded-full" style={{ backgroundColor: category.color + "22" }}>
@@ -201,6 +201,16 @@ export default function RecipeDetailScreen() {
                 <Text className="text-xs font-medium" style={{ color: colors.primary }}>
                   {codexFamilyLabel(recipe.codexFamily, lang)}
                 </Text>
+              </View>
+            ) : null}
+            {recipe.drinkDuration ? (
+              <View className="px-2.5 py-1 rounded-full bg-surface border border-border">
+                <Text className="text-xs text-muted">{tagLabel("duration", recipe.drinkDuration)}</Text>
+              </View>
+            ) : null}
+            {recipe.occasion ? (
+              <View className="px-2.5 py-1 rounded-full bg-surface border border-border">
+                <Text className="text-xs text-muted">{tagLabel("occasion", recipe.occasion)}</Text>
               </View>
             ) : null}
             {recipe.flavors.map((tag) => (
