@@ -27,13 +27,15 @@ import { displayNames } from "@/lib/utils";
 import { suggestIngredients } from "@/lib/suggest";
 import { RecipeDraft, useRecipeStore } from "@/lib/recipes/store";
 import { parseRecipeText } from "@/lib/recipes/parser";
+import { estimateRecipeAbv } from "@/lib/recipes/abv";
 import {
   CODEX_FAMILIES,
   Ingredient,
   METHODS,
   STRENGTH_LABELS,
-  Strength,
+  STRENGTH_BAND_LABELS,
   genId,
+  splitBilingualName,
 } from "@/lib/recipes/types";
 
 function ChipGroup({
@@ -92,11 +94,11 @@ export default function RecipeFormScreen() {
   const glassColors = Object.fromEntries(glassTags.map((t) => [t.name, t.color]));
 
   const [name, setName] = useState(editing?.name ?? "");
+  const [nameEn, setNameEn] = useState(editing?.nameEn ?? "");
   const [categoryId, setCategoryId] = useState<string | null>(editing?.categoryId ?? null);
   const [baseSpirit, setBaseSpirit] = useState(editing?.baseSpirit ?? (spiritNames[0] ?? ""));
   const [glass, setGlass] = useState(editing?.glass ?? "");
   const [method, setMethod] = useState(editing?.method ?? "摇和");
-  const [strength, setStrength] = useState<Strength>(editing?.strength ?? "medium");
   const [variantOf, setVariantOf] = useState(editing?.variantOf ?? "");
   const [codexFamily, setCodexFamily] = useState(editing?.codexFamily ?? "");
   const [flavors, setFlavors] = useState<string[]>(editing?.flavors ?? []);
@@ -117,11 +119,12 @@ export default function RecipeFormScreen() {
   /** Rows where user picked/dismissed suggestions — suppress until text changes */
   const [pickedIng, setPickedIng] = useState<Record<string, string>>({});
 
-  const canSave = name.trim().length > 0;
+  const canSave = name.trim().length > 0 || nameEn.trim().length > 0;
 
-  const strengthOptions = useMemo(
-    () => (Object.keys(STRENGTH_LABELS) as Strength[]).map((k) => STRENGTH_LABELS[k]),
-    [],
+  /** 根据配料与方法自动计算成品 ABV,并推导烈度大类与档位 */
+  const abvEstimate = useMemo(
+    () => estimateRecipeAbv(ingredients, method, bottles, preps),
+    [ingredients, method, bottles, preps],
   );
 
   const updateIngredient = (iid: string, field: "name" | "amount", value: string) => {
@@ -159,7 +162,18 @@ export default function RecipeFormScreen() {
       setImportHint(t("form.import.fail"));
       return;
     }
-    if (p.name) setName(p.name);
+    if (p.name) {
+      const split = splitBilingualName(p.name);
+      if (split) {
+        setName(split.zh);
+        setNameEn(split.en);
+      } else if (/[\u4e00-\u9fa5]/.test(p.name)) {
+        setName(p.name);
+      } else {
+        setNameEn(p.name);
+        if (!name.trim()) setName(p.name);
+      }
+    }
     if (p.ingredients.length > 0) setIngredients(p.ingredients);
     if (p.steps) setSteps(p.steps);
     if (p.garnish) setGarnish(p.garnish);
@@ -220,12 +234,15 @@ export default function RecipeFormScreen() {
   const handleSave = () => {
     if (!canSave) return;
     const draft: RecipeDraft = {
-      name: name.trim(),
+      name: name.trim() || nameEn.trim(),
+      nameEn: nameEn.trim(),
       categoryId,
       baseSpirit,
       glass,
       method,
-      strength,
+      strength: abvEstimate.strength ?? editing?.strength ?? "medium",
+      strengthBand: abvEstimate.band ?? editing?.strengthBand ?? "",
+      abv: abvEstimate.abv,
       variantOf: variantOf.trim(),
       codexFamily,
       flavors,
@@ -247,8 +264,6 @@ export default function RecipeFormScreen() {
     }
     router.back();
   };
-
-  const strengthValue = STRENGTH_LABELS[strength];
 
   return (
     <ScreenContainer edges={["top", "left", "right", "bottom"]}>
@@ -303,17 +318,54 @@ export default function RecipeFormScreen() {
             </Text>
           ) : null}
 
-          {/* Name */}
-          <Text className="text-sm font-medium text-muted mt-3 mb-1.5">{t("form.name.required")}</Text>
-          <TextInput
-            className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
-            placeholder={t("form.name.placeholder")}
-            placeholderTextColor={colors.muted}
-            value={name}
-            onChangeText={setName}
-            returnKeyType="done"
-            style={{ lineHeight: 20 }}
-          />
+          {/* Name: bilingual fields, primary language first (aligned with bottle library) */}
+          {lang === "en" ? (
+            <>
+              <Text className="text-sm font-medium text-muted mt-3 mb-1.5">{t("form.nameEn.required")}</Text>
+              <TextInput
+                className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
+                placeholder={t("form.nameEn.placeholder")}
+                placeholderTextColor={colors.muted}
+                value={nameEn}
+                onChangeText={setNameEn}
+                returnKeyType="done"
+                style={{ lineHeight: 20 }}
+              />
+              <Text className="text-sm font-medium text-muted mt-3 mb-1.5">{t("form.nameZh.label")}</Text>
+              <TextInput
+                className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
+                placeholder={t("form.nameZh.placeholder")}
+                placeholderTextColor={colors.muted}
+                value={name}
+                onChangeText={setName}
+                returnKeyType="done"
+                style={{ lineHeight: 20 }}
+              />
+            </>
+          ) : (
+            <>
+              <Text className="text-sm font-medium text-muted mt-3 mb-1.5">{t("form.nameZh.required")}</Text>
+              <TextInput
+                className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
+                placeholder={t("form.nameZh.placeholder")}
+                placeholderTextColor={colors.muted}
+                value={name}
+                onChangeText={setName}
+                returnKeyType="done"
+                style={{ lineHeight: 20 }}
+              />
+              <Text className="text-sm font-medium text-muted mt-3 mb-1.5">{t("form.nameEn.label")}</Text>
+              <TextInput
+                className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
+                placeholder={t("form.nameEn.placeholder")}
+                placeholderTextColor={colors.muted}
+                value={nameEn}
+                onChangeText={setNameEn}
+                returnKeyType="done"
+                style={{ lineHeight: 20 }}
+              />
+            </>
+          )}
 
           {/* Category */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.category")}</Text>
@@ -475,18 +527,34 @@ export default function RecipeFormScreen() {
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.method")}</Text>
           <ChipGroup options={METHODS} value={method} onChange={setMethod} />
 
-          {/* Strength */}
+          {/* Strength: auto-computed from ingredients + method */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.strength")}</Text>
-          <ChipGroup
-            options={strengthOptions}
-            value={strengthValue}
-            onChange={(label) => {
-              const entry = (Object.entries(STRENGTH_LABELS) as [Strength, string][]).find(
-                ([, v]) => v === label,
-              );
-              if (entry) setStrength(entry[0]);
-            }}
-          />
+          <View
+            className="bg-surface border border-border rounded-xl px-3 py-2.5"
+            style={{ gap: 2 }}
+          >
+            {abvEstimate.abv !== null && abvEstimate.strength && abvEstimate.band ? (
+              <>
+                <View className="flex-row items-center" style={{ gap: 8 }}>
+                  <Text className="text-base font-semibold text-foreground" style={{ lineHeight: 22 }}>
+                    {STRENGTH_LABELS[abvEstimate.strength]}
+                    {" · "}
+                    {STRENGTH_BAND_LABELS[abvEstimate.band][lang]}
+                  </Text>
+                  <Text className="text-sm text-muted" style={{ lineHeight: 20 }}>
+                    ≈{abvEstimate.abv}% ABV
+                  </Text>
+                </View>
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {t("form.abv.auto")}
+                </Text>
+              </>
+            ) : (
+              <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                {t("form.abv.pending")}
+              </Text>
+            )}
+          </View>
 
           {/* Glass */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.glass")}</Text>

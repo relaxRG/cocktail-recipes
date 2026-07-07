@@ -1,4 +1,4 @@
-import { Category, Recipe, genId } from "./types";
+import { Category, Recipe, genId, splitBilingualName } from "./types";
 
 export function buildDefaultCategories(): Category[] {
   const now = Date.now();
@@ -15,7 +15,7 @@ export function buildSampleRecipes(): Recipe[] {
   const mk = (
     partial: Omit<
       Recipe,
-      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "source" | "story" | "flavorDesc"
+      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "source" | "story" | "flavorDesc" | "strengthBand" | "abv" | "nameEn"
     > & {
       notes?: string;
       favorite?: boolean;
@@ -25,22 +25,33 @@ export function buildSampleRecipes(): Recipe[] {
       source?: string;
       story?: string;
       flavorDesc?: string;
+      strengthBand?: Recipe["strengthBand"];
+      abv?: Recipe["abv"];
+      nameEn?: string;
     },
     offset: number,
-  ): Recipe => ({
-    id: genId() + "-" + offset,
-    favorite: partial.favorite ?? false,
-    notes: partial.notes ?? "",
-    variantOf: partial.variantOf ?? "",
-    codexFamily: partial.codexFamily ?? "",
-    flavors: partial.flavors ?? [],
-    source: partial.source ?? "",
-    story: partial.story ?? "",
-    flavorDesc: partial.flavorDesc ?? "",
-    createdAt: now + offset,
-    updatedAt: now + offset,
-    ...partial,
-  });
+  ): Recipe => {
+    // 种子数据的混写名("尼格罗尼 Negroni")自动拆分为独立中英字段
+    const split = partial.nameEn ? null : splitBilingualName(partial.name);
+    return {
+      id: genId() + "-" + offset,
+      favorite: partial.favorite ?? false,
+      notes: partial.notes ?? "",
+      variantOf: partial.variantOf ?? "",
+      codexFamily: partial.codexFamily ?? "",
+      flavors: partial.flavors ?? [],
+      source: partial.source ?? "",
+      story: partial.story ?? "",
+      flavorDesc: partial.flavorDesc ?? "",
+      strengthBand: partial.strengthBand ?? "",
+      abv: partial.abv ?? null,
+      nameEn: partial.nameEn ?? split?.en ?? "",
+      createdAt: now + offset,
+      updatedAt: now + offset,
+      ...partial,
+      ...(split ? { name: split.zh } : {}),
+    };
+  };
 
   return [
     mk(

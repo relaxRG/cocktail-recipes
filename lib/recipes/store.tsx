@@ -10,6 +10,7 @@ import React, {
 } from "react";
 
 import { buildDefaultCategories, buildSampleRecipes } from "./seed";
+import { estimateRecipeAbv } from "./abv";
 import {
   Category,
   Recipe,
@@ -31,11 +32,16 @@ const TAG_GROUPS_KEY = "cocktail.tagGroups";
 
 export interface RecipeDraft {
   name: string;
+  /** 英文名(独立字段,可空) */
+  nameEn?: string;
   categoryId: string | null;
   baseSpirit: string;
   glass: string;
   method: string;
   strength: Recipe["strength"];
+  strengthBand?: Recipe["strengthBand"];
+  /** 自动计算的成品酒精度(%),null 表示无法计算 */
+  abv?: Recipe["abv"];
   variantOf: string;
   codexFamily: string;
   flavors: string[];
@@ -107,7 +113,25 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           migrateTagNameEn(c),
         );
         const parsed: Recipe[] = rRaw ? JSON.parse(rRaw) : [];
-        const recs: Recipe[] = parsed.map((r) => normalizeRecipe(r));
+        let migrated = false;
+        const recs: Recipe[] = parsed.map((r) => {
+          const rec = normalizeRecipe(r);
+          // 旧数据迁移:未计算过 ABV 的配方按内置关键词表回填(酒库/自制库
+          // 在各自 Provider 中加载,此处用无上下文降级计算,保存时会精确重算)
+          if (rec.abv === null && rec.ingredients.length > 0) {
+            const est = estimateRecipeAbv(rec.ingredients, rec.method, [], []);
+            if (est.abv !== null && est.band && est.strength) {
+              rec.abv = est.abv;
+              rec.strengthBand = est.band;
+              rec.strength = est.strength;
+              migrated = true;
+            }
+          }
+          return rec;
+        });
+        if (migrated) {
+          AsyncStorage.setItem(RECIPES_KEY, JSON.stringify(recs)).catch(() => {});
+        }
         if (!seeded && cats.length === 0) {
           cats = buildDefaultCategories();
           await AsyncStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
@@ -166,7 +190,13 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         favorite: false,
         createdAt: now,
         updatedAt: now,
+        strengthBand: "",
+        abv: null,
+        nameEn: "",
         ...draft,
+        ...(draft.strengthBand === undefined ? { strengthBand: "" as const } : {}),
+        ...(draft.abv === undefined ? { abv: null } : {}),
+        ...(draft.nameEn === undefined ? { nameEn: "" } : {}),
       };
       persistRecipes([recipe, ...recipesRef.current]);
       return recipe;

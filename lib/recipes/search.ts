@@ -24,6 +24,7 @@ export function filterRecipes(
     if (filter.flavor && !r.flavors.includes(filter.flavor)) return false;
     if (!q) return true;
     if (r.name.toLowerCase().includes(q)) return true;
+    if (r.nameEn.toLowerCase().includes(q)) return true;
     if (r.baseSpirit.toLowerCase().includes(q)) return true;
     if (r.notes.toLowerCase().includes(q)) return true;
     if ((r.story ?? "").toLowerCase().includes(q)) return true;

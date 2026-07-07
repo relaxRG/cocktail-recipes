@@ -20,7 +20,14 @@ import {
 import { filterRecipes } from "../lib/recipes/search";
 import { buildDefaultCategories, buildSampleRecipes } from "../lib/recipes/seed";
 import { parseRecipeText, splitIngredientLine, looksLikeIngredientLine } from "../lib/recipes/parser";
-import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib/recipes/types";
+import {
+  CODEX_FAMILIES,
+  bandsOfStrength,
+  buildDefaultTags,
+  genId,
+  normalizeRecipe,
+  strengthOfBand,
+} from "../lib/recipes/types";
 import { buildSamplePreps } from "../lib/homemade/seed";
 import { filterPreps } from "../lib/homemade/store";
 import { matchPrep, suggestPrep } from "../lib/homemade/match";
@@ -970,5 +977,31 @@ describe("bilingual tags", () => {
     expect(displayNames("Gin", "金酒", "zh").primary).toBe("金酒");
     // Missing English name falls back to Chinese
     expect(displayNames("", "自定义标签", "en").primary).toBe("自定义标签");
+  });
+});
+
+describe("strength bands (ABV ranges)", () => {
+  it("maps bands to broad strength: <15 light, 15-25 medium, 25+ strong", () => {
+    expect(strengthOfBand("lt10")).toBe("light");
+    expect(strengthOfBand("b10_15")).toBe("light");
+    expect(strengthOfBand("b15_20")).toBe("medium");
+    expect(strengthOfBand("b20_25")).toBe("medium");
+    expect(strengthOfBand("b25_30")).toBe("strong");
+    expect(strengthOfBand("b30_35")).toBe("strong");
+    expect(strengthOfBand("gt35")).toBe("strong");
+  });
+
+  it("groups bands under each strength for form display", () => {
+    expect(bandsOfStrength("light")).toEqual(["lt10", "b10_15"]);
+    expect(bandsOfStrength("medium")).toEqual(["b15_20", "b20_25"]);
+    expect(bandsOfStrength("strong")).toEqual(["b25_30", "b30_35", "gt35"]);
+  });
+
+  it("normalizeRecipe keeps old data working and fixes inconsistent strength", () => {
+    const legacy = normalizeRecipe({ id: "r1", name: "Old", strength: "medium" } as any);
+    expect(legacy.strengthBand).toBe("");
+    expect(legacy.strength).toBe("medium");
+    const fixed = normalizeRecipe({ id: "r2", name: "X", strength: "light", strengthBand: "gt35" } as any);
+    expect(fixed.strength).toBe("strong");
   });
 });

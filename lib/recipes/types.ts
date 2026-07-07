@@ -6,6 +6,56 @@ export interface Ingredient {
 
 export type Strength = "light" | "medium" | "strong";
 
+/** 细化烈度档位:按成品酒精度(ABV)区间划分 */
+export type StrengthBand =
+  | "lt10" // <10%
+  | "b10_15" // 10-15%
+  | "b15_20" // 15-20%
+  | "b20_25" // 20-25%
+  | "b25_30" // 25-30%
+  | "b30_35" // 30-35%
+  | "gt35"; // >35%
+
+export const STRENGTH_BANDS: StrengthBand[] = [
+  "lt10",
+  "b10_15",
+  "b15_20",
+  "b20_25",
+  "b25_30",
+  "b30_35",
+  "gt35",
+];
+
+/** 档位显示标签(中英) */
+export const STRENGTH_BAND_LABELS: Record<StrengthBand, { zh: string; en: string }> = {
+  lt10: { zh: "<10%", en: "<10%" },
+  b10_15: { zh: "10-15%", en: "10-15%" },
+  b15_20: { zh: "15-20%", en: "15-20%" },
+  b20_25: { zh: "20-25%", en: "20-25%" },
+  b25_30: { zh: "25-30%", en: "25-30%" },
+  b30_35: { zh: "30-35%", en: "30-35%" },
+  gt35: { zh: ">35%", en: ">35%" },
+};
+
+/** 每个 ABV 档位自动归入的大类:<15% 轻盈,15-25% 适中,25%+ 浓烈 */
+export function strengthOfBand(band: StrengthBand): Strength {
+  if (band === "lt10" || band === "b10_15") return "light";
+  if (band === "b15_20" || band === "b20_25") return "medium";
+  return "strong";
+}
+
+/** 大类下包含的档位(用于表单分组展示) */
+export function bandsOfStrength(s: Strength): StrengthBand[] {
+  return STRENGTH_BANDS.filter((b) => strengthOfBand(b) === s);
+}
+
+/** 旧数据迁移:仅有三档大类时给出代表性档位;空字符串表示未细分 */
+export function defaultBandForStrength(s: Strength): StrengthBand {
+  if (s === "light") return "b10_15";
+  if (s === "medium") return "b15_20";
+  return "b25_30";
+}
+
 /** Cocktail Codex 六大根源分类 */
 export const CODEX_FAMILIES = [
   "古典 Old-Fashioned",
@@ -34,11 +84,17 @@ export const FLAVOR_TAGS = [
 export interface Recipe {
   id: string;
   name: string;
+  /** 英文名(与酒库一致的双语独立字段);空字符串表示未填写 */
+  nameEn: string;
   categoryId: string | null;
   baseSpirit: string;
   glass: string;
   method: string;
   strength: Strength;
+  /** 细化烈度档位(ABV 区间);空字符串表示未细分,仅有大类 */
+  strengthBand: StrengthBand | "";
+  /** 自动计算的成品酒精度(%);null 表示无法计算(配料缺用量) */
+  abv: number | null;
   /** 是哪款经典鸡尾酒的变体,如"尼格罗尼";空字符串表示非变体 */
   variantOf: string;
   /** Cocktail Codex 六大根源分类,空字符串表示未选择 */
@@ -64,11 +120,14 @@ export interface Recipe {
 /** 兼容旧数据:为缺少新字段的配方补默认值 */
 export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">): Recipe {
   const base: Recipe = {
+    nameEn: "",
     categoryId: null,
     baseSpirit: "其他",
     glass: "",
     method: "",
     strength: "medium",
+    strengthBand: "",
+    abv: null,
     variantOf: "",
     codexFamily: "",
     flavors: [],
@@ -90,7 +149,35 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
   base.source = r.source ?? "";
   base.story = r.story ?? "";
   base.flavorDesc = r.flavorDesc ?? "";
+  base.strengthBand = (r.strengthBand ?? "") as StrengthBand | "";
+  base.abv = typeof r.abv === "number" && isFinite(r.abv) ? r.abv : null;
+  base.nameEn = r.nameEn ?? "";
+  // 旧数据迁移:混写名("尼格罗尼 Negroni")自动拆分为中英字段
+  if (!base.nameEn) {
+    const split = splitBilingualName(base.name);
+    if (split) {
+      base.name = split.zh;
+      base.nameEn = split.en;
+    }
+  }
+  // 一致性保护:档位与大类不一致时,以档位为准修正大类
+  if (base.strengthBand) base.strength = strengthOfBand(base.strengthBand);
   return base;
+}
+
+/**
+ * 拆分"中文名 English Name"混写:要求同时含中文段与英文段。
+ * 例:"尼格罗尼 Negroni" → { zh: "尼格罗尼", en: "Negroni" };纯中文/纯英文返回 null。
+ */
+export function splitBilingualName(name: string): { zh: string; en: string } | null {
+  const t = name.trim();
+  if (!t) return null;
+  const m = t.match(/^([\u4e00-\u9fa5][\u4e00-\u9fa5\s·、()()0-9]*?)\s+([A-Za-z][A-Za-z0-9'’.&\-\s()]*)$/);
+  if (!m) return null;
+  const zh = m[1].trim();
+  const en = m[2].trim();
+  if (!zh || !en) return null;
+  return { zh, en };
 }
 
 export interface Category {

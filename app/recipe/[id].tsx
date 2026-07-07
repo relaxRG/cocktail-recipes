@@ -15,7 +15,7 @@ import { useBottleStore } from "@/lib/bottles/store";
 import { matchPrep } from "@/lib/homemade/match";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
-import { STRENGTH_LABELS } from "@/lib/recipes/types";
+import { STRENGTH_LABELS, STRENGTH_BAND_LABELS } from "@/lib/recipes/types";
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -70,6 +70,7 @@ export default function RecipeDetailScreen() {
   };
 
   const confirmDelete = () => {
+    const delName = displayNames(recipe.nameEn, recipe.name, lang).primary;
     const doDelete = () => {
       deleteRecipe(recipe.id);
       if (Platform.OS !== "web") {
@@ -79,12 +80,12 @@ export default function RecipeDetailScreen() {
     };
     if (Platform.OS === "web") {
       // eslint-disable-next-line no-alert
-      if (typeof window !== "undefined" && window.confirm(t("detail.delete.msg", { name: recipe.name }))) {
+      if (typeof window !== "undefined" && window.confirm(t("detail.delete.msg", { name: delName }))) {
         doDelete();
       }
       return;
     }
-    Alert.alert(t("detail.delete.title"), t("detail.delete.msg", { name: recipe.name }), [
+    Alert.alert(t("detail.delete.title"), t("detail.delete.msg", { name: delName }), [
       { text: t("common.cancel"), style: "cancel" },
       { text: t("common.delete"), style: "destructive", onPress: doDelete },
     ]);
@@ -94,7 +95,15 @@ export default function RecipeDetailScreen() {
     { label: t("detail.meta.spirit"), value: tagLabel("spirit", recipe.baseSpirit) },
     { label: t("detail.meta.glass"), value: tagLabel("glass", recipe.glass) || "—" },
     { label: t("detail.meta.method"), value: recipe.method || "—" },
-    { label: t("detail.meta.strength"), value: STRENGTH_LABELS[recipe.strength] },
+    {
+      label: t("detail.meta.strength"),
+      value:
+        recipe.abv !== null && recipe.abv !== undefined
+          ? `${STRENGTH_LABELS[recipe.strength]} ≈${recipe.abv}%`
+          : recipe.strengthBand
+            ? `${STRENGTH_LABELS[recipe.strength]} · ${STRENGTH_BAND_LABELS[recipe.strengthBand][lang]}`
+            : STRENGTH_LABELS[recipe.strength],
+    },
   ];
 
   return (
@@ -138,7 +147,17 @@ export default function RecipeDetailScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 + insets.bottom }}>
-        <Text className="text-3xl font-bold text-foreground mt-2">{recipe.name}</Text>
+        {(() => {
+          const dn = displayNames(recipe.nameEn, recipe.name, lang);
+          return (
+            <>
+              <Text className="text-3xl font-bold text-foreground mt-2">{dn.primary}</Text>
+              {dn.secondary ? (
+                <Text className="text-base text-muted mt-1">{dn.secondary}</Text>
+              ) : null}
+            </>
+          );
+        })()}
         {(category || recipe.codexFamily || recipe.flavors.length > 0) ? (
           <View className="flex-row flex-wrap mt-2" style={{ gap: 6 }}>
             {category ? (
@@ -241,7 +260,70 @@ export default function RecipeDetailScreen() {
           )}
         </View>
 
-        {/* Cost estimate */}
+        {/* Steps */}
+        {recipe.steps ? (
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.steps")}</Text>
+            <View className="bg-surface rounded-xl p-4">
+              <Text className="text-base text-foreground leading-relaxed">{recipe.steps}</Text>
+            </View>
+          </>
+        ) : null}
+
+        {/* Garnish */}
+        {recipe.garnish ? (
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.garnish")}</Text>
+            <View className="bg-surface rounded-xl p-4">
+              <Text className="text-base text-foreground">{recipe.garnish}</Text>
+            </View>
+          </>
+        ) : null}
+
+        {/* Flavor description */}
+        {recipe.flavorDesc ? (
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.flavorDesc")}</Text>
+            <View className="bg-surface rounded-xl p-4">
+              <Text className="text-base text-foreground leading-relaxed">{recipe.flavorDesc}</Text>
+            </View>
+          </>
+        ) : null}
+
+        {/* Notes */}
+        {recipe.notes ? (
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.notes")}</Text>
+            <View
+              className="rounded-xl p-4"
+              style={{ backgroundColor: colors.primary + "14" }}
+            >
+              <Text className="text-base text-foreground leading-relaxed">{recipe.notes}</Text>
+            </View>
+          </>
+        ) : null}
+
+        {/* Story */}
+        {recipe.story ? (
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.story")}</Text>
+            <View className="bg-surface rounded-xl p-4">
+              <Text className="text-base text-foreground leading-relaxed">{recipe.story}</Text>
+            </View>
+          </>
+        ) : null}
+
+        {/* Source */}
+        {recipe.source ? (
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.source")}</Text>
+            <View className="bg-surface rounded-xl p-4">
+              <Text className="text-sm text-muted leading-relaxed">{recipe.source}</Text>
+            </View>
+          </>
+        ) : null}
+
+        {/* Cost estimate — kept last per information hierarchy */}
         {recipe.ingredients.length > 0 ? (
           <>
             <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.cost")}</Text>
@@ -313,69 +395,6 @@ export default function RecipeDetailScreen() {
               <Text className="text-[11px] text-muted py-2.5" style={{ lineHeight: 15 }}>
                 {t("detail.cost.note")}
               </Text>
-            </View>
-          </>
-        ) : null}
-
-        {/* Steps */}
-        {recipe.steps ? (
-          <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.steps")}</Text>
-            <View className="bg-surface rounded-xl p-4">
-              <Text className="text-base text-foreground leading-relaxed">{recipe.steps}</Text>
-            </View>
-          </>
-        ) : null}
-
-        {/* Garnish */}
-        {recipe.garnish ? (
-          <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.garnish")}</Text>
-            <View className="bg-surface rounded-xl p-4">
-              <Text className="text-base text-foreground">{recipe.garnish}</Text>
-            </View>
-          </>
-        ) : null}
-
-        {/* Flavor description */}
-        {recipe.flavorDesc ? (
-          <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.flavorDesc")}</Text>
-            <View className="bg-surface rounded-xl p-4">
-              <Text className="text-base text-foreground leading-relaxed">{recipe.flavorDesc}</Text>
-            </View>
-          </>
-        ) : null}
-
-        {/* Notes */}
-        {recipe.notes ? (
-          <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.notes")}</Text>
-            <View
-              className="rounded-xl p-4"
-              style={{ backgroundColor: colors.primary + "14" }}
-            >
-              <Text className="text-base text-foreground leading-relaxed">{recipe.notes}</Text>
-            </View>
-          </>
-        ) : null}
-
-        {/* Story */}
-        {recipe.story ? (
-          <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.story")}</Text>
-            <View className="bg-surface rounded-xl p-4">
-              <Text className="text-base text-foreground leading-relaxed">{recipe.story}</Text>
-            </View>
-          </>
-        ) : null}
-
-        {/* Source */}
-        {recipe.source ? (
-          <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.source")}</Text>
-            <View className="bg-surface rounded-xl p-4">
-              <Text className="text-sm text-muted leading-relaxed">{recipe.source}</Text>
             </View>
           </>
         ) : null}
