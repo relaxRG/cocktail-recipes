@@ -130,8 +130,19 @@ export interface Recipe {
   favorite: boolean;
   /** 做过/未做过:是否已亲手制作过该配方 */
   made: boolean;
+  /** 评分:1-10 整数,null 表示未评分(无半星) */
+  rating: number | null;
+  /** 手动排序序号:越小越靠前,null 表示未手动排序过 */
+  sortIndex: number | null;
   createdAt: number;
   updatedAt: number;
+}
+
+/** 规范化评分:限制 1-10 的整数,其余返回 null */
+export function normalizeRating(v: unknown): number | null {
+  if (typeof v !== "number" || !isFinite(v)) return null;
+  const n = Math.round(v);
+  return n >= 1 && n <= 10 ? n : null;
 }
 
 /** 兼容旧数据:为缺少新字段的配方补默认值 */
@@ -157,6 +168,8 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
     notes: "",
     favorite: false,
     made: false,
+    rating: null,
+    sortIndex: null,
     createdAt: Date.now(),
     updatedAt: Date.now(),
     ...r,
@@ -171,6 +184,9 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
   base.abv = typeof r.abv === "number" && isFinite(r.abv) ? r.abv : null;
   base.nameEn = r.nameEn ?? "";
   base.made = r.made === true;
+  base.rating = normalizeRating(r.rating);
+  base.sortIndex =
+    typeof r.sortIndex === "number" && isFinite(r.sortIndex) ? r.sortIndex : null;
   // 旧数据迁移:混写名("尼格罗尼 Negroni")自动拆分为中英字段
   if (!base.nameEn) {
     const split = splitBilingualName(base.name);

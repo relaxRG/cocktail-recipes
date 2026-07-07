@@ -30,6 +30,8 @@ export function buildSamplePreps(): HomemadePrep[] {
     notes,
     builtin: true,
     made: false,
+    rating: null,
+    sortIndex: null,
     createdAt: now + i,
     updatedAt: now + i++,
   });

@@ -141,6 +141,10 @@ export interface Bottle {
   notes: string;
   /** 是否内置数据(内置数据也可编辑/删除) */
   builtin: boolean;
+  /** 评分:1-10 整数,null 表示未评分(无半星) */
+  rating: number | null;
+  /** 手动排序序号:null 表示未手动排序(排在已排序项之后) */
+  sortIndex: number | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -161,5 +165,14 @@ export function normalizeBottle(b: Partial<Bottle> & Pick<Bottle, "id" | "nameZh
     createdAt: Date.now(),
     updatedAt: Date.now(),
     ...b,
+    ...(typeof b.sortIndex === "number" && isFinite(b.sortIndex)
+      ? { sortIndex: b.sortIndex }
+      : { sortIndex: null }),
+    ...(typeof b.rating === "number" &&
+    isFinite(b.rating) &&
+    Math.round(b.rating) >= 1 &&
+    Math.round(b.rating) <= 10
+      ? { rating: Math.round(b.rating) }
+      : { rating: null }),
   };
 }

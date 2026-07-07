@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -12,13 +12,24 @@ import {
   TextInput,
   View,
 } from "react-native";
+import DraggableFlatList, {
+  ScaleDecorator,
+  RenderItemParams,
+} from "react-native-draggable-flatlist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
+import {
+  QuickFilterChips,
+  QuickParentOption,
+  QuickSelection,
+} from "@/components/quick-filter-chips";
 import { SwipeableRow } from "@/components/swipeable-row";
+import { RatingSheet } from "@/components/rating-sheet";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { usePersistedState } from "@/hooks/use-persisted-state";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { filterPreps, useHomemadeStore } from "@/lib/homemade/store";
@@ -45,11 +56,12 @@ export default function HomemadeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { ready, preps, importSamples, sections, types } = useHomemadeStore();
+  const { ready, preps, importSamples, sections, types, reorderPreps } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const [query, setQuery] = useState("");
-  const [section, setSection] = useState<string>("");
-  // 多选筛选状态(统一筛选面板)
+  // 快捷筛选(独立于 Filter 面板,持久化保留):分区 → 类型子分类
+  const [quickSel, setQuickSel] = usePersistedState<QuickSelection>("quick.homemade.v1", {});
+  // Filter 面板多选筛选状态(与快捷筛选相互独立)
   const [selTypes, setSelTypes] = useState<string[]>([]);
   const [selTechniques, setSelTechniques] = useState<string[]>([]);
   const [sort, setSort] = useState<PrepSort>("default");
@@ -57,9 +69,18 @@ export default function HomemadeScreen() {
   /** 已展开的同名组 key 集合 */
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
+  // 快捷筛选解析:选中分区与其下细化的类型集合
+  const quickSections = Object.keys(quickSel);
+  const quickTypes = useMemo(() => [...new Set(Object.values(quickSel).flat())], [quickSel]);
+
   const filtered = useMemo(
     () => {
-      let base = filterPreps(preps, query, undefined, section || undefined, types);
+      let base = filterPreps(preps, query, undefined, undefined, types);
+      // 快捷筛选:分区(任一命中)+ 类型细化(与面板筛选取交集)
+      if (quickSections.length > 0) {
+        base = base.filter((p) => quickSections.includes(prepSectionOfIn(types, p.type)));
+      }
+      if (quickTypes.length > 0) base = base.filter((p) => quickTypes.includes(p.type));
       if (selTypes.length > 0) base = base.filter((p) => selTypes.includes(p.type));
       if (selTechniques.length > 0) {
         base = base.filter((p) => {
@@ -69,7 +90,7 @@ export default function HomemadeScreen() {
       }
       return base;
     },
-    [preps, query, selTypes, section, types, selTechniques],
+    [preps, query, selTypes, quickSections, quickTypes, types, selTechniques],
   );
 
   /** 成本函数(排序用):每 30ml 成本,退化为批次成本 */
@@ -101,13 +122,28 @@ export default function HomemadeScreen() {
     return sections.filter((s) => present.has(s.key));
   }, [preps, sections, types]);
 
-  // 类型子筛选:选中分区后,显示该分区下库内存在的类型
+  // 类型选项(Filter 面板用):库内存在的全部类型
   const usedTypes = useMemo(() => {
     const present = new Set(preps.map((p) => p.type));
-    return types.filter(
-      (pt) => present.has(pt.key) && (!section || pt.section === section),
-    );
-  }, [preps, section, types]);
+    return types.filter((pt) => present.has(pt.key));
+  }, [preps, types]);
+
+  /** 快捷筛选大分类:分区;子分类 = 该分区下库内存在的类型 */
+  const quickParents: QuickParentOption[] = useMemo(
+    () =>
+      usedSections.map((s) => {
+        const present = new Set(preps.map((p) => p.type));
+        const children = types
+          .filter((pt) => pt.section === s.key && present.has(pt.key))
+          .map((pt) => ({ value: pt.key, label: lang === "en" ? pt.en : pt.zh }));
+        return {
+          value: s.key,
+          label: lang === "en" ? s.en : s.zh,
+          children,
+        };
+      }),
+    [usedSections, preps, types, lang],
+  );
 
   // 工艺筛选:仅显示库内实际识别出的工艺(按 TECHNIQUES 声明顺序)
   const usedTechniques = useMemo(() => {
@@ -151,6 +187,54 @@ export default function HomemadeScreen() {
     setSelTechniques([]);
     setSort("default");
   };
+
+  /** 手动排序模式:平铺全部条目(不分区、不折叠),长按拖拽 */
+  const manualMode = sort === "manual";
+
+  const handleDragEnd = useCallback(
+    ({ data }: { data: HomemadePrep[] }) => {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+      reorderPreps(data.map((p) => p.id));
+    },
+    [reorderPreps],
+  );
+
+  const renderDragItem = useCallback(
+    ({ item, drag, isActive, getIndex }: RenderItemParams<HomemadePrep>) => {
+      const index = getIndex() ?? 0;
+      return (
+        <ScaleDecorator activeScale={1.02}>
+          <View style={styles.dragRow}>
+            <View style={{ flex: 1 }}>
+              <PrepRowInner
+                prep={item}
+                isFirst={index === 0}
+                isLast={index === sorted.length - 1}
+                bottles={bottles}
+              />
+            </View>
+            <Pressable
+              onLongPress={drag}
+              delayLongPress={120}
+              hitSlop={8}
+              style={({ pressed }) => [
+                styles.dragHandle,
+                { backgroundColor: colors.surface },
+                index === 0 && { borderTopRightRadius: 12 },
+                index === sorted.length - 1 && { borderBottomRightRadius: 12 },
+                (pressed || isActive) && { opacity: 0.6 },
+              ]}
+            >
+              <IconSymbol name="line.3.horizontal" size={20} color={colors.muted} />
+            </Pressable>
+          </View>
+        </ScaleDecorator>
+      );
+    },
+    [colors, sorted.length, bottles],
+  );
 
   // 按分区分组的行数据(分区标题 + 各分区内的 inset group)
   const rows = useMemo<ListRow[]>(() => {
@@ -254,14 +338,14 @@ export default function HomemadeScreen() {
       </View>
 
       {/* Section filter */}
-      {usedSections.length > 0 ? (
-        <View style={styles.chipRowWrap}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chipRow}
-          >
-            {/* 筛选与排序入口 */}
+      {/* 快捷筛选:与 Filter 面板互不联动;分区大 chip 展开类型子分类,状态持久保留 */}
+      <View style={{ marginTop: 10 }}>
+        <QuickFilterChips
+          parents={quickParents}
+          selection={quickSel}
+          onChange={setQuickSel}
+          allLabel={t("home.filter.all")}
+          leading={
             <Pressable
               style={[
                 styles.chip,
@@ -285,33 +369,9 @@ export default function HomemadeScreen() {
                 {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
               </Text>
             </Pressable>
-            <Pressable
-              style={chipStyle(section === "")}
-              onPress={() => {
-                setSection("");
-                setSelTypes([]);
-              }}
-            >
-              <Text style={chipTextStyle(section === "")}>{t("home.filter.all")}</Text>
-            </Pressable>
-            {usedSections.map((s) => {
-              const active = section === s.key;
-              return (
-                <Pressable
-                  key={s.key}
-                  style={chipStyle(active)}
-                  onPress={() => {
-                    setSection(active ? "" : s.key);
-                    setSelTypes([]);
-                  }}
-                >
-                  <Text style={chipTextStyle(active)}>{lang === "en" ? s.en : s.zh}</Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-      ) : null}
+          }
+        />
+      </View>
 
       {/* 统一筛选与排序面板:类型 + 工艺多选、排序 */}
       <FilterSortSheet
@@ -349,6 +409,28 @@ export default function HomemadeScreen() {
               </Pressable>
             </>
           ) : null}
+        </View>
+      ) : manualMode ? (
+        <View style={{ flex: 1 }}>
+          <View style={[styles.reorderHint, { backgroundColor: colors.primary + "14" }]}>
+            <IconSymbol name="line.3.horizontal" size={14} color={colors.primary} />
+            <Text style={[styles.reorderHintText, { color: colors.primary }]}>
+              {t("reorder.enter")}
+            </Text>
+          </View>
+          <DraggableFlatList
+            data={sorted}
+            keyExtractor={(p) => p.id}
+            onDragEnd={handleDragEnd}
+            renderItem={renderDragItem}
+            activationDistance={Platform.OS === "web" ? 3 : 10}
+            containerStyle={{ flex: 1 }}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingTop: 4,
+              paddingBottom: 90 + insets.bottom,
+            }}
+          />
         </View>
       ) : (
         <FlatList
@@ -421,7 +503,8 @@ function PrepRow({
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { deletePrep, togglePrepMade } = useHomemadeStore();
+  const { deletePrep, setPrepRating } = useHomemadeStore();
+  const [ratingVisible, setRatingVisible] = useState(false);
 
   const confirmDelete = () => {
     const name = displayNames(prep.name, prep.nameAlt, lang).primary;
@@ -440,14 +523,15 @@ function PrepRow({
   };
 
   return (
+    <>
     <SwipeableRow
       leftActions={[
         {
-          key: "made",
-          label: prep.made ? t("made.unmark") : t("made.mark"),
-          icon: prep.made ? "checkmark.circle" : "checkmark.circle.fill",
-          color: colors.success,
-          onPress: () => togglePrepMade(prep.id),
+          key: "rate",
+          label: t("rating.title"),
+          icon: prep.rating ? "star.fill" : "star",
+          color: colors.warning,
+          onPress: () => setRatingVisible(true),
         },
       ]}
       rightActions={[
@@ -470,6 +554,14 @@ function PrepRow({
     >
       <PrepRowInner prep={prep} isFirst={isFirst} isLast={isLast} bottles={bottles} />
     </SwipeableRow>
+    <RatingSheet
+      visible={ratingVisible}
+      title={displayNames(prep.name, prep.nameAlt, lang).primary}
+      value={prep.rating}
+      onChange={(v) => setPrepRating(prep.id, v)}
+      onClose={() => setRatingVisible(false)}
+    />
+    </>
   );
 }
 
@@ -660,6 +752,17 @@ function PrepRowInner({
                   </Text>
                 </View>
               ) : null}
+              {prep.rating ? (
+                <View
+                  style={[
+                    styles.badge,
+                    { backgroundColor: "#F5A62322", flexDirection: "row", alignItems: "center", gap: 2 },
+                  ]}
+                >
+                  <IconSymbol name="star.fill" size={10} color="#F5A623" />
+                  <Text style={[styles.badgeText, { color: "#C77F00" }]}>{prep.rating}/10</Text>
+                </View>
+              ) : null}
             </View>
           </View>
           <Pressable
@@ -714,6 +817,30 @@ const styles = StyleSheet.create({
   chipRowWrap: {
     marginTop: 10,
     marginBottom: 6,
+  },
+  dragRow: {
+    flexDirection: "row",
+    alignItems: "stretch",
+  },
+  dragHandle: {
+    width: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  reorderHint: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginHorizontal: 20,
+    marginBottom: 6,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  reorderHintText: {
+    fontSize: 12,
+    fontWeight: "600",
+    lineHeight: 16,
   },
   subChipRowWrap: {
     marginBottom: 6,

@@ -1,8 +1,9 @@
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import { Alert, Platform } from "react-native";
 
 import { RecipeCard } from "@/components/recipe-card";
+import { RatingSheet } from "@/components/rating-sheet";
 import { SwipeableRow } from "@/components/swipeable-row";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -10,7 +11,7 @@ import { displayNames } from "@/lib/utils";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { Recipe } from "@/lib/recipes/types";
 
-/** 酒单行:左滑=编辑/删除,右滑=收藏(iOS 邮件式交互) */
+/** 酒单行:左滑=编辑/删除,右滑=评分(iOS 邮件式交互) */
 export function SwipeableRecipeRow({
   recipe,
   isFirst = true,
@@ -22,7 +23,8 @@ export function SwipeableRecipeRow({
 }) {
   const colors = useColors();
   const { t, lang } = useI18n();
-  const { toggleFavorite, deleteRecipe } = useRecipeStore();
+  const { setRating, deleteRecipe } = useRecipeStore();
+  const [ratingVisible, setRatingVisible] = useState(false);
 
   const confirmDelete = () => {
     const name = displayNames(recipe.nameEn, recipe.name, lang).primary;
@@ -41,14 +43,15 @@ export function SwipeableRecipeRow({
   };
 
   return (
+    <>
     <SwipeableRow
       leftActions={[
         {
-          key: "favorite",
-          label: recipe.favorite ? t("swipe.unfavorite") : t("swipe.favorite"),
-          icon: recipe.favorite ? "star.fill" : "star",
+          key: "rate",
+          label: t("rating.title"),
+          icon: recipe.rating ? "star.fill" : "star",
           color: colors.warning,
-          onPress: () => toggleFavorite(recipe.id),
+          onPress: () => setRatingVisible(true),
         },
       ]}
       rightActions={[
@@ -71,5 +74,13 @@ export function SwipeableRecipeRow({
     >
       <RecipeCard recipe={recipe} isFirst={isFirst} isLast={isLast} />
     </SwipeableRow>
+    <RatingSheet
+      visible={ratingVisible}
+      title={displayNames(recipe.nameEn, recipe.name, lang).primary}
+      value={recipe.rating}
+      onChange={(v) => setRating(recipe.id, v)}
+      onClose={() => setRatingVisible(false)}
+    />
+    </>
   );
 }

@@ -4,6 +4,7 @@ import React from "react";
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { StarRating } from "@/components/star-rating";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -15,7 +16,7 @@ export default function BottleDetailScreen() {
   const router = useRouter();
   const { t, lang } = useI18n();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getBottle, deleteBottle } = useBottleStore();
+  const { getBottle, deleteBottle, setBottleRating } = useBottleStore();
   const bottle = getBottle(id);
 
   if (!bottle) {
@@ -124,6 +125,15 @@ export default function BottleDetailScreen() {
               </Text>
             </View>
           ))}
+        </View>
+
+        {/* Rating */}
+        <View className="flex-row items-center justify-between bg-surface rounded-xl mt-2 px-4 py-3">
+          <Text className="text-[15px] text-foreground">
+            {t("rating.title")}
+            {bottle.rating ? ` ${bottle.rating}/10` : ""}
+          </Text>
+          <StarRating value={bottle.rating} size={17} onChange={(v) => setBottleRating(bottle.id, v)} />
         </View>
 
         {bottle.notes ? (

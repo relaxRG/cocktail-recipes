@@ -42,6 +42,8 @@ export interface RecipeDraft {
   strengthBand?: Recipe["strengthBand"];
   /** 自动计算的成品酒精度(%),null 表示无法计算 */
   abv?: Recipe["abv"];
+  /** 评分(1-10 整数,可空) */
+  rating?: number | null;
   variantOf: string;
   codexFamily: string;
   flavors: string[];
@@ -65,6 +67,8 @@ interface RecipeStore {
   deleteRecipe: (id: string) => void;
   toggleFavorite: (id: string) => void;
   toggleMade: (id: string) => void;
+  setRating: (id: string, rating: number | null) => void;
+  reorderRecipes: (orderedIds: string[]) => void;
   addCategory: (name: string, color: string) => Category | null;
   renameCategory: (id: string, name: string) => void;
   setCategoryNameEn: (id: string, nameEn: string) => void;
@@ -190,6 +194,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         id: genId(),
         favorite: false,
         made: false,
+        rating: null,
+        sortIndex: null,
         createdAt: now,
         updatedAt: now,
         strengthBand: "",
@@ -199,6 +205,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         ...(draft.strengthBand === undefined ? { strengthBand: "" as const } : {}),
         ...(draft.abv === undefined ? { abv: null } : {}),
         ...(draft.nameEn === undefined ? { nameEn: "" } : {}),
+        ...(draft.rating === undefined ? { rating: null } : {}),
       };
       persistRecipes([recipe, ...recipesRef.current]);
       return recipe;
@@ -249,6 +256,35 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       persistRecipes(
         recipesRef.current.map((r) =>
           r.id === id ? { ...r, made: !r.made, updatedAt: Date.now() } : r,
+        ),
+      );
+    },
+    [persistRecipes],
+  );
+
+  /** 设置评分(1-10 整数,null 清除评分) */
+  const setRating = useCallback(
+    (id: string, rating: number | null) => {
+      const v =
+        typeof rating === "number" && isFinite(rating)
+          ? Math.min(10, Math.max(1, Math.round(rating)))
+          : null;
+      persistRecipes(
+        recipesRef.current.map((r) =>
+          r.id === id ? { ...r, rating: v, updatedAt: Date.now() } : r,
+        ),
+      );
+    },
+    [persistRecipes],
+  );
+
+  /** 长按拖拽后按新顺序写入 sortIndex(仅对传入的 id 生效,其余保持) */
+  const reorderRecipes = useCallback(
+    (orderedIds: string[]) => {
+      const pos = new Map(orderedIds.map((id, i) => [id, i]));
+      persistRecipes(
+        recipesRef.current.map((r) =>
+          pos.has(r.id) ? { ...r, sortIndex: pos.get(r.id)! } : r,
         ),
       );
     },
@@ -573,6 +609,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       deleteRecipe,
       toggleFavorite,
       toggleMade,
+      setRating,
+      reorderRecipes,
       addCategory,
       renameCategory,
       setCategoryNameEn,
@@ -608,6 +646,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       deleteRecipe,
       toggleFavorite,
       toggleMade,
+      setRating,
+      reorderRecipes,
       addCategory,
       renameCategory,
       setCategoryNameEn,

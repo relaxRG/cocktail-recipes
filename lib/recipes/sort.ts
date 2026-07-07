@@ -8,26 +8,38 @@ import { Bottle } from "../bottles/types";
 
 export const RECIPE_SORTS = [
   "default",
+  "manual",
   "name",
   "abvAsc",
   "abvDesc",
   "costAsc",
   "costDesc",
+  "ratingDesc",
   "newest",
   "favorites",
 ] as const;
 export type RecipeSort = (typeof RECIPE_SORTS)[number];
 
-export const PREP_SORTS = ["default", "name", "costAsc", "costDesc", "newest"] as const;
+export const PREP_SORTS = [
+  "default",
+  "manual",
+  "name",
+  "costAsc",
+  "costDesc",
+  "ratingDesc",
+  "newest",
+] as const;
 export type PrepSort = (typeof PREP_SORTS)[number];
 
 export const BOTTLE_SORTS = [
   "default",
+  "manual",
   "name",
   "priceAsc",
   "priceDesc",
   "abvAsc",
   "abvDesc",
+  "ratingDesc",
   "newest",
 ] as const;
 export type BottleSort = (typeof BOTTLE_SORTS)[number];
@@ -35,6 +47,16 @@ export type BottleSort = (typeof BOTTLE_SORTS)[number];
 /** 名称比较:中文用拼音序(localeCompare zh),英文字母序 */
 function compareName(a: string, b: string): number {
   return a.localeCompare(b, "zh-Hans-CN");
+}
+
+/** 手动排序:sortIndex 升序,未设置的排在末尾(保持相对原顺序) */
+function byManual(ia: number | null | undefined, ib: number | null | undefined): number {
+  const a = ia ?? null;
+  const b = ib ?? null;
+  if (a === null && b === null) return 0;
+  if (a === null) return 1;
+  if (b === null) return -1;
+  return a - b;
 }
 
 /**
@@ -65,6 +87,9 @@ export function sortRecipes(
     return (va - vb) * dir;
   };
   switch (sort) {
+    case "manual":
+      arr.sort((a, b) => byManual(a.sortIndex, b.sortIndex));
+      break;
     case "name":
       arr.sort((a, b) => compareName(nameOf(a), nameOf(b)));
       break;
@@ -79,6 +104,9 @@ export function sortRecipes(
       break;
     case "costDesc":
       arr.sort((a, b) => byNullable(costOf(a), costOf(b), -1));
+      break;
+    case "ratingDesc":
+      arr.sort((a, b) => byNullable(a.rating ?? null, b.rating ?? null, -1));
       break;
     case "newest":
       arr.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
@@ -110,6 +138,9 @@ export function sortPreps(
     return (va - vb) * dir;
   };
   switch (sort) {
+    case "manual":
+      arr.sort((a, b) => byManual(a.sortIndex, b.sortIndex));
+      break;
     case "name":
       arr.sort((a, b) => nameOf(a).localeCompare(nameOf(b), "zh-Hans-CN"));
       break;
@@ -118,6 +149,9 @@ export function sortPreps(
       break;
     case "costDesc":
       arr.sort((a, b) => byNullable(costOf(a), costOf(b), -1));
+      break;
+    case "ratingDesc":
+      arr.sort((a, b) => byNullable(a.rating ?? null, b.rating ?? null, -1));
       break;
     case "newest":
       arr.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
@@ -143,6 +177,9 @@ export function sortBottles(
   };
   const priceOf = (b: Bottle): number | null => (b.priceCny > 0 ? b.priceCny : null);
   switch (sort) {
+    case "manual":
+      arr.sort((a, b) => byManual(a.sortIndex, b.sortIndex));
+      break;
     case "name":
       arr.sort((a, b) => nameOf(a).localeCompare(nameOf(b), "zh-Hans-CN"));
       break;
@@ -157,6 +194,9 @@ export function sortBottles(
       break;
     case "abvDesc":
       arr.sort((a, b) => byNullable(a.abv ?? null, b.abv ?? null, -1));
+      break;
+    case "ratingDesc":
+      arr.sort((a, b) => byNullable(a.rating ?? null, b.rating ?? null, -1));
       break;
     case "newest":
       arr.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));

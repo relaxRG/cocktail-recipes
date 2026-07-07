@@ -147,6 +147,15 @@ export function RecipeCard({
                   <Text className="text-xs text-muted">≈¥{costTotal.toFixed(1)}</Text>
                 </View>
               ) : null}
+              {recipe.rating ? (
+                <View
+                  className="flex-row items-center px-2 py-0.5 rounded-full bg-background border border-border"
+                  style={{ gap: 2 }}
+                >
+                  <IconSymbol name="star.fill" size={11} color="#F5A623" />
+                  <Text className="text-xs text-muted">{recipe.rating}/10</Text>
+                </View>
+              ) : null}
             </View>
             {recipe.variantOf ? (
               <Text className="text-xs text-muted mt-1.5" numberOfLines={1}>

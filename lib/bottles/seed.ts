@@ -32,6 +32,8 @@ export function buildDefaultBottles(): Bottle[] {
     priceCny,
     notes,
     builtin: true,
+    rating: null,
+    sortIndex: null,
     createdAt: now + i,
     updatedAt: now + i++,
   });

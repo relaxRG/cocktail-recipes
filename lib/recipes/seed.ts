@@ -15,11 +15,13 @@ export function buildSampleRecipes(): Recipe[] {
   const mk = (
     partial: Omit<
       Recipe,
-      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "source" | "story" | "flavorDesc" | "strengthBand" | "abv" | "nameEn" | "made"
+      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "source" | "story" | "flavorDesc" | "strengthBand" | "abv" | "nameEn" | "made" | "rating" | "sortIndex"
     > & {
       notes?: string;
       favorite?: boolean;
       made?: boolean;
+      rating?: number | null;
+      sortIndex?: number | null;
       variantOf?: string;
       codexFamily?: string;
       flavors?: string[];
@@ -48,9 +50,13 @@ export function buildSampleRecipes(): Recipe[] {
       strengthBand: partial.strengthBand ?? "",
       abv: partial.abv ?? null,
       nameEn: partial.nameEn ?? split?.en ?? "",
+      rating: partial.rating ?? null,
+      sortIndex: partial.sortIndex ?? null,
       createdAt: now + offset,
       updatedAt: now + offset,
       ...partial,
+      ...(partial.rating === undefined ? { rating: null } : {}),
+      ...(partial.sortIndex === undefined ? { sortIndex: null } : {}),
       ...(split ? { name: split.zh } : {}),
     };
   };

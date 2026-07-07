@@ -20,11 +20,16 @@ export function filterRecipes(
     flavors?: string[];
     /** 多选:烈度集合 */
     strengths?: string[];
+    /** 多选:基酒集合(快捷筛选子分类用) */
+    baseSpirits?: string[];
   },
 ): Recipe[] {
   const q = query.trim().toLowerCase();
   return recipes.filter((r) => {
     if (filter.favoritesOnly && !r.favorite) return false;
+    if (filter.baseSpirits && filter.baseSpirits.length > 0) {
+      if (!filter.baseSpirits.includes(r.baseSpirit)) return false;
+    }
     if (filter.categoryIds && filter.categoryIds.length > 0) {
       if (r.categoryId === null || !filter.categoryIds.includes(r.categoryId)) return false;
     } else if (filter.categoryId !== undefined && filter.categoryId !== null) {

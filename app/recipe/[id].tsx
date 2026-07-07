@@ -5,6 +5,7 @@ import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { StarRating } from "@/components/star-rating";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -27,7 +28,8 @@ export default function RecipeDetailScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
-  const { getRecipe, getCategory, toggleFavorite, toggleMade, deleteRecipe, tags } = useRecipeStore();
+  const { getRecipe, getCategory, toggleFavorite, toggleMade, setRating, deleteRecipe, tags } =
+    useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
   const recipe = getRecipe(id);
@@ -233,6 +235,19 @@ export default function RecipeDetailScreen() {
               </Text>
             </View>
           ))}
+        </View>
+
+        {/* Rating */}
+        <View className="flex-row items-center justify-between bg-surface rounded-xl mt-3 px-4 py-3">
+          <Text className="text-sm font-medium text-foreground">
+            {t("rating.title")}
+            {recipe.rating ? ` ${recipe.rating}/10` : ""}
+          </Text>
+          <StarRating
+            value={recipe.rating}
+            size={17}
+            onChange={(v) => setRating(recipe.id, v)}
+          />
         </View>
 
         {/* Ingredients */}

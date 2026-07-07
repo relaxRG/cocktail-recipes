@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   FlatList,
   Platform,
@@ -11,14 +11,25 @@ import {
   View,
 } from "react-native";
 import * as Haptics from "expo-haptics";
+import DraggableFlatList, {
+  ScaleDecorator,
+  RenderItemParams,
+} from "react-native-draggable-flatlist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { RecipeGroupCard } from "@/components/recipe-group-card";
+import { RecipeCard } from "@/components/recipe-card";
 import { SwipeableRecipeRow } from "@/components/swipeable-recipe-row";
 import { ScreenContainer } from "@/components/screen-container";
 import { FilterSortSheet, FilterDimension } from "@/components/filter-sort-sheet";
+import {
+  QuickFilterChips,
+  QuickParentOption,
+  QuickSelection,
+} from "@/components/quick-filter-chips";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { usePersistedState } from "@/hooks/use-persisted-state";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { filterRecipes } from "@/lib/recipes/search";
@@ -31,25 +42,29 @@ import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
 import {
   CODEX_FAMILIES,
+  BASE_SPIRITS,
   Recipe,
   STRENGTH_LABELS,
   STRENGTHS,
   codexFamilyLabel,
+  localizedTagName,
 } from "@/lib/recipes/types";
 
-type Filter = { type: "all" } | { type: "favorites" } | { type: "category"; id: string };
+type Filter = { type: "all" } | { type: "favorites" };
 
 export default function RecipesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang, setLang } = useI18n();
-  const { ready, recipes, categories, importSamples, tagsOf } = useRecipeStore();
+  const { ready, recipes, categories, importSamples, tagsOf, reorderRecipes } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
   const flavorTags = tagsOf("flavor");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>({ type: "all" });
-  // 多选筛选状态
+  // 快捷筛选(独立于 Filter 面板,持久化保留):分类 → 基酒子分类
+  const [quickSel, setQuickSel] = usePersistedState<QuickSelection>("quick.recipes.v1", {});
+  // Filter 面板多选筛选状态(与快捷筛选相互独立)
   const [selCategories, setSelCategories] = useState<string[]>([]);
   const [selCodex, setSelCodex] = useState<string[]>([]);
   const [selFlavors, setSelFlavors] = useState<string[]>([]);
@@ -57,17 +72,31 @@ export default function RecipesScreen() {
   const [sort, setSort] = useState<RecipeSort>("default");
   const [sheetOpen, setSheetOpen] = useState(false);
 
+  // 快捷筛选解析:选中的大分类(分类 id)与其下细化的基酒集合
+  const quickCategoryIds = Object.keys(quickSel);
+  const quickSpirits = useMemo(
+    () => [...new Set(Object.values(quickSel).flat())],
+    [quickSel],
+  );
+
   const filtered = useMemo(
-    () =>
-      filterRecipes(recipes, query, {
+    () => {
+      // 第一层:快捷筛选(与面板筛选独立,两者取交集生效)
+      let base = filterRecipes(recipes, query, {
         favoritesOnly: filter.type === "favorites",
-        categoryIds:
-          filter.type === "category" ? [filter.id] : selCategories.length > 0 ? selCategories : undefined,
+        categoryIds: quickCategoryIds.length > 0 ? quickCategoryIds : undefined,
+        baseSpirits: quickSpirits.length > 0 ? quickSpirits : undefined,
+      });
+      // 第二层:Filter 面板多选
+      base = filterRecipes(base, "", {
+        categoryIds: selCategories.length > 0 ? selCategories : undefined,
         codexFamilies: selCodex.length > 0 ? selCodex : undefined,
         flavors: selFlavors.length > 0 ? selFlavors : undefined,
         strengths: selStrengths.length > 0 ? selStrengths : undefined,
-      }),
-    [recipes, query, filter, selCategories, selCodex, selFlavors, selStrengths],
+      });
+      return base;
+    },
+    [recipes, query, filter, quickCategoryIds, quickSpirits, selCategories, selCodex, selFlavors, selStrengths],
   );
 
   /** 成本函数(排序用),与卡片口径一致 */
@@ -113,6 +142,81 @@ export default function RecipesScreen() {
 
   /** 同名折叠:同一鸡尾酒的多个版本折叠为一组 */
   const grouped = useMemo(() => groupRecipesByName(sorted), [sorted]);
+
+  /** 手动排序模式:选择"手动排序"时列表切换为可长按拖拽 */
+  const manualMode = sort === "manual";
+
+  /** 拖拽结束:按新顺序持久化 sortIndex */
+  const handleDragEnd = useCallback(
+    ({ data }: { data: Recipe[] }) => {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+      reorderRecipes(data.map((r) => r.id));
+    },
+    [reorderRecipes],
+  );
+
+  /** 拖拽行:整卡 + 右侧把手(长按把手或整行触发拖动) */
+  const renderDragItem = useCallback(
+    ({ item, drag, isActive, getIndex }: RenderItemParams<Recipe>) => {
+      const index = getIndex() ?? 0;
+      return (
+        <ScaleDecorator activeScale={1.02}>
+          <View
+            style={[
+              styles.dragRow,
+              isActive && { shadowOpacity: 0.15, shadowRadius: 10, elevation: 4 },
+            ]}
+          >
+            <View style={{ flex: 1 }}>
+              <RecipeCard
+                recipe={item}
+                isFirst={index === 0}
+                isLast={index === sorted.length - 1}
+              />
+            </View>
+            <Pressable
+              onLongPress={drag}
+              delayLongPress={120}
+              hitSlop={8}
+              style={({ pressed }) => [
+                styles.dragHandle,
+                { backgroundColor: colors.surface },
+                index === 0 && { borderTopRightRadius: 12 },
+                index === sorted.length - 1 && { borderBottomRightRadius: 12 },
+                (pressed || isActive) && { opacity: 0.6 },
+              ]}
+            >
+              <IconSymbol name="line.3.horizontal" size={20} color={colors.muted} />
+            </Pressable>
+          </View>
+        </ScaleDecorator>
+      );
+    },
+    [colors, sorted.length],
+  );
+
+  /** 快捷筛选大分类:全部配方分类;子分类 = 该分类下库内出现过的基酒 */
+  const quickParents: QuickParentOption[] = useMemo(
+    () =>
+      categories.map((cat) => {
+        const present = new Set(
+          recipes.filter((r) => r.categoryId === cat.id).map((r) => r.baseSpirit),
+        );
+        const children = BASE_SPIRITS.filter((s) => present.has(s)).map((s) => ({
+          value: s,
+          label: localizedTagName(s, "", lang),
+        }));
+        return {
+          value: cat.id,
+          label: displayNames(cat.nameEn ?? "", cat.name, lang).primary,
+          color: cat.color,
+          children,
+        };
+      }),
+    [categories, recipes, lang],
+  );
 
   /** 筛选面板维度定义 */
   const dimensions: FilterDimension[] = [
@@ -240,69 +344,54 @@ export default function RecipesScreen() {
       </View>
 
       {/* Filter chips */}
-      <View style={styles.chipRowWrap}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipRow}
-        >
-          {/* 筛选与排序入口 */}
-          <Pressable
-            style={[
-              styles.chip,
-              styles.filterBtn,
-              {
-                backgroundColor: activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.surface,
-                borderColor: activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.border,
-              },
-            ]}
-            onPress={() => setSheetOpen(true)}
-          >
-            <IconSymbol
-              name="slider.horizontal.3"
-              size={14}
-              color={activeFilterCount > 0 || sort !== "default" ? "#FFFFFF" : colors.muted}
-            />
-            <Text style={chipTextStyle(activeFilterCount > 0 || sort !== "default")}>
-              {t("fs.filterBtn")}
-              {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
-            </Text>
-          </Pressable>
-          <Pressable style={chipStyle(filter.type === "all")} onPress={() => setFilter({ type: "all" })}>
-            <Text style={chipTextStyle(filter.type === "all")}>{t("home.filter.all")}</Text>
-          </Pressable>
-          <Pressable
-            style={chipStyle(filter.type === "favorites")}
-            onPress={() => setFilter({ type: "favorites" })}
-          >
-            <Text style={chipTextStyle(filter.type === "favorites")}>{t("home.filter.favorites")}</Text>
-          </Pressable>
-          {categories.map((cat) => {
-            const active =
-              (filter.type === "category" && filter.id === cat.id) || selCategories.includes(cat.id);
-            return (
-              <Pressable
-                key={cat.id}
-                style={[
-                  chipStyle(active),
-                  active && { backgroundColor: cat.color, borderColor: cat.color },
-                ]}
-                onPress={() => {
-                  // chip 快捷单选与面板多选联动:点击切换该分类的选中状态
-                  setFilter({ type: "all" });
-                  setSelCategories((prev) =>
-                    prev.includes(cat.id) ? prev.filter((x) => x !== cat.id) : [...prev, cat.id],
-                  );
-                }}
-              >
-                <Text style={chipTextStyle(active)}>
-                  {displayNames(cat.nameEn ?? "", cat.name, lang).primary}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
+      {/* 快捷筛选:与 Filter 面板互不联动;大分类展开基酒子分类,状态持久保留 */}
+      <QuickFilterChips
+        parents={quickParents}
+        selection={quickSel}
+        onChange={setQuickSel}
+        allLabel={t("home.filter.all")}
+        leading={
+          <>
+            {/* 筛选与排序入口(仅反映面板自身状态) */}
+            <Pressable
+              style={[
+                styles.chip,
+                styles.filterBtn,
+                {
+                  backgroundColor:
+                    activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.surface,
+                  borderColor:
+                    activeFilterCount > 0 || sort !== "default" ? colors.primary : colors.border,
+                },
+              ]}
+              onPress={() => setSheetOpen(true)}
+            >
+              <IconSymbol
+                name="slider.horizontal.3"
+                size={14}
+                color={activeFilterCount > 0 || sort !== "default" ? "#FFFFFF" : colors.muted}
+              />
+              <Text style={chipTextStyle(activeFilterCount > 0 || sort !== "default")}>
+                {t("fs.filterBtn")}
+                {activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
+              </Text>
+            </Pressable>
+            {/* 收藏快捷开关(独立于快捷分类选择) */}
+            <Pressable
+              style={chipStyle(filter.type === "favorites")}
+              onPress={() =>
+                setFilter((prev) =>
+                  prev.type === "favorites" ? { type: "all" } : { type: "favorites" },
+                )
+              }
+            >
+              <Text style={chipTextStyle(filter.type === "favorites")}>
+                {t("home.filter.favorites")}
+              </Text>
+            </Pressable>
+          </>
+        }
+      />
 
       {/* 筛选与排序面板 */}
       <FilterSortSheet
@@ -341,6 +430,36 @@ export default function RecipesScreen() {
             <IconSymbol name="sparkles" size={16} color={colors.primary} />
             <Text style={[styles.ghostBtnText, { color: colors.primary }]}>{t("home.empty.import")}</Text>
           </Pressable>
+        </View>
+      ) : manualMode ? (
+        <View style={{ flex: 1 }}>
+          {/* 手动排序提示条 */}
+          <View style={[styles.reorderHint, { backgroundColor: colors.primary + "14" }]}>
+            <IconSymbol name="line.3.horizontal" size={14} color={colors.primary} />
+            <Text style={[styles.reorderHintText, { color: colors.primary }]}>
+              {t("reorder.enter")}
+            </Text>
+          </View>
+          <DraggableFlatList
+            data={sorted}
+            keyExtractor={(r) => r.id}
+            onDragEnd={handleDragEnd}
+            renderItem={renderDragItem}
+            activationDistance={Platform.OS === "web" ? 3 : 10}
+            containerStyle={{ flex: 1 }}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingTop: 4,
+              paddingBottom: 100 + insets.bottom,
+            }}
+            ListEmptyComponent={
+              ready ? (
+                <View className="items-center pt-16 px-8">
+                  <Text className="text-base text-muted text-center">{t("home.noMatch")}</Text>
+                </View>
+              ) : null
+            }
+          />
         </View>
       ) : (
         <FlatList
@@ -396,6 +515,34 @@ export default function RecipesScreen() {
 const styles = StyleSheet.create({
   chipRowWrap: {
     marginBottom: 8,
+  },
+  dragRow: {
+    flexDirection: "row",
+    alignItems: "stretch",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+  },
+  dragHandle: {
+    width: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  reorderHint: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginHorizontal: 20,
+    marginBottom: 6,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  reorderHintText: {
+    fontSize: 12,
+    fontWeight: "600",
+    lineHeight: 16,
   },
   chipRow: {
     paddingHorizontal: 20,

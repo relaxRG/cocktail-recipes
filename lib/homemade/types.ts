@@ -23,6 +23,10 @@ export interface HomemadePrep {
   builtin: boolean;
   /** 做过/未做过:是否已亲手制作过该自制品 */
   made: boolean;
+  /** 评分:1-10 整数,null 表示未评分(无半星) */
+  rating: number | null;
+  /** 手动排序序号:越小越靠前,null 表示未手动排序过 */
+  sortIndex: number | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -138,6 +142,11 @@ export function normalizePrep(p: Partial<HomemadePrep> & { id: string }): Homema
     notes: p.notes ?? "",
     builtin: p.builtin ?? false,
     made: p.made === true,
+    rating:
+      typeof p.rating === "number" && isFinite(p.rating) && Math.round(p.rating) >= 1 && Math.round(p.rating) <= 10
+        ? Math.round(p.rating)
+        : null,
+    sortIndex: typeof p.sortIndex === "number" && isFinite(p.sortIndex) ? p.sortIndex : null,
     createdAt: p.createdAt ?? Date.now(),
     updatedAt: p.updatedAt ?? Date.now(),
   };

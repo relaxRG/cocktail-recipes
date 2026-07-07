@@ -4,6 +4,7 @@ import React from "react";
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { StarRating } from "@/components/star-rating";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -19,7 +20,7 @@ export default function HomemadeDetailScreen() {
   const router = useRouter();
   const { t, lang } = useI18n();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getPrep, deletePrep, togglePrepMade, types } = useHomemadeStore();
+  const { getPrep, deletePrep, togglePrepMade, setPrepRating, types } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const prep = getPrep(id);
 
@@ -154,6 +155,15 @@ export default function HomemadeDetailScreen() {
               </Text>
             </View>
           ))}
+        </View>
+
+        {/* Rating */}
+        <View className="flex-row items-center justify-between bg-surface rounded-xl mt-2 px-4 py-3">
+          <Text className="text-[15px] text-foreground">
+            {t("rating.title")}
+            {prep.rating ? ` ${prep.rating}/10` : ""}
+          </Text>
+          <StarRating value={prep.rating} size={17} onChange={(v) => setPrepRating(prep.id, v)} />
         </View>
 
         {primaryTechDesc ? (

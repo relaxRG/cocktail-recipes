@@ -30,13 +30,20 @@ interface HomemadeStore {
   sections: PrepSection[];
   types: PrepType[];
   addPrep: (
-    p: Omit<HomemadePrep, "id" | "createdAt" | "updatedAt" | "builtin" | "made"> & {
+    p: Omit<
+      HomemadePrep,
+      "id" | "createdAt" | "updatedAt" | "builtin" | "made" | "rating" | "sortIndex"
+    > & {
       made?: boolean;
+      rating?: number | null;
+      sortIndex?: number | null;
     },
   ) => HomemadePrep;
   updatePrep: (id: string, patch: Partial<HomemadePrep>) => void;
   deletePrep: (id: string) => void;
   togglePrepMade: (id: string) => void;
+  setPrepRating: (id: string, rating: number | null) => void;
+  reorderPreps: (orderedIds: string[]) => void;
   importSamples: () => number;
   getPrep: (id: string | undefined) => HomemadePrep | undefined;
   // Section management
@@ -147,6 +154,31 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
     (id) => {
       persist(
         preps.map((p) => (p.id === id ? { ...p, made: !p.made, updatedAt: Date.now() } : p)),
+      );
+    },
+    [preps, persist],
+  );
+
+  /** 设置自制品评分(1-10 整数,null 清除) */
+  const setPrepRating = useCallback<HomemadeStore["setPrepRating"]>(
+    (id, rating) => {
+      const v =
+        typeof rating === "number" && isFinite(rating)
+          ? Math.min(10, Math.max(1, Math.round(rating)))
+          : null;
+      persist(
+        preps.map((p) => (p.id === id ? { ...p, rating: v, updatedAt: Date.now() } : p)),
+      );
+    },
+    [preps, persist],
+  );
+
+  /** 长按拖拽后按新顺序写入 sortIndex */
+  const reorderPreps = useCallback<HomemadeStore["reorderPreps"]>(
+    (orderedIds) => {
+      const pos = new Map(orderedIds.map((id, i) => [id, i]));
+      persist(
+        preps.map((p) => (pos.has(p.id) ? { ...p, sortIndex: pos.get(p.id)! } : p)),
       );
     },
     [preps, persist],
@@ -299,6 +331,8 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
       updatePrep,
       deletePrep,
       togglePrepMade,
+      setPrepRating,
+      reorderPreps,
       importSamples,
       getPrep,
       addSection,
@@ -320,6 +354,8 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
       updatePrep,
       deletePrep,
       togglePrepMade,
+      setPrepRating,
+      reorderPreps,
       importSamples,
       getPrep,
       addSection,

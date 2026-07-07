@@ -17,7 +17,10 @@ import { Bottle, migrateBottleCategory, normalizeBottle } from "./types";
 const BOTTLES_KEY = "cocktail.bottles";
 const BOTTLES_SEEDED_KEY = "cocktail.bottles.seeded";
 
-export type BottleDraft = Omit<Bottle, "id" | "builtin" | "createdAt" | "updatedAt">;
+export type BottleDraft = Omit<
+  Bottle,
+  "id" | "builtin" | "rating" | "sortIndex" | "createdAt" | "updatedAt"
+> & { rating?: number | null };
 
 interface BottleStore {
   ready: boolean;
@@ -25,6 +28,8 @@ interface BottleStore {
   addBottle: (draft: BottleDraft) => Bottle;
   updateBottle: (id: string, draft: BottleDraft) => void;
   deleteBottle: (id: string) => void;
+  setBottleRating: (id: string, rating: number | null) => void;
+  reorderBottles: (orderedIds: string[]) => void;
   getBottle: (id: string | undefined) => Bottle | undefined;
 }
 
@@ -146,9 +151,12 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
       const bottle: Bottle = {
         id: genId(),
         builtin: false,
+        rating: null,
+        sortIndex: null,
         createdAt: now,
         updatedAt: now,
         ...draft,
+        ...(draft.rating === undefined ? { rating: null } : {}),
       };
       persist([bottle, ...bottlesRef.current]);
       return bottle;
@@ -174,14 +182,52 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
     [persist],
   );
 
+  /** 设置酒款评分(1-10 整数,null 清除) */
+  const setBottleRating = useCallback(
+    (id: string, rating: number | null) => {
+      const v =
+        typeof rating === "number" && isFinite(rating)
+          ? Math.min(10, Math.max(1, Math.round(rating)))
+          : null;
+      persist(
+        bottlesRef.current.map((b) =>
+          b.id === id ? { ...b, rating: v, updatedAt: Date.now() } : b,
+        ),
+      );
+    },
+    [persist],
+  );
+
+  /** 长按拖拽后按新顺序写入 sortIndex(仅对传入的 id 生效,其余保持) */
+  const reorderBottles = useCallback(
+    (orderedIds: string[]) => {
+      const pos = new Map(orderedIds.map((id, i) => [id, i]));
+      persist(
+        bottlesRef.current.map((b) =>
+          pos.has(b.id) ? { ...b, sortIndex: pos.get(b.id)! } : b,
+        ),
+      );
+    },
+    [persist],
+  );
+
   const getBottle = useCallback(
     (id: string | undefined) => bottles.find((b) => b.id === id),
     [bottles],
   );
 
   const value = useMemo<BottleStore>(
-    () => ({ ready, bottles, addBottle, updateBottle, deleteBottle, getBottle }),
-    [ready, bottles, addBottle, updateBottle, deleteBottle, getBottle],
+    () => ({
+      ready,
+      bottles,
+      addBottle,
+      updateBottle,
+      deleteBottle,
+      setBottleRating,
+      reorderBottles,
+      getBottle,
+    }),
+    [ready, bottles, addBottle, updateBottle, deleteBottle, setBottleRating, reorderBottles, getBottle],
   );
 
   return <BottleContext.Provider value={value}>{children}</BottleContext.Provider>;
