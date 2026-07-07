@@ -188,10 +188,6 @@ export default function CompareScreen() {
                 },
               ];
             })(),
-            {
-              label: t("compare.section.ingredients"),
-              values: items.map((p) => (p.ingredients.length > 0 ? p.ingredients.join("\n") : null)),
-            },
           ],
         },
         {
@@ -339,21 +335,6 @@ export default function CompareScreen() {
               },
             ];
           })(),
-          {
-            label: t("compare.section.ingredients"),
-            values: items.map((r) =>
-              r.ingredients.length > 0
-                ? r.ingredients
-                    .map((i) => {
-                      const link = smartLinkIngredient(i.name, bottles, preps);
-                      const name =
-                        smartLinkDisplayName(link, lang as "zh" | "en")?.primary ?? i.name;
-                      return i.amount ? `${name} ${formatAmountAsMl(i.amount)}` : name;
-                    })
-                    .join("\n")
-                : null,
-            ),
-          },
         ],
       },
       {
