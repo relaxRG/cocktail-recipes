@@ -130,7 +130,13 @@ export default function BottlesScreen() {
             paddingTop: 4,
             paddingBottom: 90 + insets.bottom,
           }}
-          renderItem={({ item }) => <BottleCard bottle={item} />}
+          renderItem={({ item, index }) => (
+            <BottleCard
+              bottle={item}
+              isFirst={index === 0}
+              isLast={index === filtered.length - 1}
+            />
+          )}
         />
       )}
 
@@ -152,7 +158,15 @@ export default function BottlesScreen() {
   );
 }
 
-function BottleCard({ bottle }: { bottle: Bottle }) {
+function BottleCard({
+  bottle,
+  isFirst,
+  isLast,
+}: {
+  bottle: Bottle;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
   const colors = useColors();
   const router = useRouter();
   return (
@@ -160,7 +174,13 @@ function BottleCard({ bottle }: { bottle: Bottle }) {
       onPress={() => router.push({ pathname: "/bottle/[id]", params: { id: bottle.id } })}
       style={({ pressed }) => [pressed && { opacity: 0.7 }]}
     >
-      <View className="bg-surface border border-border rounded-2xl px-4 py-3.5 mb-2.5">
+      <View
+        className="bg-surface px-4 py-3"
+        style={[
+          isFirst && { borderTopLeftRadius: 12, borderTopRightRadius: 12 },
+          isLast && { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 },
+        ]}
+      >
         <View className="flex-row items-center">
           <View className="flex-1 pr-2">
             <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
@@ -195,8 +215,27 @@ function BottleCard({ bottle }: { bottle: Bottle }) {
               <Text className="text-xs text-muted">价格未知</Text>
             )}
           </View>
+          <View style={{ marginLeft: 8 }}>
+            <IconSymbol name="chevron.right" size={16} color={colors.border} />
+          </View>
         </View>
       </View>
+      {!isLast ? (
+        <View
+          className="bg-surface"
+          style={{
+            height: StyleSheet.hairlineWidth,
+          }}
+        >
+          <View
+            style={{
+              height: StyleSheet.hairlineWidth,
+              backgroundColor: colors.border,
+              marginLeft: 16,
+            }}
+          />
+        </View>
+      ) : null}
     </Pressable>
   );
 }

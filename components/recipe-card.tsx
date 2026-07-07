@@ -8,7 +8,15 @@ import { useColors } from "@/hooks/use-colors";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { Recipe, STRENGTH_LABELS } from "@/lib/recipes/types";
 
-export function RecipeCard({ recipe }: { recipe: Recipe }) {
+export function RecipeCard({
+  recipe,
+  isFirst = true,
+  isLast = true,
+}: {
+  recipe: Recipe;
+  isFirst?: boolean;
+  isLast?: boolean;
+}) {
   const colors = useColors();
   const { toggleFavorite, getCategory } = useRecipeStore();
   const category = getCategory(recipe.categoryId);
@@ -31,7 +39,13 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
       onPress={() => router.push(`/recipe/${recipe.id}`)}
       style={({ pressed }) => [styles.pressable, pressed && { opacity: 0.7 }]}
     >
-      <View className="bg-surface rounded-2xl p-4 border border-border">
+      <View
+        className="bg-surface px-4 py-3"
+        style={[
+          isFirst && { borderTopLeftRadius: 12, borderTopRightRadius: 12 },
+          isLast && { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 },
+        ]}
+      >
         <View className="flex-row items-start justify-between">
           <View className="flex-1 pr-2">
             <Text className="text-lg font-semibold text-foreground" numberOfLines={1}>
@@ -89,12 +103,20 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
           </Text>
         ) : null}
       </View>
+      {!isLast ? (
+        <View className="bg-surface">
+          <View
+            className="bg-border"
+            style={{ height: StyleSheet.hairlineWidth, marginLeft: 16 }}
+          />
+        </View>
+      ) : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   pressable: {
-    marginBottom: 12,
+    marginBottom: 0,
   },
 });

@@ -95,21 +95,22 @@ export default function BottleDetailScreen() {
           <Text className="text-base text-muted mt-1">{bottle.nameEn}</Text>
         ) : null}
 
-        <View
-          className="bg-surface border border-border rounded-2xl mt-5 px-4"
-        >
+        <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={{ letterSpacing: 0.4, lineHeight: 18 }}>
+          基本信息
+        </Text>
+        <View className="bg-surface rounded-xl px-4">
           {rows.map((row, idx) => (
             <View
               key={row.label}
-              className="flex-row items-center justify-between py-3"
+              className="flex-row items-center justify-between py-2.5"
               style={
                 idx < rows.length - 1
                   ? { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }
                   : undefined
               }
             >
-              <Text className="text-sm text-muted">{row.label}</Text>
-              <Text className="text-sm font-medium text-foreground" style={{ maxWidth: "65%" }}>
+              <Text className="text-[15px] text-foreground">{row.label}</Text>
+              <Text className="text-[15px] text-muted" style={{ maxWidth: "65%" }}>
                 {row.value}
               </Text>
             </View>
@@ -117,12 +118,16 @@ export default function BottleDetailScreen() {
         </View>
 
         {bottle.notes ? (
-          <View className="bg-surface border border-border rounded-2xl mt-4 px-4 py-3.5">
-            <Text className="text-xs text-muted mb-1.5">备注</Text>
-            <Text className="text-sm text-foreground" style={{ lineHeight: 21 }}>
-              {bottle.notes}
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={{ letterSpacing: 0.4, lineHeight: 18 }}>
+              备注
             </Text>
-          </View>
+            <View className="bg-surface rounded-xl px-4 py-3">
+              <Text className="text-[15px] text-foreground" style={{ lineHeight: 22 }}>
+                {bottle.notes}
+              </Text>
+            </View>
+          </>
         ) : null}
 
         <Text className="text-xs text-muted mt-4 px-1" style={{ lineHeight: 18 }}>

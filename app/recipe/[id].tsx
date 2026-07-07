@@ -152,7 +152,7 @@ export default function RecipeDetailScreen() {
         ) : null}
 
         {/* Meta grid */}
-        <View className="flex-row mt-5 bg-surface border border-border rounded-2xl overflow-hidden">
+        <View className="flex-row mt-5 bg-surface rounded-xl overflow-hidden">
           {metaItems.map((m, idx) => (
             <View
               key={m.label}
@@ -168,8 +168,8 @@ export default function RecipeDetailScreen() {
         </View>
 
         {/* Ingredients */}
-        <Text className="text-lg font-semibold text-foreground mt-6 mb-2">配料</Text>
-        <View className="bg-surface border border-border rounded-2xl px-4">
+        <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>配料</Text>
+        <View className="bg-surface rounded-xl px-4">
           {recipe.ingredients.length === 0 ? (
             <Text className="text-sm text-muted py-4">未填写配料</Text>
           ) : (
@@ -193,8 +193,8 @@ export default function RecipeDetailScreen() {
         {/* Cost estimate */}
         {recipe.ingredients.length > 0 ? (
           <>
-            <Text className="text-lg font-semibold text-foreground mt-6 mb-2">单杯成本估算</Text>
-            <View className="bg-surface border border-border rounded-2xl px-4 pb-1">
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>单杯成本估算</Text>
+            <View className="bg-surface rounded-xl px-4 pb-1">
               <View
                 className="flex-row items-center justify-between py-3.5"
                 style={{ borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }}
@@ -255,8 +255,8 @@ export default function RecipeDetailScreen() {
         {/* Steps */}
         {recipe.steps ? (
           <>
-            <Text className="text-lg font-semibold text-foreground mt-6 mb-2">做法</Text>
-            <View className="bg-surface border border-border rounded-2xl p-4">
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>做法</Text>
+            <View className="bg-surface rounded-xl p-4">
               <Text className="text-base text-foreground leading-relaxed">{recipe.steps}</Text>
             </View>
           </>
@@ -265,8 +265,8 @@ export default function RecipeDetailScreen() {
         {/* Garnish */}
         {recipe.garnish ? (
           <>
-            <Text className="text-lg font-semibold text-foreground mt-6 mb-2">装饰</Text>
-            <View className="bg-surface border border-border rounded-2xl p-4">
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>装饰</Text>
+            <View className="bg-surface rounded-xl p-4">
               <Text className="text-base text-foreground">{recipe.garnish}</Text>
             </View>
           </>
@@ -275,10 +275,10 @@ export default function RecipeDetailScreen() {
         {/* Notes */}
         {recipe.notes ? (
           <>
-            <Text className="text-lg font-semibold text-foreground mt-6 mb-2">笔记</Text>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>笔记</Text>
             <View
-              className="rounded-2xl p-4 border"
-              style={{ backgroundColor: colors.primary + "11", borderColor: colors.primary + "33" }}
+              className="rounded-xl p-4"
+              style={{ backgroundColor: colors.primary + "14" }}
             >
               <Text className="text-base text-foreground leading-relaxed">{recipe.notes}</Text>
             </View>
@@ -288,8 +288,8 @@ export default function RecipeDetailScreen() {
         {/* Source */}
         {recipe.source ? (
           <>
-            <Text className="text-lg font-semibold text-foreground mt-6 mb-2">引用来源</Text>
-            <View className="bg-surface border border-border rounded-2xl p-4">
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>引用来源</Text>
+            <View className="bg-surface rounded-xl p-4">
               <Text className="text-sm text-muted leading-relaxed">{recipe.source}</Text>
             </View>
           </>
@@ -298,3 +298,10 @@ export default function RecipeDetailScreen() {
     </ScreenContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  groupHeader: {
+    letterSpacing: 0.4,
+    lineHeight: 18,
+  },
+});

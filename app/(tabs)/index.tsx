@@ -196,7 +196,13 @@ export default function RecipesScreen() {
         <FlatList
           data={filtered}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <RecipeCard recipe={item} />}
+          renderItem={({ item, index }) => (
+            <RecipeCard
+              recipe={item}
+              isFirst={index === 0}
+              isLast={index === filtered.length - 1}
+            />
+          )}
           contentContainerStyle={{
             paddingHorizontal: 20,
             paddingTop: 4,

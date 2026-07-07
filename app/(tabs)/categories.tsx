@@ -42,7 +42,7 @@ interface RowData {
 }
 
 /** 行高(含 mb-2.5 间距),用于拖拽位移换算 */
-const ROW_HEIGHT = 68;
+const ROW_HEIGHT = 61;
 
 function DraggableRow({
   index,
@@ -321,7 +321,8 @@ export default function CategoriesScreen() {
             </Text>
           </View>
         ) : (
-          rows.map((item, index) => {
+          <View className="bg-surface rounded-xl overflow-hidden">
+          {rows.map((item, index) => {
             const isEditing = editingId === item.id;
             const showPicker = colorPickerId === item.id;
             return (
@@ -333,8 +334,8 @@ export default function CategoriesScreen() {
                 onDragStateChange={(dragging) => setDraggingId(dragging ? item.id : null)}
               >
               <View
-                className="bg-surface border border-border rounded-2xl px-4 py-3 mb-2.5"
-                style={draggingId === item.id ? { borderColor: colors.primary } : undefined}
+                className="bg-surface px-4 py-2.5"
+                style={draggingId === item.id ? { backgroundColor: colors.primary + "14" } : undefined}
               >
                 <View className="flex-row items-center">
                   <View style={{ marginRight: 10 }}>
@@ -406,9 +407,16 @@ export default function CategoriesScreen() {
                   </View>
                 ) : null}
               </View>
+              {index < rows.length - 1 ? (
+                <View
+                  className="bg-border"
+                  style={{ height: StyleSheet.hairlineWidth, marginLeft: 58 }}
+                />
+              ) : null}
               </DraggableRow>
             );
-          })
+          })}
+          </View>
         )}
 
         <Text className="text-xs text-muted mt-2 px-1" style={{ lineHeight: 18 }}>
