@@ -18,6 +18,8 @@ import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib
 import { buildSamplePreps } from "../lib/homemade/seed";
 import { filterPreps } from "../lib/homemade/store";
 import { matchPrep, suggestPrep } from "../lib/homemade/match";
+import { suggestIngredients } from "../lib/suggest";
+import { displayNames } from "../lib/utils";
 import {
   PREP_SECTIONS,
   PREP_TYPES,
@@ -124,6 +126,41 @@ describe("homemade preps", () => {
     // Non-homemade ingredients yield no suggestion
     expect(suggestPrep("Angostura Bitters (bottled)")).toBeNull();
     expect(suggestPrep("Lime Juice")).toBeNull();
+  });
+
+  it("live-suggests ingredients from bottles and homemade preps with language priority", () => {
+    const bottles = buildDefaultBottles();
+    const preps = buildSamplePreps();
+    // English query hits both libraries; homemade ranks first on equal score
+    const en = suggestIngredients("syrup", bottles, preps, "en");
+    expect(en.length).toBeGreaterThan(0);
+    expect(en.some((s) => s.source === "homemade")).toBe(true);
+    // English UI: primary value should be English when available
+    const enHit = en.find((s) => s.source === "homemade");
+    expect(enHit && /[a-z]/i.test(enHit.value)).toBe(true);
+    // Chinese query matches Chinese names, zh UI returns Chinese primary
+    const zh = suggestIngredients("糖浆", bottles, preps, "zh");
+    expect(zh.length).toBeGreaterThan(0);
+    expect(zh.some((s) => /[\u4e00-\u9fff]/.test(s.value))).toBe(true);
+    // Single latin char yields nothing; single CJK char is allowed
+    expect(suggestIngredients("g", bottles, preps, "en").length).toBe(0);
+    expect(suggestIngredients("姜", bottles, preps, "zh").length).toBeGreaterThan(0);
+    // Limit respected
+    expect(suggestIngredients("a", bottles, preps, "en", 6).length).toBeLessThanOrEqual(6);
+  });
+
+  it("displayNames follows UI language with fallback", () => {
+    expect(displayNames("Simple Syrup", "简单糖浆", "en")).toEqual({
+      primary: "Simple Syrup",
+      secondary: "简单糖浆",
+    });
+    expect(displayNames("Simple Syrup", "简单糖浆", "zh")).toEqual({
+      primary: "简单糖浆",
+      secondary: "Simple Syrup",
+    });
+    // Fallback when preferred name missing
+    expect(displayNames("", "简单糖浆", "en")).toEqual({ primary: "简单糖浆", secondary: "" });
+    expect(displayNames("Orgeat", "", "zh")).toEqual({ primary: "Orgeat", secondary: "" });
   });
 });
 

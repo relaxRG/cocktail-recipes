@@ -197,6 +197,8 @@ const dict = {
   "detail.homemade.link": { zh: "自制库:{name}", en: "Homemade: {name}" },
   "form.homemade.matched": { zh: "已在自制库:{name}", en: "In Homemade Lab: {name}" },
   "form.homemade.add": { zh: "添加到自制库", en: "Add to Homemade Lab" },
+  "form.suggest.homemade": { zh: "自制库", en: "Homemade" },
+  "form.suggest.bottle": { zh: "酒库", en: "Bottles" },
   "hm.shelfLife": { zh: "保存期限", en: "Shelf Life" },
   "hm.storage": { zh: "储存方式", en: "Storage" },
   "hm.yield": { zh: "产量", en: "Yield" },

@@ -7,6 +7,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
+import { displayNames } from "@/lib/utils";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { prepTypeLabel } from "@/lib/homemade/types";
 
@@ -54,6 +55,8 @@ export default function HomemadeDetailScreen() {
     ...(prep.storage ? [{ label: t("hm.storage"), value: prep.storage }] : []),
   ];
 
+  const names = displayNames(prep.name, prep.nameAlt, lang);
+
   const sectionTitle = (label: string) => (
     <Text
       className="text-[13px] text-muted uppercase mt-6 mb-2 px-4"
@@ -93,10 +96,10 @@ export default function HomemadeDetailScreen() {
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}>
         <Text className="text-3xl font-bold text-foreground" style={{ lineHeight: 40 }}>
-          {prep.name}
+          {names.primary}
         </Text>
-        {prep.nameAlt ? (
-          <Text className="text-base text-muted mt-1">{prep.nameAlt}</Text>
+        {names.secondary ? (
+          <Text className="text-base text-muted mt-1">{names.secondary}</Text>
         ) : null}
 
         {sectionTitle(t("bottle.info"))}

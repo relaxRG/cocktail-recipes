@@ -8,6 +8,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
+import { displayNames } from "@/lib/utils";
 import { estimateRecipeCost, formatAmountAsMl } from "@/lib/bottles/cost";
 import { useBottleStore } from "@/lib/bottles/store";
 import { matchPrep } from "@/lib/homemade/match";
@@ -19,7 +20,7 @@ export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { getRecipe, getCategory, toggleFavorite, deleteRecipe } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
@@ -196,7 +197,7 @@ export default function RecipeDetailScreen() {
                         <View className="flex-row items-center mt-1" style={{ gap: 4 }}>
                           <IconSymbol name="sparkles" size={12} color={colors.primary} />
                           <Text className="text-xs" style={{ color: colors.primary }}>
-                            {t("detail.homemade.link", { name: prep.name })}
+                            {t("detail.homemade.link", { name: displayNames(prep.name, prep.nameAlt, lang).primary })}
                           </Text>
                           <IconSymbol name="chevron.right" size={11} color={colors.primary} />
                         </View>
@@ -255,7 +256,7 @@ export default function RecipeDetailScreen() {
                     </Text>
                     {item.bottle && item.cost !== null ? (
                       <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                        {item.bottle.nameZh} ¥{item.bottle.priceCny}/{item.bottle.volume} ×{" "}
+                        {displayNames(item.bottle.nameEn, item.bottle.nameZh, lang).primary} ¥{item.bottle.priceCny}/{item.bottle.volume} ×{" "}
                         {item.amountMl?.toFixed(0)}ml
                       </Text>
                     ) : (

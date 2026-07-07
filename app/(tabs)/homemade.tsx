@@ -17,6 +17,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
+import { displayNames } from "@/lib/utils";
 import { filterPreps, useHomemadeStore } from "@/lib/homemade/store";
 import {
   HomemadePrep,
@@ -285,6 +286,7 @@ function PrepRow({
   const colors = useColors();
   const router = useRouter();
   const { lang } = useI18n();
+  const names = displayNames(prep.name, prep.nameAlt, lang);
   return (
     <Pressable
       onPress={() => router.push({ pathname: "/homemade/[id]", params: { id: prep.id } })}
@@ -300,11 +302,11 @@ function PrepRow({
         <View className="flex-row items-center">
           <View className="flex-1 pr-2">
             <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
-              {prep.name}
+              {names.primary}
             </Text>
-            {prep.nameAlt ? (
+            {names.secondary ? (
               <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                {prep.nameAlt}
+                {names.secondary}
               </Text>
             ) : null}
             <View className="flex-row items-center mt-1.5" style={{ gap: 6, flexWrap: "wrap" }}>

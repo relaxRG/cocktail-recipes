@@ -21,6 +21,9 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { matchPrep, suggestPrep } from "@/lib/homemade/match";
 import { useHomemadeStore } from "@/lib/homemade/store";
+import { useBottleStore } from "@/lib/bottles/store";
+import { displayNames } from "@/lib/utils";
+import { suggestIngredients } from "@/lib/suggest";
 import { RecipeDraft, useRecipeStore } from "@/lib/recipes/store";
 import { parseRecipeText } from "@/lib/recipes/parser";
 import {
@@ -73,9 +76,10 @@ export default function RecipeFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { getRecipe, addRecipe, updateRecipe, categories, tagsOf } = useRecipeStore();
   const { preps } = useHomemadeStore();
+  const { bottles } = useBottleStore();
   const editing = getRecipe(id);
 
   const spiritTags = tagsOf("spirit");
@@ -105,6 +109,10 @@ export default function RecipeFormScreen() {
   const [garnish, setGarnish] = useState(editing?.garnish ?? "");
   const [notes, setNotes] = useState(editing?.notes ?? "");
   const [importHint, setImportHint] = useState("");
+  /** Which ingredient row is focused (shows live suggestions) */
+  const [focusedIng, setFocusedIng] = useState<string | null>(null);
+  /** Rows where user picked/dismissed suggestions — suppress until text changes */
+  const [pickedIng, setPickedIng] = useState<Record<string, string>>({});
 
   const canSave = name.trim().length > 0;
 
@@ -115,6 +123,14 @@ export default function RecipeFormScreen() {
 
   const updateIngredient = (iid: string, field: "name" | "amount", value: string) => {
     setIngredients((prev) => prev.map((i) => (i.id === iid ? { ...i, [field]: value } : i)));
+  };
+
+  const pickSuggestion = (iid: string, value: string) => {
+    updateIngredient(iid, "name", value);
+    setPickedIng((prev) => ({ ...prev, [iid]: value }));
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
   };
 
   const addIngredientRow = () => {
@@ -455,6 +471,11 @@ export default function RecipeFormScreen() {
             const trimmed = ing.name.trim();
             const prep = trimmed.length >= 2 ? matchPrep(trimmed, preps) : null;
             const suggestion = !prep && trimmed.length >= 2 ? suggestPrep(trimmed) : null;
+            const showSuggest =
+              focusedIng === ing.id && trimmed.length > 0 && pickedIng[ing.id] !== ing.name;
+            const liveSuggestions = showSuggest
+              ? suggestIngredients(trimmed, bottles, preps, lang).filter((s) => s.value !== trimmed)
+              : [];
             return (
               <View key={ing.id} className="mb-2">
                 <View className="flex-row items-center" style={{ gap: 8 }}>
@@ -464,6 +485,13 @@ export default function RecipeFormScreen() {
                     placeholderTextColor={colors.muted}
                     value={ing.name}
                     onChangeText={(v) => updateIngredient(ing.id, "name", v)}
+                    onFocus={() => setFocusedIng(ing.id)}
+                    onBlur={() => {
+                      // Delay so suggestion taps register before the list hides
+                      setTimeout(() => {
+                        setFocusedIng((cur) => (cur === ing.id ? null : cur));
+                      }, 150);
+                    }}
                     returnKeyType="done"
                     style={{ lineHeight: 20 }}
                   />
@@ -488,6 +516,53 @@ export default function RecipeFormScreen() {
                     />
                   </Pressable>
                 </View>
+                {liveSuggestions.length > 0 ? (
+                  <View
+                    className="rounded-xl border overflow-hidden mt-1"
+                    style={{ backgroundColor: colors.surface, borderColor: colors.border }}
+                  >
+                    {liveSuggestions.map((s, sIdx) => (
+                      <Pressable
+                        key={s.key}
+                        onPress={() => pickSuggestion(ing.id, s.value)}
+                        style={({ pressed }) => [
+                          styles.suggestRow,
+                          sIdx > 0 && {
+                            borderTopWidth: StyleSheet.hairlineWidth,
+                            borderTopColor: colors.border,
+                          },
+                          pressed && { opacity: 0.6 },
+                        ]}
+                      >
+                        <IconSymbol
+                          name={s.source === "homemade" ? "sparkles" : "wineglass.fill"}
+                          size={13}
+                          color={s.source === "homemade" ? colors.primary : colors.muted}
+                        />
+                        <Text
+                          className="text-sm text-foreground"
+                          numberOfLines={1}
+                          style={{ lineHeight: 18, flexShrink: 1 }}
+                        >
+                          {s.value}
+                        </Text>
+                        {s.secondary ? (
+                          <Text
+                            className="text-xs text-muted"
+                            numberOfLines={1}
+                            style={{ lineHeight: 16, flexShrink: 1 }}
+                          >
+                            {s.secondary}
+                          </Text>
+                        ) : null}
+                        <View style={{ flex: 1 }} />
+                        <Text className="text-[11px] text-muted" style={{ lineHeight: 14 }}>
+                          {s.source === "homemade" ? t("form.suggest.homemade") : t("form.suggest.bottle")}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                ) : null}
                 {prep ? (
                   <Pressable
                     onPress={() =>
@@ -497,7 +572,7 @@ export default function RecipeFormScreen() {
                   >
                     <IconSymbol name="sparkles" size={12} color={colors.primary} />
                     <Text className="text-xs" style={{ color: colors.primary, lineHeight: 16 }}>
-                      {t("form.homemade.matched", { name: prep.name })}
+                      {t("form.homemade.matched", { name: displayNames(prep.name, prep.nameAlt, lang).primary })}
                     </Text>
                     <IconSymbol name="chevron.right" size={11} color={colors.primary} />
                   </Pressable>
@@ -517,7 +592,7 @@ export default function RecipeFormScreen() {
                   >
                     <IconSymbol name="plus.circle.fill" size={12} color={colors.success} />
                     <Text className="text-xs" style={{ color: colors.success, lineHeight: 16 }}>
-                      {t("form.homemade.add")} · {suggestion.name}
+                      {t("form.homemade.add")} · {displayNames(suggestion.name, suggestion.nameAlt, lang).primary}
                     </Text>
                   </Pressable>
                 ) : null}
@@ -640,6 +715,13 @@ const styles = StyleSheet.create({
     gap: 4,
     marginTop: 4,
     paddingHorizontal: 4,
+  },
+  suggestRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
   },
   importBtn: {
     flexDirection: "row",
