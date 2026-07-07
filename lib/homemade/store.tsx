@@ -10,7 +10,7 @@ import React, {
 } from "react";
 
 import { buildSamplePreps } from "./seed";
-import { buildWaldorfPreps } from "../bottles/waldorf-ingredients";
+import { buildWaldorfPreps, findFullPrepByName } from "../bottles/waldorf-ingredients";
 import {
   HomemadePrep,
   PREP_SECTION_MIGRATION,
@@ -32,6 +32,8 @@ const TYPES_KEY = "homemade.types.v1";
 const TAXONOMY_V2_KEY = "homemade.taxonomy.v2";
 /** 《Waldorf》自制配料数据集导入标记 */
 const WALDORF_PREPS_FLAG = "homemade.waldorf.v1";
+/** 《Waldorf》v2:书中 House-Made Recipes 完整做法回填/去重/增补标记 */
+const WALDORF_PREPS_V2_FLAG = "homemade.waldorf.v2";
 
 interface HomemadeStore {
   ready: boolean;
@@ -197,6 +199,70 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
             }
             AsyncStorage.setItem(WALDORF_PREPS_FLAG, "1").catch(() => {});
             notifySyncChange(WALDORF_PREPS_FLAG);
+          }
+        }
+        // 《Waldorf》v2:书中完整做法回填存量空壳条目 + 归一去重 + 增补新条目(一次性,幂等)
+        {
+          const v2Done = await AsyncStorage.getItem(WALDORF_PREPS_V2_FLAG);
+          if (!v2Done) {
+            let changed = false;
+            // 1) 存量空壳 builtin 条目(无配料且无做法)按名回填完整数据
+            finalList = finalList.map((p) => {
+              if (!p.builtin || p.ingredients.length > 0 || p.recipe.trim()) return p;
+              const full = findFullPrepByName(p.name) ?? findFullPrepByName(p.nameAlt);
+              if (!full) return p;
+              changed = true;
+              return {
+                ...p,
+                type: full.type,
+                ingredients: full.ingredients,
+                recipe: full.recipe,
+                yield: full.yield,
+                shelfLife: full.shelfLife,
+                storage: full.storage,
+                notes: p.notes && !full.notes.includes(p.notes) ? `${full.notes}\n${p.notes}` : full.notes,
+                updatedAt: Date.now(),
+              };
+            });
+            // 2) 回填后按"英文名|中文名"去重(保留用户自建/信息更全的一条)
+            const seen = new Map<string, number>();
+            const deduped: HomemadePrep[] = [];
+            for (const p of finalList) {
+              const key = `${p.name.trim().toLowerCase()}|${p.nameAlt.trim()}`;
+              const prev = seen.get(key);
+              if (prev === undefined) {
+                seen.set(key, deduped.length);
+                deduped.push(p);
+              } else {
+                const a = deduped[prev];
+                const score = (x: HomemadePrep) =>
+                  (x.builtin ? 0 : 4) + (x.recipe.trim() ? 1 : 0) + (x.ingredients.length ? 1 : 0);
+                if (score(p) > score(a)) deduped[prev] = p;
+                changed = true;
+              }
+            }
+            finalList = deduped;
+            // 3) 补入书中新提取、库内尚无的条目
+            const names = new Set<string>();
+            for (const p of finalList) {
+              if (p.name) names.add(p.name.trim().toLowerCase());
+              if (p.nameAlt) names.add(p.nameAlt.trim().toLowerCase());
+            }
+            const fresh = buildWaldorfPreps().filter(
+              (p) =>
+                !names.has(p.name.trim().toLowerCase()) &&
+                !names.has(p.nameAlt.trim().toLowerCase()),
+            );
+            if (fresh.length > 0) {
+              finalList = [...finalList, ...fresh];
+              changed = true;
+            }
+            if (changed) {
+              AsyncStorage.setItem(PREPS_KEY, JSON.stringify(finalList)).catch(() => {});
+              notifySyncChange(PREPS_KEY);
+            }
+            AsyncStorage.setItem(WALDORF_PREPS_V2_FLAG, "1").catch(() => {});
+            notifySyncChange(WALDORF_PREPS_V2_FLAG);
           }
         }
         setPreps(finalList);

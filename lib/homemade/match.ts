@@ -20,12 +20,31 @@ function stripQualifiers(s: string): string {
 }
 
 /**
+ * 同物异名别名表(《Waldorf》书内确证):
+ * 配料名匹配左侧正则时,直接链接到英文名含右侧关键词的自制条目。
+ */
+const PREP_ALIASES: [RegExp, string][] = [
+  [/raspberry syrup|覆盆子糖浆/, "berry syrup"],
+  [/strawberry syrup|草莓糖浆/, "berry syrup"],
+  [/blackberry syrup|黑莓糖浆/, "berry syrup"],
+  [/可可粉混合物|可可混合物|cocoa mix(?!.*white)|hot.*cocoa|冷热可可/, "hot (cold) cocoa mix"],
+  [/gomme syrup|gum syrup|阿拉伯胶糖浆/, "gum syrup"],
+  [/chocolate bitters|巧克力苦精(?!.*fee)/, "cocoa bitters"],
+];
+
+/**
  * Match an ingredient name against homemade preps.
  * Checks both name (English-first) and nameAlt (Chinese) with bidirectional containment.
  */
 export function matchPrep(ingredientName: string, preps: HomemadePrep[]): HomemadePrep | null {
   const raw = norm(ingredientName);
   if (!raw || raw.length < 2) return null;
+  for (const [re, target] of PREP_ALIASES) {
+    if (re.test(raw)) {
+      const hit = preps.find((p) => p.name.toLowerCase().includes(target));
+      if (hit) return hit;
+    }
+  }
   const stripped = stripQualifiers(raw);
   const queries = stripped && stripped !== raw ? [raw, stripped] : [raw];
 

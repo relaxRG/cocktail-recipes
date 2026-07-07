@@ -32,9 +32,25 @@ interface WaldorfIngredientData {
   aliasMap: Record<string, { en: string; zh: string }>;
   stepsEn: Record<string, string>;
 }
+interface WaldorfFullPrepRow {
+  srcName?: string;
+  nameEn: string;
+  nameZh: string;
+  type: string;
+  ingredients: string[];
+  recipe: string;
+  yield: string;
+  shelfLife: string;
+  storage: string;
+  notes: string;
+  source?: string;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const DATA = require("../../assets/waldorf-ingredients.json") as WaldorfIngredientData;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const FULL_PREPS = (require("../../assets/waldorf-preps.json") as { preps: WaldorfFullPrepRow[] })
+  .preps;
 
 export const WALDORF_ALIAS_MAP: Record<string, { en: string; zh: string }> = DATA.aliasMap;
 export const WALDORF_STEPS_EN: Record<string, string> = DATA.stepsEn;
@@ -130,21 +146,62 @@ function mapPrepType(cat: string, nameEn: string): string {
   return "other";
 }
 
-/** 构建自制库条目 */
+/** 归一化名称:去 house-made/homemade/chilled 等前缀与括号备选,便于新旧条目匹配 */
+export function normalizePrepName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\(.*?\)/g, " ")
+    .replace(/\b(house-?made|homemade|chilled|cooled|brewed)\b/g, " ")
+    .replace(/\bor\b.*$/g, " ") // "simple syrup or gomme syrup" → simple syrup
+    .replace(/[^a-z\u4e00-\u9fff]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+/** 旧 63 条空壳名 → 完整数据集条目的手工映射(同物异名,书内确证) */
+const OLD_TO_FULL: Record<string, string> = {
+  "homemade cacao bitters": "Cocoa Bitters",
+  "homemade chocolate bitters": "Cocoa Bitters",
+  "homemade white cacao mix": "White Cocoa Mix",
+  "chilled homemade hot/cold cocoa mix": "Hot (Cold) Cocoa Mix",
+  "chocolate mix": "Hot (Cold) Cocoa Mix",
+  "homemade honey ginger syrup": "Honey and Ginger Syrup",
+  "homemade bacardi elixir": "Bacardi Elixir Cordial",
+  "house-made raspberry syrup": "Berry Syrup (Raspberry, Strawberry, Etc.)",
+  "homemade raspberry syrup": "Berry Syrup (Raspberry, Strawberry, Etc.)",
+  "homemade strawberry syrup": "Berry Syrup (Raspberry, Strawberry, Etc.)",
+  "gomme syrup": "Gum Syrup",
+  "spiced rum infusion": "Spiced Rum Infusion (Amber Rum)",
+  "henry mckenna bourbon (black cherry infused)": "Black Cherry-Infused Bourbon (Henry McKenna)",
+  "chilled strawberry and pink peppercorn-infused galliano l'autentico":
+    "Strawberry and Pink Peppercorn-Infused Galliano",
+};
+
+/**
+ * 构建自制库条目:以书中提取的 48 条完整数据(配料/做法/产量/保存)为主体,
+ * 旧 63 条名称经归一/手工映射与之合并去重;确实独立的旧条目保留为简条目。
+ */
 export function buildWaldorfPreps(): HomemadePrep[] {
   const now = Date.now();
-  return DATA.preps.map((p, i) => ({
-    id: `waldorf-p-${i}`,
+  const list: HomemadePrep[] = FULL_PREPS.map((p, i) => ({
+    id: `waldorf-full-${i}`,
     name: p.nameEn,
     nameAlt: p.nameZh,
-    type: mapPrepType(p.category, p.nameEn),
+    type: p.type,
     abvGroup: null,
-    ingredients: [],
-    recipe: "",
-    yield: "",
-    shelfLife: "",
-    storage: "",
-    notes: p.note || "",
+    ingredients: p.ingredients,
+    recipe: p.recipe,
+    yield: p.yield,
+    shelfLife: p.shelfLife,
+    storage: p.storage,
+    notes: [
+      p.notes,
+      p.source
+        ? `来源:《The Waldorf Astoria Bar Book》${p.source}`
+        : "来源:《The Waldorf Astoria Bar Book》Chapter 3 House-Made Recipes",
+    ]
+      .filter(Boolean)
+      .join("\n"),
     builtin: true,
     made: false,
     rating: null,
@@ -152,4 +209,57 @@ export function buildWaldorfPreps(): HomemadePrep[] {
     createdAt: now + i,
     updatedAt: now + i,
   }));
+  const fullKeys = new Set<string>();
+  for (const p of FULL_PREPS) {
+    fullKeys.add(normalizePrepName(p.nameEn));
+    fullKeys.add(p.nameZh.trim());
+  }
+  // 旧 63 条:映射/归一后已被覆盖的跳过,独有的保留为简条目
+  let extra = 0;
+  for (const p of DATA.preps) {
+    const low = p.nameEn.trim().toLowerCase();
+    if (OLD_TO_FULL[low]) continue;
+    const norm = normalizePrepName(p.nameEn);
+    if (fullKeys.has(norm) || fullKeys.has(p.nameZh.trim())) continue;
+    // 归一名互为包含也视为同物(demerara syrup ⊂ house-made demerara syrup)
+    if ([...fullKeys].some((k) => k.length > 3 && (norm.includes(k) || k.includes(norm)))) continue;
+    fullKeys.add(norm);
+    fullKeys.add(p.nameZh.trim());
+    list.push({
+      id: `waldorf-p-${extra}`,
+      name: p.nameEn,
+      nameAlt: p.nameZh,
+      type: mapPrepType(p.category, p.nameEn),
+      abvGroup: null,
+      ingredients: [],
+      recipe: "",
+      yield: "",
+      shelfLife: "",
+      storage: "",
+      notes: p.note || "",
+      builtin: true,
+      made: false,
+      rating: null,
+      sortIndex: null,
+      createdAt: now + 1000 + extra,
+      updatedAt: now + 1000 + extra,
+    });
+    extra += 1;
+  }
+  return list;
+}
+
+/** 供 store 做 v2 回填:按归一名/手工映射查完整条目(仅返回有做法的) */
+export function findFullPrepByName(name: string): HomemadePrep | null {
+  const low = name.trim().toLowerCase();
+  const mapped = OLD_TO_FULL[low];
+  const norm = normalizePrepName(name);
+  for (const p of buildWaldorfPreps()) {
+    if (!p.recipe) continue;
+    if (mapped && p.name === mapped) return p;
+    const pn = normalizePrepName(p.name);
+    if (pn === norm || p.nameAlt.trim() === name.trim()) return p;
+    if (pn.length > 3 && norm.length > 3 && (pn.includes(norm) || norm.includes(pn))) return p;
+  }
+  return null;
 }
