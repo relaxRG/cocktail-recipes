@@ -44,6 +44,12 @@ const dict = {
   "tags.new.placeholder": { zh: "新{s}名称", en: "New {s} name" },
   "tags.empty": { zh: "还没有{s}标签,在上方创建一个吧", en: "No {s} tags yet. Create one above" },
   "tags.count": { zh: "{n} 份配方", en: "{n} recipes" },
+  "tags.edit.zh": { zh: "中文名", en: "Chinese name" },
+  "tags.edit.en": { zh: "英文名", en: "English name" },
+  "tags.autofill.hint": {
+    zh: "输入中文或英文,常用标签会自动补全另一语言译名。",
+    en: "Type Chinese or English; common tags auto-fill the other language.",
+  },
   "tags.hint": {
     zh: "点击色点可换颜色;长按标签行上下拖动可调整顺序,排序会同步到表单与筛选。",
     en: "Tap the dot to change color. Long-press and drag rows to reorder; order syncs to forms and filters.",

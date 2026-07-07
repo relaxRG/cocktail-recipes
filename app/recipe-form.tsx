@@ -420,7 +420,12 @@ export default function RecipeFormScreen() {
               const blocks: { key: string; label: string | null; items: typeof flavorTags }[] = [];
               for (const g of flavorGroups) {
                 const items = flavorTags.filter((tg) => tg.groupId === g.id);
-                if (items.length > 0) blocks.push({ key: g.id, label: g.name, items });
+                if (items.length > 0)
+                  blocks.push({
+                    key: g.id,
+                    label: displayNames(g.nameEn ?? "", g.name, lang).primary,
+                    items,
+                  });
               }
               const ungrouped = flavorTags.filter((tg) => !tg.groupId || !groupedIds.has(tg.groupId));
               if (ungrouped.length > 0) {
@@ -453,7 +458,7 @@ export default function RecipeFormScreen() {
                           ]}
                         >
                           <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
-                            {tag.name}
+                            {displayNames(tag.nameEn ?? "", tag.name, lang).primary}
                           </Text>
                         </Pressable>
                       );

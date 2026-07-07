@@ -18,6 +18,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
+import { displayNames } from "@/lib/utils";
 import { filterRecipes } from "@/lib/recipes/search";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { CODEX_FAMILIES } from "@/lib/recipes/types";
@@ -140,7 +141,9 @@ export default function RecipesScreen() {
                 ]}
                 onPress={() => setFilter({ type: "category", id: cat.id })}
               >
-                <Text style={chipTextStyle(active)}>{cat.name}</Text>
+                <Text style={chipTextStyle(active)}>
+                  {displayNames(cat.nameEn ?? "", cat.name, lang).primary}
+                </Text>
               </Pressable>
             );
           })}
@@ -178,7 +181,9 @@ export default function RecipesScreen() {
                 ]}
                 onPress={() => setFlavorFilter(active ? "" : tag.name)}
               >
-                <Text style={chipTextStyle(active)}>{tag.name}</Text>
+                <Text style={chipTextStyle(active)}>
+                  {displayNames(tag.nameEn ?? "", tag.name, lang).primary}
+                </Text>
               </Pressable>
             );
           })}

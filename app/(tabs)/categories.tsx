@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { cn, displayNames } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { CATEGORY_COLORS, TagGroup, TagKind } from "@/lib/recipes/types";
@@ -39,6 +40,7 @@ const SECTION_LABEL_KEY = {
 interface RowData {
   id: string;
   name: string;
+  nameEn: string;
   color: string;
   count: number;
   groupId?: string | null;
@@ -115,16 +117,19 @@ export default function CategoriesScreen() {
     tagGroups,
     addCategory,
     renameCategory,
+    setCategoryNameEn,
     setCategoryColor,
     deleteCategory,
     reorderCategories,
     addTag,
     renameTag,
+    setTagNameEn,
     setTagColor,
     deleteTag,
     reorderTags,
     addTagGroup,
     renameTagGroup,
+    setTagGroupNameEn,
     deleteTagGroup,
     reorderTagGroups,
     setTagGroup,
@@ -136,11 +141,13 @@ export default function CategoriesScreen() {
   const [newColor, setNewColor] = useState<string>(CATEGORY_COLORS[0]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
+  const [editingNameEn, setEditingNameEn] = useState("");
   const [colorPickerId, setColorPickerId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [newGroupName, setNewGroupName] = useState("");
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
   const [editingGroupName, setEditingGroupName] = useState("");
+  const [editingGroupNameEn, setEditingGroupNameEn] = useState("");
   /** tag id showing the "assign to group" picker */
   const [groupPickerId, setGroupPickerId] = useState<string | null>(null);
 
@@ -149,6 +156,7 @@ export default function CategoriesScreen() {
       return categories.map((c) => ({
         id: c.id,
         name: c.name,
+        nameEn: c.nameEn ?? "",
         color: c.color,
         count: recipes.filter((r) => r.categoryId === c.id).length,
       }));
@@ -158,6 +166,7 @@ export default function CategoriesScreen() {
       .map((t) => ({
         id: t.id,
         name: t.name,
+        nameEn: t.nameEn ?? "",
         color: t.color,
         groupId: t.groupId ?? null,
         count:
@@ -280,8 +289,13 @@ export default function CategoriesScreen() {
       if (section === "category") renameCategory(editingId, editingName);
       else renameTag(editingId, editingName);
     }
+    if (editingId) {
+      if (section === "category") setCategoryNameEn(editingId, editingNameEn);
+      else setTagNameEn(editingId, editingNameEn);
+    }
     setEditingId(null);
     setEditingName("");
+    setEditingNameEn("");
   };
 
   const pickColor = (rowId: string, color: string) => {
@@ -308,8 +322,10 @@ export default function CategoriesScreen() {
     if (editingGroupId && editingGroupName.trim()) {
       renameTagGroup(editingGroupId, editingGroupName);
     }
+    if (editingGroupId) setTagGroupNameEn(editingGroupId, editingGroupNameEn);
     setEditingGroupId(null);
     setEditingGroupName("");
+    setEditingGroupNameEn("");
   };
 
   const moveGroup = (index: number, dir: -1 | 1) => {
@@ -449,6 +465,9 @@ export default function CategoriesScreen() {
               </Pressable>
             ))}
           </View>
+          <Text className="text-xs text-muted mt-2.5" style={{ lineHeight: 16 }}>
+            {t("tags.autofill.hint")}
+          </Text>
         </View>
 
         {/* Tag group manager (tag sections only) */}
@@ -491,20 +510,39 @@ export default function CategoriesScreen() {
                 >
                   <IconSymbol name="folder.fill" size={16} color={colors.primary} />
                   {isEditingG ? (
-                    <TextInput
-                      className="flex-1 bg-background border border-border rounded-lg px-2 py-1 text-[15px] text-foreground"
-                      value={editingGroupName}
-                      onChangeText={setEditingGroupName}
-                      autoFocus
-                      returnKeyType="done"
-                      onSubmitEditing={commitGroupEdit}
-                      onBlur={commitGroupEdit}
-                      style={{ lineHeight: 20 }}
-                    />
+                    <View className="flex-1" style={{ gap: 4 }}>
+                      <TextInput
+                        className="bg-background border border-border rounded-lg px-2 py-1 text-[15px] text-foreground"
+                        value={editingGroupName}
+                        onChangeText={setEditingGroupName}
+                        autoFocus
+                        returnKeyType="done"
+                        placeholder={t("tags.edit.zh")}
+                        placeholderTextColor={colors.muted}
+                        onSubmitEditing={commitGroupEdit}
+                        style={{ lineHeight: 20 }}
+                      />
+                      <TextInput
+                        className="bg-background border border-border rounded-lg px-2 py-1 text-[15px] text-foreground"
+                        value={editingGroupNameEn}
+                        onChangeText={setEditingGroupNameEn}
+                        returnKeyType="done"
+                        placeholder={t("tags.edit.en")}
+                        placeholderTextColor={colors.muted}
+                        onSubmitEditing={commitGroupEdit}
+                        style={{ lineHeight: 20 }}
+                      />
+                    </View>
                   ) : (
                     <View className="flex-1">
                       <Text className="text-[15px] font-medium text-foreground" numberOfLines={1}>
-                        {g.name}
+                        {displayNames(g.nameEn ?? "", g.name, lang).primary}
+                        {displayNames(g.nameEn ?? "", g.name, lang).secondary ? (
+                          <Text className="text-xs text-muted">
+                            {"  "}
+                            {displayNames(g.nameEn ?? "", g.name, lang).secondary}
+                          </Text>
+                        ) : null}
                         <Text className="text-xs text-muted">  {t("tg.tagCount", { n: tagCount })}</Text>
                       </Text>
                     </View>
@@ -524,6 +562,7 @@ export default function CategoriesScreen() {
                       onPress={() => {
                         setEditingGroupId(g.id);
                         setEditingGroupName(g.name);
+                        setEditingGroupNameEn(g.nameEn ?? "");
                       }}
                       hitSlop={6}
                       style={({ pressed }) => [pressed && { opacity: 0.6 }]}
@@ -579,20 +618,40 @@ export default function CategoriesScreen() {
                     />
                   </Pressable>
                   {isEditing ? (
-                    <TextInput
-                      className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-base text-foreground"
-                      value={editingName}
-                      onChangeText={setEditingName}
-                      autoFocus
-                      returnKeyType="done"
-                      onSubmitEditing={commitEdit}
-                      onBlur={commitEdit}
-                      style={{ lineHeight: 20 }}
-                    />
+                    <View className="flex-1" style={{ gap: 6 }}>
+                      <TextInput
+                        className="bg-background border border-border rounded-lg px-2 py-1.5 text-base text-foreground"
+                        value={editingName}
+                        onChangeText={setEditingName}
+                        autoFocus
+                        returnKeyType="done"
+                        placeholder={t("tags.edit.zh")}
+                        placeholderTextColor={colors.muted}
+                        onSubmitEditing={commitEdit}
+                        style={{ lineHeight: 20 }}
+                      />
+                      <TextInput
+                        className="bg-background border border-border rounded-lg px-2 py-1.5 text-base text-foreground"
+                        value={editingNameEn}
+                        onChangeText={setEditingNameEn}
+                        returnKeyType="done"
+                        placeholder={t("tags.edit.en")}
+                        placeholderTextColor={colors.muted}
+                        onSubmitEditing={commitEdit}
+                        style={{ lineHeight: 20 }}
+                      />
+                    </View>
                   ) : (
                     <View className="flex-1">
-                      <Text className="text-base font-medium text-foreground">{item.name}</Text>
-                      <Text className="text-xs text-muted mt-0.5">{t("tags.count", { n: item.count })}</Text>
+                      <Text className="text-base font-medium text-foreground">
+                        {displayNames(item.nameEn, item.name, lang).primary}
+                      </Text>
+                      <Text className="text-xs text-muted mt-0.5">
+                        {displayNames(item.nameEn, item.name, lang).secondary
+                          ? `${displayNames(item.nameEn, item.name, lang).secondary} · `
+                          : ""}
+                        {t("tags.count", { n: item.count })}
+                      </Text>
                     </View>
                   )}
                   <View className="flex-row items-center" style={{ gap: 16, marginLeft: 8 }}>
@@ -605,6 +664,7 @@ export default function CategoriesScreen() {
                         onPress={() => {
                           setEditingId(item.id);
                           setEditingName(item.name);
+                          setEditingNameEn(item.nameEn);
                         }}
                         hitSlop={8}
                         style={({ pressed }) => [pressed && { opacity: 0.6 }]}
@@ -659,7 +719,10 @@ export default function CategoriesScreen() {
                       className="text-[13px] text-muted uppercase"
                       style={{ letterSpacing: 0.4, lineHeight: 17 }}
                     >
-                      {block.group ? block.group.name : t("tg.ungrouped")} · {block.items.length}
+                      {block.group
+                        ? displayNames(block.group.nameEn ?? "", block.group.name, lang).primary
+                        : t("tg.ungrouped")}{" "}
+                      · {block.items.length}
                     </Text>
                   </View>
                   <View className="bg-surface rounded-xl overflow-hidden">
@@ -695,20 +758,40 @@ export default function CategoriesScreen() {
                                 />
                               </Pressable>
                               {isEditing ? (
-                                <TextInput
-                                  className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-base text-foreground"
-                                  value={editingName}
-                                  onChangeText={setEditingName}
-                                  autoFocus
-                                  returnKeyType="done"
-                                  onSubmitEditing={commitEdit}
-                                  onBlur={commitEdit}
-                                  style={{ lineHeight: 20 }}
-                                />
+                                <View className="flex-1" style={{ gap: 6 }}>
+                                  <TextInput
+                                    className="bg-background border border-border rounded-lg px-2 py-1.5 text-base text-foreground"
+                                    value={editingName}
+                                    onChangeText={setEditingName}
+                                    autoFocus
+                                    returnKeyType="done"
+                                    placeholder={t("tags.edit.zh")}
+                                    placeholderTextColor={colors.muted}
+                                    onSubmitEditing={commitEdit}
+                                    style={{ lineHeight: 20 }}
+                                  />
+                                  <TextInput
+                                    className="bg-background border border-border rounded-lg px-2 py-1.5 text-base text-foreground"
+                                    value={editingNameEn}
+                                    onChangeText={setEditingNameEn}
+                                    returnKeyType="done"
+                                    placeholder={t("tags.edit.en")}
+                                    placeholderTextColor={colors.muted}
+                                    onSubmitEditing={commitEdit}
+                                    style={{ lineHeight: 20 }}
+                                  />
+                                </View>
                               ) : (
                                 <View className="flex-1">
-                                  <Text className="text-base font-medium text-foreground">{item.name}</Text>
-                                  <Text className="text-xs text-muted mt-0.5">{t("tags.count", { n: item.count })}</Text>
+                                  <Text className="text-base font-medium text-foreground">
+                                    {displayNames(item.nameEn, item.name, lang).primary}
+                                  </Text>
+                                  <Text className="text-xs text-muted mt-0.5">
+                                    {displayNames(item.nameEn, item.name, lang).secondary
+                                      ? `${displayNames(item.nameEn, item.name, lang).secondary} · `
+                                      : ""}
+                                    {t("tags.count", { n: item.count })}
+                                  </Text>
                                 </View>
                               )}
                               <View className="flex-row items-center" style={{ gap: 14, marginLeft: 8 }}>
@@ -732,6 +815,7 @@ export default function CategoriesScreen() {
                                     onPress={() => {
                                       setEditingId(item.id);
                                       setEditingName(item.name);
+                                      setEditingNameEn(item.nameEn);
                                     }}
                                     hitSlop={8}
                                     style={({ pressed }) => [pressed && { opacity: 0.6 }]}
@@ -800,7 +884,7 @@ export default function CategoriesScreen() {
                                         ]}
                                       >
                                         <Text style={[styles.groupChipText, { color: active ? "#FFFFFF" : colors.foreground }]}>
-                                          {g.name}
+                                          {displayNames(g.nameEn ?? "", g.name, lang).primary}
                                         </Text>
                                       </Pressable>
                                     );

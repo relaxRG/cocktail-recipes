@@ -3,10 +3,10 @@ import { Category, Recipe, genId } from "./types";
 export function buildDefaultCategories(): Category[] {
   const now = Date.now();
   return [
-    { id: "cat-classic", name: "经典", color: "#C0841A", createdAt: now },
-    { id: "cat-original", name: "自创", color: "#7B5EA7", createdAt: now + 1 },
-    { id: "cat-fresh", name: "清爽", color: "#3E7A5E", createdAt: now + 2 },
-    { id: "cat-strong", name: "浓烈", color: "#B0413E", createdAt: now + 3 },
+    { id: "cat-classic", name: "经典", nameEn: "Classic", color: "#C0841A", createdAt: now },
+    { id: "cat-original", name: "自创", nameEn: "Original", color: "#7B5EA7", createdAt: now + 1 },
+    { id: "cat-fresh", name: "清爽", nameEn: "Refreshing", color: "#3E7A5E", createdAt: now + 2 },
+    { id: "cat-strong", name: "浓烈", nameEn: "Strong", color: "#B0413E", createdAt: now + 3 },
   ];
 }
 

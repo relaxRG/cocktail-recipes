@@ -16,8 +16,10 @@ import {
   TagGroup,
   TagItem,
   TagKind,
+  autoFillTagNames,
   buildDefaultTags,
   genId,
+  migrateTagNameEn,
   normalizeRecipe,
 } from "./types";
 
@@ -58,17 +60,20 @@ interface RecipeStore {
   toggleFavorite: (id: string) => void;
   addCategory: (name: string, color: string) => Category | null;
   renameCategory: (id: string, name: string) => void;
+  setCategoryNameEn: (id: string, nameEn: string) => void;
   setCategoryColor: (id: string, color: string) => void;
   deleteCategory: (id: string) => void;
   reorderCategories: (orderedIds: string[]) => void;
   addTag: (kind: TagKind, name: string, color: string) => TagItem | null;
   renameTag: (id: string, name: string) => void;
+  setTagNameEn: (id: string, nameEn: string) => void;
   setTagColor: (id: string, color: string) => void;
   deleteTag: (id: string) => void;
   reorderTags: (kind: TagKind, orderedIds: string[]) => void;
   tagsOf: (kind: TagKind) => TagItem[];
   addTagGroup: (kind: TagKind, name: string) => TagGroup | null;
   renameTagGroup: (id: string, name: string) => void;
+  setTagGroupNameEn: (id: string, nameEn: string) => void;
   deleteTagGroup: (id: string) => void;
   reorderTagGroups: (kind: TagKind, orderedIds: string[]) => void;
   setTagGroup: (tagId: string, groupId: string | null) => void;
@@ -98,7 +103,9 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           AsyncStorage.getItem(TAGS_KEY),
           AsyncStorage.getItem(TAG_GROUPS_KEY),
         ]);
-        let cats: Category[] = cRaw ? JSON.parse(cRaw) : [];
+        let cats: Category[] = (cRaw ? (JSON.parse(cRaw) as Category[]) : []).map((c) =>
+          migrateTagNameEn(c),
+        );
         const parsed: Recipe[] = rRaw ? JSON.parse(rRaw) : [];
         const recs: Recipe[] = parsed.map((r) => normalizeRecipe(r));
         if (!seeded && cats.length === 0) {
@@ -106,12 +113,16 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           await AsyncStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
           await AsyncStorage.setItem(SEEDED_KEY, "1");
         }
-        let tagList: TagItem[] = tRaw ? JSON.parse(tRaw) : [];
+        let tagList: TagItem[] = (tRaw ? (JSON.parse(tRaw) as TagItem[]) : []).map((t) =>
+          migrateTagNameEn(t),
+        );
         if (!tRaw) {
           tagList = buildDefaultTags();
           await AsyncStorage.setItem(TAGS_KEY, JSON.stringify(tagList));
         }
-        const groupList: TagGroup[] = gRaw ? JSON.parse(gRaw) : [];
+        const groupList: TagGroup[] = (gRaw ? (JSON.parse(gRaw) as TagGroup[]) : []).map(
+          (g) => migrateTagNameEn(g),
+        );
         setTagGroups(groupList);
         setTags(tagList);
         setCategories(cats);
@@ -204,10 +215,12 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     (name: string, color: string): Category | null => {
       const trimmed = name.trim();
       if (!trimmed) return null;
-      if (categoriesRef.current.some((c) => c.name === trimmed)) return null;
+      const filled = autoFillTagNames(trimmed);
+      if (categoriesRef.current.some((c) => c.name === filled.name)) return null;
       const cat: Category = {
         id: genId(),
-        name: trimmed,
+        name: filled.name,
+        nameEn: filled.nameEn,
         color,
         createdAt: Date.now(),
       };
@@ -237,15 +250,37 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     [persistCategories],
   );
 
+  const setCategoryNameEn = useCallback(
+    (id: string, nameEn: string) => {
+      persistCategories(
+        categoriesRef.current.map((c) =>
+          c.id === id ? { ...c, nameEn: nameEn.trim() } : c,
+        ),
+      );
+    },
+    [persistCategories],
+  );
+
   const addTag = useCallback(
     (kind: TagKind, name: string, color: string): TagItem | null => {
       const trimmed = name.trim();
       if (!trimmed) return null;
-      if (tagsRef.current.some((t) => t.kind === kind && t.name === trimmed)) return null;
+      const filled = autoFillTagNames(trimmed);
+      if (
+        tagsRef.current.some(
+          (t) =>
+            t.kind === kind &&
+            (t.name === filled.name ||
+              (!!filled.nameEn &&
+                (t.nameEn ?? "").toLowerCase() === filled.nameEn.toLowerCase())),
+        )
+      )
+        return null;
       const tag: TagItem = {
         id: genId(),
         kind,
-        name: trimmed,
+        name: filled.name,
+        nameEn: filled.nameEn,
         color,
         createdAt: Date.now(),
       };
@@ -289,6 +324,15 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     [persistTags, persistRecipes],
   );
 
+  const setTagNameEn = useCallback(
+    (id: string, nameEn: string) => {
+      persistTags(
+        tagsRef.current.map((t) => (t.id === id ? { ...t, nameEn: nameEn.trim() } : t)),
+      );
+    },
+    [persistTags],
+  );
+
   const setTagColor = useCallback(
     (id: string, color: string) => {
       persistTags(tagsRef.current.map((t) => (t.id === id ? { ...t, color } : t)));
@@ -329,8 +373,15 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     (kind: TagKind, name: string): TagGroup | null => {
       const trimmed = name.trim();
       if (!trimmed) return null;
-      if (tagGroupsRef.current.some((g) => g.kind === kind && g.name === trimmed)) return null;
-      const group: TagGroup = { id: genId(), kind, name: trimmed, createdAt: Date.now() };
+      const filled = autoFillTagNames(trimmed);
+      if (tagGroupsRef.current.some((g) => g.kind === kind && g.name === filled.name)) return null;
+      const group: TagGroup = {
+        id: genId(),
+        kind,
+        name: filled.name,
+        nameEn: filled.nameEn,
+        createdAt: Date.now(),
+      };
       persistTagGroups([...tagGroupsRef.current, group]);
       return group;
     },
@@ -343,6 +394,17 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       if (!trimmed) return;
       persistTagGroups(
         tagGroupsRef.current.map((g) => (g.id === id ? { ...g, name: trimmed } : g)),
+      );
+    },
+    [persistTagGroups],
+  );
+
+  const setTagGroupNameEn = useCallback(
+    (id: string, nameEn: string) => {
+      persistTagGroups(
+        tagGroupsRef.current.map((g) =>
+          g.id === id ? { ...g, nameEn: nameEn.trim() } : g,
+        ),
       );
     },
     [persistTagGroups],
@@ -468,17 +530,20 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       toggleFavorite,
       addCategory,
       renameCategory,
+      setCategoryNameEn,
       setCategoryColor,
       deleteCategory,
       reorderCategories,
       addTag,
       renameTag,
+      setTagNameEn,
       setTagColor,
       deleteTag,
       reorderTags,
       tagsOf,
       addTagGroup,
       renameTagGroup,
+      setTagGroupNameEn,
       deleteTagGroup,
       reorderTagGroups,
       setTagGroup,
@@ -499,17 +564,20 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       toggleFavorite,
       addCategory,
       renameCategory,
+      setCategoryNameEn,
       setCategoryColor,
       deleteCategory,
       reorderCategories,
       addTag,
       renameTag,
+      setTagNameEn,
       setTagColor,
       deleteTag,
       reorderTags,
       tagsOf,
       addTagGroup,
       renameTagGroup,
+      setTagGroupNameEn,
       deleteTagGroup,
       reorderTagGroups,
       setTagGroup,

@@ -22,7 +22,7 @@ export default function RecipeDetailScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
-  const { getRecipe, getCategory, toggleFavorite, deleteRecipe } = useRecipeStore();
+  const { getRecipe, getCategory, toggleFavorite, deleteRecipe, tags } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
   const recipe = getRecipe(id);
@@ -44,6 +44,11 @@ export default function RecipeDetailScreen() {
   }
 
   const category = getCategory(recipe.categoryId);
+  const tagLabel = (kind: string, name: string) => {
+    if (!name) return name;
+    const hit = tags.find((tg) => tg.kind === kind && tg.name === name);
+    return hit ? displayNames(hit.nameEn ?? "", hit.name, lang).primary : name;
+  };
   const baseCostEst = estimateRecipeCost(recipe.ingredients, bottles);
   // Fallback: cost un-matched ingredients via homemade prep unit cost
   const hmCosts = baseCostEst.items.map((item) =>
@@ -86,8 +91,8 @@ export default function RecipeDetailScreen() {
   };
 
   const metaItems = [
-    { label: t("detail.meta.spirit"), value: recipe.baseSpirit },
-    { label: t("detail.meta.glass"), value: recipe.glass || "—" },
+    { label: t("detail.meta.spirit"), value: tagLabel("spirit", recipe.baseSpirit) },
+    { label: t("detail.meta.glass"), value: tagLabel("glass", recipe.glass) || "—" },
     { label: t("detail.meta.method"), value: recipe.method || "—" },
     { label: t("detail.meta.strength"), value: STRENGTH_LABELS[recipe.strength] },
   ];
@@ -139,7 +144,7 @@ export default function RecipeDetailScreen() {
             {category ? (
               <View className="px-2.5 py-1 rounded-full" style={{ backgroundColor: category.color + "22" }}>
                 <Text className="text-xs font-medium" style={{ color: category.color }}>
-                  {category.name}
+                  {displayNames(category.nameEn ?? "", category.name, lang).primary}
                 </Text>
               </View>
             ) : null}
@@ -158,7 +163,7 @@ export default function RecipeDetailScreen() {
                 key={tag}
                 className="px-2.5 py-1 rounded-full bg-surface border border-border"
               >
-                <Text className="text-xs text-muted">{tag}</Text>
+                <Text className="text-xs text-muted">{tagLabel("flavor", tag)}</Text>
               </View>
             ))}
           </View>

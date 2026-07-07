@@ -929,3 +929,46 @@ describe("bilingual support", () => {
     expect(byChinese.length).toBe(1);
   });
 });
+
+describe("bilingual tags", () => {
+  it("default tags and categories carry English names", () => {
+    const tags = buildDefaultTags();
+    for (const tag of tags) {
+      expect((tag.nameEn ?? "").length).toBeGreaterThan(0);
+    }
+    const cats = buildDefaultCategories();
+    for (const c of cats) {
+      expect((c.nameEn ?? "").length).toBeGreaterThan(0);
+    }
+  });
+
+  it("auto-fills the other language when adding common tag names", async () => {
+    const { autoFillTagNames, migrateTagNameEn } = await import("../lib/recipes/types");
+    // zh input → en auto-filled from dictionary
+    expect(autoFillTagNames("金酒").nameEn).toMatch(/gin/i);
+    // en input → zh name resolved from reverse dictionary
+    const gin = autoFillTagNames("Gin");
+    expect(gin.name).toContain("金酒");
+    expect(gin.nameEn).toBe("Gin");
+    // unknown English name keeps itself on both sides
+    const unknown = autoFillTagNames("Dragon Pearl Foam");
+    expect(unknown.name).toBe("Dragon Pearl Foam");
+    expect(unknown.nameEn).toBe("Dragon Pearl Foam");
+    // unknown Chinese name keeps zh, leaves en empty
+    const zhUnknown = autoFillTagNames("龙珠泡沫");
+    expect(zhUnknown.name).toBe("龙珠泡沫");
+    expect(zhUnknown.nameEn).toBe("");
+    // legacy data migration fills nameEn from dictionary
+    const migrated = migrateTagNameEn<{ name: string; nameEn?: string }>({ name: "金酒" });
+    expect(migrated.nameEn).toMatch(/gin/i);
+    const untouched = migrateTagNameEn({ name: "金酒", nameEn: "Custom Gin" });
+    expect(untouched.nameEn).toBe("Custom Gin");
+  });
+
+  it("displayNames gives language-priority rendering for tags", () => {
+    expect(displayNames("Gin", "金酒", "en").primary).toBe("Gin");
+    expect(displayNames("Gin", "金酒", "zh").primary).toBe("金酒");
+    // Missing English name falls back to Chinese
+    expect(displayNames("", "自定义标签", "en").primary).toBe("自定义标签");
+  });
+});

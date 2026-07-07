@@ -96,6 +96,8 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
 export interface Category {
   id: string;
   name: string;
+  /** 英文名(独立字段,按界面语言优先展示) */
+  nameEn?: string;
   color: string;
   createdAt: number;
 }
@@ -108,6 +110,8 @@ export interface TagItem {
   id: string;
   kind: TagKind;
   name: string;
+  /** 英文名(独立字段,按界面语言优先展示) */
+  nameEn?: string;
   color: string;
   /** 所属分组 id(可选,未分组时为空) */
   groupId?: string | null;
@@ -119,6 +123,8 @@ export interface TagGroup {
   id: string;
   kind: TagKind;
   name: string;
+  /** 英文名(独立字段,按界面语言优先展示) */
+  nameEn?: string;
   createdAt: number;
 }
 
@@ -128,6 +134,107 @@ export const TAG_KIND_LABELS: Record<TagKind, string> = {
   flavor: "风味",
 };
 
+/** 常用标签中英对照词典(zh -> en),用于自动补全译名与旧数据迁移 */
+export const TAG_NAME_DICT: Record<string, string> = {
+  // 基酒
+  金酒: "Gin",
+  朗姆: "Rum",
+  朗姆酒: "Rum",
+  伏特加: "Vodka",
+  威士忌: "Whiskey",
+  龙舌兰: "Tequila",
+  白兰地: "Brandy",
+  利口酒: "Liqueur",
+  无酒精: "Non-Alcoholic",
+  梅斯卡尔: "Mezcal",
+  皮斯科: "Pisco",
+  清酒: "Sake",
+  烧酒: "Shochu",
+  金巴利: "Campari",
+  味美思: "Vermouth",
+  苦艾酒: "Absinthe",
+  雪莉酒: "Sherry",
+  波特酒: "Port",
+  香槟: "Champagne",
+  其他: "Other",
+  // 杯型
+  马天尼杯: "Martini",
+  古典杯: "Rocks",
+  高球杯: "Highball",
+  柯林杯: "Collins",
+  库佩杯: "Coupe",
+  飓风杯: "Hurricane",
+  子弹杯: "Shot",
+  尼克诺拉杯: "Nick & Nora",
+  郁金香杯: "Tulip",
+  笛型杯: "Flute",
+  提基杯: "Tiki Mug",
+  铜杯: "Copper Mug",
+  红酒杯: "Wine Glass",
+  朱莉普杯: "Julep Cup",
+  // 风味
+  草本: "Herbal",
+  果味: "Fruity",
+  柑橘: "Citrus",
+  花香: "Floral",
+  甜润: "Sweet",
+  酸爽: "Sour",
+  苦韵: "Bitter",
+  辛香: "Spicy",
+  烟熏: "Smoky",
+  咸鲜: "Savory",
+  清爽: "Refreshing",
+  浓郁: "Rich",
+  坚果: "Nutty",
+  奶油: "Creamy",
+  干爽: "Dry",
+  热带: "Tropical",
+  气泡: "Sparkling",
+  焦糖: "Caramel",
+  咖啡: "Coffee",
+  巧克力: "Chocolate",
+  // 分类
+  经典: "Classic",
+  自创: "Original",
+  浓烈: "Strong",
+  低度: "Low-ABV",
+  餐前: "Aperitif",
+  餐后: "Digestif",
+  热饮: "Hot",
+  提基: "Tiki",
+};
+
+/** 反向词典(en 小写 -> zh) */
+const TAG_NAME_DICT_REV: Record<string, string> = Object.fromEntries(
+  Object.entries(TAG_NAME_DICT).map(([zh, en]) => [en.toLowerCase(), zh]),
+);
+
+const hasCJK = (s: string) => /[\u4e00-\u9fff]/.test(s);
+
+/**
+ * 根据输入的名称自动补全另一语言译名。
+ * 返回 { name(中文优先), nameEn }:输入中文查词典补英文;输入英文查反向词典补中文,
+ * 查不到时中文侧回退为输入原文,保证 name 始终有值(name 是配方引用主键)。
+ */
+export function autoFillTagNames(input: string): { name: string; nameEn: string } {
+  const raw = input.trim();
+  if (!raw) return { name: "", nameEn: "" };
+  if (hasCJK(raw)) {
+    return { name: raw, nameEn: TAG_NAME_DICT[raw] ?? "" };
+  }
+  const zh = TAG_NAME_DICT_REV[raw.toLowerCase()];
+  return zh ? { name: zh, nameEn: raw } : { name: raw, nameEn: raw };
+}
+
+/** 为旧标签数据补全英文名(仅当词典可查且 nameEn 为空) */
+export function migrateTagNameEn<T extends { name: string; nameEn?: string }>(item: T): T {
+  if (item.nameEn) return item;
+  const en = TAG_NAME_DICT[item.name.trim()];
+  if (en) return { ...item, nameEn: en };
+  if (!hasCJK(item.name)) return { ...item, nameEn: item.name };
+  return item;
+}
+
 /** 构建默认标签集合(首次启动时初始化,之后完全由用户管理) */
 export function buildDefaultTags(): TagItem[] {
   const now = Date.now();
@@ -136,6 +243,7 @@ export function buildDefaultTags(): TagItem[] {
     id: `tag-${kind}-${i}`,
     kind,
     name,
+    nameEn: TAG_NAME_DICT[name] ?? "",
     color,
     createdAt: now + i++,
   });
