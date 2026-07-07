@@ -24,6 +24,7 @@ import { SyncProvider } from "@/lib/sync/provider";
 import { BottleProvider } from "@/lib/bottles/store";
 import { BottleTaxonomyProvider } from "@/lib/bottles/taxonomy";
 import { HomemadeProvider } from "@/lib/homemade/store";
+import { IceSettingsProvider } from "@/lib/ice/store";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -95,6 +96,7 @@ export default function RootLayout() {
           <BottleTaxonomyProvider>
           <BottleProvider>
           <HomemadeProvider>
+          <IceSettingsProvider>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="recipe/[id]" />
@@ -112,9 +114,11 @@ export default function RootLayout() {
                 name="homemade-form"
                 options={{ presentation: "modal" }}
               />
+              <Stack.Screen name="ice-settings" options={{ presentation: "modal" }} />
               <Stack.Screen name="oauth/callback" />
             </Stack>
             <StatusBar style="auto" />
+          </IceSettingsProvider>
           </HomemadeProvider>
           </BottleProvider>
           </BottleTaxonomyProvider>

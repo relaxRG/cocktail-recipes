@@ -12,6 +12,10 @@ import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { formatAmountAsMl } from "@/lib/bottles/cost";
 import { estimateRecipeCostSmart } from "@/lib/recipes/smart-cost";
+import { parseSource } from "@/lib/recipes/source-parse";
+import { useIceSettings } from "@/lib/ice/store";
+import { estimateIceCost } from "@/lib/ice/cost";
+import { analyzeStructure, structuralFormula } from "@/lib/recipes/structure";
 import {
   garnishDisplayText,
   ingredientDisplayName,
@@ -63,6 +67,9 @@ export default function RecipeDetailScreen() {
   };
   // Smart cost: same 5-level matching as ingredient linking (bottles + homemade preps)
   const costEst = estimateRecipeCostSmart(recipe.ingredients, bottles, preps);
+  const { ice: iceSettings } = useIceSettings();
+  const iceCost = estimateIceCost(recipe.method, recipe.ice, iceSettings);
+  const grandTotal = costEst.total + iceCost.total;
 
   const handleFavorite = () => {
     if (Platform.OS !== "web") {
@@ -348,6 +355,35 @@ export default function RecipeDetailScreen() {
           </>
         ) : null}
 
+        {/* Structural formula (auto-analyzed, after steps & garnish) */}
+        {recipe.ingredients.length > 0 ? (
+          <>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>
+              {t("detail.structure")}
+            </Text>
+            <View className="bg-surface rounded-xl p-4">
+              <Text className="text-base text-foreground font-medium" style={{ lineHeight: 24 }}>
+                {structuralFormula(recipe.ingredients, lang as "zh" | "en", formatAmountAsMl)}
+              </Text>
+              <View className="mt-3 pt-3 border-t border-border" style={{ gap: 6 }}>
+                {analyzeStructure(recipe.ingredients).map((it) => (
+                  <View key={it.ingredient.id} className="flex-row items-center justify-between">
+                    <Text className="text-sm text-muted" numberOfLines={1}>
+                      {lang === "en" ? it.label.en : it.label.zh}
+                    </Text>
+                    <Text className="text-sm text-foreground ml-2 flex-1 text-right" numberOfLines={1}>
+                      {ingredientDisplayName(it.ingredient.name, lang as "zh" | "en")}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+              <Text className="text-xs text-muted mt-3" style={{ lineHeight: 16 }}>
+                {t("detail.structure.hint")}
+              </Text>
+            </View>
+          </>
+        ) : null}
+
         {/* Flavor description */}
         {recipe.flavorDesc ? (
           <>
@@ -386,7 +422,32 @@ export default function RecipeDetailScreen() {
           <>
             <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.source")}</Text>
             <View className="bg-surface rounded-xl p-4">
-              <Text className="text-sm text-muted leading-relaxed">{recipe.source}</Text>
+              {(() => {
+                const ps = parseSource(recipe.source);
+                const rows = [
+                  { label: t("detail.source.venue"), value: ps.venue },
+                  { label: t("detail.source.creator"), value: ps.creator },
+                  { label: t("detail.source.season"), value: ps.season },
+                  { label: t("detail.source.year"), value: ps.year },
+                ].filter((r) => r.value);
+                if (rows.length === 0) {
+                  return <Text className="text-sm text-muted leading-relaxed">{recipe.source}</Text>;
+                }
+                return (
+                  <View style={{ gap: 8 }}>
+                    {rows.map((r) => (
+                      <View key={r.label} className="flex-row items-start justify-between">
+                        <Text className="text-sm text-muted" style={{ width: 110 }}>
+                          {r.label}
+                        </Text>
+                        <Text className="text-sm text-foreground flex-1 text-right" style={{ lineHeight: 19 }}>
+                          {r.value}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                );
+              })()}
             </View>
           </>
         ) : null}
@@ -404,7 +465,7 @@ export default function RecipeDetailScreen() {
                   {t("detail.cost.total", { a: costEst.estimatedCount, b: costEst.totalCount })}
                 </Text>
                 <Text className="text-xl font-bold" style={{ color: colors.primary }}>
-                  {costEst.estimatedCount > 0 ? `¥${costEst.total.toFixed(1)}` : "—"}
+                  {costEst.estimatedCount > 0 || iceCost.total > 0 ? `¥${grandTotal.toFixed(1)}` : "—"}
                 </Text>
               </View>
               {costEst.items.map((item, idx) => {
@@ -439,8 +500,9 @@ export default function RecipeDetailScreen() {
                     </View>
                     {linkedBottle && item.cost !== null ? (
                       <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                        {displayNames(linkedBottle.nameEn, linkedBottle.nameZh, lang).primary} ¥{linkedBottle.priceCny}/{linkedBottle.volume} ×{" "}
-                        {item.amountMl?.toFixed(0)}ml
+                        {item.wholeBottle
+                          ? `${displayNames(linkedBottle.nameEn, linkedBottle.nameZh, lang).primary} ${t("detail.cost.wholeBottle", { p: String(linkedBottle.priceCny), v: linkedBottle.volume })}`
+                          : `${displayNames(linkedBottle.nameEn, linkedBottle.nameZh, lang).primary} ¥${linkedBottle.priceCny}/${linkedBottle.volume} × ${item.amountMl?.toFixed(0)}ml`}
                       </Text>
                     ) : linkedPrep && item.cost !== null ? (
                       <Text className="text-xs mt-0.5" numberOfLines={1} style={{ color: colors.primary }}>
@@ -485,6 +547,37 @@ export default function RecipeDetailScreen() {
                   <View key={item.ingredient.id}>{row}</View>
                 );
               })}
+              {iceCost.items.map((it, idx2) => (
+                <Pressable
+                  key={`ice-${it.use}-${idx2}`}
+                  onPress={() => router.push("/ice-settings")}
+                  style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                >
+                  <View
+                    className="flex-row items-center justify-between py-2.5"
+                    style={{ borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}
+                  >
+                    <View className="flex-1 pr-3">
+                      <View className="flex-row items-center" style={{ gap: 4 }}>
+                        <Text className="text-sm" numberOfLines={1} style={{ color: colors.primary }}>
+                          {displayNames(it.kind.nameEn, it.kind.nameZh, lang).primary}
+                        </Text>
+                        <IconSymbol name="chevron.right" size={10} color={colors.primary} />
+                      </View>
+                      <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                        {t(
+                          it.use === "shake"
+                            ? "detail.cost.ice.shake"
+                            : it.use === "stir"
+                              ? "detail.cost.ice.stir"
+                              : "detail.cost.ice.serve",
+                        )}
+                      </Text>
+                    </View>
+                    <Text className="text-sm font-semibold text-foreground">¥{it.cost.toFixed(1)}</Text>
+                  </View>
+                </Pressable>
+              ))}
               <Text className="text-[11px] text-muted py-2.5" style={{ lineHeight: 15 }}>
                 {t("detail.cost.note")}
               </Text>

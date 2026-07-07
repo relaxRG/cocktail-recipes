@@ -39,6 +39,7 @@ const MAPPING = {
   "pencil": "edit",
   "trash.fill": "delete",
   "chevron.left": "chevron-left",
+  "snowflake": "ac-unit",
   "xmark": "close",
   "checkmark": "check",
   "checkmark.circle": "radio-button-unchecked",

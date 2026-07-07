@@ -150,6 +150,17 @@
 - 详情页成本区当前结构: costEst.items.map 内 row 变量 + cLink 智能链接 + Pressable 跳转 (415-490行)
 
 ## 2026-07-08 新维度:饮用时长+饮用场合
+
+## 2026-07-08 单位智能转换统一(本轮)
+- formatAmountAsMl(lib/bottles/cost.ts): 非液体 NON_LIQUID_RE(片/个/块/cube/leaves/mint/cloves/whole/small/rind/egg等)原样保留;
+  含 or/或 多方案不转换;纯数字无单位视为计数不转;液体单位(oz/cl/dash/tsp/吧勺)→ml
+- 应用位置: 详情页配料区+结构公式(formatAmountAsMl 作为 structuralFormula 第3参)、对比页配料行
+- abv.ts NON_LIQUID_RE 词表已同步扩充
+- 审计脚本 scripts/audit-amounts.py(扫描 assets/waldorf-recipes.json 非标单位)
+- 结构公式区块已移至 做法/装饰 之后(app/recipe/[id].tsx)
+- 引用来源结构化: lib/recipes/source-parse.ts parseSource(venue/creator/season/year),详情页来源区分行展示,无法解析回退原文
+- 易失效产品整瓶计成本: smart-cost.ts isPerishableWholeBottle(软饮类别或碳酸/果汁关键词,排除糖浆/苦精/鲜榨),
+  cost=整瓶价, wholeBottle=true, amountMl 保持真实用量;详情页注记 detail.cost.wholeBottle
 资料依据: IBA官方分类(Before Dinner/After Dinner/All Day/Longdrink), 维基"餐前酒和餐后酒", 知乎/搜狐中文调酒资料(按饮用时间场合分:餐前/餐后/晚餐/睡前/派对)
 设计:
 - duration 维度(tag kind="duration"): 短饮 Short Drink / 长饮 Long Drink
@@ -171,3 +182,20 @@
 - tags.tsx 管理页已接入两个新 section + i18n(tags.section.duration/occasion)
 - 表单页结构: state 在 ~114 行(flavors), draft 提交在 ~259 行, flavors chips 区在 482-539, Codex 区在 441-467; ChipGroup 组件可复用(options/value/onChange/labelOf)
 - 待办: recipe-form 加 duration/occasion 单选 ChipGroup(state+draft+编辑回填); RecipeDraft 接口补可选字段; 详情页显示两个徽章; 首页筛选面板接入; i18n form.duration/form.occasion/detail 词条; 单元测试 classify.test.ts
+
+## 结构构成公式(structural formula)设计
+资料: Cocktail Codex(core/balance/seasoning), David Embury《The Fine Art of Mixing Drinks》(base/modifier/accent), Proof Cocktails anatomy(8:3:2), IBA 六大根源家族
+角色术语体系(中/英,精密描述):
+1. 基酒核心 base_core: 纯正烈酒基酒/陈酿烈酒基酒/agave烈酒基酒(金朗伏威龙白兰地等,量最大)
+2. 副核心 co_base: 第二烈酒(拆分基酒)
+3. 加强酒修饰核心 fortified_modifier: 味美思/雪莉/波特/金鸡纳酒(Martini家族修饰)
+4. 酸度调节剂 acid: 柑橘酸(柠檬/青柠/葡萄柚)/发酵酸(醋/康普茶) → "鲜榨柑橘酸度调节剂"
+5. 甜度平衡剂 sweet: 糖浆基平衡剂(simple/demerara/蜂蜜/orgeat)/利口酒基复合平衡剂(triple sec等,兼具风味)
+6. 苦味调味剂 bitter_seasoning: 苦精(dash级)→"芳香苦精调味剂"
+7. 苦味修饰剂 amaro_modifier: 金巴利/阿玛罗(量大的苦味成分)
+8. 延长剂 lengthener: 苏打水/汤力/姜汁啤酒/香槟 →"碳酸延长剂";果汁大量→"果汁延长剂"
+9. 质构剂 texture: 蛋白/全蛋/奶油/椰浆 →"蛋白质构剂/乳脂质构剂"
+10. 稀释调节 dilution: 水/冰(明确列出时)
+11. 芳香点缀 aromatic_accent: 苦艾酒涮杯/floats/苦精表面/盐边
+输出格式: 陈酿烈酒基酒 (60ml) + 鲜榨柑橘酸度调节剂 (20ml) + 糖浆基甜度平衡剂 (15ml) + 芳香苦精调味剂 (2dash)
+判定信号: 智能配料匹配(bottles category/style) + 名称关键词 + 用量(ml/dash) + 位次

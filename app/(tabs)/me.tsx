@@ -146,6 +146,25 @@ export default function MeScreen() {
               </View>
               <IconSymbol name="chevron.right" size={18} color={colors.muted} />
             </Pressable>
+            <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: 62 }} />
+            <Pressable
+              onPress={() => {
+                tap();
+                router.push("/ice-settings");
+              }}
+              style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+            >
+              <View style={[styles.iconWrap, { backgroundColor: "#5AC8FA" }]}>
+                <IconSymbol name="snowflake" size={18} color="#FFFFFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-foreground">{t("me.ice")}</Text>
+                <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                  {t("me.ice.desc")}
+                </Text>
+              </View>
+              <IconSymbol name="chevron.right" size={18} color={colors.muted} />
+            </Pressable>
           </View>
         </View>
 

@@ -97,8 +97,6 @@ export default function RecipeFormScreen() {
   const spiritTags = tagsOf("spirit");
   const glassTags = tagsOf("glass");
   const flavorTags = tagsOf("flavor");
-  const durationTags = tagsOf("duration");
-  const occasionTags = tagsOf("occasion");
   const spiritNames = spiritTags.map((t) => t.name);
   const glassNames = glassTags.map((t) => t.name);
   const spiritColors = Object.fromEntries(spiritTags.map((t) => [t.name, t.color]));
@@ -114,8 +112,6 @@ export default function RecipeFormScreen() {
   const [variantOf, setVariantOf] = useState(editing?.variantOf ?? "");
   const [codexFamily, setCodexFamily] = useState(editing?.codexFamily ?? "");
   const [flavors, setFlavors] = useState<string[]>(editing?.flavors ?? []);
-  const [drinkDuration, setDrinkDuration] = useState(editing?.drinkDuration ?? "");
-  const [occasion, setOccasion] = useState(editing?.occasion ?? "");
   const [source, setSource] = useState(editing?.source ?? "");
   const [story, setStory] = useState(editing?.story ?? "");
   const [flavorDesc, setFlavorDesc] = useState(editing?.flavorDesc ?? "");
@@ -261,8 +257,6 @@ export default function RecipeFormScreen() {
       variantOf: variantOf.trim(),
       codexFamily,
       flavors,
-      drinkDuration,
-      occasion,
       source: source.trim(),
       story: story.trim(),
       flavorDesc: flavorDesc.trim(),
@@ -485,63 +479,6 @@ export default function RecipeFormScreen() {
           />
 
           {/* Drink duration (single-select) */}
-          {durationTags.length > 0 ? (
-            <>
-              <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.duration")}</Text>
-              <View style={styles.chipWrap}>
-                {durationTags.map((tag) => {
-                  const active = drinkDuration === tag.name;
-                  return (
-                    <Pressable
-                      key={tag.id}
-                      onPress={() => setDrinkDuration(active ? "" : tag.name)}
-                      style={[
-                        styles.chip,
-                        {
-                          backgroundColor: active ? tag.color : colors.surface,
-                          borderColor: active ? tag.color : tag.color + "66",
-                        },
-                      ]}
-                    >
-                      <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
-                        {displayNames(tag.nameEn ?? "", tag.name, lang).primary}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </>
-          ) : null}
-
-          {/* Occasion (single-select) */}
-          {occasionTags.length > 0 ? (
-            <>
-              <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.occasion")}</Text>
-              <View style={styles.chipWrap}>
-                {occasionTags.map((tag) => {
-                  const active = occasion === tag.name;
-                  return (
-                    <Pressable
-                      key={tag.id}
-                      onPress={() => setOccasion(active ? "" : tag.name)}
-                      style={[
-                        styles.chip,
-                        {
-                          backgroundColor: active ? tag.color : colors.surface,
-                          borderColor: active ? tag.color : tag.color + "66",
-                        },
-                      ]}
-                    >
-                      <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
-                        {displayNames(tag.nameEn ?? "", tag.name, lang).primary}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </>
-          ) : null}
-
           {/* Flavor tags */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.flavors.multi")}</Text>
           {flavorTags.length > 0 ? (

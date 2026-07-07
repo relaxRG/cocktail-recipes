@@ -12,7 +12,7 @@ import React, {
 
 import { buildDefaultCategories, buildSampleRecipes } from "./seed";
 import { estimateRecipeAbv } from "./abv";
-import { classifyRecipe } from "./classify";
+import { classifyRecipe, inferDrinkDuration, inferOccasion } from "./classify";
 import {
   WALDORF_DATASET_KEY,
   buildWaldorfCategories,
@@ -270,6 +270,9 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         ...(draft.nameEn === undefined ? { nameEn: "" } : {}),
         ...(draft.rating === undefined ? { rating: null } : {}),
       };
+      // 智能归类:饮用时长与场合始终由引擎自动判定(无需人工填写)
+      recipe.drinkDuration = inferDrinkDuration(recipe);
+      recipe.occasion = inferOccasion(recipe);
       persistRecipes([recipe, ...recipesRef.current]);
       return recipe;
     },
@@ -287,9 +290,14 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
   const updateRecipe = useCallback(
     (id: string, draft: RecipeDraft) => {
       persistRecipes(
-        recipesRef.current.map((r) =>
-          r.id === id ? { ...r, ...draft, updatedAt: Date.now() } : r,
-        ),
+        recipesRef.current.map((r) => {
+          if (r.id !== id) return r;
+          const next = { ...r, ...draft, updatedAt: Date.now() };
+          // 编辑后重新智能归类(配料/杯型/方法可能已变化)
+          next.drinkDuration = inferDrinkDuration(next);
+          next.occasion = inferOccasion(next);
+          return next;
+        }),
       );
     },
     [persistRecipes],

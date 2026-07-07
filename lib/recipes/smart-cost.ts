@@ -21,6 +21,8 @@ export interface SmartIngredientCost {
   amountMl: number | null;
   cost: number | null;
   reason: "no_match" | "no_amount" | "no_price" | "no_volume" | null;
+  /** 按整瓶计成本(开瓶后易失效产品,如可乐/软饮/非现榨果汁);用量仍按真实份量显示 */
+  wholeBottle?: boolean;
 }
 
 export interface SmartRecipeCost {
@@ -68,6 +70,24 @@ function bottleUnitPrice(bottle: Bottle): number | null {
   return bottle.priceCny / vol;
 }
 
+/**
+ * 开瓶后易失效、剩余难以用完的产品:成本按整瓶计。
+ * 依据:碳酸类开瓶即漏气;非现榨果汁开封后 1-3 天内变质。
+ * 判定信号:酒库分类"软饮" + 名称关键词(碳酸/果汁类)。
+ * 例外:糖浆/苦精保质期长,不按整瓶;鲜榨果汁属自制/原材料,按用量。
+ */
+const PERISHABLE_NAME_RE =
+  /可乐|cola|苏打水|soda|汤力|tonic|姜汁汽水|ginger\s*(ale|beer)|干姜水|气泡水|sparkling|七喜|雪碧|sprite|7-?up|柠檬汽水|lemonade|果汁|juice|nectar|苹果汁|橙汁|菠萝汁|蔓越莓汁|西柚汁|葡萄柚汁|番茄汁|椰浆水?|coconut\s*water|奶|milk|cream|红牛|energy/i;
+const PERISHABLE_EXCLUDE_RE = /鲜榨|现榨|fresh(ly)?\s*(squeezed|pressed)|自制|homemade|糖浆|syrup|苦精|bitters/i;
+
+/** 判断酒库条目是否属于"开瓶易失效、按整瓶计成本"的产品 */
+export function isPerishableWholeBottle(bottle: Bottle): boolean {
+  const name = `${bottle.nameZh} ${bottle.nameEn}`;
+  if (PERISHABLE_EXCLUDE_RE.test(name)) return false;
+  if (bottle.category === "软饮") return true;
+  return PERISHABLE_NAME_RE.test(name);
+}
+
 /** 单个配料的智能成本 */
 export function estimateIngredientCostSmart(
   ing: Ingredient,
@@ -81,6 +101,20 @@ export function estimateIngredientCostSmart(
   const amountMl = parseAmountLoose(ing.amount);
 
   if (link.kind === "bottle") {
+    // 易失效产品:按一整瓶价格计成本,用量保持真实份量不变
+    if (isPerishableWholeBottle(link.bottle)) {
+      if (link.bottle.priceCny > 0) {
+        return {
+          ingredient: ing,
+          link,
+          amountMl,
+          cost: link.bottle.priceCny,
+          reason: null,
+          wholeBottle: true,
+        };
+      }
+      return { ingredient: ing, link, amountMl, cost: null, reason: "no_price", wholeBottle: true };
+    }
     const unit = bottleUnitPrice(link.bottle);
     if (unit === null) {
       return {

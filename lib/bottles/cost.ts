@@ -77,23 +77,27 @@ export function parseAmountToMl(amount: string): number | null {
   return value;
 }
 
+/** 非液体计数单位(中/英):水果个数、叶片、方糖等,保留原始呈现 */
+const NON_LIQUID_RE =
+  /片|个|颗|枝|块|条|只|适量|少许|叶|把|抹|圈|针|satsuma|slice|wedge|sprig|lea(f|ves)|piece|cube|egg|pinch|twist|peel|wheel|whole|rind|zest|mint|berr|cherr|olive|clove|small|large|to\s*top|top\s*up|toasted|\blime\b|\blemon\b|\borange\b|青柠(?!汁)|柠檬(?!汁)/i;
+
 /**
  * 将用量文本统一格式化为 ml 显示。
  * 例:"1.5 oz" -> "45ml";"2 dash" -> "1.8ml";
- * 无法换算的(如"适量"、"1片"、"8-10片")原样返回。
+ * 非液体计数单位(如"1 个"、"12片"、"2 cubes"、"10 leaves")原样返回。
  */
 export function formatAmountAsMl(amount: string): string {
   const text = amount.trim();
   if (!text) return text;
+  // 非液体计数单位优先原样保留(水果/叶片/方糖/蛋等)
+  if (NON_LIQUID_RE.test(text)) return text;
+  // 含"or"/"或"等多方案写法不转换,避免误导
+  if (/\bor\b|或/i.test(text)) return text;
   // 已经是纯 ml 写法时规范化输出
   const ml = parseAmountToMl(text);
   if (ml === null) return text;
-  // 含"片/个/颗/枝/块/条/只/适量/少许/半个"等非液体计量时不转换
-  if (/片|个|颗|枝|块|条|只|适量|少许|叶|把|抹|圈|针/.test(text)) return text;
-  // 英文非液体计量词保留原文:slice/wedge/sprig/leaf/leaves/piece/cube/egg/pinch/twist/peel/wheel/top
-  if (/slice|wedge|sprig|lea(f|ves)|piece|cube|egg|pinch|twist|peel|wheel|whole|to\s*top|top\s*up/i.test(text)) {
-    return text;
-  }
+  // 纯数字无单位:小数字(<20)多为计数(蛋/果),保留;大数字按 ml 简写惯例转换
+  if (/^[\d\s./½¼¾⅓⅔~-]+$/.test(text) && ml < 20) return text;
   const rounded = Math.round(ml * 10) / 10;
   const display = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
   return `${display}ml`;

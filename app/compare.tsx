@@ -12,6 +12,7 @@ import { useBottleStore } from "@/lib/bottles/store";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { estimatePrepCost } from "@/lib/homemade/cost";
 import { estimateRecipeCostSmart } from "@/lib/recipes/smart-cost";
+import { formatAmountAsMl } from "@/lib/bottles/cost";
 import { detectPrepTechniques, techniqueLabel } from "@/lib/homemade/technique";
 import { prepTypeLabelIn } from "@/lib/homemade/types";
 import {
@@ -183,7 +184,7 @@ export default function CompareScreen() {
             values: items.map((r) =>
               r.ingredients.length > 0
                 ? r.ingredients
-                    .map((i) => (i.amount ? `${i.name} ${i.amount}` : i.name))
+                    .map((i) => (i.amount ? `${i.name} ${formatAmountAsMl(i.amount)}` : i.name))
                     .join("\n")
                 : null,
             ),

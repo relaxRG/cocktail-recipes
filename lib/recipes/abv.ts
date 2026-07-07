@@ -158,7 +158,7 @@ export function bandOfAbv(abv: number): StrengthBand {
 
 /** Amounts that are garnish-like and shouldn't count toward liquid volume */
 const NON_LIQUID_RE =
-  /片|个|颗|枝|块|条|只|适量|少许|叶|把|抹|圈|针|slice|wedge|sprig|lea(f|ves)|piece|cube|pinch|twist|peel|wheel|whole|rim|salt/i;
+  /片|个|颗|枝|块|条|只|适量|少许|叶|把|抹|圈|针|slice|wedge|sprig|lea(f|ves)|piece|cube|pinch|twist|peel|wheel|whole|rim|salt|rind|zest|mint|berr|cherr|olive|clove|small|large|toasted/i;
 /** "top up" style amounts: assume a highball top of ~90ml */
 const TOP_UP_RE = /to\s*top|top\s*up|加满|适量补满/i;
 
