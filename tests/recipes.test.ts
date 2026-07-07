@@ -3,6 +3,12 @@ import { describe, expect, it } from "vitest";
 import { filterBottles } from "../lib/bottles/store";
 import { buildDefaultBottles } from "../lib/bottles/seed";
 import { normalizeBottle } from "../lib/bottles/types";
+import {
+  estimateRecipeCost,
+  matchBottle,
+  parseAmountToMl,
+  parseVolumeToMl,
+} from "../lib/bottles/cost";
 import { filterRecipes } from "../lib/recipes/search";
 import { buildDefaultCategories, buildSampleRecipes } from "../lib/recipes/seed";
 import { CODEX_FAMILIES, buildDefaultTags, genId, normalizeRecipe } from "../lib/recipes/types";
@@ -189,5 +195,80 @@ describe("bottle database", () => {
     expect(b.abv).toBe(0);
     expect(b.priceCny).toBe(0);
     expect(b.builtin).toBe(false);
+  });
+});
+
+describe("cost estimation", () => {
+  it("parses amounts in various units to ml", () => {
+    expect(parseAmountToMl("45ml")).toBe(45);
+    expect(parseAmountToMl("1.5 oz")).toBe(45);
+    expect(parseAmountToMl("1/2 oz")).toBe(15);
+    expect(parseAmountToMl("1 1/2 oz")).toBe(45);
+    expect(parseAmountToMl("2 dash")).toBeCloseTo(1.8);
+    expect(parseAmountToMl("30 毫升")).toBe(30);
+    expect(parseAmountToMl("1 bar spoon")).toBe(5);
+    expect(parseAmountToMl("45")).toBe(45);
+    expect(parseAmountToMl("适量")).toBeNull();
+    expect(parseAmountToMl("")).toBeNull();
+  });
+
+  it("parses bottle volume to ml", () => {
+    expect(parseVolumeToMl("700ml")).toBe(700);
+    expect(parseVolumeToMl("1000ml")).toBe(1000);
+    expect(parseVolumeToMl("75cl")).toBe(750);
+    expect(parseVolumeToMl("1L")).toBe(1000);
+    expect(parseVolumeToMl("")).toBeNull();
+  });
+
+  it("matches ingredients to bottles by name/brand", () => {
+    const bottles = buildDefaultBottles();
+    expect(matchBottle("金巴利", bottles)?.nameEn).toBe("Campari");
+    expect(matchBottle("Campari", bottles)?.nameZh).toBe("金巴利");
+    expect(matchBottle("君度橙酒", bottles)?.nameEn).toBe("Cointreau");
+    // 类别兜底:泛称"金酒"匹配该分类中最便宜的酒款
+    const gin = matchBottle("金酒", bottles);
+    expect(gin?.category).toBe("金酒");
+    expect(matchBottle("完全不存在的东西xyz", bottles)).toBeNull();
+  });
+
+  it("estimates recipe cost from matched bottles", () => {
+    const bottles = buildDefaultBottles();
+    // 尼格罗尼:金酒30ml + 金巴利30ml + 甜味美思30ml
+    const est = estimateRecipeCost(
+      [
+        { id: "1", name: "金酒", amount: "30ml" },
+        { id: "2", name: "金巴利", amount: "30ml" },
+        { id: "3", name: "马天尼红味美思", amount: "30ml" },
+        { id: "4", name: "橙皮", amount: "1片" },
+      ],
+      bottles,
+    );
+    expect(est.totalCount).toBe(4);
+    expect(est.estimatedCount).toBe(3);
+    expect(est.total).toBeGreaterThan(5);
+    expect(est.total).toBeLessThan(50);
+    // 金巴利 150元/750ml * 30ml = 6元
+    const campari = est.items.find((i) => i.ingredient.name === "金巴利");
+    expect(campari?.cost).toBeCloseTo(6, 1);
+  });
+
+  it("estimates cost for seed recipes end-to-end (negroni & whiskey sour)", () => {
+    const bottles = buildDefaultBottles();
+    const recipes = buildSampleRecipes();
+    const negroni = recipes.find((r) => r.name.includes("尼格罗尼"));
+    expect(negroni).toBeDefined();
+    const est = estimateRecipeCost(negroni!.ingredients, bottles);
+    // 金酒/金巴利/甜味美思 三项均应可估算
+    expect(est.estimatedCount).toBe(3);
+    expect(est.total).toBeGreaterThan(5);
+
+    const sour = recipes.find((r) => r.name.includes("威士忌酸"));
+    expect(sour).toBeDefined();
+    const est2 = estimateRecipeCost(sour!.ingredients, bottles);
+    // 波本威士忌应可估算;蛋白无法估算但不报错
+    const bourbon = est2.items.find((i) => i.ingredient.name.includes("波本"));
+    expect(bourbon?.cost).not.toBeNull();
+    const egg = est2.items.find((i) => i.ingredient.name.includes("蛋白"));
+    expect(egg?.cost).toBeNull();
   });
 });

@@ -7,6 +7,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { estimateRecipeCost } from "@/lib/bottles/cost";
+import { useBottleStore } from "@/lib/bottles/store";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { STRENGTH_LABELS } from "@/lib/recipes/types";
 
@@ -15,6 +17,7 @@ export default function RecipeDetailScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { getRecipe, getCategory, toggleFavorite, deleteRecipe } = useRecipeStore();
+  const { bottles } = useBottleStore();
   const recipe = getRecipe(id);
 
   if (!recipe) {
@@ -34,6 +37,7 @@ export default function RecipeDetailScreen() {
   }
 
   const category = getCategory(recipe.categoryId);
+  const costEst = estimateRecipeCost(recipe.ingredients, bottles);
 
   const handleFavorite = () => {
     if (Platform.OS !== "web") {
@@ -185,6 +189,68 @@ export default function RecipeDetailScreen() {
             ))
           )}
         </View>
+
+        {/* Cost estimate */}
+        {recipe.ingredients.length > 0 ? (
+          <>
+            <Text className="text-lg font-semibold text-foreground mt-6 mb-2">单杯成本估算</Text>
+            <View className="bg-surface border border-border rounded-2xl px-4 pb-1">
+              <View
+                className="flex-row items-center justify-between py-3.5"
+                style={{ borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }}
+              >
+                <Text className="text-sm text-muted">
+                  预估总成本({costEst.estimatedCount}/{costEst.totalCount} 项可估算)
+                </Text>
+                <Text className="text-xl font-bold" style={{ color: colors.primary }}>
+                  {costEst.estimatedCount > 0 ? `¥${costEst.total.toFixed(1)}` : "—"}
+                </Text>
+              </View>
+              {costEst.items.map((item, idx) => (
+                <View
+                  key={item.ingredient.id}
+                  className="flex-row items-center justify-between py-2.5"
+                  style={
+                    idx > 0
+                      ? { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }
+                      : undefined
+                  }
+                >
+                  <View className="flex-1 pr-3">
+                    <Text className="text-sm text-foreground" numberOfLines={1}>
+                      {item.ingredient.name}
+                    </Text>
+                    {item.bottle && item.cost !== null ? (
+                      <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                        {item.bottle.nameZh} ¥{item.bottle.priceCny}/{item.bottle.volume} ×{" "}
+                        {item.amountMl?.toFixed(0)}ml
+                      </Text>
+                    ) : (
+                      <Text className="text-xs text-muted mt-0.5">
+                        {item.reason === "no_bottle"
+                          ? "酒库中无匹配酒款"
+                          : item.reason === "no_amount"
+                            ? "用量无法换算(如:适量)"
+                            : item.reason === "no_price"
+                              ? "酒款未填写价格"
+                              : "酒款未填写规格"}
+                      </Text>
+                    )}
+                  </View>
+                  <Text
+                    className="text-sm font-semibold"
+                    style={{ color: item.cost !== null ? colors.foreground : colors.muted }}
+                  >
+                    {item.cost !== null ? `¥${item.cost.toFixed(1)}` : "—"}
+                  </Text>
+                </View>
+              ))}
+              <Text className="text-[11px] text-muted py-2.5" style={{ lineHeight: 15 }}>
+                按酒库参考价与规格折算,不含冰、装饰与损耗;仅供参考。
+              </Text>
+            </View>
+          </>
+        ) : null}
 
         {/* Steps */}
         {recipe.steps ? (
