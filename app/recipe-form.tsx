@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useI18n } from "@/lib/i18n";
 import { RecipeDraft, useRecipeStore } from "@/lib/recipes/store";
 import { parseRecipeText } from "@/lib/recipes/parser";
 import {
@@ -70,6 +71,7 @@ export default function RecipeFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { t } = useI18n();
   const { getRecipe, addRecipe, updateRecipe, categories, tagsOf } = useRecipeStore();
   const editing = getRecipe(id);
 
@@ -132,7 +134,7 @@ export default function RecipeFormScreen() {
     const gotSomething =
       p.name || p.ingredients.length > 0 || p.steps || p.glass || p.garnish || p.source;
     if (!gotSomething) {
-      setImportHint("未能从剪贴板内容中识别出配方信息,请检查复制的文字");
+      setImportHint(t("form.import.fail"));
       return;
     }
     if (p.name) setName(p.name);
@@ -152,12 +154,12 @@ export default function RecipeFormScreen() {
       if (hit) setBaseSpirit(hit);
     }
     const parts: string[] = [];
-    if (p.name) parts.push("酒名");
-    if (p.ingredients.length > 0) parts.push(`${p.ingredients.length} 项配料`);
-    if (p.steps) parts.push("做法");
-    if (p.glass) parts.push("杯型");
-    if (p.garnish) parts.push("装饰");
-    setImportHint(`已识别并填入:${parts.join("、")},请核对后保存`);
+    if (p.name) parts.push(t("form.name.label"));
+    if (p.ingredients.length > 0) parts.push(`${p.ingredients.length} ${t("form.ingredients")}`);
+    if (p.steps) parts.push(t("detail.steps"));
+    if (p.glass) parts.push(t("form.glass"));
+    if (p.garnish) parts.push(t("form.garnish"));
+    setImportHint(`${t("form.import.done")}: ${parts.join(", ")}`);
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
@@ -167,7 +169,7 @@ export default function RecipeFormScreen() {
     try {
       const text = await Clipboard.getStringAsync();
       if (!text || !text.trim()) {
-        setImportHint("剪贴板为空,请先复制配方文字");
+        setImportHint(t("form.import.empty"));
         return;
       }
       const hasContent =
@@ -175,21 +177,21 @@ export default function RecipeFormScreen() {
       if (hasContent) {
         if (Platform.OS === "web") {
           // eslint-disable-next-line no-alert
-          if (typeof window !== "undefined" && !window.confirm("导入将覆盖已填写的内容,继续吗?")) {
+          if (typeof window !== "undefined" && !window.confirm(t("form.import.overwrite"))) {
             return;
           }
           applyParsed(text);
           return;
         }
-        Alert.alert("粘贴导入", "导入将覆盖已填写的内容,继续吗?", [
-          { text: "取消", style: "cancel" },
-          { text: "导入", onPress: () => applyParsed(text) },
+        Alert.alert(t("form.import.title"), t("form.import.overwrite"), [
+          { text: t("common.cancel"), style: "cancel" },
+          { text: t("form.import.confirm"), onPress: () => applyParsed(text) },
         ]);
         return;
       }
       applyParsed(text);
     } catch {
-      setImportHint("读取剪贴板失败,请手动粘贴到对应字段");
+      setImportHint(t("form.import.readFail"));
     }
   };
 
@@ -236,7 +238,7 @@ export default function RecipeFormScreen() {
           <IconSymbol name="xmark" size={24} color={colors.foreground} />
         </Pressable>
         <Text className="text-lg font-semibold text-foreground">
-          {editing ? "编辑配方" : "新建配方"}
+          {editing ? t("form.title.edit") : t("form.title.new")}
         </Text>
         <View style={{ width: 24 }} />
       </View>
@@ -264,10 +266,10 @@ export default function RecipeFormScreen() {
             <IconSymbol name="doc.on.clipboard" size={18} color={colors.primary} />
             <View style={{ flex: 1 }}>
               <Text className="text-sm font-semibold" style={{ color: colors.primary, lineHeight: 19 }}>
-                粘贴导入配方
+                {t("form.pasteImport")}
               </Text>
               <Text className="text-xs text-muted mt-0.5" style={{ lineHeight: 16 }}>
-                复制配方文字后点这里,自动识别酒名、配料用量与做法
+                {t("form.pasteImport.hint")}
               </Text>
             </View>
           </Pressable>
@@ -278,10 +280,10 @@ export default function RecipeFormScreen() {
           ) : null}
 
           {/* Name */}
-          <Text className="text-sm font-medium text-muted mt-3 mb-1.5">酒名 *</Text>
+          <Text className="text-sm font-medium text-muted mt-3 mb-1.5">{t("form.name.required")}</Text>
           <TextInput
             className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
-            placeholder="例如:金汤力 Gin & Tonic"
+            placeholder={t("form.name.placeholder")}
             placeholderTextColor={colors.muted}
             value={name}
             onChangeText={setName}
@@ -290,7 +292,7 @@ export default function RecipeFormScreen() {
           />
 
           {/* Category */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">分类</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.category")}</Text>
           <View style={styles.chipWrap}>
             <Pressable
               onPress={() => setCategoryId(null)}
@@ -305,7 +307,7 @@ export default function RecipeFormScreen() {
               <Text
                 style={[styles.chipText, { color: categoryId === null ? "#FFFFFF" : colors.muted }]}
               >
-                未分类
+                {t("form.uncategorized")}
               </Text>
             </Pressable>
             {categories.map((cat) => {
@@ -331,7 +333,7 @@ export default function RecipeFormScreen() {
           </View>
 
           {/* Base spirit */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">基酒</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.spirit")}</Text>
           {spiritNames.length > 0 ? (
             <ChipGroup
               options={spiritNames}
@@ -340,15 +342,15 @@ export default function RecipeFormScreen() {
               colorsMap={spiritColors}
             />
           ) : (
-            <Text className="text-xs text-muted">暂无基酒标签,可在“分类”页添加</Text>
+            <Text className="text-xs text-muted">{t("form.noSpirit")}</Text>
           )}
 
           {/* Codex family */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">
-            Codex 根源分类
+            {t("form.codex")}
           </Text>
           <Text className="text-xs text-muted mb-2" style={{ lineHeight: 16 }}>
-            按《Cocktail Codex》六大母配方归类,再点一次可取消
+            {t("form.codex.hint")}
           </Text>
           <View style={styles.chipWrap}>
             {CODEX_FAMILIES.map((fam) => {
@@ -374,10 +376,10 @@ export default function RecipeFormScreen() {
           </View>
 
           {/* Variant of */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">经典变体来源</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.variantOf")}</Text>
           <TextInput
             className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
-            placeholder="是哪款经典鸡尾酒的变体?如:尼格罗尼"
+            placeholder={t("form.variantOf.placeholder")}
             placeholderTextColor={colors.muted}
             value={variantOf}
             onChangeText={setVariantOf}
@@ -386,7 +388,7 @@ export default function RecipeFormScreen() {
           />
 
           {/* Flavor tags */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">风味标签(可多选)</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.flavors.multi")}</Text>
           {flavorTags.length > 0 ? (
             <View style={styles.chipWrap}>
               {flavorTags.map((tag) => {
@@ -411,15 +413,15 @@ export default function RecipeFormScreen() {
               })}
             </View>
           ) : (
-            <Text className="text-xs text-muted">暂无风味标签,可在“分类”页添加</Text>
+            <Text className="text-xs text-muted">{t("form.noFlavor")}</Text>
           )}
 
           {/* Method */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">制作方法</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.method")}</Text>
           <ChipGroup options={METHODS} value={method} onChange={setMethod} />
 
           {/* Strength */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">烈度</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.strength")}</Text>
           <ChipGroup
             options={strengthOptions}
             value={strengthValue}
@@ -432,7 +434,7 @@ export default function RecipeFormScreen() {
           />
 
           {/* Glass */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">杯型</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.glass")}</Text>
           {glassNames.length > 0 ? (
             <ChipGroup
               options={glassNames}
@@ -441,16 +443,16 @@ export default function RecipeFormScreen() {
               colorsMap={glassColors}
             />
           ) : (
-            <Text className="text-xs text-muted">暂无杯型标签,可在“分类”页添加</Text>
+            <Text className="text-xs text-muted">{t("form.noGlass")}</Text>
           )}
 
           {/* Ingredients */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">配料</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.ingredients")}</Text>
           {ingredients.map((ing) => (
             <View key={ing.id} className="flex-row items-center mb-2" style={{ gap: 8 }}>
               <TextInput
                 className="flex-[3] bg-surface border border-border rounded-xl px-3 py-2.5 text-base text-foreground"
-                placeholder="配料名"
+                placeholder={t("form.ingredient.name")}
                 placeholderTextColor={colors.muted}
                 value={ing.name}
                 onChangeText={(v) => updateIngredient(ing.id, "name", v)}
@@ -459,7 +461,7 @@ export default function RecipeFormScreen() {
               />
               <TextInput
                 className="flex-[2] bg-surface border border-border rounded-xl px-3 py-2.5 text-base text-foreground"
-                placeholder="用量"
+                placeholder={t("form.ingredient.amount")}
                 placeholderTextColor={colors.muted}
                 value={ing.amount}
                 onChangeText={(v) => updateIngredient(ing.id, "amount", v)}
@@ -485,15 +487,15 @@ export default function RecipeFormScreen() {
           >
             <IconSymbol name="plus.circle.fill" size={20} color={colors.primary} />
             <Text className="text-sm font-medium" style={{ color: colors.primary, lineHeight: 20 }}>
-              添加配料
+              {t("form.addIngredient")}
             </Text>
           </Pressable>
 
           {/* Steps */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">做法步骤</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.steps")}</Text>
           <TextInput
             className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
-            placeholder={"1. 摇酒壶加冰\n2. 倒入材料摇和\n3. 滤入冰镇酒杯"}
+            placeholder={t("form.steps.placeholder")}
             placeholderTextColor={colors.muted}
             value={steps}
             onChangeText={setSteps}
@@ -502,10 +504,10 @@ export default function RecipeFormScreen() {
           />
 
           {/* Garnish */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">装饰物</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.garnish")}</Text>
           <TextInput
             className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
-            placeholder="例如:柠檬皮、薄荷枝"
+            placeholder={t("form.garnish.placeholder")}
             placeholderTextColor={colors.muted}
             value={garnish}
             onChangeText={setGarnish}
@@ -514,10 +516,10 @@ export default function RecipeFormScreen() {
           />
 
           {/* Notes */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">个人笔记</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.notes")}</Text>
           <TextInput
             className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
-            placeholder="口感记录、改良想法…"
+            placeholder={t("form.notes.placeholder")}
             placeholderTextColor={colors.muted}
             value={notes}
             onChangeText={setNotes}
@@ -526,10 +528,10 @@ export default function RecipeFormScreen() {
           />
 
           {/* Source */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">引用来源</Text>
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.source")}</Text>
           <TextInput
             className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
-            placeholder="如:Cocktail Codex p.120 / 某酒吧 / 网站链接"
+            placeholder={t("form.source.placeholder")}
             placeholderTextColor={colors.muted}
             value={source}
             onChangeText={setSource}
@@ -557,7 +559,7 @@ export default function RecipeFormScreen() {
             ]}
           >
             <Text style={[styles.saveBtnText, { color: canSave ? "#FFFFFF" : colors.muted }]}>
-              {editing ? "保存修改" : "保存配方"}
+              {editing ? t("form.save.edit") : t("form.save")}
             </Text>
           </Pressable>
         </View>

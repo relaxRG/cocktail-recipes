@@ -16,13 +16,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useI18n } from "@/lib/i18n";
 import { filterBottles, useBottleStore } from "@/lib/bottles/store";
-import { BOTTLE_CATEGORIES, Bottle } from "@/lib/bottles/types";
+import { BOTTLE_CATEGORIES, BOTTLE_CATEGORY_EN, Bottle } from "@/lib/bottles/types";
 
 export default function BottlesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { t, lang } = useI18n();
   const { ready, bottles } = useBottleStore();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("");
@@ -54,9 +56,9 @@ export default function BottlesScreen() {
   return (
     <ScreenContainer>
       <View className="px-5 pt-2 pb-1">
-        <Text className="text-3xl font-bold text-foreground">酒库</Text>
+        <Text className="text-3xl font-bold text-foreground">{t("bottles.title")}</Text>
         <Text className="text-sm text-muted mt-1">
-          {bottles.length} 款酒 · 中英文名、度数与参考价
+          {t("bottles.subtitle", { n: bottles.length })}
         </Text>
       </View>
 
@@ -69,7 +71,7 @@ export default function BottlesScreen() {
           <IconSymbol name="magnifyingglass" size={18} color={colors.muted} />
           <TextInput
             className="flex-1 ml-2 text-base text-foreground"
-            placeholder="搜索酒名、品牌、产地..."
+            placeholder={t("bottles.search.placeholder")}
             placeholderTextColor={colors.muted}
             value={query}
             onChangeText={setQuery}
@@ -92,7 +94,7 @@ export default function BottlesScreen() {
           contentContainerStyle={styles.chipRow}
         >
           <Pressable style={chipStyle(category === "")} onPress={() => setCategory("")}>
-            <Text style={chipTextStyle(category === "")}>全部</Text>
+            <Text style={chipTextStyle(category === "")}>{t("home.filter.all")}</Text>
           </Pressable>
           {BOTTLE_CATEGORIES.map((cat) => {
             const active = category === cat;
@@ -102,7 +104,9 @@ export default function BottlesScreen() {
                 style={chipStyle(active)}
                 onPress={() => setCategory(active ? "" : cat)}
               >
-                <Text style={chipTextStyle(active)}>{cat}</Text>
+                <Text style={chipTextStyle(active)}>
+                  {lang === "en" ? BOTTLE_CATEGORY_EN[cat] ?? cat : cat}
+                </Text>
               </Pressable>
             );
           })}
@@ -113,12 +117,10 @@ export default function BottlesScreen() {
         <View className="flex-1 items-center justify-center px-8" style={{ marginTop: -40 }}>
           <Text style={{ fontSize: 48, lineHeight: 64 }}>🍾</Text>
           <Text className="text-xl font-semibold text-foreground mt-3">
-            {bottles.length === 0 ? "酒库是空的" : "没有匹配的酒款"}
+            {bottles.length === 0 ? t("bottles.empty.title") : t("bottles.noMatch.title")}
           </Text>
           <Text className="text-sm text-muted text-center mt-2 leading-relaxed">
-            {bottles.length === 0
-              ? "添加你拥有或想了解的酒款"
-              : "换个关键词或分类试试"}
+            {bottles.length === 0 ? t("bottles.empty.desc") : t("bottles.noMatch.desc")}
           </Text>
         </View>
       ) : (
@@ -169,6 +171,7 @@ function BottleCard({
 }) {
   const colors = useColors();
   const router = useRouter();
+  const { t, lang } = useI18n();
   return (
     <Pressable
       onPress={() => router.push({ pathname: "/bottle/[id]", params: { id: bottle.id } })}
@@ -184,18 +187,20 @@ function BottleCard({
         <View className="flex-row items-center">
           <View className="flex-1 pr-2">
             <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
-              {bottle.nameZh}
+              {lang === "en" && bottle.nameEn ? bottle.nameEn : bottle.nameZh}
             </Text>
-            {bottle.nameEn ? (
+            {(lang === "en" ? bottle.nameZh : bottle.nameEn) ? (
               <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                {bottle.nameEn}
+                {lang === "en" ? bottle.nameZh : bottle.nameEn}
               </Text>
             ) : null}
             <View className="flex-row items-center mt-1.5" style={{ gap: 6, flexWrap: "wrap" }}>
               <View
                 style={[styles.badge, { backgroundColor: colors.primary + "22" }]}
               >
-                <Text style={[styles.badgeText, { color: colors.primary }]}>{bottle.category}</Text>
+                <Text style={[styles.badgeText, { color: colors.primary }]}>
+                  {lang === "en" ? BOTTLE_CATEGORY_EN[bottle.category] ?? bottle.category : bottle.category}
+                </Text>
               </View>
               {bottle.volume ? (
                 <Text className="text-xs text-muted">{bottle.volume}</Text>
@@ -209,10 +214,10 @@ function BottleCard({
                 <Text className="text-lg font-bold text-foreground">
                   ¥{bottle.priceCny}
                 </Text>
-                <Text className="text-[10px] text-muted">参考价</Text>
+                <Text className="text-[10px] text-muted">{t("bottles.price.ref")}</Text>
               </>
             ) : (
-              <Text className="text-xs text-muted">价格未知</Text>
+              <Text className="text-xs text-muted">{t("bottles.price.unknown")}</Text>
             )}
           </View>
           <View style={{ marginLeft: 8 }}>

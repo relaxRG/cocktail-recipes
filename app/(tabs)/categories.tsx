@@ -22,17 +22,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useI18n } from "@/lib/i18n";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { CATEGORY_COLORS, TagKind } from "@/lib/recipes/types";
 
 type SectionKey = "category" | TagKind;
 
-const SECTIONS: { key: SectionKey; label: string; hint: string }[] = [
-  { key: "category", label: "分类", hint: "配方所属的自定义分类" },
-  { key: "spirit", label: "基酒", hint: "表单中可选的基酒标签" },
-  { key: "glass", label: "杯型", hint: "表单中可选的杯型标签" },
-  { key: "flavor", label: "风味", hint: "表单中可多选的风味标签" },
-];
+const SECTION_KEYS: SectionKey[] = ["category", "spirit", "glass", "flavor"];
+const SECTION_LABEL_KEY = {
+  category: "tags.section.category",
+  spirit: "tags.section.spirit",
+  glass: "tags.section.glass",
+  flavor: "tags.section.flavor",
+} as const;
 
 interface RowData {
   id: string;
@@ -104,6 +106,7 @@ function DraggableRow({
 export default function CategoriesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { t, lang, setLang } = useI18n();
   const {
     categories,
     recipes,
@@ -152,7 +155,7 @@ export default function CategoriesScreen() {
       }));
   }, [section, categories, tags, recipes]);
 
-  const sectionLabel = SECTIONS.find((s) => s.key === section)!.label;
+  const sectionLabel = t(SECTION_LABEL_KEY[section]);
 
   const applyOrder = useCallback(
     (orderedIds: string[]) => {
@@ -190,13 +193,22 @@ export default function CategoriesScreen() {
   };
 
   const confirmDelete = (row: RowData) => {
-    let message = `确定删除「${row.name}」吗?`;
+    let message = t("tags.delete.confirm", { name: row.name });
     if (section === "category" && row.count > 0) {
-      message = `「${row.name}」下有 ${row.count} 份配方,删除后它们将变为未分类。`;
+      message =
+        lang === "zh"
+          ? `「${row.name}」下有 ${row.count} 份配方,删除后它们将变为未分类。`
+          : `"${row.name}" has ${row.count} recipes. They will become uncategorized.`;
     } else if (section === "flavor" && row.count > 0) {
-      message = `「${row.name}」被 ${row.count} 份配方使用,删除后将从这些配方中移除。`;
+      message =
+        lang === "zh"
+          ? `「${row.name}」被 ${row.count} 份配方使用,删除后将从这些配方中移除。`
+          : `"${row.name}" is used by ${row.count} recipes and will be removed from them.`;
     } else if ((section === "spirit" || section === "glass") && row.count > 0) {
-      message = `「${row.name}」被 ${row.count} 份配方使用,删除标签不会修改这些配方的文字记录。`;
+      message =
+        lang === "zh"
+          ? `「${row.name}」被 ${row.count} 份配方使用,删除标签不会修改这些配方的文字记录。`
+          : `"${row.name}" is used by ${row.count} recipes. Deleting the tag won't change their text.`;
     }
     const doDelete = () =>
       section === "category" ? deleteCategory(row.id) : deleteTag(row.id);
@@ -204,9 +216,9 @@ export default function CategoriesScreen() {
       if (typeof window !== "undefined" && window.confirm(message)) doDelete();
       return;
     }
-    Alert.alert(`删除${sectionLabel}`, message, [
-      { text: "取消", style: "cancel" },
-      { text: "删除", style: "destructive", onPress: doDelete },
+    Alert.alert(t("tags.delete.title", { s: sectionLabel }), message, [
+      { text: t("common.cancel"), style: "cancel" },
+      { text: t("common.delete"), style: "destructive", onPress: doDelete },
     ]);
   };
 
@@ -231,22 +243,50 @@ export default function CategoriesScreen() {
   return (
     <ScreenContainer>
       <View className="px-5 pt-2 pb-3">
-        <Text className="text-3xl font-bold text-foreground">标签管理</Text>
+        <Text className="text-3xl font-bold text-foreground">{t("tags.title")}</Text>
         <Text className="text-sm text-muted mt-1">
-          自定义分类、基酒、杯型与风味标签
+          {t("tags.subtitle")}
         </Text>
+      </View>
+
+      {/* Language setting */}
+      <View className="px-5 pb-3">
+        <View className="flex-row items-center bg-surface rounded-xl px-4 py-3">
+          <Text className="flex-1 text-base text-foreground">{t("common.language")}</Text>
+          <View className="flex-row bg-background rounded-lg p-0.5" style={{ gap: 2 }}>
+            {(["zh", "en"] as const).map((l) => (
+              <Pressable
+                key={l}
+                onPress={() => setLang(l)}
+                style={[
+                  styles.langSeg,
+                  lang === l && { backgroundColor: colors.primary },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.langSegText,
+                    { color: lang === l ? "#FFFFFF" : colors.muted },
+                  ]}
+                >
+                  {l === "zh" ? "中文" : "English"}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
       </View>
 
       {/* Section switcher */}
       <View className="px-5 pb-3">
         <View className="flex-row bg-surface border border-border rounded-xl p-1">
-          {SECTIONS.map((s) => {
-            const active = section === s.key;
+          {SECTION_KEYS.map((key) => {
+            const active = section === key;
             return (
               <Pressable
-                key={s.key}
+                key={key}
                 onPress={() => {
-                  setSection(s.key);
+                  setSection(key);
                   setEditingId(null);
                   setColorPickerId(null);
                 }}
@@ -261,7 +301,7 @@ export default function CategoriesScreen() {
                     { color: active ? "#FFFFFF" : colors.muted },
                   ]}
                 >
-                  {s.label}
+                  {t(SECTION_LABEL_KEY[key])}
                 </Text>
               </Pressable>
             );
@@ -279,7 +319,7 @@ export default function CategoriesScreen() {
           <View className="flex-row items-center" style={{ gap: 8 }}>
             <TextInput
               className="flex-1 bg-background border border-border rounded-xl px-3 py-2.5 text-base text-foreground"
-              placeholder={`新${sectionLabel}名称`}
+              placeholder={t("tags.new.placeholder", { s: sectionLabel })}
               placeholderTextColor={colors.muted}
               value={newName}
               onChangeText={setNewName}
@@ -317,7 +357,7 @@ export default function CategoriesScreen() {
         {rows.length === 0 ? (
           <View className="items-center pt-12 px-8">
             <Text className="text-base text-muted text-center">
-              还没有{sectionLabel}标签,在上方创建一个吧
+              {t("tags.empty", { s: sectionLabel })}
             </Text>
           </View>
         ) : (
@@ -366,7 +406,7 @@ export default function CategoriesScreen() {
                   ) : (
                     <View className="flex-1">
                       <Text className="text-base font-medium text-foreground">{item.name}</Text>
-                      <Text className="text-xs text-muted mt-0.5">{item.count} 份配方</Text>
+                      <Text className="text-xs text-muted mt-0.5">{t("tags.count", { n: item.count })}</Text>
                     </View>
                   )}
                   <View className="flex-row items-center" style={{ gap: 16, marginLeft: 8 }}>
@@ -420,7 +460,7 @@ export default function CategoriesScreen() {
         )}
 
         <Text className="text-xs text-muted mt-2 px-1" style={{ lineHeight: 18 }}>
-          点击色点可换颜色;长按标签行上下拖动可调整顺序,排序会同步到表单与筛选。
+          {t("tags.hint")}
         </Text>
       </ScrollView>
     </ScreenContainer>
@@ -448,6 +488,16 @@ const styles = StyleSheet.create({
   },
   segmentText: {
     fontSize: 14,
+    fontWeight: "600",
+    lineHeight: 18,
+  },
+  langSeg: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  langSegText: {
+    fontSize: 13,
     fontWeight: "600",
     lineHeight: 18,
   },

@@ -15,12 +15,14 @@ import {
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useI18n } from "@/lib/i18n";
 import { BottleDraft, useBottleStore } from "@/lib/bottles/store";
-import { BOTTLE_CATEGORIES } from "@/lib/bottles/types";
+import { BOTTLE_CATEGORIES, BOTTLE_CATEGORY_EN } from "@/lib/bottles/types";
 
 export default function BottleFormScreen() {
   const colors = useColors();
   const router = useRouter();
+  const { t, lang } = useI18n();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { getBottle, addBottle, updateBottle } = useBottleStore();
   const editing = getBottle(id);
@@ -107,7 +109,7 @@ export default function BottleFormScreen() {
             <IconSymbol name="xmark" size={22} color={colors.foreground} />
           </Pressable>
           <Text className="flex-1 text-center text-lg font-semibold text-foreground">
-            {editing ? "编辑酒款" : "添加酒款"}
+            {editing ? t("bform.title.edit") : t("bform.title.new")}
           </Text>
           <View style={{ width: 22 }} />
         </View>
@@ -116,10 +118,10 @@ export default function BottleFormScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
           keyboardShouldPersistTaps="handled"
         >
-          {field("中文名 *", nameZh, setNameZh, "例如:君度橙酒")}
-          {field("英文名", nameEn, setNameEn, "例如:Cointreau")}
+          {field(t("bform.nameZh"), nameZh, setNameZh, lang === "en" ? "e.g. 君度橙酒" : "例如:君度橙酒")}
+          {field(t("bform.nameEn"), nameEn, setNameEn, "e.g. Cointreau")}
 
-          <Text className="text-sm font-medium text-foreground mb-1.5">分类</Text>
+          <Text className="text-sm font-medium text-foreground mb-1.5">{t("bform.category")}</Text>
           <View className="flex-row flex-wrap mb-4" style={{ gap: 8 }}>
             {BOTTLE_CATEGORIES.map((cat) => {
               const active = category === cat;
@@ -141,19 +143,19 @@ export default function BottleFormScreen() {
                       { color: active ? "#FFFFFF" : colors.foreground },
                     ]}
                   >
-                    {cat}
+                    {lang === "en" ? BOTTLE_CATEGORY_EN[cat] ?? cat : cat}
                   </Text>
                 </Pressable>
               );
             })}
           </View>
 
-          {field("品牌", brand, setBrand, "例如:Cointreau")}
-          {field("产地", origin, setOrigin, "例如:法国")}
-          {field("规格", volume, setVolume, "例如:700ml")}
-          {field("酒精度数(% vol)", abv, setAbv, "例如:40", { keyboardType: "numeric" })}
-          {field("中国参考价(¥)", price, setPrice, "例如:170", { keyboardType: "numeric" })}
-          {field("备注", notes, setNotes, "口感、用途、购买渠道等", { multiline: true })}
+          {field(t("bform.brand"), brand, setBrand, "e.g. Cointreau")}
+          {field(t("bform.origin"), origin, setOrigin, lang === "en" ? "e.g. France" : "例如:法国")}
+          {field(t("bform.volume"), volume, setVolume, lang === "en" ? "e.g. 700ml" : "例如:700ml")}
+          {field(t("bform.abv"), abv, setAbv, lang === "en" ? "e.g. 40" : "例如:40", { keyboardType: "numeric" })}
+          {field(t("bform.price"), price, setPrice, lang === "en" ? "e.g. 170" : "例如:170", { keyboardType: "numeric" })}
+          {field(t("bform.notes"), notes, setNotes, lang === "en" ? "Taste, usage, where to buy…" : "口感、用途、购买渠道等", { multiline: true })}
         </ScrollView>
 
         <View className="px-5 pb-2 pt-2">
@@ -166,7 +168,7 @@ export default function BottleFormScreen() {
               pressed && canSave && { transform: [{ scale: 0.98 }], opacity: 0.9 },
             ]}
           >
-            <Text style={styles.saveBtnText}>{editing ? "保存修改" : "保存酒款"}</Text>
+            <Text style={styles.saveBtnText}>{editing ? t("form.save.edit") : t("bform.save")}</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -201,4 +203,3 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 });
-

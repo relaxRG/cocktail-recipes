@@ -28,6 +28,8 @@ interface BottleStore {
   getBottle: (id: string | undefined) => Bottle | undefined;
 }
 
+const SEED_VERSION = "2";
+
 const BottleContext = createContext<BottleStore | null>(null);
 
 export function BottleProvider({ children }: { children: React.ReactNode }) {
@@ -45,7 +47,23 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
         if (!seeded && list.length === 0) {
           list = buildDefaultBottles();
           await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
-          await AsyncStorage.setItem(BOTTLES_SEEDED_KEY, "1");
+          await AsyncStorage.setItem(BOTTLES_SEEDED_KEY, SEED_VERSION);
+        } else if (seeded && seeded !== SEED_VERSION) {
+          // 种子库升级:把新增的内置酒款合并进来(按 nameEn 去重,不覆盖用户数据)
+          const existingEn = new Set(
+            list.map((b) => b.nameEn.trim().toLowerCase()).filter(Boolean),
+          );
+          const existingZh = new Set(list.map((b) => b.nameZh.trim()).filter(Boolean));
+          const additions = buildDefaultBottles().filter(
+            (b) =>
+              !existingEn.has(b.nameEn.trim().toLowerCase()) &&
+              !existingZh.has(b.nameZh.trim()),
+          );
+          if (additions.length > 0) {
+            list = [...list, ...additions];
+            await AsyncStorage.setItem(BOTTLES_KEY, JSON.stringify(list));
+          }
+          await AsyncStorage.setItem(BOTTLES_SEEDED_KEY, SEED_VERSION);
         }
         setBottles(list);
       } catch (e) {

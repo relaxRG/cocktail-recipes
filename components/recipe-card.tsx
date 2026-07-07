@@ -5,6 +5,7 @@ import * as Haptics from "expo-haptics";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useI18n } from "@/lib/i18n";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { Recipe, STRENGTH_LABELS } from "@/lib/recipes/types";
 
@@ -18,6 +19,7 @@ export function RecipeCard({
   isLast?: boolean;
 }) {
   const colors = useColors();
+  const { t, lang } = useI18n();
   const { toggleFavorite, getCategory } = useRecipeStore();
   const category = getCategory(recipe.categoryId);
 
@@ -66,7 +68,9 @@ export function RecipeCard({
                 <Text className="text-xs text-muted">{recipe.baseSpirit}</Text>
               </View>
               <View className="px-2 py-0.5 rounded-full bg-background border border-border">
-                <Text className="text-xs text-muted">{STRENGTH_LABELS[recipe.strength]}</Text>
+                <Text className="text-xs text-muted">
+                  {lang === "en" ? t(`strength.${recipe.strength}`) : STRENGTH_LABELS[recipe.strength]}
+                </Text>
               </View>
               {recipe.codexFamily ? (
                 <View
@@ -81,7 +85,7 @@ export function RecipeCard({
             </View>
             {recipe.variantOf ? (
               <Text className="text-xs text-muted mt-1.5" numberOfLines={1}>
-                变体 · {recipe.variantOf}
+                {t("card.variant")} · {recipe.variantOf}
               </Text>
             ) : null}
           </View>

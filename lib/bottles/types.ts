@@ -9,9 +9,35 @@ export const BOTTLE_CATEGORIES = [
   "利口酒",
   "苦精",
   "味美思",
+  "开胃酒",
+  "起泡酒",
+  "葡萄酒",
+  "清酒烧酒",
+  "中式白酒",
+  "软饮糖浆",
   "其他",
 ] as const;
 export type BottleCategory = (typeof BOTTLE_CATEGORIES)[number];
+
+/** 酒款分类英文映射(界面语言为英文时显示) */
+export const BOTTLE_CATEGORY_EN: Record<string, string> = {
+  金酒: "Gin",
+  朗姆: "Rum",
+  伏特加: "Vodka",
+  威士忌: "Whisky",
+  龙舌兰: "Agave",
+  白兰地: "Brandy",
+  利口酒: "Liqueur",
+  苦精: "Bitters",
+  味美思: "Vermouth",
+  开胃酒: "Aperitif/Amaro",
+  起泡酒: "Sparkling",
+  葡萄酒: "Wine",
+  清酒烧酒: "Sake/Shochu",
+  中式白酒: "Baijiu",
+  软饮糖浆: "Mixers/Syrups",
+  其他: "Others",
+};
 
 /** 酒款(酒类数据库条目) */
 export interface Bottle {

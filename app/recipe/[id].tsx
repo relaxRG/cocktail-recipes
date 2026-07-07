@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useI18n } from "@/lib/i18n";
 import { estimateRecipeCost, formatAmountAsMl } from "@/lib/bottles/cost";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useRecipeStore } from "@/lib/recipes/store";
@@ -16,6 +17,7 @@ export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { t } = useI18n();
   const { getRecipe, getCategory, toggleFavorite, deleteRecipe } = useRecipeStore();
   const { bottles } = useBottleStore();
   const recipe = getRecipe(id);
@@ -23,13 +25,13 @@ export default function RecipeDetailScreen() {
   if (!recipe) {
     return (
       <ScreenContainer className="items-center justify-center px-8">
-        <Text className="text-base text-muted">配方不存在或已被删除</Text>
+        <Text className="text-base text-muted">{t("detail.notFound")}</Text>
         <Pressable
           onPress={() => router.back()}
           style={({ pressed }) => [pressed && { opacity: 0.6 }]}
         >
           <Text className="text-base mt-3" style={{ color: colors.primary }}>
-            返回
+            {t("common.back")}
           </Text>
         </Pressable>
       </ScreenContainer>
@@ -56,22 +58,22 @@ export default function RecipeDetailScreen() {
     };
     if (Platform.OS === "web") {
       // eslint-disable-next-line no-alert
-      if (typeof window !== "undefined" && window.confirm(`确定删除「${recipe.name}」吗?`)) {
+      if (typeof window !== "undefined" && window.confirm(t("detail.delete.msg", { name: recipe.name }))) {
         doDelete();
       }
       return;
     }
-    Alert.alert("删除配方", `确定删除「${recipe.name}」吗?此操作无法撤销。`, [
-      { text: "取消", style: "cancel" },
-      { text: "删除", style: "destructive", onPress: doDelete },
+    Alert.alert(t("detail.delete.title"), t("detail.delete.msg", { name: recipe.name }), [
+      { text: t("common.cancel"), style: "cancel" },
+      { text: t("common.delete"), style: "destructive", onPress: doDelete },
     ]);
   };
 
   const metaItems = [
-    { label: "基酒", value: recipe.baseSpirit },
-    { label: "杯型", value: recipe.glass || "—" },
-    { label: "方法", value: recipe.method || "—" },
-    { label: "烈度", value: STRENGTH_LABELS[recipe.strength] },
+    { label: t("detail.meta.spirit"), value: recipe.baseSpirit },
+    { label: t("detail.meta.glass"), value: recipe.glass || "—" },
+    { label: t("detail.meta.method"), value: recipe.method || "—" },
+    { label: t("detail.meta.strength"), value: STRENGTH_LABELS[recipe.strength] },
   ];
 
   return (
@@ -147,7 +149,7 @@ export default function RecipeDetailScreen() {
         ) : null}
         {recipe.variantOf ? (
           <Text className="text-sm text-muted mt-2">
-            变体来源:{recipe.variantOf}
+            {t("detail.variantOf", { name: recipe.variantOf })}
           </Text>
         ) : null}
 
@@ -168,10 +170,10 @@ export default function RecipeDetailScreen() {
         </View>
 
         {/* Ingredients */}
-        <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>配料</Text>
+        <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.ingredients")}</Text>
         <View className="bg-surface rounded-xl px-4">
           {recipe.ingredients.length === 0 ? (
-            <Text className="text-sm text-muted py-4">未填写配料</Text>
+            <Text className="text-sm text-muted py-4">{t("detail.noIngredients")}</Text>
           ) : (
             recipe.ingredients.map((ing, idx) => (
               <View
@@ -193,14 +195,14 @@ export default function RecipeDetailScreen() {
         {/* Cost estimate */}
         {recipe.ingredients.length > 0 ? (
           <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>单杯成本估算</Text>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.cost")}</Text>
             <View className="bg-surface rounded-xl px-4 pb-1">
               <View
                 className="flex-row items-center justify-between py-3.5"
                 style={{ borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }}
               >
                 <Text className="text-sm text-muted">
-                  预估总成本({costEst.estimatedCount}/{costEst.totalCount} 项可估算)
+                  {t("detail.cost.total", { a: costEst.estimatedCount, b: costEst.totalCount })}
                 </Text>
                 <Text className="text-xl font-bold" style={{ color: colors.primary }}>
                   {costEst.estimatedCount > 0 ? `¥${costEst.total.toFixed(1)}` : "—"}
@@ -228,12 +230,12 @@ export default function RecipeDetailScreen() {
                     ) : (
                       <Text className="text-xs text-muted mt-0.5">
                         {item.reason === "no_bottle"
-                          ? "酒库中无匹配酒款"
+                          ? t("detail.cost.noBottle")
                           : item.reason === "no_amount"
-                            ? "用量无法换算(如:适量)"
+                            ? t("detail.cost.noAmount")
                             : item.reason === "no_price"
-                              ? "酒款未填写价格"
-                              : "酒款未填写规格"}
+                              ? t("detail.cost.noPrice")
+                              : t("detail.cost.noVolume")}
                       </Text>
                     )}
                   </View>
@@ -246,7 +248,7 @@ export default function RecipeDetailScreen() {
                 </View>
               ))}
               <Text className="text-[11px] text-muted py-2.5" style={{ lineHeight: 15 }}>
-                按酒库参考价与规格折算,不含冰、装饰与损耗;仅供参考。
+                {t("detail.cost.note")}
               </Text>
             </View>
           </>
@@ -255,7 +257,7 @@ export default function RecipeDetailScreen() {
         {/* Steps */}
         {recipe.steps ? (
           <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>做法</Text>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.steps")}</Text>
             <View className="bg-surface rounded-xl p-4">
               <Text className="text-base text-foreground leading-relaxed">{recipe.steps}</Text>
             </View>
@@ -265,7 +267,7 @@ export default function RecipeDetailScreen() {
         {/* Garnish */}
         {recipe.garnish ? (
           <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>装饰</Text>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.garnish")}</Text>
             <View className="bg-surface rounded-xl p-4">
               <Text className="text-base text-foreground">{recipe.garnish}</Text>
             </View>
@@ -275,7 +277,7 @@ export default function RecipeDetailScreen() {
         {/* Notes */}
         {recipe.notes ? (
           <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>笔记</Text>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.notes")}</Text>
             <View
               className="rounded-xl p-4"
               style={{ backgroundColor: colors.primary + "14" }}
@@ -288,7 +290,7 @@ export default function RecipeDetailScreen() {
         {/* Source */}
         {recipe.source ? (
           <>
-            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>引用来源</Text>
+            <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={styles.groupHeader}>{t("detail.source")}</Text>
             <View className="bg-surface rounded-xl p-4">
               <Text className="text-sm text-muted leading-relaxed">{recipe.source}</Text>
             </View>

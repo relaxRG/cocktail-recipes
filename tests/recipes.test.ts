@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { filterBottles } from "../lib/bottles/store";
 import { buildDefaultBottles } from "../lib/bottles/seed";
-import { normalizeBottle } from "../lib/bottles/types";
+import { BOTTLE_CATEGORIES, normalizeBottle } from "../lib/bottles/types";
 import {
   estimateRecipeCost,
   formatAmountAsMl,
@@ -183,8 +183,12 @@ describe("bottle database", () => {
 
   it("filters bottles by chinese name, english name and category", () => {
     const bottles = buildDefaultBottles();
-    expect(filterBottles(bottles, "君度").length).toBe(1);
-    expect(filterBottles(bottles, "cointreau").length).toBe(1);
+    const zhHits = filterBottles(bottles, "君度");
+    expect(zhHits.length).toBeGreaterThanOrEqual(1);
+    expect(zhHits.some((b) => b.nameEn === "Cointreau")).toBe(true);
+    const enHits = filterBottles(bottles, "cointreau");
+    expect(enHits.length).toBeGreaterThanOrEqual(1);
+    expect(enHits.some((b) => b.nameZh === "君度橙酒")).toBe(true);
     const gins = filterBottles(bottles, "", "金酒");
     expect(gins.length).toBeGreaterThan(0);
     expect(gins.every((b) => b.category === "金酒")).toBe(true);
@@ -198,6 +202,32 @@ describe("bottle database", () => {
     expect(b.abv).toBe(0);
     expect(b.priceCny).toBe(0);
     expect(b.builtin).toBe(false);
+  });
+
+  it("expanded bottle database has 200+ entries", () => {
+    const bottles = buildDefaultBottles();
+    expect(bottles.length).toBeGreaterThanOrEqual(200);
+  });
+
+  it("covers all major categories", () => {
+    const bottles = buildDefaultBottles();
+    const cats = new Set(bottles.map((b) => b.category));
+    for (const c of [
+      "金酒", "朗姆", "伏特加", "威士忌", "龙舌兰", "白兰地",
+      "利口酒", "苦精", "味美思", "开胃酒", "起泡酒", "葡萄酒",
+      "清酒烧酒", "中式白酒", "软饮糖浆",
+    ]) {
+      expect(cats.has(c)).toBe(true);
+    }
+  });
+
+  it("every bottle has valid category and bilingual names", () => {
+    const bottles = buildDefaultBottles();
+    for (const b of bottles) {
+      expect((BOTTLE_CATEGORIES as readonly string[]).includes(b.category)).toBe(true);
+      expect(b.nameZh.length).toBeGreaterThan(0);
+      expect(b.nameEn.length).toBeGreaterThan(0);
+    }
   });
 });
 

@@ -5,9 +5,11 @@ import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Platform } from "react-native";
 import { useColors } from "@/hooks/use-colors";
+import { useI18n } from "@/lib/i18n";
 
 export default function TabLayout() {
   const colors = useColors();
+  const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 56 + bottomPadding;
@@ -31,21 +33,21 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "酒单",
+          title: t("tab.recipes"),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="wineglass.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="bottles"
         options={{
-          title: "酒库",
+          title: t("tab.bottles"),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="books.vertical.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="categories"
         options={{
-          title: "分类",
+          title: t("tab.tags"),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="folder.fill" color={color} />,
         }}
       />

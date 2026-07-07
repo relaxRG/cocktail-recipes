@@ -17,6 +17,7 @@ import { RecipeCard } from "@/components/recipe-card";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useI18n } from "@/lib/i18n";
 import { filterRecipes } from "@/lib/recipes/search";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { CODEX_FAMILIES } from "@/lib/recipes/types";
@@ -26,6 +27,7 @@ type Filter = { type: "all" } | { type: "favorites" } | { type: "category"; id: 
 export default function RecipesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { t, lang, setLang } = useI18n();
   const { ready, recipes, categories, importSamples, tagsOf } = useRecipeStore();
   const flavorTags = tagsOf("flavor");
   const [query, setQuery] = useState("");
@@ -66,11 +68,28 @@ export default function RecipesScreen() {
 
   return (
     <ScreenContainer>
-      <View className="px-5 pt-2 pb-3">
-        <Text className="text-3xl font-bold text-foreground">我的酒单</Text>
-        <Text className="text-sm text-muted mt-1">
-          {recipes.length > 0 ? `共 ${recipes.length} 份配方` : "记录属于你的每一杯"}
-        </Text>
+      <View className="px-5 pt-2 pb-3 flex-row items-end justify-between">
+        <View>
+          <Text className="text-3xl font-bold text-foreground">{t("home.title")}</Text>
+          <Text className="text-sm text-muted mt-1">
+            {recipes.length > 0
+              ? t("home.subtitle.count", { n: recipes.length })
+              : t("home.subtitle.empty")}
+          </Text>
+        </View>
+        <Pressable
+          onPress={() => setLang(lang === "zh" ? "en" : "zh")}
+          hitSlop={8}
+          style={({ pressed }) => [
+            styles.langBtn,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+            pressed && { opacity: 0.6 },
+          ]}
+        >
+          <Text style={[styles.langBtnText, { color: colors.primary }]}>
+            {lang === "zh" ? "EN" : "中"}
+          </Text>
+        </Pressable>
       </View>
 
       {/* Search bar */}
@@ -79,7 +98,7 @@ export default function RecipesScreen() {
           <IconSymbol name="magnifyingglass" size={18} color={colors.muted} />
           <TextInput
             className="flex-1 py-2.5 px-2 text-base text-foreground"
-            placeholder="搜索酒名、配料、笔记…"
+            placeholder={t("home.search.placeholder")}
             placeholderTextColor={colors.muted}
             value={query}
             onChangeText={setQuery}
@@ -102,13 +121,13 @@ export default function RecipesScreen() {
           contentContainerStyle={styles.chipRow}
         >
           <Pressable style={chipStyle(filter.type === "all")} onPress={() => setFilter({ type: "all" })}>
-            <Text style={chipTextStyle(filter.type === "all")}>全部</Text>
+            <Text style={chipTextStyle(filter.type === "all")}>{t("home.filter.all")}</Text>
           </Pressable>
           <Pressable
             style={chipStyle(filter.type === "favorites")}
             onPress={() => setFilter({ type: "favorites" })}
           >
-            <Text style={chipTextStyle(filter.type === "favorites")}>★ 收藏</Text>
+            <Text style={chipTextStyle(filter.type === "favorites")}>{t("home.filter.favorites")}</Text>
           </Pressable>
           {categories.map((cat) => {
             const active = filter.type === "category" && filter.id === cat.id;
@@ -170,9 +189,9 @@ export default function RecipesScreen() {
       {ready && recipes.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8" style={{ marginTop: -40 }}>
           <Text style={{ fontSize: 56, lineHeight: 72 }}>🍸</Text>
-          <Text className="text-xl font-semibold text-foreground mt-3">还没有配方</Text>
+          <Text className="text-xl font-semibold text-foreground mt-3">{t("home.empty.title")}</Text>
           <Text className="text-sm text-muted text-center mt-2 leading-relaxed">
-            记录下你的第一杯鸡尾酒,或先导入几份经典配方看看效果
+            {t("home.empty.desc")}
           </Text>
           <Pressable
             onPress={handleAdd}
@@ -182,14 +201,14 @@ export default function RecipesScreen() {
               pressed && { transform: [{ scale: 0.97 }], opacity: 0.9 },
             ]}
           >
-            <Text style={styles.primaryBtnText}>添加第一杯</Text>
+            <Text style={styles.primaryBtnText}>{t("home.empty.add")}</Text>
           </Pressable>
           <Pressable
             onPress={importSamples}
             style={({ pressed }) => [styles.ghostBtn, pressed && { opacity: 0.6 }]}
           >
             <IconSymbol name="sparkles" size={16} color={colors.primary} />
-            <Text style={[styles.ghostBtnText, { color: colors.primary }]}>导入经典示例配方</Text>
+            <Text style={[styles.ghostBtnText, { color: colors.primary }]}>{t("home.empty.import")}</Text>
           </Pressable>
         </View>
       ) : (
@@ -212,7 +231,7 @@ export default function RecipesScreen() {
             ready ? (
               <View className="items-center pt-16 px-8">
                 <Text className="text-base text-muted text-center">
-                  没有找到匹配的配方,换个关键词或分类试试
+                  {t("home.noMatch")}
                 </Text>
               </View>
             ) : null
@@ -252,6 +271,18 @@ const styles = StyleSheet.create({
   chipText: {
     fontSize: 13,
     fontWeight: "500",
+    lineHeight: 18,
+  },
+  langBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    marginBottom: 2,
+  },
+  langBtnText: {
+    fontSize: 13,
+    fontWeight: "600",
     lineHeight: 18,
   },
   divider: {

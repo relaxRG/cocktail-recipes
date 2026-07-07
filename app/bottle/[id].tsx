@@ -6,11 +6,14 @@ import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useI18n } from "@/lib/i18n";
 import { useBottleStore } from "@/lib/bottles/store";
+import { BOTTLE_CATEGORY_EN } from "@/lib/bottles/types";
 
 export default function BottleDetailScreen() {
   const colors = useColors();
   const router = useRouter();
+  const { t, lang } = useI18n();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getBottle, deleteBottle } = useBottleStore();
   const bottle = getBottle(id);
@@ -18,9 +21,9 @@ export default function BottleDetailScreen() {
   if (!bottle) {
     return (
       <ScreenContainer className="items-center justify-center px-8">
-        <Text className="text-base text-muted">酒款不存在或已被删除</Text>
+        <Text className="text-base text-muted">{t("bottle.notFound")}</Text>
         <Pressable onPress={() => router.back()} style={{ marginTop: 16 }}>
-          <Text style={{ color: colors.primary, fontSize: 15 }}>返回</Text>
+          <Text style={{ color: colors.primary, fontSize: 15 }}>{t("common.back")}</Text>
         </Pressable>
       </ScreenContainer>
     );
@@ -35,25 +38,28 @@ export default function BottleDetailScreen() {
       router.back();
     };
     if (Platform.OS === "web") {
-      if (window.confirm(`确定删除「${bottle.nameZh}」吗?`)) doDelete();
+      if (window.confirm(t("tags.delete.confirm", { name: bottle.nameZh }))) doDelete();
     } else {
-      Alert.alert("删除酒款", `确定删除「${bottle.nameZh}」吗?`, [
-        { text: "取消", style: "cancel" },
-        { text: "删除", style: "destructive", onPress: doDelete },
+      Alert.alert(t("bottle.delete.title"), t("tags.delete.confirm", { name: bottle.nameZh }), [
+        { text: t("common.cancel"), style: "cancel" },
+        { text: t("common.delete"), style: "destructive", onPress: doDelete },
       ]);
     }
   };
 
   const rows: { label: string; value: string }[] = [
-    { label: "英文名", value: bottle.nameEn || "—" },
-    { label: "分类", value: bottle.category },
-    { label: "品牌", value: bottle.brand || "—" },
-    { label: "产地", value: bottle.origin || "—" },
-    { label: "规格", value: bottle.volume || "—" },
-    { label: "酒精度", value: `${bottle.abv}% vol` },
+    { label: t("bottle.nameEn"), value: bottle.nameEn || "—" },
     {
-      label: "中国参考价",
-      value: bottle.priceCny > 0 ? `¥${bottle.priceCny}` : "未知",
+      label: t("bottle.category"),
+      value: lang === "en" ? BOTTLE_CATEGORY_EN[bottle.category] ?? bottle.category : bottle.category,
+    },
+    { label: t("bottle.brand"), value: bottle.brand || "—" },
+    { label: t("bottle.origin"), value: bottle.origin || "—" },
+    { label: t("bottle.volume"), value: bottle.volume || "—" },
+    { label: t("bottle.abv"), value: `${bottle.abv}% vol` },
+    {
+      label: t("bottle.price"),
+      value: bottle.priceCny > 0 ? `¥${bottle.priceCny}` : t("bottles.price.unknown"),
     },
   ];
 
@@ -89,14 +95,16 @@ export default function BottleDetailScreen() {
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}>
         <Text className="text-3xl font-bold text-foreground" style={{ lineHeight: 40 }}>
-          {bottle.nameZh}
+          {lang === "en" && bottle.nameEn ? bottle.nameEn : bottle.nameZh}
         </Text>
-        {bottle.nameEn ? (
-          <Text className="text-base text-muted mt-1">{bottle.nameEn}</Text>
+        {(lang === "en" ? bottle.nameZh : bottle.nameEn) ? (
+          <Text className="text-base text-muted mt-1">
+            {lang === "en" ? bottle.nameZh : bottle.nameEn}
+          </Text>
         ) : null}
 
         <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={{ letterSpacing: 0.4, lineHeight: 18 }}>
-          基本信息
+          {t("bottle.info")}
         </Text>
         <View className="bg-surface rounded-xl px-4">
           {rows.map((row, idx) => (
@@ -120,7 +128,7 @@ export default function BottleDetailScreen() {
         {bottle.notes ? (
           <>
             <Text className="text-[13px] text-muted uppercase mt-6 mb-2 px-4" style={{ letterSpacing: 0.4, lineHeight: 18 }}>
-              备注
+              {t("bottle.notes")}
             </Text>
             <View className="bg-surface rounded-xl px-4 py-3">
               <Text className="text-[15px] text-foreground" style={{ lineHeight: 22 }}>
@@ -131,7 +139,7 @@ export default function BottleDetailScreen() {
         ) : null}
 
         <Text className="text-xs text-muted mt-4 px-1" style={{ lineHeight: 18 }}>
-          价格为中国市场常见参考价,会随渠道与时间波动。
+          {t("bottle.priceNote")}
         </Text>
       </ScrollView>
     </ScreenContainer>
