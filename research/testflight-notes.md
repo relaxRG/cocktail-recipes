@@ -33,6 +33,16 @@
 - eas.json 已补 ascAppId: 6788653669
 - TestFlight 页面: https://appstoreconnect.apple.com/apps/6788653669/testflight/ios
 - 后续: Apple 处理 5-10 分钟 → 用户在 TestFlight 页签配置测试员(内部测试组即时可测)
+
+## build 3: 研发测试板块更新 (2026-07-08 下午)
+- 代码版本: checkpoint b7a2f1db(研发测试板块:项目/批次/diff/对比/定稿入酒单)
+- .p8 从 /home/ubuntu/upload/ 恢复至 /home/ubuntu/.apple-creds/AuthKey_L752A4L2PF.p8
+- build id: 029bae3c-b0a4-470f-9d71-4f7efb701621 (production, autoIncrement, buildNumber 应为 3)
+- 日志: https://expo.dev/accounts/rgsh/projects/cocktail-recipes/builds/029bae3c-b0a4-470f-9d71-4f7efb701621
+- 构建 FINISHED: version 1.0.0, buildNumber 5
+- eas submit 成功 → 已上传 App Store Connect,Apple 处理 5-10 分钟后出现在 TestFlight
+- TestFlight: https://appstoreconnect.apple.com/apps/6788653669/testflight/ios
+- 备注: 已在 TestFlight 内部测试组的测试员会自动收到新构建更新推送
 ## 计划步骤
 1. [x] 凭证收齐并安全存放
 2. [x] 安装 eas-cli(注:shell 需在项目目录内运行)

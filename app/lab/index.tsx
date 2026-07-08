@@ -1,6 +1,15 @@
 import { useRouter } from "expo-router";
-import React, { useMemo } from "react";
-import { FlatList, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useMemo, useState } from "react";
+import {
+  FlatList,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import * as Haptics from "expo-haptics";
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -28,11 +37,21 @@ export default function LabIndexScreen() {
   const router = useRouter();
   const { t, lang } = useI18n();
   const { projects, batchesOf } = useLabStore();
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<LabProjectStatus | null>(null);
 
   const rows = useMemo<Row[]>(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = projects.filter((p) => {
+      if (statusFilter && p.status !== statusFilter) return false;
+      if (!q) return true;
+      return (
+        p.name.toLowerCase().includes(q) || p.goal.toLowerCase().includes(q)
+      );
+    });
     const out: Row[] = [];
     for (const status of LAB_STATUS_ORDER) {
-      const group = projects
+      const group = filtered
         .filter((p) => p.status === status)
         .sort((a, b) => b.updatedAt - a.updatedAt);
       if (group.length === 0) continue;
@@ -40,6 +59,13 @@ export default function LabIndexScreen() {
       for (const p of group) out.push({ kind: "project", project: p });
     }
     return out;
+  }, [projects, query, statusFilter]);
+
+  /** 各状态项目数(用于筛选 chip 显示计数) */
+  const statusCounts = useMemo(() => {
+    const m = new Map<LabProjectStatus, number>();
+    for (const p of projects) m.set(p.status, (m.get(p.status) ?? 0) + 1);
+    return m;
   }, [projects]);
 
   return (
@@ -102,6 +128,87 @@ export default function LabIndexScreen() {
           </Pressable>
         </View>
       ) : (
+        <>
+        {/* 搜索框 */}
+        <View
+          className="mx-5 mb-2 flex-row items-center rounded-xl px-3"
+          style={{ backgroundColor: colors.surface, height: 38, gap: 6 }}
+        >
+          <IconSymbol name="magnifyingglass" size={15} color={colors.muted} />
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder={t("lab.search.ph")}
+            placeholderTextColor={colors.muted}
+            returnKeyType="done"
+            className="flex-1 text-sm text-foreground"
+            style={{ paddingVertical: 0, lineHeight: 18 }}
+          />
+          {query ? (
+            <Pressable onPress={() => setQuery("")} hitSlop={8}>
+              <IconSymbol name="xmark.circle.fill" size={15} color={colors.muted} />
+            </Pressable>
+          ) : null}
+        </View>
+        {/* 状态筛选 chip */}
+        <View style={{ marginBottom: 4 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 20, gap: 6 }}
+          >
+            <Pressable
+              onPress={() => setStatusFilter(null)}
+              style={[
+                styles.filterChip,
+                {
+                  backgroundColor: statusFilter === null ? colors.primary : colors.surface,
+                  borderColor: statusFilter === null ? colors.primary : colors.border,
+                },
+              ]}
+            >
+              <Text
+                className="text-xs font-medium"
+                style={{ color: statusFilter === null ? "#FFFFFF" : colors.muted, lineHeight: 16 }}
+              >
+                {t("lab.filter.all")} · {projects.length}
+              </Text>
+            </Pressable>
+            {LAB_STATUS_ORDER.map((status) => {
+              const count = statusCounts.get(status) ?? 0;
+              if (count === 0) return null;
+              const active = statusFilter === status;
+              return (
+                <Pressable
+                  key={status}
+                  onPress={() => setStatusFilter(active ? null : status)}
+                  style={[
+                    styles.filterChip,
+                    {
+                      backgroundColor: active ? STATUS_COLORS[status] : colors.surface,
+                      borderColor: active ? STATUS_COLORS[status] : colors.border,
+                    },
+                  ]}
+                >
+                  <Text
+                    className="text-xs font-medium"
+                    style={{ color: active ? "#FFFFFF" : colors.muted, lineHeight: 16 }}
+                  >
+                    {t(`lab.status.${status}` as "lab.status.testing")} · {count}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+        {rows.length === 0 ? (
+          <View className="flex-1 items-center justify-center px-10" style={{ gap: 8 }}>
+            <IconSymbol name="magnifyingglass" size={30} color={colors.muted} />
+            <Text className="text-sm text-muted text-center" style={{ lineHeight: 20 }}>
+              {t("lab.search.noResult")}
+            </Text>
+          </View>
+        ) : (
         <FlatList
           data={rows}
           keyExtractor={(item) =>
@@ -195,12 +302,20 @@ export default function LabIndexScreen() {
             );
           }}
         />
+        )}
+        </>
       )}
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  filterChip: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 999,
+    paddingHorizontal: 11,
+    paddingVertical: 5,
+  },
   newBtn: {
     flexDirection: "row",
     alignItems: "center",

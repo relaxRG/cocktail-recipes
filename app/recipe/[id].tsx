@@ -20,6 +20,7 @@ import { estimateIceCost } from "@/lib/ice/cost";
 import { analyzeStructure, structuralFormula } from "@/lib/recipes/structure";
 import { VariantBadge } from "@/components/variant-badge";
 import { CodexFamilyBadge } from "@/components/codex-family-badge";
+import { LabOriginBadge } from "@/components/lab-origin-badge";
 import {
   garnishDisplayText,
   ingredientDisplayName,
@@ -256,6 +257,8 @@ export default function RecipeDetailScreen() {
         ) : null}
         {/* Variant of 经典标注:点按弹出完整谱系论证资料浮层 */}
         <VariantBadge recipe={recipe} mode="full" />
+        {/* 源自研发项目回链:点按跳回项目迭代历史 */}
+        <LabOriginBadge recipeId={recipe.id} />
 
         {/* Meta grid */}
         <View className="flex-row mt-5 bg-surface rounded-xl overflow-hidden">
