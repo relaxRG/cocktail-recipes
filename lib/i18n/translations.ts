@@ -5,7 +5,7 @@ const dict = {
   // Tabs
   "tab.recipes": { zh: "酒单", en: "Recipes" },
   // 私密访问门与云端同步
-  "gate.title": { zh: "鸡尾酒配方手册", en: "Cocktail Recipe Book" },
+  "gate.title": { zh: "cocktail R", en: "cocktail R" },
   "gate.subtitle": { zh: "私人调酒工作台 · 配方、酒库与自制库云端同步", en: "Your private bartending workspace with cloud sync" },
   "gate.login": { zh: "登录使用", en: "Sign In" },
   "gate.private": { zh: "此应用为私人使用,仅限所有者访问", en: "This app is private and owner-only" },
