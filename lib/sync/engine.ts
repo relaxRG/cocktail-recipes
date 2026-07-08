@@ -26,6 +26,8 @@ export const SYNC_KEYS = [
   "homemade.waldorf.v1",
   "bottles.taxonomy.categories.v1",
   "bottles.taxonomy.styles.v1",
+  "cocktail.lab.projects",
+  "cocktail.lab.batches",
   "app.lang.v1",
 ] as const;
 

@@ -389,27 +389,43 @@ export default function RecipesScreen() {
               : t("home.subtitle.empty")}
           </Text>
         </View>
-        {recipes.length > 0 ? (
+        <View className="flex-row items-center" style={{ gap: 8 }}>
           <Pressable
             onPress={() => {
               if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              if (selectMode) exitSelectMode();
-              else setSelectMode(true);
+              router.push("/lab");
             }}
             style={({ pressed }) => [
               styles.selectBtn,
-              {
-                backgroundColor: selectMode ? colors.primary : colors.surface,
-                borderColor: selectMode ? colors.primary : colors.border,
-              },
+              { backgroundColor: colors.surface, borderColor: colors.border, flexDirection: "row", alignItems: "center", gap: 4 },
               pressed && { opacity: 0.7 },
             ]}
           >
-            <Text style={[styles.selectBtnText, { color: selectMode ? "#FFFFFF" : colors.muted }]}>
-              {selectMode ? t("sel.exit") : t("sel.enter")}
-            </Text>
+            <IconSymbol name="flask.fill" size={13} color={colors.primary} />
+            <Text style={[styles.selectBtnText, { color: colors.primary }]}>{t("lab.entry")}</Text>
           </Pressable>
-        ) : null}
+          {recipes.length > 0 ? (
+            <Pressable
+              onPress={() => {
+                if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                if (selectMode) exitSelectMode();
+                else setSelectMode(true);
+              }}
+              style={({ pressed }) => [
+                styles.selectBtn,
+                {
+                  backgroundColor: selectMode ? colors.primary : colors.surface,
+                  borderColor: selectMode ? colors.primary : colors.border,
+                },
+                pressed && { opacity: 0.7 },
+              ]}
+            >
+              <Text style={[styles.selectBtnText, { color: selectMode ? "#FFFFFF" : colors.muted }]}>
+                {selectMode ? t("sel.exit") : t("sel.enter")}
+              </Text>
+            </Pressable>
+          ) : null}
+        </View>
       </View>
 
       {/* Search bar */}

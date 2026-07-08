@@ -52,6 +52,7 @@ const MAPPING = {
   "sparkles": "auto-awesome",
   "link": "link",
   "arrow.triangle.2.circlepath": "sync",
+  "exclamationmark.triangle.fill": "warning",
   "person.crop.circle.fill": "account-circle",
   "tag.fill": "label",
   "square.and.arrow.down.fill": "download",

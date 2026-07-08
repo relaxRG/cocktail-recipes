@@ -259,3 +259,14 @@ export function parseRecipeText(text: string): ParsedRecipe {
 
   return result;
 }
+
+/** 根据配料名推断基酒标签(与 parseRecipeText 同源词表);无法判断返回空串 */
+export function inferBaseSpiritFromIngredients(
+  ingredients: { name: string }[],
+): string {
+  const ingText = ingredients.map((i) => i.name).join(" ");
+  for (const [re, label] of SPIRIT_WORDS) {
+    if (re.test(ingText)) return label;
+  }
+  return "";
+}
