@@ -110,3 +110,15 @@
 - recipe-group-card.tsx:组头同步名称行高/基线与标签顺序(版本数→分类→家族→基酒→烈度→对比)。
 - 移动端 375x812 截图验收通过。
 待办:全量测试;todo.md 勾选;checkpoint;交付。
+
+---
+
+## 启动屏黑底白标修复(2026-07-08 用户新指令)
+现状排查:
+- app.config.ts splash 背景原为 #17130E(近黑),已改 backgroundColor #FFFFFF / dark #F7F7F7。
+- splash-icon.png 为白底深墨蓝马天尼(512x512,四角 ~#FEFEFE 白,非透明),白底图配白背景 OK。
+- theme.config.js: background dark=#000000(纯黑)——App 进入后深色模式底为纯黑,与用户"黑底白logo刺眼"感受相关;
+  userInterfaceStyle: "automatic",用户设备为深色模式时首屏即黑。
+- 方案:splash 改浅色;深色模式 App 背景由纯黑 #000000 改为 iOS 系统深灰 #1C1C1E(HIG systemBackground dark 实为纯黑,
+  但用户要求不伤眼,采用柔和深灰);surface dark 同步调整。
+- 注意:splash 配置改动需重新构建原生包(TestFlight 新版本)才在真机生效;Expo Go/网页预览即时可见部分有限。
