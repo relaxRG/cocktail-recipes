@@ -13,6 +13,7 @@ import {
 } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { SmartImportBar } from "@/components/smart-import-bar";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -70,6 +71,7 @@ export default function HomemadeFormScreen() {
   const [yieldStr, setYieldStr] = useState(editing?.yield ?? "");
   const [shelfLife, setShelfLife] = useState(editing?.shelfLife ?? "");
   const [storage, setStorage] = useState(editing?.storage ?? "");
+  const [source, setSource] = useState(editing?.source ?? "");
   const [notes, setNotes] = useState(editing?.notes ?? "");
   /** 用户是否已手动选过类型(选过则不再自动推断覆盖) */
   const [typeTouched, setTypeTouched] = useState(Boolean(editing) || Boolean(prefillType));
@@ -115,6 +117,7 @@ export default function HomemadeFormScreen() {
       yield: yieldStr.trim(),
       shelfLife: shelfLife.trim(),
       storage: storage.trim(),
+      source: source.trim(),
       notes: notes.trim(),
     };
     if (editing) {
@@ -172,6 +175,24 @@ export default function HomemadeFormScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 60 }}
           keyboardShouldPersistTaps="handled"
         >
+          {!editing && (
+            <SmartImportBar
+              targetType="prep"
+              onExtracted={(item) => {
+                if (item.nameZh || item.nameEn) {
+                  setName(item.nameZh || item.nameEn);
+                  setNameAlt(item.nameZh ? item.nameEn : "");
+                }
+                if (item.prepIngredients?.length) setIngRows(toRows(item.prepIngredients));
+                if (item.prepRecipe) setRecipe(item.prepRecipe);
+                if (item.prepYield) setYieldStr(item.prepYield);
+                if (item.shelfLife) setShelfLife(item.shelfLife);
+                if (item.storage) setStorage(item.storage);
+                if (item.source) setSource(item.source);
+                if (item.notes) setNotes(item.notes);
+              }}
+            />
+          )}
           {fieldLabel(t("hmform.name"))}
           <TextInput
             style={inputStyle}
@@ -417,6 +438,20 @@ export default function HomemadeFormScreen() {
             value={storage}
             onChangeText={setStorage}
             placeholder={lang === "en" ? "e.g. Sealed bottle in fridge" : "如:密封冷藏"}
+            placeholderTextColor={colors.muted}
+            returnKeyType="done"
+          />
+
+          {fieldLabel(t("hmform.source"))}
+          <TextInput
+            style={inputStyle}
+            value={source}
+            onChangeText={setSource}
+            placeholder={
+              lang === "en"
+                ? "e.g. The Waldorf Astoria Bar Book · Frank Caiafa · 2016"
+                : "如:The Waldorf Astoria Bar Book · Frank Caiafa · 2016"
+            }
             placeholderTextColor={colors.muted}
             returnKeyType="done"
           />

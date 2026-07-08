@@ -820,13 +820,13 @@ function FamilyCard({
                       marginRight: 10,
                     }}
                   />
-                  <View className="flex-1 pr-2">
+                  <View className="flex-1 pr-2" style={{ height: 36, justifyContent: "center" }}>
                     <Text className="text-sm font-medium text-foreground" numberOfLines={1}>
                       {lang === "en" && v.nameEn ? v.nameEn : v.nameZh || v.nameEn}
                     </Text>
-                    {v.volume ? (
-                      <Text className="text-[11px] text-muted mt-0.5">{v.volume}</Text>
-                    ) : null}
+                    <Text className="text-[11px] text-muted mt-0.5" numberOfLines={1}>
+                      {v.volume || " "}
+                    </Text>
                   </View>
                   {v.priceCny > 0 ? (
                     <Text className="text-sm font-semibold text-foreground">¥{v.priceCny}</Text>
@@ -883,15 +883,15 @@ function BottleCardInner({
       >
         <View className="flex-row items-center">
           <View className="flex-1 pr-2">
-            <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
-              {lang === "en" && bottle.nameEn ? bottle.nameEn : bottle.nameZh}
-            </Text>
-            {(lang === "en" ? bottle.nameZh : bottle.nameEn) ? (
-              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                {lang === "en" ? bottle.nameZh : bottle.nameEn}
+            <View style={{ height: 40, justifyContent: "center" }}>
+              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+                {lang === "en" && bottle.nameEn ? bottle.nameEn : bottle.nameZh}
               </Text>
-            ) : null}
-            <View className="flex-row items-center mt-1.5" style={{ gap: 6, flexWrap: "wrap" }}>
+              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                {(lang === "en" ? bottle.nameZh : bottle.nameEn) || " "}
+              </Text>
+            </View>
+            <View className="flex-row items-center mt-1.5" style={{ gap: 6, height: 24, overflow: "hidden" }}>
               <View
                 style={[styles.badge, { backgroundColor: colors.primary + "22" }]}
               >

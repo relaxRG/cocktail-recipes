@@ -16,6 +16,7 @@ import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { SmartImportBar } from "@/components/smart-import-bar";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -240,6 +241,7 @@ export default function RecipeFormScreen() {
       setImportHint(t("form.import.readFail"));
     }
   };
+  void handlePasteImport; // legacy local parser kept for offline fallback reference
 
   const handleSave = () => {
     if (!canSave) return;
@@ -301,28 +303,33 @@ export default function RecipeFormScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Paste import */}
-          <Pressable
-            onPress={handlePasteImport}
-            style={({ pressed }) => [
-              styles.importBtn,
-              {
-                backgroundColor: colors.primary + "14",
-                borderColor: colors.primary + "55",
-              },
-              pressed && { opacity: 0.7 },
-            ]}
-          >
-            <IconSymbol name="doc.on.clipboard" size={18} color={colors.primary} />
-            <View style={{ flex: 1 }}>
-              <Text className="text-sm font-semibold" style={{ color: colors.primary, lineHeight: 19 }}>
-                {t("form.pasteImport")}
-              </Text>
-              <Text className="text-xs text-muted mt-0.5" style={{ lineHeight: 16 }}>
-                {t("form.pasteImport.hint")}
-              </Text>
-            </View>
-          </Pressable>
+          {/* Smart import: paste / camera / photos */}
+          <SmartImportBar
+            targetType="recipe"
+            onExtracted={(item) => {
+              if (item.nameZh || item.nameEn) {
+                setName(item.nameZh || item.nameEn);
+                setNameEn(item.nameEn);
+              }
+              if (item.baseSpirit) setBaseSpirit(item.baseSpirit);
+              if (item.glass) setGlass(item.glass);
+              if (item.method) setMethod(item.method);
+              if (item.ingredients?.length) {
+                setIngredients(
+                  item.ingredients.map((ing) => ({
+                    id: genId(),
+                    name: ing.name,
+                    amount: ing.amount,
+                  })),
+                );
+              }
+              if (item.steps) setSteps(item.steps);
+              if (item.garnish) setGarnish(item.garnish);
+              if (item.source) setSource(item.source);
+              if (item.notes) setNotes(item.notes);
+              setImportHint(t("smartImport.filled"));
+            }}
+          />
           {importHint ? (
             <Text className="text-xs mt-2" style={{ color: colors.primary, lineHeight: 16 }}>
               {importHint}

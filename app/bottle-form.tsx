@@ -13,6 +13,7 @@ import {
 } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { SmartImportBar } from "@/components/smart-import-bar";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
@@ -133,6 +134,25 @@ export default function BottleFormScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
           keyboardShouldPersistTaps="handled"
         >
+          {!editing && (
+            <SmartImportBar
+              targetType="bottle"
+              onExtracted={(item) => {
+                if (item.nameZh) setNameZh(item.nameZh);
+                if (item.nameEn) setNameEn(item.nameEn);
+                if (item.category) setCategory(item.category);
+                if (item.style) setStyle(item.style);
+                if (item.brand) setBrand(item.brand);
+                if (item.origin) setOrigin(item.origin);
+                if (item.volume) setVolume(item.volume);
+                if (item.abv) setAbv(String(item.abv));
+                if (item.priceCny) setPrice(String(item.priceCny));
+                if (item.notes || item.source) {
+                  setNotes([item.notes, item.source].filter(Boolean).join(" · "));
+                }
+              }}
+            />
+          )}
           {field(t("bform.nameZh"), nameZh, setNameZh, lang === "en" ? "e.g. 君度橙酒" : "例如:君度橙酒")}
           {field(t("bform.nameEn"), nameEn, setNameEn, "e.g. Cointreau")}
 

@@ -28,6 +28,7 @@ export function buildSamplePreps(): HomemadePrep[] {
     yield: yieldStr,
     shelfLife,
     storage,
+    source: "",
     notes,
     builtin: true,
     made: false,

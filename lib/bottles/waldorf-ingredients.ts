@@ -194,14 +194,10 @@ export function buildWaldorfPreps(): HomemadePrep[] {
     yield: p.yield,
     shelfLife: p.shelfLife,
     storage: p.storage,
-    notes: [
-      p.notes,
-      p.source
-        ? `来源:《The Waldorf Astoria Bar Book》${p.source}`
-        : "来源:《The Waldorf Astoria Bar Book》Chapter 3 House-Made Recipes",
-    ]
-      .filter(Boolean)
-      .join("\n"),
+    source: p.source
+      ? `The Waldorf Astoria Bar Book · Frank Caiafa · ${p.source}`
+      : "The Waldorf Astoria Bar Book · Frank Caiafa · Chapter 3 House-Made Recipes",
+    notes: p.notes || "",
     builtin: true,
     made: false,
     rating: null,
@@ -236,6 +232,7 @@ export function buildWaldorfPreps(): HomemadePrep[] {
       yield: "",
       shelfLife: "",
       storage: "",
+      source: "The Waldorf Astoria Bar Book · Frank Caiafa",
       notes: p.note || "",
       builtin: true,
       made: false,

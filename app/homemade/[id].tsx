@@ -14,6 +14,7 @@ import { useBottleStore } from "@/lib/bottles/store";
 import { estimatePrepCost } from "@/lib/homemade/cost";
 import { prepTypeLabelIn } from "@/lib/homemade/types";
 import { detectPrepTechniques, techniqueDesc, techniqueLabel } from "@/lib/homemade/technique";
+import { parseSource } from "@/lib/recipes/source-parse";
 
 export default function HomemadeDetailScreen() {
   const colors = useColors();
@@ -334,6 +335,47 @@ export default function HomemadeDetailScreen() {
               <Text className="text-[15px] text-foreground" style={{ lineHeight: 22 }}>
                 {prep.notes}
               </Text>
+            </View>
+          </>
+        ) : null}
+
+        {prep.source ? (
+          <>
+            {sectionTitle(t("hmform.source"))}
+            <View className="bg-surface rounded-xl px-4 py-3">
+              {(() => {
+                const ps = parseSource(prep.source);
+                const rows = [
+                  { label: t("detail.source.venue"), value: ps.venue },
+                  { label: t("detail.source.creator"), value: ps.creator },
+                  { label: t("detail.source.season"), value: ps.season },
+                  { label: t("detail.source.year"), value: ps.year },
+                ].filter((r) => r.value);
+                if (rows.length === 0) {
+                  return (
+                    <Text className="text-sm text-muted" style={{ lineHeight: 20 }}>
+                      {prep.source}
+                    </Text>
+                  );
+                }
+                return (
+                  <View style={{ gap: 8 }}>
+                    {rows.map((r) => (
+                      <View key={r.label} className="flex-row items-start justify-between">
+                        <Text className="text-sm text-muted" style={{ width: 110 }}>
+                          {r.label}
+                        </Text>
+                        <Text
+                          className="text-sm text-foreground flex-1 text-right"
+                          style={{ lineHeight: 19 }}
+                        >
+                          {r.value}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                );
+              })()}
             </View>
           </>
         ) : null}

@@ -38,6 +38,11 @@ export interface HomemadePrep {
   shelfLife: string;
   /** e.g. "Refrigerate in sealed bottle" */
   storage: string;
+  /**
+   * 引用来源,与配方 source 标准一致:
+   * 如 "The Waldorf Astoria Bar Book · Frank Caiafa · 2016" 或 "店名 · 创作者 · 年份"。
+   */
+  source: string;
   notes: string;
   builtin: boolean;
   /** 做过/未做过:是否已亲手制作过该自制品 */
@@ -298,6 +303,7 @@ export function normalizePrep(p: Partial<HomemadePrep> & { id: string }): Homema
     shelfLife: p.shelfLife ?? "",
     storage: p.storage ?? "",
     notes: p.notes ?? "",
+    source: p.source ?? "",
     builtin: p.builtin ?? false,
     made: p.made === true,
     rating:

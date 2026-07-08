@@ -38,6 +38,16 @@ const dict = {
   "me.stats.preps": { zh: "自制", en: "Preps" },
   // Bulk import
   "bulk.title": { zh: "批量导入", en: "Bulk Import" },
+  "smartImport.paste": { zh: "粘贴导入", en: "Paste" },
+  "smartImport.camera": { zh: "拍照导入", en: "Camera" },
+  "smartImport.photo": { zh: "相册导入", en: "Photos" },
+  "smartImport.empty.title": { zh: "未识别到内容", en: "Nothing Recognized" },
+  "smartImport.empty.msg": { zh: "没有识别出可用条目,请尝试更清晰的文本或图片", en: "No usable items recognized. Try clearer text or images." },
+  "smartImport.fail.title": { zh: "识别失败", en: "Recognition Failed" },
+  "smartImport.fail.msg": { zh: "智能识别出错,请稍后重试", en: "Something went wrong. Please try again." },
+  "smartImport.clipboard.empty.title": { zh: "剪贴板为空", en: "Clipboard Empty" },
+  "smartImport.clipboard.empty.msg": { zh: "请先复制要导入的文本内容", en: "Copy the text you want to import first." },
+  "smartImport.filled": { zh: "已识别并填入表单,请核对后保存", en: "Recognized and filled in. Review before saving." },
   "bulk.subtitle": { zh: "粘贴文本,智能识别类型并批量创建", en: "Paste text; we detect and create items in bulk" },
   "bulk.paste.placeholder": { zh: "粘贴酒款清单、自制原料做法或配方文本…\n支持一次粘贴多条,空行分隔", en: "Paste bottle lists, prep methods or recipe text…\nMultiple entries separated by blank lines" },
   "bulk.paste.fromClipboard": { zh: "从剪贴板粘贴", en: "Paste from Clipboard" },
@@ -526,6 +536,7 @@ const dict = {
   "hmform.shelfLife": { zh: "保存期限", en: "Shelf Life" },
   "hmform.storage": { zh: "储存方式", en: "Storage" },
   "hmform.notes": { zh: "备注", en: "Notes" },
+  "hmform.source": { zh: "引用来源", en: "Source" },
 
   // Prep sections manager
   "psm.title": { zh: "分区管理", en: "Manage Sections" },

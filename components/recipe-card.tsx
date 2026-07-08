@@ -81,15 +81,13 @@ export function RecipeCard({
             {(() => {
               const dn = displayNames(recipe.nameEn, recipe.name, lang);
               return (
-                <View style={{ minHeight: 40 }}>
+                <View style={{ height: 40, justifyContent: "center" }}>
                   <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
                     {dn.primary}
                   </Text>
-                  {dn.secondary ? (
-                    <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                      {dn.secondary}
-                    </Text>
-                  ) : null}
+                  <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                    {dn.secondary || " "}
+                  </Text>
                 </View>
               );
             })()}
@@ -170,7 +168,7 @@ export function RecipeCard({
             </Pressable>
           </View>
         </View>
-        <Text className="text-sm text-muted mt-2" numberOfLines={1} style={{ minHeight: 18 }}>
+        <Text className="text-sm text-muted mt-2" numberOfLines={1} style={{ height: 20 }}>
           {ingredientSummary || " "}
         </Text>
       </View>

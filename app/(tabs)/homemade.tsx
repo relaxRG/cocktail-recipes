@@ -1068,15 +1068,15 @@ function PrepRowInner({
       >
         <View className="flex-row items-center">
           <View className="flex-1 pr-2">
-            <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
-              {names.primary}
-            </Text>
-            {names.secondary ? (
-              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                {names.secondary}
+            <View style={{ height: 40, justifyContent: "center" }}>
+              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+                {names.primary}
               </Text>
-            ) : null}
-            <View className="flex-row items-center mt-1.5" style={{ gap: 6, flexWrap: "wrap" }}>
+              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                {names.secondary || " "}
+              </Text>
+            </View>
+            <View className="flex-row items-center mt-1.5" style={{ gap: 6, height: 24, overflow: "hidden" }}>
               <View style={[styles.badge, { backgroundColor: colors.primary + "22" }]}>
                 <Text style={[styles.badgeText, { color: colors.primary }]}>
                   {prepTypeLabelIn(types, prep.type, lang)}

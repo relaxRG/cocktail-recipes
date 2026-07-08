@@ -13,6 +13,7 @@ import {
 import { useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
+import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -75,6 +76,8 @@ export default function BulkImportScreen() {
   const [text, setText] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileBase64, setFileBase64] = useState<string | null>(null);
+  const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [imageMime, setImageMime] = useState<string>("image/jpeg");
   const [rows, setRows] = useState<PreviewRow[]>([]);
   const [importedCount, setImportedCount] = useState<number | null>(null);
 
@@ -129,16 +132,65 @@ export default function BulkImportScreen() {
     }
     setFileName(asset.name);
     setFileBase64(base64);
+    setImageBase64(null);
     setImportedCount(null);
   }, [lang]);
+
+  /** 从图片选择结果读取 base64 */
+  const applyImageResult = useCallback((res: ImagePicker.ImagePickerResult) => {
+    if (res.canceled || !res.assets?.length) return;
+    const asset = res.assets[0];
+    if (!asset.base64) return;
+    setImageBase64(asset.base64);
+    setImageMime(asset.mimeType || "image/jpeg");
+    setFileName(null);
+    setFileBase64(null);
+    setImportedCount(null);
+  }, []);
+
+  /** 相册选择照片识别导入 */
+  const pickImage = useCallback(async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      const msg = lang === "zh" ? "需要相册访问权限" : "Photo library permission required";
+      if (Platform.OS === "web") window.alert(msg);
+      else Alert.alert(msg);
+      return;
+    }
+    const res = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 0.8,
+      base64: true,
+    });
+    applyImageResult(res);
+  }, [lang, applyImageResult]);
+
+  /** 拍照识别导入 */
+  const takePhoto = useCallback(async () => {
+    if (Platform.OS === "web") {
+      // web 无相机权限流,退化为相册/文件选择
+      await pickImage();
+      return;
+    }
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) {
+      const msg = lang === "zh" ? "需要相机权限" : "Camera permission required";
+      Alert.alert(msg);
+      return;
+    }
+    const res = await ImagePicker.launchCameraAsync({ quality: 0.8, base64: true });
+    applyImageResult(res);
+  }, [lang, pickImage, applyImageResult]);
 
   const runExtract = useCallback(async () => {
     setImportedCount(null);
     try {
       const result = await extractMutation.mutateAsync(
-        fileBase64 && fileName
-          ? { fileBase64, fileName }
-          : { text: text.trim() },
+        imageBase64
+          ? { imageBase64, imageMime }
+          : fileBase64 && fileName
+            ? { fileBase64, fileName }
+            : { text: text.trim() },
       );
       const next: PreviewRow[] = (result.items as ExtractedItem[]).map((item, i) => ({
         key: `${Date.now()}-${i}`,
@@ -158,7 +210,7 @@ export default function BulkImportScreen() {
       if (Platform.OS === "web") window.alert(msg);
       else Alert.alert(msg);
     }
-  }, [extractMutation, fileBase64, fileName, text, lang]);
+  }, [extractMutation, fileBase64, fileName, imageBase64, imageMime, text, lang]);
 
   const toggleRow = (key: string) =>
     setRows((rs) => rs.map((r) => (r.key === key ? { ...r, checked: !r.checked } : r)));
@@ -257,6 +309,7 @@ export default function BulkImportScreen() {
           yield: item.prepYield,
           shelfLife: item.shelfLife,
           storage: item.storage,
+          source: item.source || "",
           notes: item.notes,
         });
         count++;
@@ -298,7 +351,7 @@ export default function BulkImportScreen() {
   }, [rows, addBottle, addPrep, addRecipe, matchBottleCategory, matchPrepType, matchRecipeCategory, sections, types]);
 
   const selectedCount = useMemo(() => rows.filter((r) => r.checked).length, [rows]);
-  const canExtract = !busy && (Boolean(text.trim()) || Boolean(fileBase64));
+  const canExtract = !busy && (Boolean(text.trim()) || Boolean(fileBase64) || Boolean(imageBase64));
 
   return (
     <ScreenContainer>
@@ -359,10 +412,55 @@ export default function BulkImportScreen() {
                 </Pressable>
               ) : null}
             </View>
+            {/* 拍照 / 相册图片识别 */}
+            <View className="flex-row items-center mt-2.5" style={{ gap: 10 }}>
+              {Platform.OS !== "web" ? (
+                <Pressable
+                  onPress={takePhoto}
+                  disabled={busy}
+                  style={({ pressed }) => [
+                    styles.fileBtn,
+                    { borderColor: colors.border, backgroundColor: colors.background },
+                    pressed && { opacity: 0.7 },
+                  ]}
+                >
+                  <IconSymbol name="camera.fill" size={16} color={colors.primary} />
+                  <Text style={[styles.fileBtnText, { color: colors.primary }]}>
+                    {lang === "zh" ? "拍照识别" : "Camera"}
+                  </Text>
+                </Pressable>
+              ) : null}
+              <Pressable
+                onPress={pickImage}
+                disabled={busy}
+                style={({ pressed }) => [
+                  styles.fileBtn,
+                  { borderColor: colors.border, backgroundColor: colors.background },
+                  pressed && { opacity: 0.7 },
+                ]}
+              >
+                <IconSymbol name="photo.fill" size={16} color={colors.primary} />
+                <Text style={[styles.fileBtnText, { color: colors.primary }]}>
+                  {lang === "zh" ? "相册照片识别" : "Photo library"}
+                </Text>
+              </Pressable>
+              {imageBase64 ? (
+                <Pressable
+                  onPress={() => setImageBase64(null)}
+                  hitSlop={8}
+                  style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+                >
+                  <View className="flex-row items-center" style={{ gap: 4 }}>
+                    <IconSymbol name="checkmark.circle.fill" size={16} color={colors.success} />
+                    <IconSymbol name="xmark.circle.fill" size={18} color={colors.muted} />
+                  </View>
+                </Pressable>
+              ) : null}
+            </View>
             <Text className="text-xs text-muted mt-2" style={{ lineHeight: 16 }}>
               {lang === "zh"
-                ? "支持 PDF、Excel(xlsx/csv)、Word(docx)、纯文本,最大 10MB"
-                : "Supports PDF, Excel (xlsx/csv), Word (docx) and plain text, up to 10MB"}
+                ? "支持 PDF、Excel(xlsx/csv)、Word(docx)、纯文本与照片(中英文智能识别),最大 10MB"
+                : "Supports PDF, Excel (xlsx/csv), Word (docx), plain text and photos (bilingual OCR), up to 10MB"}
             </Text>
           </View>
 

@@ -35,6 +35,8 @@ const MAPPING = {
   "magnifyingglass": "search",
   "xmark.circle.fill": "cancel",
   "doc.fill": "description",
+  "camera.fill": "photo-camera",
+  "photo.fill": "photo",
   "circle": "radio-button-unchecked",
   "pencil": "edit",
   "trash.fill": "delete",

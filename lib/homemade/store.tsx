@@ -34,7 +34,43 @@ const TAXONOMY_V2_KEY = "homemade.taxonomy.v2";
 const WALDORF_PREPS_FLAG = "homemade.waldorf.v1";
 /** 《Waldorf》v2:书中 House-Made Recipes 完整做法回填/去重/增补标记 */
 const WALDORF_PREPS_V2_FLAG = "homemade.waldorf.v2";
+/** v3:notes 中来源类文字提取归入 source 字段并去重的一次性迁移标记 */
+const PREP_SOURCE_V3_FLAG = "homemade.source.v3";
 
+/** 从 notes 中辩证提取来源类文字:返回 [提取出的来源, 清理后的 notes];无来源时返回 [null, 原 notes] */
+export function extractSourceFromNotes(notes: string): [string | null, string] {
+  if (!notes.trim()) return [null, notes];
+  const lines = notes.split(/\n+/);
+  const sourceLines: string[] = [];
+  const kept: string[] = [];
+  const patterns: RegExp[] = [
+    /^(?:来源|出处|引用来源|摘自|源自)[::]\s*(.+)$/,
+    /^Source[::]\s*(.+)$/i,
+    /^(?:Adapted|Taken)\s+from\s+(.+)$/i,
+    /^(?:摘录自|改编自)\s*(.+)$/,
+  ];
+  // 书名类内嵌:整行提及 Waldorf Astoria Bar Book 且为纯来源句(短句,无做法动词)
+  const bookRe = /The\s+Waldorf\s+Astoria\s+Bar\s+Book|《?华尔道夫[·・]?阿斯托里亚酒吧手册》?/i;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    let matched = false;
+    for (const re of patterns) {
+      const m = trimmed.match(re);
+      if (m) {
+        sourceLines.push(m[1].trim());
+        matched = true;
+        break;
+      }
+    }
+    if (!matched && bookRe.test(trimmed) && trimmed.length <= 60) {
+      sourceLines.push(trimmed.replace(/^[-·•\s]+/, ""));
+      matched = true;
+    }
+    if (!matched) kept.push(line);
+  }
+  if (sourceLines.length === 0) return [null, notes];
+  return [sourceLines.join(" · "), kept.join("\n").trim()];
+}
 interface HomemadeStore {
   ready: boolean;
   preps: HomemadePrep[];
@@ -263,6 +299,44 @@ export function HomemadeProvider({ children }: { children: React.ReactNode }) {
             }
             AsyncStorage.setItem(WALDORF_PREPS_V2_FLAG, "1").catch(() => {});
             notifySyncChange(WALDORF_PREPS_V2_FLAG);
+          }
+        }
+        // v3:notes 中来源类文字提取归入 source 字段,并从 notes 删除重复信息(一次性,幂等)
+        {
+          const v3Done = await AsyncStorage.getItem(PREP_SOURCE_V3_FLAG);
+          if (!v3Done) {
+            let changed = false;
+            finalList = finalList.map((p) => {
+              // builtin Waldorf 条目:统一补书籍来源
+              const isWaldorf =
+                p.builtin &&
+                (/waldorf/i.test(p.notes) || /waldorf/i.test(p.source ?? "") || p.builtin);
+              const [extracted, cleanedNotes] = extractSourceFromNotes(p.notes);
+              let nextSource = p.source ?? "";
+              let nextNotes = p.notes;
+              if (extracted) {
+                nextSource = nextSource
+                  ? nextSource.includes(extracted)
+                    ? nextSource
+                    : `${nextSource} · ${extracted}`
+                  : extracted;
+                nextNotes = cleanedNotes;
+              }
+              if (!nextSource && isWaldorf && /waldorf/i.test(`${p.notes} ${p.recipe}`)) {
+                nextSource = "The Waldorf Astoria Bar Book · Frank Caiafa";
+              }
+              if (nextSource !== (p.source ?? "") || nextNotes !== p.notes) {
+                changed = true;
+                return { ...p, source: nextSource, notes: nextNotes, updatedAt: Date.now() };
+              }
+              return p;
+            });
+            if (changed) {
+              AsyncStorage.setItem(PREPS_KEY, JSON.stringify(finalList)).catch(() => {});
+              notifySyncChange(PREPS_KEY);
+            }
+            AsyncStorage.setItem(PREP_SOURCE_V3_FLAG, "1").catch(() => {});
+            notifySyncChange(PREP_SOURCE_V3_FLAG);
           }
         }
         setPreps(finalList);
