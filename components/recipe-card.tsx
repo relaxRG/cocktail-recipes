@@ -1,9 +1,10 @@
 import { router } from "expo-router";
 import React, { useMemo } from "react";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import * as Haptics from "expo-haptics";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { VariantBadge } from "@/components/variant-badge";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
@@ -81,17 +82,28 @@ export function RecipeCard({
             {(() => {
               const dn = displayNames(recipe.nameEn, recipe.name, lang);
               return (
-                <View style={{ height: 40, justifyContent: "center" }}>
-                  <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
-                    {dn.primary}
-                  </Text>
-                  <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                    {dn.secondary || " "}
-                  </Text>
-                </View>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ height: 40 }}
+                  contentContainerStyle={{ alignItems: "center", gap: 6 }}
+                >
+                  <Text className="text-base font-semibold text-foreground">{dn.primary}</Text>
+                  {dn.secondary ? (
+                    <Text className="text-xs text-muted">{dn.secondary}</Text>
+                  ) : null}
+                </ScrollView>
               );
             })()}
-            <View className="flex-row items-center mt-1.5" style={{ gap: 6, overflow: "hidden", height: 24 }}>
+            {/* Variant of 标签独立一行完整显示 */}
+            <VariantBadge recipe={recipe} mode="compact" />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mt-1.5"
+              style={{ height: 24 }}
+              contentContainerStyle={{ alignItems: "center", gap: 6 }}
+            >
               {category ? (
                 <View
                   className="px-2 py-0.5 rounded-full"
@@ -141,7 +153,7 @@ export function RecipeCard({
                   <Text className="text-xs text-muted">{recipe.rating}/10</Text>
                 </View>
               ) : null}
-            </View>
+            </ScrollView>
           </View>
           <View className="flex-row items-center" style={{ gap: 14 }}>
             <Pressable

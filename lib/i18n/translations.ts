@@ -184,6 +184,13 @@ const dict = {
   "common.language": { zh: "界面语言", en: "Language" },
   // Recipe detail
   "detail.notFound": { zh: "配方不存在或已被删除", en: "Recipe not found or deleted" },
+  "detail.lineage": { zh: "变体说明", en: "Variant Analysis" },
+  "variant.of": { zh: "Variant of {name}", en: "Variant of {name}" },
+  "variant.sheet.title": { zh: "变体说明 · {name}", en: "Variant of {name}" },
+  "detail.lineage.hint": {
+    zh: "由智能谱系引擎基于《Cocktail Codex》《The Joy of Mixology》《Imbibe!》《The Fine Art of Mixing Drinks》、Difford's Guide 与 IBA 官方配方等专业文献自动论证生成",
+    en: "Auto-generated lineage analysis grounded in Cocktail Codex, The Joy of Mixology, Imbibe!, The Fine Art of Mixing Drinks, Difford's Guide and IBA official recipes",
+  },
   "detail.meta.spirit": { zh: "基酒", en: "Spirit" },
   "detail.meta.glass": { zh: "杯型", en: "Glass" },
   "detail.meta.method": { zh: "方法", en: "Method" },

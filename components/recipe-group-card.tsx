@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import * as Haptics from "expo-haptics";
 
 import { RecipeCard } from "@/components/recipe-card";
@@ -86,17 +86,24 @@ export function RecipeGroupCard({
         >
           <View className="flex-row items-center">
             <View className="flex-1 pr-2">
-              <View style={{ minHeight: 40 }}>
-                <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
-                  {dn.primary}
-                </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ height: 40 }}
+                contentContainerStyle={{ alignItems: "center", gap: 6 }}
+              >
+                <Text className="text-base font-semibold text-foreground">{dn.primary}</Text>
                 {dn.secondary ? (
-                  <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                    {dn.secondary}
-                  </Text>
+                  <Text className="text-xs text-muted">{dn.secondary}</Text>
                 ) : null}
-              </View>
-              <View className="flex-row items-center mt-1.5" style={{ gap: 6, overflow: "hidden", height: 24 }}>
+              </ScrollView>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                className="mt-1.5"
+                style={{ height: 24 }}
+                contentContainerStyle={{ alignItems: "center", gap: 6 }}
+              >
                 <View
                   className="px-2 py-0.5 rounded-full"
                   style={{ backgroundColor: colors.primary + "18" }}
@@ -153,7 +160,7 @@ export function RecipeGroupCard({
                     {t("group.compare")}
                   </Text>
                 </Pressable>
-              </View>
+              </ScrollView>
             </View>
             <IconSymbol
               name={expanded ? "chevron.up" : "chevron.down"}

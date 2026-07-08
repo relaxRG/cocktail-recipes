@@ -13,6 +13,7 @@ import React, {
 import { buildDefaultCategories, buildSampleRecipes } from "./seed";
 import { estimateRecipeAbv } from "./abv";
 import { classifyRecipe, inferDrinkDuration, inferOccasion } from "./classify";
+import { inferVariantOf } from "./lineage";
 import {
   WALDORF_DATASET_KEY,
   buildWaldorfCategories,
@@ -150,6 +151,14 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           }
           // 旧数据迁移:自动归类饮用时长(短饮/长饮)与饮用场合(餐前/餐后等)
           if (classifyRecipe(rec)) migrated = true;
+          // 旧数据迁移:经典变体智能识别(空 variantOf 时按谱系引擎回填)
+          if (!rec.variantOf && rec.ingredients.length > 0) {
+            const v = inferVariantOf(rec);
+            if (v) {
+              rec.variantOf = v;
+              migrated = true;
+            }
+          }
           return rec;
         });
         if (!seeded && cats.length === 0) {
@@ -273,6 +282,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       // 智能归类:饮用时长与场合始终由引擎自动判定(无需人工填写)
       recipe.drinkDuration = inferDrinkDuration(recipe);
       recipe.occasion = inferOccasion(recipe);
+      // 经典变体智能识别:人工未填写时自动判定(人工填写优先)
+      if (!recipe.variantOf) recipe.variantOf = inferVariantOf(recipe);
       persistRecipes([recipe, ...recipesRef.current]);
       return recipe;
     },
@@ -296,6 +307,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           // 编辑后重新智能归类(配料/杯型/方法可能已变化)
           next.drinkDuration = inferDrinkDuration(next);
           next.occasion = inferOccasion(next);
+          // 变体来源:人工清空或从未填写时重新智能判定
+          if (!next.variantOf) next.variantOf = inferVariantOf(next);
           return next;
         }),
       );

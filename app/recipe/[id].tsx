@@ -18,6 +18,7 @@ import { parseSource } from "@/lib/recipes/source-parse";
 import { useIceSettings } from "@/lib/ice/store";
 import { estimateIceCost } from "@/lib/ice/cost";
 import { analyzeStructure, structuralFormula } from "@/lib/recipes/structure";
+import { VariantBadge } from "@/components/variant-badge";
 import {
   garnishDisplayText,
   ingredientDisplayName,
@@ -259,11 +260,8 @@ export default function RecipeDetailScreen() {
             ))}
           </View>
         ) : null}
-        {recipe.variantOf ? (
-          <Text className="text-sm text-muted mt-2">
-            {t("detail.variantOf", { name: recipe.variantOf })}
-          </Text>
-        ) : null}
+        {/* Variant of 经典标注:点按弹出完整谱系论证资料浮层 */}
+        <VariantBadge recipe={recipe} mode="full" />
 
         {/* Meta grid */}
         <View className="flex-row mt-5 bg-surface rounded-xl overflow-hidden">

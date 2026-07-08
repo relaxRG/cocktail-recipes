@@ -34,6 +34,7 @@ const MAPPING = {
   "star": "star-border",
   "magnifyingglass": "search",
   "xmark.circle.fill": "cancel",
+  "book.fill": "menu-book",
   "doc.fill": "description",
   "camera.fill": "photo-camera",
   "photo.fill": "photo",
