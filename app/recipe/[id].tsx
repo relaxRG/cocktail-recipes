@@ -19,6 +19,7 @@ import { useIceSettings } from "@/lib/ice/store";
 import { estimateIceCost } from "@/lib/ice/cost";
 import { analyzeStructure, structuralFormula } from "@/lib/recipes/structure";
 import { VariantBadge } from "@/components/variant-badge";
+import { CodexFamilyBadge } from "@/components/codex-family-badge";
 import {
   garnishDisplayText,
   ingredientDisplayName,
@@ -231,14 +232,7 @@ export default function RecipeDetailScreen() {
               </View>
             ) : null}
             {recipe.codexFamily ? (
-              <View
-                className="px-2.5 py-1 rounded-full border"
-                style={{ borderColor: colors.primary, backgroundColor: colors.primary + "15" }}
-              >
-                <Text className="text-xs font-medium" style={{ color: colors.primary }}>
-                  {codexFamilyLabel(recipe.codexFamily, lang)}
-                </Text>
-              </View>
+              <CodexFamilyBadge family={recipe.codexFamily} />
             ) : null}
             {recipe.drinkDuration ? (
               <View className="px-2.5 py-1 rounded-full bg-surface border border-border">

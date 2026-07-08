@@ -187,6 +187,11 @@ const dict = {
   "detail.lineage": { zh: "变体说明", en: "Variant Analysis" },
   "variant.of": { zh: "Variant of {name}", en: "Variant of {name}" },
   "variant.sheet.title": { zh: "变体说明 · {name}", en: "Variant of {name}" },
+  "codex.sheet.title": { zh: "母配方 · {name}", en: "Root Recipe · {name}" },
+  "codex.sheet.hint": {
+    zh: "六大母配方体系依据 Death & Co《Cocktail Codex》(2018),并以《The Joy of Mixology》《Imbibe!》交叉佐证",
+    en: "Six root templates per Death & Co's Cocktail Codex (2018), cross-referenced with The Joy of Mixology and Imbibe!",
+  },
   "detail.lineage.hint": {
     zh: "由智能谱系引擎基于《Cocktail Codex》《The Joy of Mixology》《Imbibe!》《The Fine Art of Mixing Drinks》、Difford's Guide 与 IBA 官方配方等专业文献自动论证生成",
     en: "Auto-generated lineage analysis grounded in Cocktail Codex, The Joy of Mixology, Imbibe!, The Fine Art of Mixing Drinks, Difford's Guide and IBA official recipes",
