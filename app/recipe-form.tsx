@@ -190,6 +190,9 @@ export default function RecipeFormScreen() {
     if (p.garnish) setGarnish(p.garnish);
     if (p.source) setSource(p.source);
     if (p.variantOf) setVariantOf(p.variantOf);
+    // 文本明确声明的 Codex 家族:确认合法(解析器已规范化)即采用;
+    // 但用户已手动选择的值优先级最高,不覆盖
+    if (p.codexFamily && !codexFamily) setCodexFamily(p.codexFamily);
     // 杯型/基酒:仅当解析结果能对应到已有标签时才选中,否则原样填入
     if (p.glass) {
       const hit = glassNames.find((g) => p.glass.includes(g) || g.includes(p.glass));

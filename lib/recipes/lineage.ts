@@ -616,6 +616,14 @@ export function inferFamily(
   if (roles.has("fortified") || roles.has("bitter_modifier")) return "martini";
   if (roles.has("texture_dairy") || (roles.has("sweet_liqueur") && !roles.has("bitters")))
     return "duo_trio";
+  // Duo:烈酒 + 利口酒直接作双基(如 君度+干邑 的 Bird、Godfather、Rusty Nail),
+  // 利口酒即甜源,无其他修饰 → Duo/Trio(Codex 归 OF 族甜源变体)
+  if (
+    roles.has("base_liqueur") &&
+    (roles.has("base_aged") || roles.has("base_white")) &&
+    !roles.has("sweet_syrup")
+  )
+    return "duo_trio";
   if (roles.has("sweet_syrup") || roles.has("bitters")) return "old_fashioned";
   return "unknown";
 }
@@ -836,4 +844,93 @@ export function inferVariantOf(
   const nameNorm = W(`${r.name} ${r.nameEn ?? ""}`);
   if (nameNorm.includes(W(v.classic.en)) || nameNorm.includes(v.classic.zh)) return "";
   return `${v.classic.zh} ${v.classic.en}`;
+}
+
+/* --------------------------- Codex Family 智能识别 --------------------------- */
+
+/**
+ * CODEX_FAMILIES 六值(与 types.ts 存量字符串严格一致):
+ * "古典 Old-Fashioned" | "马天尼 Martini" | "大吉利 Daiquiri" | "边车 Sidecar" | "高球 Highball" | "菲兹 Flip"
+ */
+const CODEX_OF = "古典 Old-Fashioned";
+const CODEX_MARTINI = "马天尼 Martini";
+const CODEX_DAIQUIRI = "大吉利 Daiquiri";
+const CODEX_SIDECAR = "边车 Sidecar";
+const CODEX_HIGHBALL = "高球 Highball";
+const CODEX_FLIP = "菲兹 Flip";
+
+/**
+ * 引擎 FamilyKey → Codex 六族映射(依据 Cocktail Codex 原著归族,见
+ * research/variant-lineage-research.md §八):
+ * - julep → Old Fashioned 族(原著:Mint Julep 为 OF 官方衍生)
+ * - tropical → 椰浆/乳脂类(Piña Colada)→ Flip 族;柑橘酸甜类(Mai Tai)→ Daiquiri 族
+ * - duo_trio → 含乳脂(Trio: White Russian/Alexander)→ Flip 族;纯利口酒(Duo)→ OF 族
+ * - snapper/unknown → 不妄断,返回 ""
+ */
+export function toCodexFamily(
+  family: FamilyKey,
+  roles: Set<StructureRole>,
+  ingText: string,
+): string {
+  switch (family) {
+    case "old_fashioned": return CODEX_OF;
+    case "martini": return CODEX_MARTINI;
+    case "daiquiri": return CODEX_DAIQUIRI;
+    case "sidecar": return CODEX_SIDECAR;
+    case "highball": return CODEX_HIGHBALL;
+    case "flip": return CODEX_FLIP;
+    case "julep": return CODEX_OF;
+    case "tropical":
+      return textHas(ingText, [...K.coconut, ...K.cream]) || roles.has("texture_dairy")
+        ? CODEX_FLIP
+        : CODEX_DAIQUIRI;
+    case "duo_trio":
+      return roles.has("texture_dairy") || textHas(ingText, K.cream)
+        ? CODEX_FLIP
+        : CODEX_OF;
+    default:
+      return "";
+  }
+}
+
+/**
+ * 规范化文本中明确声明的 Codex Family(导入解析用):
+ * 支持中英正名与常见别名/范式名(Sour→Daiquiri、Daisy→Sidecar、Spirit-forward→Martini 等);
+ * 无法确认合法时返回 ""(交由引擎判定)。
+ */
+export function normalizeCodexFamilyDecl(raw: string): string {
+  const t = W((raw ?? "").trim());
+  if (!t) return "";
+  const table: [string[], string][] = [
+    [["old-fashioned", "old fashioned", "古典", "元祖", "ancestral"], CODEX_OF],
+    [["julep", "朱莉普", "toddy", "托蒂"], CODEX_OF],
+    [["martini", "马天尼", "马提尼", "spirit-forward", "spirit forward", "french-italian", "法意"], CODEX_MARTINI],
+    [["daiquiri", "大吉利", "德贵丽", "sour", "酸酒", "酸味"], CODEX_DAIQUIRI],
+    [["sidecar", "边车", "赛德卡", "daisy", "雏菊", "new orleans sour"], CODEX_SIDECAR],
+    [["highball", "高球", "嗨棒", "collins", "柯林斯", "fizz", "菲斯", "buck", "mule", "骡子", "spritz"], CODEX_HIGHBALL],
+    [["flip", "菲利普", "蛋酒", "nog", "colada", "可乐达", "trio", "alexander", "亚历山大"], CODEX_FLIP],
+  ];
+  // 先精确匹配六值原文
+  const exact = [CODEX_OF, CODEX_MARTINI, CODEX_DAIQUIRI, CODEX_SIDECAR, CODEX_HIGHBALL, CODEX_FLIP]
+    .find((v) => W(v) === t || v === raw.trim());
+  if (exact) return exact;
+  for (const [words, value] of table) {
+    if (words.some((w) => t.includes(w))) return value;
+  }
+  return "";
+}
+
+/**
+ * 供 codexFamily 字段自动回填(引擎判定级):
+ * 优先随 Variant of 判定的经典锚点归族;否则用结构决策树家族映射。
+ */
+export function inferCodexFamily(
+  r: Pick<Recipe, "name" | "nameEn" | "ingredients" | "method" | "baseSpirit" | "glass">,
+): string {
+  if (!r.ingredients || r.ingredients.length === 0) return "";
+  const v = analyzeLineage(r);
+  const items = analyzeStructure(r.ingredients);
+  const roles = new Set<StructureRole>(items.map((i) => i.role));
+  const ingText = r.ingredients.map((i) => i.name).join(" ") + " " + (r.glass ?? "");
+  return toCodexFamily(v.family, roles, ingText);
 }

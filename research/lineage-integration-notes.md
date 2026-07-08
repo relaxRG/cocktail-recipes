@@ -28,6 +28,53 @@
 - 验收截图发现:出现「Variant of 高球/嗨棒 Highball」「Variant of 巴克/骡子范式 Buck / Mule」
   这类"范式/家族"锚点被当作具体经典展示,观感不严谨。处理:锚点增加 paradigm 标记,
   paradigm 锚点在 Variant of 标注中显示为「××家族」文案(variant.family i18n),避免误导。
+  (后续用户确认:Variant of 照旧展示,paradigm 不做特殊文案;paradigm 字段保留但展示层未用)
+
+---
+
+## Codex Family 三级优先级智能识别(2026-07-08)
+
+需求:手动修改最高 > 导入文本明确声明(确认合法后采用) > 引擎自动判定;存量批量补齐空值。
+
+### 已核实的接入点(文件:行号)
+- `lib/recipes/types.ts:63` CODEX_FAMILIES 六值中文混写,如 "古典 Old-Fashioned"、"菲兹 Flip"(Flip 中文系早期误译,为兼容保留)。
+- `lib/recipes/lineage.ts:596` inferFamily(roles, ingText, method) → FamilyKey(含 julep/duo_trio/tropical/snapper 扩展族)。
+- `lib/recipes/lineage.ts:88` LineageVerdict { classic, family, ... };analyzeLineage 为主入口;inferVariantOf 已被 store 使用。
+- `lib/recipes/store.tsx:154-161` 旧数据迁移处(variantOf 回填),codexFamily 批量补齐加在同一段。
+- `lib/recipes/store.tsx:286,311` addRecipe/updateRecipe 保存时回填处。
+- `lib/recipes/parser.ts:156` 文本字段解析注册表,已有 variantOf 正则;新增 codexFamily 声明解析(家族/Family/Codex 写法)。
+
+### 实现方案
+1. lineage.ts 新增 `toCodexFamily(verdict): string`:FamilyKey→CODEX_FAMILIES 字符串映射;
+   julep→古典;tropical→椰浆乳脂判据→菲兹 Flip,柑橘酸甜→大吉利;duo_trio→乳脂→菲兹,纯利口酒→古典;
+   snapper/unknown→ ""(不妄断)。依据 research/variant-lineage-research.md §八映射表。
+2. lineage.ts 新增 `normalizeCodexFamilyDecl(raw): string`:把文本声明(中/英/别名,如 "Sour"→大吉利、
+   "Daisy"→边车、"Spirit-forward"→马天尼)规范化为六值之一;非法返回 ""。
+3. parser.ts 注册 `家族/Codex|Family` 字段正则 → normalizeCodexFamilyDecl 确认后写入 codexFamily。
+4. store.tsx:迁移段+add/update 段,`!rec.codexFamily` 时用 toCodexFamily(analyzeLineage(rec)) 回填;
+   手动值(表单已填)永不覆盖。
+5. 测试:tests/lineage.test.ts 增加 toCodexFamily/normalizeCodexFamilyDecl 用例。
+
+### 文献核对结论(已写入 variant-lineage-research.md §八)
+- Codex 官方:Julep/Champagne Cocktail/Toddy→OF 族;Manhattan/Negroni→Martini 族;
+  Margarita/White Lady→Sidecar 族(甜源=利口酒判据);White Russian/Piña Colada/Irish Coffee→Flip 族;
+  Collins/Fizz/Buck/Mule→Highball 族。来源:VinePair 官方图解、Quizlet 原著摘录、
+  Rusty Barrel 六部曲、r/bartenders 原著讨论(URL 已存研究文档)。
+
+### 批跑结果(447 份 Waldorf)
+马天尼125 / 大吉利122 / 古典94 / Flip40 / 高球39 / 边车20 / 未判定7。
+抽查合理:苦艾菲兹→高球(Fizz 官方归 Highball 族)、Aviation→边车(利口酒甜源)、
+亚历山大→Flip(乳脂)、越境→高球(姜汁啤酒 Buck)。
+遗留:「鸟 Bird」(君度2oz+干邑1oz,纯利口酒 Duo)未判定——inferFamily 未走到 duo_trio 分支,
+原因可能是君度被识别为柑橘利口酒甜源导致 roles 只有 sweet_liqueur 而无其他信号。
+血腥玛丽类咸鲜(Snapper)不判定属预期。
+
+修复后复跑:Bird→duo_trio→古典 OK,测试 345 过。剩余未判定 6 个:
+血腥兔子/血腥玛丽(Snapper,预期);查理·罗斯(单一干邑纯饮,非鸡尾酒结构,预期);
+桃子浸泡波本(浸渍酒非鸡尾酒,预期);Lucky George(Bushmills 威士忌+Giffard Banane 香蕉利口酒,
+标准 Duo,应判但 Giffard Banane du Brésil 英文名未被 structure 识别为利口酒);
+石围栏 Stone Fence(苹果酒+苹果白兰地,Highball 族 cider 长饮,cider 未在碳酸/长饮词表)。
+结论:仅 2 例可改进且都是词表覆盖问题,不动引擎逻辑,补词表即可。
 
 已完成:
 - research/variant-lineage-research.md:多文献研究文档(Codex/Regan/Embury/Wondrich/Difford/Death&Co)

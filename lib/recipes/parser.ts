@@ -1,4 +1,5 @@
 import { Ingredient, genId } from "./types";
+import { normalizeCodexFamilyDecl } from "./lineage";
 
 /** 解析结果:与表单字段对应,均为可选 */
 export interface ParsedRecipe {
@@ -10,6 +11,8 @@ export interface ParsedRecipe {
   garnish: string;
   baseSpirit: string;
   variantOf: string;
+  /** 文本明确声明的 Codex 六大家族(已规范化为六值之一,非法为 "") */
+  codexFamily: string;
   source: string;
 }
 
@@ -139,6 +142,7 @@ export function parseRecipeText(text: string): ParsedRecipe {
     garnish: "",
     baseSpirit: "",
     variantOf: "",
+    codexFamily: "",
     source: "",
   };
   const rawLines = text
@@ -154,6 +158,10 @@ export function parseRecipeText(text: string): ParsedRecipe {
     [/^(做法|方法|method)\s*[::]\s*(.+)$/i, (v) => (result.steps = result.steps ? result.steps + "\n" + v : v)],
     [/^(来源|出处|source)\s*[::]\s*(.+)$/i, (v) => (result.source = v)],
     [/^(变体|variant\s*of|变体来源)\s*[::]\s*(.+)$/i, (v) => (result.variantOf = v)],
+    [
+      /^(家族|六大家族|母配方|codex(?:\s*family)?|family)\s*[::]\s*(.+)$/i,
+      (v) => (result.codexFamily = normalizeCodexFamilyDecl(v)),
+    ],
     [/^(名称|酒名|name)\s*[::]\s*(.+)$/i, (v) => (result.name = v)],
   ];
 

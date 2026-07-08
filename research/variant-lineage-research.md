@@ -125,3 +125,35 @@ Ancestrals(元祖:Old Fashioned、Sazerac、Improved Cocktail)/Sours/Spirit-Forw
 
 ## 参考来源
 - Cocktail Codex (Day/Fauchald/Kaplan/Tarby, 2018); The Joy of Mixology (Gary Regan, 2003); Imbibe! (David Wondrich, 2007); The Old-Fashioned (Robert Simonson, 2014); The Fine Art of Mixing Drinks (David Embury, 1948); Welcome Home (Death & Co); Difford's Guide cocktail families & Martini history; Serious Eats Cocktail 101 (Michael Dietsch/Paul Clarke); PUNCH "What the Hell Is a Crusta?"; Wikipedia Negroni(引 Picchi 2002 等文献学考证); VinePair Cocktail Codex infographic; Kevin Kos Old Fashioned history(引 Croswell 1806)。
+
+---
+
+## 八、补充校验(Codex Family 智能识别,2026-07-08 二次文献核对)
+
+### Codex 原著归族边界(经 VinePair 官方图解、Quizlet 原著摘录、Rusty Barrel 六部曲、r/bartenders 原著讨论交叉证实)
+1. **Old Fashioned 族**官方衍生含:Sazerac、Hot Toddy、**Mint Julep**、**Champagne Cocktail**——即 Julep 与香槟鸡尾酒在 Codex 体系归 OF 族(热饮 Toddy 亦然)。
+2. **Martini 族**官方衍生含:Negroni、Boulevardier、**Manhattan**、Vesper、Martinez——Manhattan/Negroni 归 Martini 族(烈酒+加香酒骨架)。
+3. **Daiquiri vs Sidecar 判据 = 甜源**:糖/糖浆(Sour)→Daiquiri 族;利口酒(Daisy)→Sidecar 族。Margarita、White Lady 原著明确归 Sidecar 族。
+4. **Flip 族**原著/衍生阐释含:White Russian、**Piña Colada**(椰浆=乳脂类比)、Irish Coffee、Eggnog——乳/蛋质地判据。
+5. **Whisky Highball 族**:Collins/Fizz/Buck/Mule/G&T/Spritz 等一切碳酸长饮。
+
+### 引擎内部家族 → Codex 六族(用户 codexFamily 字段)映射表
+| 引擎 FamilyKey | Codex 六族归属 | 依据 |
+|---|---|---|
+| old_fashioned | 古典 Old-Fashioned | 直接对应 |
+| martini | 马天尼 Martini | 直接对应 |
+| daiquiri | 大吉利 Daiquiri | 直接对应 |
+| sidecar | 边车 Sidecar | 直接对应 |
+| highball | 高球 Highball | 直接对应 |
+| flip | 菲兹 Flip | 直接对应(字段存量值即此混写) |
+| julep | 古典 Old-Fashioned | Codex 官方:Mint Julep 为 OF 衍生 |
+| duo_trio(含乳脂) | 菲兹 Flip | White Russian/Alexander 归 Flip(Rusty Barrel/Codex) |
+| duo_trio(纯利口酒) | 古典 Old-Fashioned | Duo=烈酒+利口酒甜源,无酸无泡,OF 骨架(利口酒当糖) |
+| tropical(椰浆/乳脂) | 菲兹 Flip | Piña Colada 归 Flip(Codex 衍生阐释) |
+| tropical(柑橘酸甜) | 大吉利 Daiquiri | Mai Tai 等 = 朗姆酸酒扩展(Codex 将 Mai Tai 列 Daiquiri 章) |
+| snapper | 不自动归族 | 咸鲜类 Codex 无对应,留空待手动 |
+| unknown | 不自动归族 | 证据不足不妄断 |
+
+### 命名勘误记录
+- 字段常量「菲兹 Flip」中文"菲兹"系早期误译(Fizz≠Flip),但存量 447 份配方与筛选器均使用该字符串,
+  为数据兼容保留存储值不变;展示层 codexFamilyLabel 英文界面显示 "Flip" 无歧义。

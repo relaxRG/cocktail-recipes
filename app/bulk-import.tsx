@@ -27,6 +27,7 @@ import { useHomemadeStore } from "@/lib/homemade/store";
 import { classifyPrepGroup, guessPrepType } from "@/lib/homemade/types";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { genId } from "@/lib/recipes/types";
+import { normalizeCodexFamilyDecl } from "@/lib/recipes/lineage";
 
 type ItemType = "bottle" | "prep" | "recipe";
 
@@ -53,6 +54,8 @@ interface ExtractedItem {
   steps: string;
   garnish: string;
   source: string;
+  variantOf: string;
+  codexFamily: string;
   notes: string;
 }
 
@@ -322,8 +325,9 @@ export default function BulkImportScreen() {
           glass: item.glass,
           method: item.method,
           strength: "medium",
-          variantOf: "",
-          codexFamily: "",
+          // 三级优先级:文本明确声明(确认合法后采用)> 引擎自动判定(store 保存时回填)
+          variantOf: item.variantOf || "",
+          codexFamily: normalizeCodexFamilyDecl(item.codexFamily || ""),
           flavors: [],
           source: item.source,
           story: "",

@@ -13,7 +13,7 @@ import React, {
 import { buildDefaultCategories, buildSampleRecipes } from "./seed";
 import { estimateRecipeAbv } from "./abv";
 import { classifyRecipe, inferDrinkDuration, inferOccasion } from "./classify";
-import { inferVariantOf } from "./lineage";
+import { inferVariantOf, inferCodexFamily } from "./lineage";
 import {
   WALDORF_DATASET_KEY,
   buildWaldorfCategories,
@@ -159,6 +159,15 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
               migrated = true;
             }
           }
+          // 旧数据迁移:Codex 六大家族智能识别(空 codexFamily 时按引擎回填;
+          // 人工/文本声明的非空值不覆盖——三级优先级)
+          if (!rec.codexFamily && rec.ingredients.length > 0) {
+            const f = inferCodexFamily(rec);
+            if (f) {
+              rec.codexFamily = f;
+              migrated = true;
+            }
+          }
           return rec;
         });
         if (!seeded && cats.length === 0) {
@@ -284,6 +293,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       recipe.occasion = inferOccasion(recipe);
       // 经典变体智能识别:人工未填写时自动判定(人工填写优先)
       if (!recipe.variantOf) recipe.variantOf = inferVariantOf(recipe);
+      // Codex 家族智能识别:人工/文本声明未给出时自动判定
+      if (!recipe.codexFamily) recipe.codexFamily = inferCodexFamily(recipe);
       persistRecipes([recipe, ...recipesRef.current]);
       return recipe;
     },
@@ -309,6 +320,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
           next.occasion = inferOccasion(next);
           // 变体来源:人工清空或从未填写时重新智能判定
           if (!next.variantOf) next.variantOf = inferVariantOf(next);
+          // Codex 家族:人工清空或从未填写时重新智能判定
+          if (!next.codexFamily) next.codexFamily = inferCodexFamily(next);
           return next;
         }),
       );

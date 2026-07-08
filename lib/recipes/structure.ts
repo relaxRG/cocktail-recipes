@@ -94,15 +94,15 @@ const SYRUPS = [
 ];
 const SWEET_LIQUEURS = [
   "利口酒", "君度", "橙皮酒", "库拉索", "黑加仑", "樱桃白兰地", "马拉斯奇诺", "查特",
-  "廊酒", "圣杰曼", "接骨木花", "咖啡利口", "可可利口", "杏仁利口", "苹果利口",
+  "廊酒", "圣杰曼", "接骨木花", "咖啡利口", "可可利口", "杏仁利口", "苹果利口", "香蕉利口",
   "liqueur", "cointreau", "triple sec", "curacao", "cura\u00e7ao", "cassis", "maraschino",
   "chartreuse", "benedictine", "st-germain", "st germain", "elderflower", "kahlua",
-  "amaretto", "falernum", "drambuie", "galliano", "midori", "creme de",
+  "amaretto", "falernum", "drambuie", "galliano", "midori", "creme de", "banane",
 ];
 const BITTERS_DASH = ["苦精", "bitters", "比特"];
 const CARBONATED = [
-  "苏打水", "汤力", "姜汁啤酒", "姜汁汽水", "可乐", "气泡水", "香槟", "起泡酒", "普罗塞克", "卡瓦", "啤酒",
-  "soda", "tonic", "ginger beer", "ginger ale", "cola", "sparkling", "champagne", "prosecco", "cava", "beer", "lemonade",
+  "苏打水", "汤力", "姜汁啤酒", "姜汁汽水", "可乐", "气泡水", "香槟", "起泡酒", "普罗塞克", "卡瓦", "啤酒", "苹果酒",
+  "soda", "tonic", "ginger beer", "ginger ale", "cola", "sparkling", "champagne", "prosecco", "cava", "beer", "lemonade", "cider",
 ];
 const JUICES = [
   "菠萝汁", "蔓越莓汁", "苹果汁", "番茄汁", "桃汁", "芒果汁", "百香果",
