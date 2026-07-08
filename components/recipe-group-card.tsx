@@ -89,12 +89,16 @@ export function RecipeGroupCard({
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                style={{ height: 40 }}
-                contentContainerStyle={{ alignItems: "center", gap: 6 }}
+                style={{ height: 24 }}
+                contentContainerStyle={{ alignItems: "baseline", gap: 6 }}
               >
-                <Text className="text-base font-semibold text-foreground">{dn.primary}</Text>
+                <Text className="text-base font-semibold text-foreground" style={{ lineHeight: 22 }}>
+                  {dn.primary}
+                </Text>
                 {dn.secondary ? (
-                  <Text className="text-xs text-muted">{dn.secondary}</Text>
+                  <Text className="text-xs text-muted" style={{ lineHeight: 22 }}>
+                    {dn.secondary}
+                  </Text>
                 ) : null}
               </ScrollView>
               <ScrollView
@@ -122,13 +126,6 @@ export function RecipeGroupCard({
                     </Text>
                   </View>
                 ) : null}
-                {commonBase ? (
-                  <View className="px-2 py-0.5 rounded-full bg-background border border-border">
-                    <Text className="text-xs text-muted">
-                      {localizedTagName(commonBase, "", lang)}
-                    </Text>
-                  </View>
-                ) : null}
                 {commonFamily ? (
                   <View
                     className="px-2 py-0.5 rounded-full border"
@@ -136,6 +133,13 @@ export function RecipeGroupCard({
                   >
                     <Text className="text-xs" style={{ color: colors.primary }}>
                       {codexFamilyLabel(commonFamily, lang)}
+                    </Text>
+                  </View>
+                ) : null}
+                {commonBase ? (
+                  <View className="px-2 py-0.5 rounded-full bg-background border border-border">
+                    <Text className="text-xs text-muted">
+                      {localizedTagName(commonBase, "", lang)}
                     </Text>
                   </View>
                 ) : null}

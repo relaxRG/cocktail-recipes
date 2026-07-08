@@ -85,18 +85,24 @@ export function RecipeCard({
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  style={{ height: 40 }}
-                  contentContainerStyle={{ alignItems: "center", gap: 6 }}
+                  style={{ height: 24 }}
+                  contentContainerStyle={{ alignItems: "baseline", gap: 6 }}
                 >
-                  <Text className="text-base font-semibold text-foreground">{dn.primary}</Text>
+                  <Text className="text-base font-semibold text-foreground" style={{ lineHeight: 22 }}>
+                    {dn.primary}
+                  </Text>
                   {dn.secondary ? (
-                    <Text className="text-xs text-muted">{dn.secondary}</Text>
+                    <Text className="text-xs text-muted" style={{ lineHeight: 22 }}>
+                      {dn.secondary}
+                    </Text>
                   ) : null}
                 </ScrollView>
               );
             })()}
-            {/* Variant of 标签独立一行完整显示 */}
-            <VariantBadge recipe={recipe} mode="compact" />
+            {/* Variant of / 经典原方:纯文字次要标注,与主名左对齐(Apple HIG 副标题式) */}
+            <View className="mt-0.5">
+              <VariantBadge recipe={recipe} mode="compact" />
+            </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -104,6 +110,7 @@ export function RecipeCard({
               style={{ height: 24 }}
               contentContainerStyle={{ alignItems: "center", gap: 6 }}
             >
+              {/* 标签优先级:分类 → Codex 家族 → 基酒 → 烈度 → 评分 → 成本 */}
               {category ? (
                 <View
                   className="px-2 py-0.5 rounded-full"
@@ -111,6 +118,16 @@ export function RecipeCard({
                 >
                   <Text className="text-xs font-medium" style={{ color: category.color }}>
                     {localizedTagName(category.name, category.nameEn, lang)}
+                  </Text>
+                </View>
+              ) : null}
+              {recipe.codexFamily ? (
+                <View
+                  className="px-2 py-0.5 rounded-full border"
+                  style={{ borderColor: colors.primary + "66", backgroundColor: colors.primary + "12" }}
+                >
+                  <Text className="text-xs" style={{ color: colors.primary }}>
+                    {codexFamilyLabel(recipe.codexFamily, lang)}
                   </Text>
                 </View>
               ) : null}
@@ -129,21 +146,6 @@ export function RecipeCard({
                       : ""}
                 </Text>
               </View>
-              {recipe.codexFamily ? (
-                <View
-                  className="px-2 py-0.5 rounded-full border"
-                  style={{ borderColor: colors.primary + "66", backgroundColor: colors.primary + "12" }}
-                >
-                  <Text className="text-xs" style={{ color: colors.primary }}>
-                    {codexFamilyLabel(recipe.codexFamily, lang)}
-                  </Text>
-                </View>
-              ) : null}
-              {costTotal !== null ? (
-                <View className="px-2 py-0.5 rounded-full bg-background border border-border">
-                  <Text className="text-xs text-muted">≈¥{costTotal.toFixed(1)}</Text>
-                </View>
-              ) : null}
               {recipe.rating ? (
                 <View
                   className="flex-row items-center px-2 py-0.5 rounded-full bg-background border border-border"
@@ -151,6 +153,11 @@ export function RecipeCard({
                 >
                   <IconSymbol name="star.fill" size={11} color="#F5A623" />
                   <Text className="text-xs text-muted">{recipe.rating}/10</Text>
+                </View>
+              ) : null}
+              {costTotal !== null ? (
+                <View className="px-2 py-0.5 rounded-full bg-background border border-border">
+                  <Text className="text-xs text-muted">≈¥{costTotal.toFixed(1)}</Text>
                 </View>
               ) : null}
             </ScrollView>

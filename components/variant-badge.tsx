@@ -29,18 +29,20 @@ function cachedAnalyze(
  * 解析配方的「Variant of」展示名:
  * - 人工填写的 variantOf 优先
  * - 否则用智能谱系引擎判定(low 置信度不显示)
- * - 配方本身即经典时不显示(名称包含经典名)
+ * - 配方本身即经典时返回 isClassic=true(卡片/详情标注「经典原方 Classic」)
  */
 export function resolveVariantLabel(
   recipe: Pick<Recipe, "name" | "nameEn" | "ingredients" | "method" | "baseSpirit" | "glass" | "variantOf">,
   lang: string,
-): { label: string; verdict: LineageVerdict | null } | null {
+): { label: string; verdict: LineageVerdict | null; isClassic?: boolean } | null {
   const verdict = cachedAnalyze(recipe);
   const manual = (recipe.variantOf ?? "").trim();
   const nameNorm = `${recipe.name} ${recipe.nameEn ?? ""}`.toLowerCase();
   if (manual) {
-    // 配方本身即经典:人工字段与名称一致时不显示
-    if (nameNorm.includes(manual.toLowerCase())) return null;
+    // 配方本身即经典:人工字段与名称一致时标注经典原方
+    if (nameNorm.includes(manual.toLowerCase())) {
+      return { label: pickLangName(manual, lang), verdict, isClassic: true };
+    }
     return { label: pickLangName(manual, lang), verdict };
   }
   if (!verdict.classic) return null;
@@ -48,7 +50,9 @@ export function resolveVariantLabel(
     nameNorm.includes(verdict.classic.en.toLowerCase()) ||
     nameNorm.includes(verdict.classic.zh)
   ) {
-    return null;
+    const label =
+      lang === "en" ? verdict.classic.en : `${verdict.classic.zh} ${verdict.classic.en}`;
+    return { label, verdict, isClassic: true };
   }
   const label =
     lang === "en" ? verdict.classic.en : `${verdict.classic.zh} ${verdict.classic.en}`;
@@ -86,15 +90,17 @@ export function VariantBadge({ recipe, mode = "full" }: VariantBadgeProps) {
   if (!resolved) return null;
 
   if (mode === "compact") {
+    // Apple HIG:纯文字次要标注,无色块背景,与主名左对齐
     return (
-      <View
-        className="px-2 py-0.5 rounded-full self-start"
-        style={{ backgroundColor: colors.primary + "14" }}
+      <Text
+        className="text-xs"
+        numberOfLines={1}
+        style={{ color: colors.muted, lineHeight: 16 }}
       >
-        <Text className="text-[11px] font-medium" numberOfLines={1} style={{ color: colors.primary, lineHeight: 15 }}>
-          {t("variant.of", { name: resolved.label })}
-        </Text>
-      </View>
+        {resolved.isClassic
+          ? t("variant.classicSelf")
+          : t("variant.of", { name: resolved.label })}
+      </Text>
     );
   }
 
@@ -112,7 +118,9 @@ export function VariantBadge({ recipe, mode = "full" }: VariantBadgeProps) {
       >
         <IconSymbol name="book.fill" size={13} color={colors.primary} />
         <Text className="text-sm font-medium" style={{ color: colors.primary }}>
-          {t("variant.of", { name: resolved.label })}
+          {resolved.isClassic
+            ? t("variant.classicSelf")
+            : t("variant.of", { name: resolved.label })}
         </Text>
         <IconSymbol name="chevron.right" size={12} color={colors.muted} />
       </Pressable>

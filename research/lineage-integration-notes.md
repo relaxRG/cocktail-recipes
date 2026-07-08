@@ -96,3 +96,17 @@
 - 详情页 i18n:t("detail.variantOf", {name}) 已存在(translations.ts:270)
 - store 迁移模式:normalizeRecipe→estimateRecipeAbv→classifyRecipe→migrated 标记(store.tsx:136-154)
 - 详情页结构公式区块已用 analyzeStructure/structuralFormula(detail.structure @ translations.ts:322)
+
+---
+
+## 卡片 Apple 风格整理(2026-07-08 用户新指令)
+需求:1) Variant of 去色块改纯文字与主名左对齐;经典本体标注「经典原方 Classic」;
+2) 标签顺序整理避免截断;3) 卡片尺寸统一;4) 参照 Apple HIG 排版对齐。
+已实现:
+- variant-badge.tsx:compact 改纯文字(text-xs muted 无背景框);resolveVariantLabel 支持经典本体判定(isClassic);
+  i18n 新增 variant.classicSelf(经典原方 Classic / Classic Original)。
+- recipe-card.tsx:名称行 height 24 + baseline 对齐 + lineHeight 22;Variant 行 mt-0.5 独立一行;
+  标签顺序=分类→Codex家族→基酒→烈度→评分→成本。
+- recipe-group-card.tsx:组头同步名称行高/基线与标签顺序(版本数→分类→家族→基酒→烈度→对比)。
+- 移动端 375x812 截图验收通过。
+待办:全量测试;todo.md 勾选;checkpoint;交付。

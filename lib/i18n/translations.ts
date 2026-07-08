@@ -186,6 +186,7 @@ const dict = {
   "detail.notFound": { zh: "配方不存在或已被删除", en: "Recipe not found or deleted" },
   "detail.lineage": { zh: "变体说明", en: "Variant Analysis" },
   "variant.of": { zh: "Variant of {name}", en: "Variant of {name}" },
+  "variant.classicSelf": { zh: "经典原方 Classic", en: "Classic Original" },
   "variant.sheet.title": { zh: "变体说明 · {name}", en: "Variant of {name}" },
   "codex.sheet.title": { zh: "母配方 · {name}", en: "Root Recipe · {name}" },
   "codex.sheet.hint": {
