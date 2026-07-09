@@ -1,7 +1,8 @@
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -9,9 +10,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
-
+import * as ImagePicker from "expo-image-picker";
 import { ScreenContainer } from "@/components/screen-container";
 import { SmartImportBar } from "@/components/smart-import-bar";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -19,6 +21,8 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { BottleDraft, useBottleStore } from "@/lib/bottles/store";
 import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
+import { trpc } from "@/lib/trpc";
+import type { EnrichedProduct } from "@/server/routers";
 
 export default function BottleFormScreen() {
   const colors = useColors();
@@ -55,6 +59,89 @@ export default function BottleFormScreen() {
   const [notes, setNotes] = useState(editing?.notes ?? "");
 
   const canSave = nameZh.trim().length > 0 || nameEn.trim().length > 0;
+
+  // ── 联网识别补全 ──────────────────────────────────────────────────────────
+  const enrichMutation = trpc.lookup.enrich.useMutation();
+  const [lookupBusy, setLookupBusy] = useState<"text" | "photo" | null>(null);
+  const [lookupStatus, setLookupStatus] = useState<{ kind: "ok" | "err"; msg: string } | null>(null);
+
+  const applyEnriched = useCallback(
+    (item: EnrichedProduct) => {
+      if (!nameZh.trim() && item.nameZh) setNameZh(item.nameZh);
+      if (!nameEn.trim() && item.nameEn) setNameEn(item.nameEn);
+      if (item.category && taxCategories.some((c) => c.zh === item.category))
+        setCategory(item.category);
+      if (!style.trim() && item.style) setStyle(item.style);
+      if (!brand.trim() && item.brand) setBrand(item.brand);
+      if (!origin.trim() && item.origin) setOrigin(item.origin);
+      if (!volume.trim() && item.volume) setVolume(item.volume);
+      if (!(parseFloat(abv) > 0) && item.abv > 0) setAbv(String(item.abv));
+      if (!(parseFloat(price) > 0) && item.priceCny > 0) setPrice(String(item.priceCny));
+      if (!notes.trim() && item.notes) setNotes(item.notes);
+      if (Platform.OS !== "web")
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setLookupStatus({ kind: "ok", msg: t("lookup.filled") });
+    },
+    [nameZh, nameEn, style, brand, origin, volume, abv, price, notes, taxCategories, t],
+  );
+
+  const handleLookup = useCallback(async () => {
+    const query = [nameZh.trim(), nameEn.trim(), brand.trim()].filter(Boolean).join(" ");
+    if (!query) {
+      setLookupStatus({ kind: "err", msg: t("lookup.needName") });
+      return;
+    }
+    setLookupStatus(null);
+    setLookupBusy("text");
+    try {
+      const res = await enrichMutation.mutateAsync({ names: [query] });
+      const item = res.items.find((i) => i.found);
+      if (!item) {
+        setLookupStatus({ kind: "err", msg: t("lookup.notFound") });
+        return;
+      }
+      applyEnriched(item);
+    } catch {
+      setLookupStatus({ kind: "err", msg: t("smartImport.fail.msg") });
+    } finally {
+      setLookupBusy(null);
+    }
+  }, [nameZh, nameEn, brand, enrichMutation, applyEnriched, t]);
+
+  const handleLookupPhoto = useCallback(async () => {
+    setLookupStatus(null);
+    try {
+      const camPerm = await ImagePicker.requestCameraPermissionsAsync();
+      if (!camPerm.granted) {
+        setLookupStatus({ kind: "err", msg: t("smartImport.fail.msg") });
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ["images"],
+        quality: 0.7,
+        base64: true,
+        allowsEditing: false,
+      });
+      if (result.canceled || !result.assets[0]?.base64) return;
+      setLookupBusy("photo");
+      const asset = result.assets[0];
+      const res = await enrichMutation.mutateAsync({
+        names: [nameZh.trim(), nameEn.trim()].filter(Boolean),
+        imageBase64: asset.base64!,
+        imageMime: asset.mimeType ?? "image/jpeg",
+      });
+      const item = res.items.find((i) => i.found);
+      if (!item) {
+        setLookupStatus({ kind: "err", msg: t("lookup.notFound") });
+        return;
+      }
+      applyEnriched(item);
+    } catch {
+      setLookupStatus({ kind: "err", msg: t("smartImport.fail.msg") });
+    } finally {
+      setLookupBusy(null);
+    }
+  }, [nameZh, nameEn, enrichMutation, applyEnriched, t]);
 
   const handleSave = () => {
     if (!canSave) return;
@@ -134,6 +221,7 @@ export default function BottleFormScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
           keyboardShouldPersistTaps="handled"
         >
+          {/* 智能批量导入(新建时显示) */}
           {!editing && (
             <SmartImportBar
               targetType="bottle"
@@ -153,6 +241,59 @@ export default function BottleFormScreen() {
               }}
             />
           )}
+
+          {/* 联网识别补全工具栏(新建 & 编辑均可用) */}
+          <View style={styles.lookupRow}>
+            <TouchableOpacity
+              onPress={handleLookup}
+              disabled={!!lookupBusy}
+              style={[
+                styles.lookupBtn,
+                { backgroundColor: colors.primary + "14", borderColor: colors.primary + "30" },
+                !!lookupBusy && { opacity: 0.5 },
+              ]}
+            >
+              {lookupBusy === "text" ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <IconSymbol name="globe" size={14} color={colors.primary} />
+              )}
+              <Text style={[styles.lookupBtnText, { color: colors.primary }]}>
+                {t("lookup.btn")}
+              </Text>
+            </TouchableOpacity>
+            {Platform.OS !== "web" && (
+              <TouchableOpacity
+                onPress={handleLookupPhoto}
+                disabled={!!lookupBusy}
+                style={[
+                  styles.lookupBtn,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  !!lookupBusy && { opacity: 0.5 },
+                ]}
+              >
+                {lookupBusy === "photo" ? (
+                  <ActivityIndicator size="small" color={colors.muted} />
+                ) : (
+                  <IconSymbol name="camera.fill" size={14} color={colors.muted} />
+                )}
+                <Text style={[styles.lookupBtnText, { color: colors.muted }]}>
+                  {t("lookup.photo")}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          {lookupStatus && (
+            <Text
+              style={[
+                styles.lookupStatus,
+                { color: lookupStatus.kind === "ok" ? colors.success : colors.error },
+              ]}
+            >
+              {lookupStatus.msg}
+            </Text>
+          )}
+
           {field(t("bform.nameZh"), nameZh, setNameZh, lang === "en" ? "e.g. 君度橙酒" : "例如:君度橙酒")}
           {field(t("bform.nameEn"), nameEn, setNameEn, "e.g. Cointreau")}
 
@@ -173,10 +314,7 @@ export default function BottleFormScreen() {
                   ]}
                 >
                   <Text
-                    style={[
-                      styles.chipText,
-                      { color: active ? "#FFFFFF" : colors.foreground },
-                    ]}
+                    style={[styles.chipText, { color: active ? "#FFFFFF" : colors.foreground }]}
                   >
                     {categoryLabel(cat, lang)}
                   </Text>
@@ -207,10 +345,7 @@ export default function BottleFormScreen() {
                       ]}
                     >
                       <Text
-                        style={[
-                          styles.chipText,
-                          { color: active ? "#FFFFFF" : colors.foreground },
-                        ]}
+                        style={[styles.chipText, { color: active ? "#FFFFFF" : colors.foreground }]}
                       >
                         {lang === "zh" && d.zh ? d.zh : s}
                       </Text>
@@ -249,6 +384,29 @@ export default function BottleFormScreen() {
 }
 
 const styles = StyleSheet.create({
+  lookupRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 10,
+  },
+  lookupBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  lookupBtnText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  lookupStatus: {
+    fontSize: 12,
+    marginBottom: 10,
+    marginTop: -4,
+  },
   chip: {
     paddingHorizontal: 14,
     height: 34,

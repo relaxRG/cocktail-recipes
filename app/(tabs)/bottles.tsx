@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import {
   Alert,
   FlatList,
+  ActivityIndicator,
   Platform,
   Pressable,
   ScrollView,
@@ -38,6 +39,7 @@ import {
   BOTTLE_GROUPS,
   Bottle,
 } from "@/lib/bottles/types";
+import { trpc } from "@/lib/trpc";
 
 export default function BottlesScreen() {
   const colors = useColors();
@@ -53,6 +55,50 @@ export default function BottlesScreen() {
   } = useBottleTaxonomy();
   const [query, setQuery] = useState("");
   const [group, setGroup] = useState<"spirits" | "bottles" | "materials">("spirits");
+  // 联网批量补全
+  const enrichMutation = trpc.lookup.enrich.useMutation();
+  const [enrichBusy, setEnrichBusy] = useState(false);
+
+  const handleBulkEnrich = useCallback(async () => {
+    const incomplete = bottles.filter(
+      (b) => groupOf(b.category) === group && (b.abv === 0 || b.priceCny === 0 || !b.origin),
+    ).slice(0, 8);
+    if (incomplete.length === 0) {
+      Alert.alert(
+        lang === "zh" ? "无需补全" : "All good",
+        t("lookup.batch.none"),
+      );
+      return;
+    }
+    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setEnrichBusy(true);
+    try {
+      const names = incomplete.map((b) => [b.nameEn, b.nameZh].filter(Boolean).join(" "));
+      const res = await enrichMutation.mutateAsync({ names });
+      let filled = 0;
+      for (let i = 0; i < incomplete.length; i++) {
+        const item = res.items[i];
+        if (!item?.found) continue;
+        const b = incomplete[i];
+        const patch: Record<string, unknown> = {};
+        if (b.abv === 0 && item.abv > 0) patch.abv = item.abv;
+        if (b.priceCny === 0 && item.priceCny > 0) patch.priceCny = item.priceCny;
+        if (!b.origin && item.origin) patch.origin = item.origin;
+        if (!b.brand && item.brand) patch.brand = item.brand;
+        if (!b.style && item.style) patch.style = item.style;
+        if (Object.keys(patch).length > 0) {
+          bulkUpdateBottles([b.id], patch as Parameters<typeof bulkUpdateBottles>[1]);
+          filled++;
+        }
+      }
+      if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert(lang === "zh" ? "补全完成" : "Done", t("lookup.batch.done", { n: filled }));
+    } catch {
+      Alert.alert(lang === "zh" ? "补全失败" : "Failed", t("smartImport.fail.msg"));
+    } finally {
+      setEnrichBusy(false);
+    }
+  }, [bottles, group, groupOf, enrichMutation, bulkUpdateBottles, lang, t]);
   // 多选模式:批量删除/批量改分类/风格
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -389,6 +435,33 @@ export default function BottlesScreen() {
                   : t("bottles.subtitle", { n: groupBottles.length })}
             </Text>
           </View>
+          <View className="flex-row items-center" style={{ gap: 8 }}>
+          {groupBottles.length > 0 && !selectMode && (
+            <Pressable
+              onPress={handleBulkEnrich}
+              disabled={enrichBusy}
+              style={({ pressed }) => [
+                styles.selectBtn,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 4,
+                },
+                (pressed || enrichBusy) && { opacity: 0.6 },
+              ]}
+            >
+              {enrichBusy ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <IconSymbol name="wand.and.stars" size={14} color={colors.primary} />
+              )}
+              <Text style={[styles.selectBtnText, { color: colors.primary }]}>
+                {lang === "zh" ? "补全" : "Fill"}
+              </Text>
+            </Pressable>
+          )}
           {groupBottles.length > 0 ? (
             <Pressable
               onPress={() => {
@@ -412,6 +485,7 @@ export default function BottlesScreen() {
               </Text>
             </Pressable>
           ) : null}
+          </View>
         </View>
       </View>
 

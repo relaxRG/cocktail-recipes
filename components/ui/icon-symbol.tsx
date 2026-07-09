@@ -59,6 +59,9 @@ const MAPPING = {
   "globe": "language",
   "icloud.fill": "cloud",
   "info.circle.fill": "info",
+  "doc.badge.plus": "note-add",
+  "arrow.up.doc.fill": "upload-file",
+  "wand.and.stars": "auto-fix-high",
 } as IconMapping;
 
 /**

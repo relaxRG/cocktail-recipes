@@ -131,26 +131,47 @@ export default function MeScreen() {
             <Pressable
               onPress={() => {
                 tap();
-                router.push("/bulk-import");
-              }}
-              style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
-            >
-              <View style={[styles.iconWrap, { backgroundColor: "#34C759" }]}>
-                <IconSymbol name="square.and.arrow.down.fill" size={18} color="#FFFFFF" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-semibold text-foreground">{t("me.import")}</Text>
-                <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                  {t("me.import.desc")}
-                </Text>
-              </View>
-              <IconSymbol name="chevron.right" size={18} color={colors.muted} />
-            </Pressable>
-            <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: 62 }} />
-            <Pressable
-              onPress={() => {
-                tap();
-                router.push("/ice-settings");
+              router.push("/bulk-import");
+            }}
+            style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+          >
+            <View style={[styles.iconWrap, { backgroundColor: "#34C759" }]}>
+              <IconSymbol name="square.and.arrow.down.fill" size={18} color="#FFFFFF" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-foreground">{t("me.import")}</Text>
+              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                {t("me.import.desc")}
+              </Text>
+            </View>
+            <IconSymbol name="chevron.right" size={18} color={colors.muted} />
+          </Pressable>
+          <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: 62 }} />
+          <Pressable
+            onPress={() => {
+              tap();
+              router.push("/book-import");
+            }}
+            style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+          >
+            <View style={[styles.iconWrap, { backgroundColor: "#FF9500" }]}>
+              <IconSymbol name="doc.badge.plus" size={18} color="#FFFFFF" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-foreground">
+                {lang === "zh" ? "书籍导入" : "Import from Book"}
+              </Text>
+              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                {lang === "zh" ? "从 EPUB/PDF 书籍提取并导入配方" : "Extract recipes from EPUB/PDF books"}
+              </Text>
+            </View>
+            <IconSymbol name="chevron.right" size={18} color={colors.muted} />
+          </Pressable>
+          <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: 62 }} />
+          <Pressable
+            onPress={() => {
+              tap();
+              router.push("/ice-settings");
               }}
               style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
             >
