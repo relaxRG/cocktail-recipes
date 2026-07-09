@@ -196,6 +196,12 @@ export interface Bottle {
   priceCny: number;
   /** 备注 */
   notes: string;
+  /** 风味标签(多选,用于鸡尾酒风味分析) */
+  flavorTags: string[];
+  /** 产品故事/介绍(文字描述) */
+  story: string;
+  /** 风格说明(详细描述,区别于 style 子分类标签) */
+  styleDesc: string;
   /** 是否内置数据(内置数据也可编辑/删除) */
   builtin: boolean;
   /** 评分:1-10 整数,null 表示未评分(无半星) */
@@ -223,6 +229,9 @@ export function normalizeBottle(b: Partial<Bottle> & Pick<Bottle, "id" | "nameZh
     abv: 0,
     priceCny: 0,
     notes: "",
+    flavorTags: [],
+    story: "",
+    styleDesc: "",
     builtin: false,
     createdAt: Date.now(),
     updatedAt: Date.now(),

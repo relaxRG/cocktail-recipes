@@ -289,6 +289,9 @@ export default function BulkImportScreen() {
           abv: item.abv,
           priceCny: item.priceCny,
           notes: item.notes,
+          flavorTags: [],
+          story: "",
+          styleDesc: "",
         });
         count++;
       } else if (item.type === "prep") {

@@ -162,9 +162,26 @@ const translatedItemSchema = z.object({
 export type TranslatedRecipeItem = z.infer<typeof translatedItemSchema>;
 
 // ─── 联网补全 ──────────────────────────────────────────────────────────────────
-const ENRICH_SYSTEM_PROMPT = `你是一个鸡尾酒/酒类知识专家。用户会给出一个或多个酒、原料或产品的名称(可能含品牌、也可能附照片)。请根据你已有的行业知识,尽力还原每件产品的真实资料,补全为结构化条目。
-请输出 JSON:{"items":[{"query":"原样返回用户给出的名称","found":true,"nameZh":"中文名","nameEn":"英文名","category":"金酒/朗姆/伏特加/威士忌/龙舌兰/白兰地/利口酒/苦精/味美思/开胃酒/起泡酒/葡萄酒/清酒烧酒/中式白酒/糖浆/软饮/糖与甜味剂/果蔬/香料与草本/花卉/茶咖与可可/坚果与谷物/乳蛋/酸类与添加剂/其他","style":"","brand":"","origin":"","volume":"700ml","abv":40,"priceCny":170,"notes":"一句话简介(中文,50字内)","confidence":"high"}]}
-规则:完全无法识别的名称输出{"query":"原名","found":false};abv/priceCny未知填0;category必须严格落在枚举中;不要编造品牌;confidence:知名大牌high,通用品类medium,勉强猜测low`;
+const ENRICH_SYSTEM_PROMPT = `你是一个鸡尾酒/酒类知识专家。用户会给出一个或多个酒、原料或产品的名称(可能含品牌、也可能附照片),它们在用户的私人库中暂无资料。请根据你已有的行业知识,尽力还原每件产品的真实资料,补全为结构化条目。
+
+请输出 JSON:
+{"items":[{
+  "query":"原样返回用户给出的名称(附照片且无名称时填识别出的名称)",
+  "found": true,
+  "nameZh":"中文名(通用译名,如 君度橙酒)","nameEn":"英文名(如 Cointreau)",
+  "category":"必须从以下枚举精确选一:金酒/朗姆/伏特加/威士忌/龙舌兰/白兰地/利口酒/苦精/味美思/开胃酒/起泡酒/葡萄酒/清酒烧酒/中式白酒/糖浆/软饮/糖与甜味剂/果蔬/香料与草本/花卉/茶咖与可可/坚果与谷物/乳蛋/酸类与添加剂/其他",
+  "style":"风格子分类(如 London Dry / Bourbon / Orange Liqueur),不确定填 \\"\\"",
+  "brand":"品牌(如 Cointreau)","origin":"产地国家/地区","volume":"常见规格如 700ml","abv":40,"priceCny":170,
+  "notes":"一句话简介:风味特征、常见用途、代表配方等(中文,50 字内)",
+  "confidence":"high"|"medium"|"low"
+}]}
+规则:
+- 每个名称对应一个条目,不得增删;完全无法识别的名称输出 {"query":"原名","found":false}
+- 数值字段 abv/priceCny 输出数字:abv 未知填 0;priceCny 给出中国市场常见零售价的合理估计(元),完全无从估计填 0
+- 未知字符串字段填 ""
+- category 必须严格落在上述枚举中,选最贴切的一个;是自制/新鲜原料时也归入最接近的分类
+- 不要编造不存在的品牌;不确定品牌就留空但仍可给出通用品类资料
+- confidence:资料把握程度(知名大牌 high,通用品类 medium,勉强猜测 low)`;
 
 const enrichSchema = z.object({
   query: z.string().catch(""),
@@ -417,6 +434,66 @@ export const appRouter = router({
           if (r.success) items.push(r.data);
         }
         return { items };
+      }),
+    /** 配方 AI 补全:根据配方名称/配料/基酒补全风味标签、故事、风味描述、来源 */
+    enrichRecipe: publicProcedure
+      .input(
+        z.object({
+          name: z.string().max(200).optional(),
+          nameEn: z.string().max(200).optional(),
+          baseSpirit: z.string().max(100).optional(),
+          ingredients: z.array(z.string().max(200)).max(30).optional(),
+          story: z.string().max(1000).optional(),
+          flavorDesc: z.string().max(500).optional(),
+          source: z.string().max(500).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const name = [input.name, input.nameEn].filter(Boolean).join(" / ");
+        const prompt = `你是专业的鸡尾酒知识专家。根据以下配方信息补全风味与介绍。\n配方名称: ${name}\n${input.baseSpirit ? `基酒: ${input.baseSpirit}` : ""}\n${(input.ingredients ?? []).length > 0 ? `配料: ${(input.ingredients ?? []).join(", ")}` : ""}\n请输出 JSON:\n{\n  "flavors": ["草本","果味","柑橘","花香","甜润","酸爽","苦韵","辛香","烟熏","咸鲜","清爽","浓郁","坚果","奶油","干爽","热带","气泡","焦糖","咖啡","巧克力"] 中最合适的2-4个,\n  "story": "这款鸡尾酒的历史来历与创作故事(中文,100字内),不清楚则返回空字符串",\n  "flavorDesc": "风味描述:口感特点与风味层次(中文,50字内),不清楚则返回空字符串",\n  "source": "引用来源:如 IBA Official Cocktail 等,不确定则返回空字符串",\n  "confidence": "high"|"medium"|"low"\n}`;
+        const response = await invokeLLM({
+          messages: [{ role: "user", content: prompt }],
+          response_format: { type: "json_object" },
+        });
+        const raw = response.choices[0]?.message?.content;
+        const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
+        const p = parsed as Record<string, unknown>;
+        return {
+          flavors: Array.isArray(p.flavors) ? (p.flavors as string[]).slice(0, 6) : [],
+          story: typeof p.story === "string" ? p.story.trim() : "",
+          flavorDesc: typeof p.flavorDesc === "string" ? p.flavorDesc.trim() : "",
+          source: typeof p.source === "string" ? p.source.trim() : "",
+          confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
+        };
+      }),
+    /** 酒款风味/故事/风格联网补全 */
+    enrichBottle: publicProcedure
+      .input(
+        z.object({
+          nameZh: z.string().max(200).optional(),
+          nameEn: z.string().max(200).optional(),
+          category: z.string().max(100).optional(),
+          style: z.string().max(100).optional(),
+          brand: z.string().max(200).optional(),
+          origin: z.string().max(200).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const name = [input.nameEn, input.nameZh].filter(Boolean).join(" / ");
+        const prompt = `你是专业的烈酒/饮料知识专家。根据以下产品信息补全风味与介绍。\n产品名称: ${name}\n${input.category ? `分类: ${input.category}` : ""}\n${input.style ? `风格: ${input.style}` : ""}\n${input.brand ? `品牌: ${input.brand}` : ""}\n${input.origin ? `产地: ${input.origin}` : ""}\n请输出 JSON:\n{\n  "flavorTags": ["草本","果味","柑橘","花香","甜润","酸爽","苦韵","辛香","烟熏","咸鲜","清爽","浓郁","坚果","奶油","干爽","热带","焦糖","咖啡","巧克力","泥煤","蜂蜜","香草","辛辣"] 中最合适的2-4个,\n  "story": "产品故事/介绍(中文,80字内,不确定则返回空字符串)",\n  "styleDesc": "风格特点描述(中文,50字内,不确定则返回空字符串)",\n  "confidence": "high"|"medium"|"low"\n}`;
+        const response = await invokeLLM({
+          messages: [{ role: "user", content: prompt }],
+          response_format: { type: "json_object" },
+        });
+        const raw = response.choices[0]?.message?.content;
+        const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
+        const p = parsed as Record<string, unknown>;
+        return {
+          flavorTags: Array.isArray(p.flavorTags) ? (p.flavorTags as string[]).slice(0, 6) : [],
+          story: typeof p.story === "string" ? p.story.trim() : "",
+          styleDesc: typeof p.styleDesc === "string" ? p.styleDesc.trim() : "",
+          confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
+        };
       }),
   }),
 

@@ -59,11 +59,21 @@ export default function BottleFormScreen() {
   const [notes, setNotes] = useState(editing?.notes ?? "");
 
   const canSave = nameZh.trim().length > 0 || nameEn.trim().length > 0;
+  const [flavorTags, setFlavorTags] = useState<string[]>(editing?.flavorTags ?? []);
+  const [story, setStory] = useState(editing?.story ?? "");
+  const [styleDesc, setStyleDesc] = useState(editing?.styleDesc ?? "");
 
   // ── 联网识别补全 ──────────────────────────────────────────────────────────
   const enrichMutation = trpc.lookup.enrich.useMutation();
-  const [lookupBusy, setLookupBusy] = useState<"text" | "photo" | null>(null);
+  const enrichBottleMutation = trpc.lookup.enrichBottle.useMutation();
+  const [lookupBusy, setLookupBusy] = useState<"text" | "photo" | "flavor" | null>(null);
   const [lookupStatus, setLookupStatus] = useState<{ kind: "ok" | "err"; msg: string } | null>(null);
+  const [pendingFlavor, setPendingFlavor] = useState<{
+    flavorTags: string[];
+    story: string;
+    styleDesc: string;
+    confidence: "high" | "medium" | "low";
+  } | null>(null);
 
   const applyEnriched = useCallback(
     (item: EnrichedProduct) => {
@@ -156,6 +166,9 @@ export default function BottleFormScreen() {
       abv: Math.max(0, Math.min(100, parseFloat(abv) || 0)),
       priceCny: Math.max(0, parseFloat(price) || 0),
       notes: notes.trim(),
+      flavorTags,
+      story: story.trim(),
+      styleDesc: styleDesc.trim(),
     };
     if (editing) {
       updateBottle(editing.id, draft);
@@ -363,6 +376,188 @@ export default function BottleFormScreen() {
           {field(t("bform.abv"), abv, setAbv, lang === "en" ? "e.g. 40" : "例如:40", { keyboardType: "numeric" })}
           {field(t("bform.price"), price, setPrice, lang === "en" ? "e.g. 170" : "例如:170", { keyboardType: "numeric" })}
           {field(t("bform.notes"), notes, setNotes, lang === "en" ? "Taste, usage, where to buy…" : "口感、用途、购买渠道等", { multiline: true })}
+          {/* Flavor & Story enrichment */}
+          <View className="flex-row items-center justify-between mb-1.5" style={{ marginTop: 4 }}>
+            <Text className="text-sm font-medium text-foreground">
+              {lang === "zh" ? "风味 / 故事" : "Flavor / Story"}
+            </Text>
+            <Pressable
+              onPress={async () => {
+                const n = nameEn.trim() || nameZh.trim();
+                if (!n || lookupBusy) return;
+                setLookupBusy("flavor");
+                setPendingFlavor(null);
+                try {
+                  const result = await enrichBottleMutation.mutateAsync({
+                    nameZh: nameZh.trim() || undefined,
+                    nameEn: nameEn.trim() || undefined,
+                    category: category || undefined,
+                    style: style.trim() || undefined,
+                    brand: brand.trim() || undefined,
+                    origin: origin.trim() || undefined,
+                  });
+                  setPendingFlavor(result);
+                } catch {
+                  // silent fail
+                } finally {
+                  setLookupBusy(null);
+                }
+              }}
+              disabled={lookupBusy !== null || (!nameEn.trim() && !nameZh.trim())}
+              hitSlop={8}
+              style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+            >
+              <View className="flex-row items-center" style={{ gap: 4 }}>
+                {lookupBusy === "flavor" ? (
+                  <Text className="text-xs" style={{ color: colors.primary }}>
+                    {lang === "zh" ? "AI 补全中…" : "AI filling…"}
+                  </Text>
+                ) : (
+                  <>
+                    <IconSymbol name="sparkles" size={13} color={colors.primary} />
+                    <Text className="text-xs" style={{ color: colors.primary }}>
+                      {lang === "zh" ? "AI 补全" : "AI Fill"}
+                    </Text>
+                  </>
+                )}
+              </View>
+            </Pressable>
+          </View>
+          {pendingFlavor && (
+            <View
+              className="rounded-xl border px-3 py-3 mb-3"
+              style={{ borderColor: colors.primary + "44", backgroundColor: colors.primary + "0A", gap: 6 }}
+            >
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center" style={{ gap: 6 }}>
+                  <IconSymbol name="sparkles" size={13} color={colors.primary} />
+                  <Text className="text-xs font-medium" style={{ color: colors.primary }}>
+                    {lang === "zh" ? "AI 建议" : "AI Suggestion"}
+                  </Text>
+                  <View
+                    className="px-1.5 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor:
+                        pendingFlavor.confidence === "high"
+                          ? colors.success + "22"
+                          : pendingFlavor.confidence === "medium"
+                            ? "#FF950022"
+                            : colors.border,
+                    }}
+                  >
+                    <Text
+                      className="text-[10px] font-medium"
+                      style={{
+                        color:
+                          pendingFlavor.confidence === "high"
+                            ? colors.success
+                            : pendingFlavor.confidence === "medium"
+                              ? "#FF9500"
+                              : colors.muted,
+                      }}
+                    >
+                      {pendingFlavor.confidence === "high"
+                        ? (lang === "zh" ? "高可信" : "High")
+                        : pendingFlavor.confidence === "medium"
+                          ? (lang === "zh" ? "中可信" : "Medium")
+                          : (lang === "zh" ? "低可信" : "Low")}
+                    </Text>
+                  </View>
+                </View>
+                <Pressable onPress={() => setPendingFlavor(null)} hitSlop={8}>
+                  <IconSymbol name="xmark" size={14} color={colors.muted} />
+                </Pressable>
+              </View>
+              {pendingFlavor.flavorTags.length > 0 && (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "风味标签: " : "Flavors: "}{pendingFlavor.flavorTags.join(" · ")}
+                </Text>
+              )}
+              {pendingFlavor.story ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "故事: " : "Story: "}{pendingFlavor.story}
+                </Text>
+              ) : null}
+              {pendingFlavor.styleDesc ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "风格: " : "Style: "}{pendingFlavor.styleDesc}
+                </Text>
+              ) : null}
+              <View className="flex-row mt-2" style={{ gap: 8 }}>
+                <Pressable
+                  onPress={() => {
+                    if (pendingFlavor.flavorTags.length > 0 && flavorTags.length === 0) {
+                      setFlavorTags(pendingFlavor.flavorTags);
+                    }
+                    if (pendingFlavor.story && !story.trim()) setStory(pendingFlavor.story);
+                    if (pendingFlavor.styleDesc && !styleDesc.trim()) setStyleDesc(pendingFlavor.styleDesc);
+                    setPendingFlavor(null);
+                  }}
+                  style={({ pressed }) => [
+                    {
+                      flex: 1,
+                      paddingVertical: 7,
+                      borderRadius: 8,
+                      alignItems: "center" as const,
+                      backgroundColor: colors.primary,
+                      opacity: pressed ? 0.8 : 1,
+                    },
+                  ]}
+                >
+                  <Text className="text-xs font-semibold" style={{ color: "#FFFFFF" }}>
+                    {lang === "zh" ? "应用到空白字段" : "Apply to empty fields"}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setPendingFlavor(null)}
+                  style={({ pressed }) => [
+                    {
+                      paddingVertical: 7,
+                      paddingHorizontal: 14,
+                      borderRadius: 8,
+                      alignItems: "center" as const,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                      opacity: pressed ? 0.6 : 1,
+                    },
+                  ]}
+                >
+                  <Text className="text-xs" style={{ color: colors.muted }}>
+                    {lang === "zh" ? "忽略" : "Dismiss"}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+          {flavorTags.length > 0 && (
+            <View className="flex-row flex-wrap mb-3" style={{ gap: 6 }}>
+              {flavorTags.map((tag) => (
+                <Pressable
+                  key={tag}
+                  onPress={() => setFlavorTags((prev) => prev.filter((t) => t !== tag))}
+                  style={[
+                    styles.chip,
+                    { backgroundColor: colors.primary + "18", borderColor: colors.primary + "44" },
+                  ]}
+                >
+                  <Text style={[styles.chipText, { color: colors.primary }]}>{tag}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+          {field(
+            lang === "zh" ? "故事/介绍" : "Story",
+            story,
+            setStory,
+            lang === "en" ? "Brief product story or description…" : "产品故事或简介…",
+            { multiline: true },
+          )}
+          {field(
+            lang === "zh" ? "风格描述" : "Style Description",
+            styleDesc,
+            setStyleDesc,
+            lang === "en" ? "Style characteristics…" : "风格特点描述…",
+          )}
         </ScrollView>
 
         <View className="px-5 pb-2 pt-2">

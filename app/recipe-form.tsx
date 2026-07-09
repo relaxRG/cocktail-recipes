@@ -28,6 +28,7 @@ import { useBottleStore } from "@/lib/bottles/store";
 import { displayNames } from "@/lib/utils";
 import { suggestIngredients } from "@/lib/suggest";
 import { RecipeDraft, useRecipeStore } from "@/lib/recipes/store";
+import { trpc } from "@/lib/trpc";
 import { parseRecipeText } from "@/lib/recipes/parser";
 import { estimateRecipeAbv } from "@/lib/recipes/abv";
 import {
@@ -37,6 +38,9 @@ import {
   ICE_TYPES,
   STRENGTH_LABELS,
   STRENGTH_BAND_LABELS,
+  CARD_TAG_SLOTS,
+  CARD_TAG_SLOT_LABELS,
+  CardTagSlot,
   codexFamilyLabel,
   genId,
   localizedTagName,
@@ -91,6 +95,7 @@ export default function RecipeFormScreen() {
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
   const { getRecipe, addRecipe, updateRecipe, categories, tagsOf, tagGroupsOf } = useRecipeStore();
+  const enrichRecipeMutation = trpc.lookup.enrichRecipe.useMutation();
   const { preps } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const editing = getRecipe(id);
@@ -125,6 +130,17 @@ export default function RecipeFormScreen() {
   const [garnish, setGarnish] = useState(editing?.garnish ?? "");
   const [notes, setNotes] = useState(editing?.notes ?? "");
   const [importHint, setImportHint] = useState("");
+  const [cardTagOrder, setCardTagOrder] = useState<CardTagSlot[]>(
+    editing?.cardTagOrder ?? [...CARD_TAG_SLOTS],
+  );
+  const [aiEnriching, setAiEnriching] = useState(false);
+  const [aiResult, setAiResult] = useState<{
+    story?: string;
+    flavorDesc?: string;
+    source?: string;
+    flavors?: string[];
+    confidence?: "high" | "medium" | "low";
+  } | null>(null);
   /** Which ingredient row is focused (shows live suggestions) */
   const [focusedIng, setFocusedIng] = useState<string | null>(null);
   /** Rows where user picked/dismissed suggestions — suppress until text changes */
@@ -132,6 +148,43 @@ export default function RecipeFormScreen() {
 
   const canSave = name.trim().length > 0 || nameEn.trim().length > 0;
 
+  const handleAiEnrich = () => {
+    const recipeName = name.trim() || nameEn.trim();
+    if (!recipeName || aiEnriching) return;
+    setAiEnriching(true);
+    setAiResult(null);
+    const ingNames = ingredients.map((i) => i.name).filter(Boolean);
+    enrichRecipeMutation.mutate(
+      {
+        name: recipeName,
+        nameEn: nameEn.trim() || undefined,
+        baseSpirit: baseSpirit || undefined,
+        ingredients: ingNames.length > 0 ? ingNames : undefined,
+        source: source.trim() || undefined,
+        story: story.trim() || undefined,
+        flavorDesc: flavorDesc.trim() || undefined,
+      },
+      {
+        onSuccess: (result) => {
+          setAiResult(result);
+          setAiEnriching(false);
+        },
+        onError: () => {
+          setAiEnriching(false);
+        },
+      },
+    );
+  };
+  const applyAiResult = () => {
+    if (!aiResult) return;
+    if (aiResult.story && !story.trim()) setStory(aiResult.story);
+    if (aiResult.flavorDesc && !flavorDesc.trim()) setFlavorDesc(aiResult.flavorDesc);
+    if (aiResult.source && !source.trim()) setSource(aiResult.source);
+    if (aiResult.flavors && aiResult.flavors.length > 0 && flavors.length === 0) {
+      setFlavors(aiResult.flavors);
+    }
+    setAiResult(null);
+  };
   /** 根据配料与方法自动计算成品 ABV,并推导烈度大类与档位 */
   const abvEstimate = useMemo(
     () => estimateRecipeAbv(ingredients, method, bottles, preps),
@@ -269,11 +322,30 @@ export default function RecipeFormScreen() {
       steps: steps.trim(),
       garnish: garnish.trim(),
       notes: notes.trim(),
+      cardTagOrder: JSON.stringify(cardTagOrder) === JSON.stringify([...CARD_TAG_SLOTS]) ? null : cardTagOrder,
     };
     if (editing) {
       updateRecipe(editing.id, draft);
     } else {
-      addRecipe(draft);
+      const newRecipe = addRecipe(draft);
+      if (flavors.length === 0) {
+        const ingNames = draft.ingredients.map((i) => i.name).filter(Boolean);
+        enrichRecipeMutation.mutate(
+          {
+            name: draft.name,
+            nameEn: draft.nameEn || undefined,
+            baseSpirit: draft.baseSpirit || undefined,
+            ingredients: ingNames.length > 0 ? ingNames : undefined,
+          },
+          {
+            onSuccess: (result) => {
+              if (result.flavors.length > 0) {
+                updateRecipe(newRecipe.id, { ...draft, flavors: result.flavors });
+              }
+            },
+          },
+        );
+      }
     }
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -903,8 +975,115 @@ export default function RecipeFormScreen() {
             style={{ minHeight: 80, textAlignVertical: "top", lineHeight: 22 }}
           />
 
-          {/* Story */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.story")}</Text>
+         {/* Story */}
+          <View className="flex-row items-center justify-between mt-5 mb-1.5">
+            <Text className="text-sm font-medium text-muted">{t("form.story")}</Text>
+            <Pressable
+              onPress={handleAiEnrich}
+              hitSlop={8}
+              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+            >
+              <View className="flex-row items-center" style={{ gap: 4 }}>
+                {aiEnriching ? (
+                  <Text className="text-xs" style={{ color: colors.primary }}>
+                    {lang === "zh" ? "AI 补全中…" : "AI filling…"}
+                  </Text>
+                ) : (
+                  <>
+                    <IconSymbol name="sparkles" size={13} color={colors.primary} />
+                    <Text className="text-xs" style={{ color: colors.primary }}>
+                      {lang === "zh" ? "AI 补全" : "AI Fill"}
+                    </Text>
+                  </>
+                )}
+              </View>
+            </Pressable>
+          </View>
+          {aiResult && (
+            <View
+              className="rounded-xl border px-3 py-3 mb-2"
+              style={{ borderColor: colors.primary + "44", backgroundColor: colors.primary + "0A", gap: 8 }}
+            >
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center" style={{ gap: 6 }}>
+                  <IconSymbol name="sparkles" size={13} color={colors.primary} />
+                  <Text className="text-xs font-medium" style={{ color: colors.primary }}>
+                    {lang === "zh" ? "AI 建议" : "AI Suggestion"}
+                  </Text>
+                  <View
+                    className="px-1.5 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor:
+                        aiResult.confidence === "high"
+                          ? colors.success + "22"
+                          : aiResult.confidence === "medium"
+                            ? "#FF950022"
+                            : colors.border,
+                    }}
+                  >
+                    <Text
+                      className="text-[10px] font-medium"
+                      style={{
+                        color:
+                          aiResult.confidence === "high"
+                            ? colors.success
+                            : aiResult.confidence === "medium"
+                              ? "#FF9500"
+                              : colors.muted,
+                      }}
+                    >
+                      {aiResult.confidence === "high"
+                        ? (lang === "zh" ? "高可信" : "High")
+                        : aiResult.confidence === "medium"
+                          ? (lang === "zh" ? "中可信" : "Medium")
+                          : (lang === "zh" ? "低可信" : "Low")}
+                    </Text>
+                  </View>
+                </View>
+                <Pressable onPress={() => setAiResult(null)} hitSlop={8}>
+                  <IconSymbol name="xmark" size={14} color={colors.muted} />
+                </Pressable>
+              </View>
+              {aiResult.flavors && aiResult.flavors.length > 0 && flavors.length === 0 && (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "风味标签: " : "Flavors: "}{aiResult.flavors.join(" · ")}
+                </Text>
+              )}
+              {aiResult.story ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "故事: " : "Story: "}{aiResult.story}
+                </Text>
+              ) : null}
+              {aiResult.flavorDesc ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "风味: " : "Flavor desc: "}{aiResult.flavorDesc}
+                </Text>
+              ) : null}
+              {aiResult.source ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "来源: " : "Source: "}{aiResult.source}
+                </Text>
+              ) : null}
+              <Pressable
+                onPress={applyAiResult}
+                style={({ pressed }) => [
+                  {
+                    marginTop: 2,
+                    paddingVertical: 7,
+                    paddingHorizontal: 14,
+                    borderRadius: 8,
+                    alignItems: "center" as const,
+                    backgroundColor: colors.primary,
+                    opacity: pressed ? 0.8 : 1,
+                  },
+                ]}
+              >
+                <Text className="text-xs font-semibold" style={{ color: "#FFFFFF" }}>
+                  {lang === "zh" ? "应用到空白字段" : "Apply to empty fields"}
+                </Text>
+              </Pressable>
+            </View>
+          )}
           <TextInput
             className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
             placeholder={t("form.story.placeholder")}
@@ -926,6 +1105,97 @@ export default function RecipeFormScreen() {
             returnKeyType="done"
             style={{ lineHeight: 20 }}
           />
+          {/* Card tag order */}
+          <Text className="text-sm font-medium text-muted mt-5 mb-1">{lang === "zh" ? "卡片标签" : "Card Tags"}</Text>
+          <Text className="text-xs text-muted mb-2" style={{ lineHeight: 16 }}>
+            {lang === "zh" ? "拖动排序,点击隐藏/显示标签" : "Tap to hide/show, drag to reorder"}
+          </Text>
+          <View className="bg-surface border border-border rounded-xl overflow-hidden">
+            {CARD_TAG_SLOTS.map((slot, idx) => {
+              const visible = cardTagOrder.includes(slot);
+              const pos = cardTagOrder.indexOf(slot);
+              return (
+                <Pressable
+                  key={slot}
+                  onPress={() => {
+                    setCardTagOrder((prev) => {
+                      if (prev.includes(slot)) return prev.filter((s) => s !== slot);
+                      const next = [...prev];
+                      next.splice(Math.min(pos, next.length), 0, slot);
+                      return next;
+                    });
+                  }}
+                  style={({ pressed }) => [
+                    {
+                      flexDirection: "row" as const,
+                      alignItems: "center" as const,
+                      paddingHorizontal: 14,
+                      paddingVertical: 11,
+                      gap: 10,
+                      borderTopWidth: idx === 0 ? 0 : StyleSheet.hairlineWidth,
+                      borderTopColor: colors.border,
+                      opacity: pressed ? 0.65 : 1,
+                    },
+                  ]}
+                >
+                  <IconSymbol
+                    name={visible ? "checkmark.circle.fill" : "circle"}
+                    size={20}
+                    color={visible ? colors.primary : colors.muted}
+                  />
+                  <Text
+                    className="flex-1 text-sm"
+                    style={{ color: visible ? colors.foreground : colors.muted }}
+                  >
+                    {lang === "zh"
+                      ? CARD_TAG_SLOT_LABELS[slot].zh
+                      : CARD_TAG_SLOT_LABELS[slot].en}
+                  </Text>
+                  {visible && (
+                    <View className="flex-row items-center" style={{ gap: 4 }}>
+                      <Pressable
+                        hitSlop={8}
+                        onPress={() => {
+                          setCardTagOrder((prev) => {
+                            const i = prev.indexOf(slot);
+                            if (i <= 0) return prev;
+                            const next = [...prev];
+                            [next[i - 1], next[i]] = [next[i], next[i - 1]];
+                            return next;
+                          });
+                        }}
+                      >
+                        <IconSymbol name="chevron.up" size={16} color={colors.muted} />
+                      </Pressable>
+                      <Pressable
+                        hitSlop={8}
+                        onPress={() => {
+                          setCardTagOrder((prev) => {
+                            const i = prev.indexOf(slot);
+                            if (i < 0 || i >= prev.length - 1) return prev;
+                            const next = [...prev];
+                            [next[i], next[i + 1]] = [next[i + 1], next[i]];
+                            return next;
+                          });
+                        }}
+                      >
+                        <IconSymbol name="chevron.down" size={16} color={colors.muted} />
+                      </Pressable>
+                    </View>
+                  )}
+                </Pressable>
+              );
+            })}
+          </View>
+          <Pressable
+            onPress={() => setCardTagOrder([...CARD_TAG_SLOTS])}
+            hitSlop={6}
+            style={{ alignSelf: "flex-start", marginTop: 6 }}
+          >
+            <Text className="text-xs" style={{ color: colors.primary }}>
+              {lang === "zh" ? "恢复默认" : "Reset to default"}
+            </Text>
+          </Pressable>
         </ScrollView>
 
         {/* Save button */}

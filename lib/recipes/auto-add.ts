@@ -48,6 +48,9 @@ export function draftFromName(rawName: string): BottleDraft | null {
     abv: cls.library === "bottle" ? 0 : 0,
     priceCny: 0,
     notes: "自动添加:配方成本估算发现库中缺失",
+    flavorTags: [],
+    story: "",
+    styleDesc: "",
   };
 }
 

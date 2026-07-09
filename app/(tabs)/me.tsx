@@ -155,14 +155,12 @@ export default function MeScreen() {
             style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
           >
             <View style={[styles.iconWrap, { backgroundColor: "#FF9500" }]}>
-              <IconSymbol name="doc.badge.plus" size={18} color="#FFFFFF" />
+              <IconSymbol name="book.fill" size={18} color="#FFFFFF" />
             </View>
             <View className="flex-1">
-              <Text className="text-base font-semibold text-foreground">
-                {lang === "zh" ? "书籍导入" : "Import from Book"}
-              </Text>
+              <Text className="text-base font-semibold text-foreground">{t("me.bookImport")}</Text>
               <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                {lang === "zh" ? "从 EPUB/PDF 书籍提取并导入配方" : "Extract recipes from EPUB/PDF books"}
+                {t("me.bookImport.desc")}
               </Text>
             </View>
             <IconSymbol name="chevron.right" size={18} color={colors.muted} />
@@ -172,16 +170,16 @@ export default function MeScreen() {
             onPress={() => {
               tap();
               router.push("/ice-settings");
-              }}
-              style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
-            >
-              <View style={[styles.iconWrap, { backgroundColor: "#5AC8FA" }]}>
-                <IconSymbol name="snowflake" size={18} color="#FFFFFF" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-semibold text-foreground">{t("me.ice")}</Text>
-                <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                  {t("me.ice.desc")}
+            }}
+            style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+          >
+            <View style={[styles.iconWrap, { backgroundColor: "#5AC8FA" }]}>
+              <IconSymbol name="snowflake" size={18} color="#FFFFFF" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-foreground">{t("me.ice")}</Text>
+              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                {t("me.ice.desc")}
                 </Text>
               </View>
               <IconSymbol name="chevron.right" size={18} color={colors.muted} />

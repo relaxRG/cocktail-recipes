@@ -262,6 +262,9 @@ export function BottleProvider({ children }: { children: React.ReactNode }) {
                 abv: b.abv,
                 priceCny: b.priceCny,
                 notes: b.notes,
+                flavorTags: b.flavorTags ?? [],
+                story: b.story ?? "",
+                styleDesc: b.styleDesc ?? "",
               });
               if (parts.length <= 1) {
                 result.push(b);

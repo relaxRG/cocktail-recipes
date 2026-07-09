@@ -68,6 +68,8 @@ export interface RecipeDraft {
   steps: string;
   garnish: string;
   notes: string;
+  /** 卡片标签顺序(null 表示默认顺序) */
+  cardTagOrder?: Recipe["cardTagOrder"];
 }
 
 interface RecipeStore {
@@ -274,6 +276,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         made: false,
         rating: null,
         sortIndex: null,
+        cardTagOrder: null,
         createdAt: now,
         updatedAt: now,
         strengthBand: "",

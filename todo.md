@@ -327,3 +327,10 @@
 - [x] 完善智能链接:扩充英文同义词词典(50+ 利口酒/苦精/果汁/糖浆变体)
 - [x] 完善智能链接:形态折叠支持克重单位配料识别(book-import 自制配方)
 - [x] 全部 371 项测试通过
+## 第二轮 GitHub 新功能合并（2026-07-09）
+- [x] recipe-card.tsx：卡片标签顺序按 cardTagOrder 字段自定义渲染（CARD_TAG_SLOTS 默认顺序）
+- [x] recipe-form.tsx：AI 补全配方（enrichRecipe mutation）、cardTagOrder 拖拽排序 UI
+- [x] recipe/[id].tsx：零价酒款联网补全按钮（enrich.useMutation + missingBottles）
+- [x] bottle-form.tsx：flavorTags/story/styleDesc 字段编辑 UI + enrichBottle AI 补全
+- [x] book-import.tsx：全面升级为阅读器模式（ReadingBlock/ReviewItem/段落高亮选取/AI扫描）
+- [x] 全部 371 项测试通过，TS 零错误

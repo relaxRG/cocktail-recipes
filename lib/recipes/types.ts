@@ -96,6 +96,18 @@ export const FLAVOR_TAGS = [
   "咸鲜",
 ] as const;
 
+/** 卡片标签槽位 */
+export type CardTagSlot = "category" | "codexFamily" | "baseSpirit" | "strength" | "rating" | "cost";
+export const CARD_TAG_SLOTS: CardTagSlot[] = ["category", "codexFamily", "baseSpirit", "strength", "rating", "cost"];
+export const CARD_TAG_SLOT_LABELS: Record<CardTagSlot, { zh: string; en: string }> = {
+  category:    { zh: "分类",        en: "Category" },
+  codexFamily: { zh: "Codex 家族",  en: "Codex Family" },
+  baseSpirit:  { zh: "基酒",        en: "Base Spirit" },
+  strength:    { zh: "烈度",        en: "Strength" },
+  rating:      { zh: "评分",        en: "Rating" },
+  cost:        { zh: "成本",        en: "Cost" },
+};
+
 export interface Recipe {
   id: string;
   name: string;
@@ -140,6 +152,8 @@ export interface Recipe {
   rating: number | null;
   /** 手动排序序号:越小越靠前,null 表示未手动排序过 */
   sortIndex: number | null;
+  /** 卡片标签顺序与可见性:null 表示使用默认顺序(全部显示) */
+  cardTagOrder: CardTagSlot[] | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -179,6 +193,7 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
     made: false,
     rating: null,
     sortIndex: null,
+    cardTagOrder: null,
     createdAt: Date.now(),
     updatedAt: Date.now(),
     ...r,
@@ -199,6 +214,7 @@ export function normalizeRecipe(r: Partial<Recipe> & Pick<Recipe, "id" | "name">
   base.rating = normalizeRating(r.rating);
   base.sortIndex =
     typeof r.sortIndex === "number" && isFinite(r.sortIndex) ? r.sortIndex : null;
+  base.cardTagOrder = Array.isArray(r.cardTagOrder) ? r.cardTagOrder as CardTagSlot[] : null;
   // 旧数据迁移:混写名("尼格罗尼 Negroni")自动拆分为中英字段
   if (!base.nameEn) {
     const split = splitBilingualName(base.name);

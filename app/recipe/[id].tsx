@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -27,6 +28,13 @@ import {
   stepsDisplayText,
 } from "@/lib/recipes/ingredient-display";
 import { useBottleStore } from "@/lib/bottles/store";
+import {
+  applyEnrichedToBottle,
+  enrichQueryName,
+  matchEnrichedItem,
+} from "@/lib/bottles/enrich";
+import { type Bottle } from "@/lib/bottles/types";
+import { trpc } from "@/lib/trpc";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { smartLinkIngredient, smartLinkDisplayName } from "@/lib/recipes/smart-link";
 import { useRecipeStore } from "@/lib/recipes/store";
@@ -45,6 +53,7 @@ export default function RecipeDetailScreen() {
   const { getRecipe, getCategory, toggleFavorite, toggleMade, setRating, deleteRecipe, tags } =
     useRecipeStore();
   const { bottles, addBottle } = useBottleStore();
+  const { updateBottle } = useBottleStore();
   const { preps } = useHomemadeStore();
   const recipe = getRecipe(id);
 
@@ -102,6 +111,46 @@ export default function RecipeDetailScreen() {
     ? estimateGarnishCost(recipe.garnish, bottles, preps)
     : null;
   const grandTotal = costEst.total + iceCost.total + (garnishCost?.total ?? 0);
+  const enrichMutation = trpc.lookup.enrich.useMutation();
+  const [enrichMsg, setEnrichMsg] = React.useState<string | null>(null);
+  const missingBottles: Bottle[] = [];
+  {
+    const seen = new Set<string>();
+    const consider = (link: ReturnType<typeof smartLinkIngredient>) => {
+      if (link?.kind === "bottle" && link.bottle.priceCny <= 0 && !seen.has(link.bottle.id)) {
+        seen.add(link.bottle.id);
+        missingBottles.push(link.bottle);
+      }
+    };
+    for (const it of costEst.items) consider(it.link);
+    if (garnishCost) {
+      for (const g of garnishCost.groups) for (const it of g.items) consider(it.est.link);
+    }
+  }
+  const handleEnrichMissing = async () => {
+    const targets = missingBottles.slice(0, 8);
+    if (targets.length === 0 || enrichMutation.isPending) return;
+    setEnrichMsg(null);
+    const names = targets.map(enrichQueryName);
+    try {
+      const res = await enrichMutation.mutateAsync({ names });
+      let updated = 0;
+      targets.forEach((b, i) => {
+        const item = matchEnrichedItem(res.items, names, i);
+        if (!item) return;
+        const draft = applyEnrichedToBottle(b, item);
+        if (!draft) return;
+        updateBottle(b.id, draft);
+        updated++;
+      });
+      if (updated > 0 && Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      setEnrichMsg(updated > 0 ? t("lookup.enrichDone") : t("lookup.enrichNone"));
+    } catch {
+      setEnrichMsg(t("smartImport.fail.msg"));
+    }
+  };
 
   const handleFavorite = () => {
     if (Platform.OS !== "web") {
@@ -494,6 +543,37 @@ export default function RecipeDetailScreen() {
                     : "—"}
                 </Text>
               </View>
+              {missingBottles.length > 0 ? (
+                <Pressable
+                  onPress={handleEnrichMissing}
+                  disabled={enrichMutation.isPending}
+                  style={({ pressed }) => [
+                    {
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                      paddingVertical: 9,
+                      borderRadius: 9,
+                      marginTop: 10,
+                      backgroundColor: colors.primary + "14",
+                    },
+                    (pressed || enrichMutation.isPending) && { opacity: 0.6 },
+                  ]}
+                >
+                  {enrichMutation.isPending ? (
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  ) : (
+                    <IconSymbol name="globe" size={14} color={colors.primary} />
+                  )}
+                  <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+                    {t("lookup.enrichMissing")} ({missingBottles.length})
+                  </Text>
+                </Pressable>
+              ) : null}
+              {enrichMsg ? (
+                <Text className="text-xs text-muted mt-1.5 text-center">{enrichMsg}</Text>
+              ) : null}
               {costEst.items.map((item, idx) => {
                 const cLink = item.link;
                 const cSmart = smartLinkDisplayName(cLink, lang as "zh" | "en");

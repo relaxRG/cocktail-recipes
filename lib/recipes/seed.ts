@@ -15,7 +15,7 @@ export function buildSampleRecipes(): Recipe[] {
   const mk = (
     partial: Omit<
       Recipe,
-      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "drinkDuration" | "occasion" | "source" | "story" | "flavorDesc" | "strengthBand" | "abv" | "nameEn" | "made" | "rating" | "sortIndex"
+      "id" | "createdAt" | "updatedAt" | "favorite" | "notes" | "variantOf" | "codexFamily" | "flavors" | "drinkDuration" | "occasion" | "source" | "story" | "flavorDesc" | "strengthBand" | "abv" | "nameEn" | "made" | "rating" | "sortIndex" | "cardTagOrder"
     > & {
       notes?: string;
       favorite?: boolean;
@@ -56,6 +56,7 @@ export function buildSampleRecipes(): Recipe[] {
       nameEn: partial.nameEn ?? split?.en ?? "",
       rating: partial.rating ?? null,
       sortIndex: partial.sortIndex ?? null,
+      cardTagOrder: null,
       createdAt: now + offset,
       updatedAt: now + offset,
       ...partial,

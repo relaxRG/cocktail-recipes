@@ -17,6 +17,9 @@ const mkBottle = (over: Partial<Bottle>): Bottle => ({
   priceCny: 0,
   notes: "",
   builtin: true,
+  flavorTags: [],
+  story: "",
+  styleDesc: "",
   rating: null,
   sortIndex: null,
   createdAt: 0,
@@ -157,6 +160,9 @@ describe("splitBottleDraft (library-entry connector split)", () => {
     abv: 0,
     priceCny: 6,
     notes: "",
+    flavorTags: [],
+    story: "",
+    styleDesc: "",
   };
 
   it("splits zh names joined by 与/或/、 into separate drafts", () => {

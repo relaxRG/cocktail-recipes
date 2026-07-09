@@ -29,6 +29,8 @@ const dict = {
   "me.tags.desc": { zh: "分类、基酒、杯型、风味、酒库分类、自制分区", en: "Categories, spirits, glasses, flavors & more" },
   "me.import": { zh: "批量导入", en: "Bulk Import" },
   "me.import.desc": { zh: "粘贴文本,智能识别并创建酒款/自制/配方", en: "Paste text to create bottles, preps & recipes" },
+  "me.bookImport": { zh: "书籍导入", en: "Book Import" },
+  "me.bookImport.desc": { zh: "导入 EPUB/PDF,自动识别书中配方并提取", en: "Import EPUB/PDF and auto-detect recipes" },
   "me.ice": { zh: "冰块成本", en: "Ice Cost" },
   "me.ice.desc": { zh: "摇冰、方冰、碎冰等款式与价格,自动计入配方成本", en: "Ice styles & prices, auto-included in recipe costs" },
   "me.language": { zh: "界面语言", en: "Language" },
@@ -683,6 +685,9 @@ const dict = {
   "lookup.batch.btn": { zh: "批量补全缺失资料", en: "Bulk fill missing info" },
   "lookup.batch.done": { zh: "已补全 {n} 件产品", en: "Filled {n} products" },
   "lookup.batch.none": { zh: "暂无需要补全的产品", en: "No products need filling" },
+  "lookup.enrichMissing": { zh: "联网补全缺失资料", en: "AI-fill missing info" },
+  "lookup.enrichDone": { zh: "已联网补全并更新入库", en: "Enriched and saved to library" },
+  "lookup.enrichNone": { zh: "没有识别出可补全的资料", en: "Nothing could be enriched." },
   // ── 书籍导入 ──────────────────────────────────────────────────────────────
   "book.title": { zh: "书籍导入", en: "Import from Book" },
   "book.pick": { zh: "选择文件", en: "Pick File" },

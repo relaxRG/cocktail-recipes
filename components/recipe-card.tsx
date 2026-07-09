@@ -15,9 +15,10 @@ import { useRecipeStore } from "@/lib/recipes/store";
 import {
   Recipe,
   STRENGTH_LABELS,
-  STRENGTH_BAND_LABELS,
   codexFamilyLabel,
   localizedTagName,
+  CARD_TAG_SLOTS,
+  CardTagSlot,
 } from "@/lib/recipes/types";
 
 export function RecipeCard({
@@ -110,56 +111,76 @@ export function RecipeCard({
               style={{ height: 24 }}
               contentContainerStyle={{ alignItems: "center", gap: 6 }}
             >
-              {/* 标签优先级:分类 → Codex 家族 → 基酒 → 烈度 → 评分 → 成本 */}
-              {category ? (
-                <View
-                  className="px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: category.color + "22" }}
-                >
-                  <Text className="text-xs font-medium" style={{ color: category.color }}>
-                    {localizedTagName(category.name, category.nameEn, lang)}
-                  </Text>
-                </View>
-              ) : null}
-              {recipe.codexFamily ? (
-                <View
-                  className="px-2 py-0.5 rounded-full border"
-                  style={{ borderColor: colors.primary + "66", backgroundColor: colors.primary + "12" }}
-                >
-                  <Text className="text-xs" style={{ color: colors.primary }}>
-                    {codexFamilyLabel(recipe.codexFamily, lang)}
-                  </Text>
-                </View>
-              ) : null}
-              <View className="px-2 py-0.5 rounded-full bg-background border border-border">
-                <Text className="text-xs text-muted">
-                  {localizedTagName(recipe.baseSpirit, "", lang)}
-                </Text>
-              </View>
-              <View className="px-2 py-0.5 rounded-full bg-background border border-border">
-                <Text className="text-xs text-muted">
-                  {lang === "en" ? t(`strength.${recipe.strength}`) : STRENGTH_LABELS[recipe.strength]}
-                  {recipe.abv !== null && recipe.abv !== undefined
-                    ? ` ≈${recipe.abv}%`
-                    : recipe.strengthBand
-                      ? ` ${STRENGTH_BAND_LABELS[recipe.strengthBand][lang]}`
-                      : ""}
-                </Text>
-              </View>
-              {recipe.rating ? (
-                <View
-                  className="flex-row items-center px-2 py-0.5 rounded-full bg-background border border-border"
-                  style={{ gap: 2 }}
-                >
-                  <IconSymbol name="star.fill" size={11} color="#F5A623" />
-                  <Text className="text-xs text-muted">{recipe.rating}/10</Text>
-                </View>
-              ) : null}
-              {costTotal !== null ? (
-                <View className="px-2 py-0.5 rounded-full bg-background border border-border">
-                  <Text className="text-xs text-muted">≈¥{costTotal.toFixed(1)}</Text>
-                </View>
-              ) : null}
+              {(recipe.cardTagOrder ?? CARD_TAG_SLOTS).map((slot: CardTagSlot) => {
+                if (slot === "category") {
+                  if (!category) return null;
+                  return (
+                    <View
+                      key="category"
+                      className="px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: category.color + "22" }}
+                    >
+                      <Text className="text-xs font-medium" style={{ color: category.color }}>
+                        {localizedTagName(category.name, category.nameEn, lang)}
+                      </Text>
+                    </View>
+                  );
+                }
+                if (slot === "codexFamily") {
+                  if (!recipe.codexFamily) return null;
+                  return (
+                    <View
+                      key="codexFamily"
+                      className="px-2 py-0.5 rounded-full border"
+                      style={{ borderColor: colors.primary + "66", backgroundColor: colors.primary + "12" }}
+                    >
+                      <Text className="text-xs" style={{ color: colors.primary }}>
+                        {codexFamilyLabel(recipe.codexFamily, lang)}
+                      </Text>
+                    </View>
+                  );
+                }
+                if (slot === "baseSpirit") {
+                  return (
+                    <View key="baseSpirit" className="px-2 py-0.5 rounded-full bg-background border border-border">
+                      <Text className="text-xs text-muted">
+                        {localizedTagName(recipe.baseSpirit, "", lang)}
+                      </Text>
+                    </View>
+                  );
+                }
+                if (slot === "strength") {
+                  return (
+                    <View key="strength" className="px-2 py-0.5 rounded-full bg-background border border-border">
+                      <Text className="text-xs text-muted">
+                        {lang === "en" ? t(`strength.${recipe.strength}`) : STRENGTH_LABELS[recipe.strength]}
+                      </Text>
+                    </View>
+                  );
+                }
+                if (slot === "rating") {
+                  if (!recipe.rating) return null;
+                  return (
+                    <View
+                      key="rating"
+                      className="flex-row items-center px-2 py-0.5 rounded-full bg-background border border-border"
+                      style={{ gap: 2 }}
+                    >
+                      <IconSymbol name="star.fill" size={11} color="#F5A623" />
+                      <Text className="text-xs text-muted">{recipe.rating}/10</Text>
+                    </View>
+                  );
+                }
+                if (slot === "cost") {
+                  if (costTotal === null) return null;
+                  return (
+                    <View key="cost" className="px-2 py-0.5 rounded-full bg-background border border-border">
+                      <Text className="text-xs text-muted">≈¥{costTotal.toFixed(1)}</Text>
+                    </View>
+                  );
+                }
+                return null;
+              })}
             </ScrollView>
           </View>
           <View className="flex-row items-center" style={{ gap: 14 }}>

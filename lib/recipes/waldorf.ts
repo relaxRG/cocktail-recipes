@@ -78,6 +78,7 @@ export function buildWaldorfRecipes(): Recipe[] {
     made: false,
     rating: null,
     sortIndex: null,
+    cardTagOrder: null,
     createdAt: now + i,
     updatedAt: now + i,
   }));
