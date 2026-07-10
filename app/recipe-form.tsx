@@ -38,14 +38,18 @@ import {
   ICE_TYPES,
   STRENGTH_LABELS,
   STRENGTH_BAND_LABELS,
-  CARD_TAG_SLOTS,
-  CARD_TAG_SLOT_LABELS,
-  CardTagSlot,
   codexFamilyLabel,
   genId,
   localizedTagName,
   splitBilingualName,
+  FLAVOR_TAGS,
+  FLAVOR_TASTE_TAGS,
+  FLAVOR_AROMA_TAGS,
+  FLAVOR_TEXTURE_TAGS,
+  FLAVOR_LAYER_LABELS,
+  FLAVOR_TAG_EN,
 } from "@/lib/recipes/types";
+import { FLAVOR_TAG_DEFAULT_COLORS } from "@/lib/settings/card-tags";
 
 function ChipGroup({
   options,
@@ -94,7 +98,7 @@ export default function RecipeFormScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
-  const { getRecipe, addRecipe, updateRecipe, categories, tagsOf, tagGroupsOf } = useRecipeStore();
+  const { getRecipe, addRecipe, updateRecipe, categories, tagsOf } = useRecipeStore();
   const enrichRecipeMutation = trpc.lookup.enrichRecipe.useMutation();
   const { preps } = useHomemadeStore();
   const { bottles } = useBottleStore();
@@ -102,7 +106,6 @@ export default function RecipeFormScreen() {
 
   const spiritTags = tagsOf("spirit");
   const glassTags = tagsOf("glass");
-  const flavorTags = tagsOf("flavor");
   const spiritNames = spiritTags.map((t) => t.name);
   const glassNames = glassTags.map((t) => t.name);
   const spiritColors = Object.fromEntries(spiritTags.map((t) => [t.name, t.color]));
@@ -130,9 +133,6 @@ export default function RecipeFormScreen() {
   const [garnish, setGarnish] = useState(editing?.garnish ?? "");
   const [notes, setNotes] = useState(editing?.notes ?? "");
   const [importHint, setImportHint] = useState("");
-  const [cardTagOrder, setCardTagOrder] = useState<CardTagSlot[]>(
-    editing?.cardTagOrder ?? [...CARD_TAG_SLOTS],
-  );
   /** AI story/source/flavorDesc completion state */
   const [aiEnriching, setAiEnriching] = useState(false);
   const [aiResult, setAiResult] = useState<{
@@ -325,9 +325,9 @@ export default function RecipeFormScreen() {
       ingredients: ingredients.filter((i) => i.name.trim().length > 0),
       steps: steps.trim(),
       garnish: garnish.trim(),
-      notes: notes.trim(),
-      cardTagOrder: JSON.stringify(cardTagOrder) === JSON.stringify([...CARD_TAG_SLOTS]) ? null : cardTagOrder,
-    };
+    notes: notes.trim(),
+      cardTagOrder: null,
+  };
     if (editing) {
       updateRecipe(editing.id, draft);
     } else {
@@ -691,63 +691,42 @@ export default function RecipeFormScreen() {
           {/* Drink duration (single-select) */}
           {/* Flavor tags */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.flavors.multi")}</Text>
-          {flavorTags.length > 0 ? (
-            (() => {
-              const flavorGroups = tagGroupsOf("flavor");
-              const groupedIds = new Set(flavorGroups.map((g) => g.id));
-              const blocks: { key: string; label: string | null; items: typeof flavorTags }[] = [];
-              for (const g of flavorGroups) {
-                const items = flavorTags.filter((tg) => tg.groupId === g.id);
-                if (items.length > 0)
-                  blocks.push({
-                    key: g.id,
-                    label: displayNames(g.nameEn ?? "", g.name, lang).primary,
-                    items,
-                  });
-              }
-              const ungrouped = flavorTags.filter((tg) => !tg.groupId || !groupedIds.has(tg.groupId));
-              if (ungrouped.length > 0) {
-                blocks.push({
-                  key: "ungrouped",
-                  label: blocks.length > 0 ? t("tg.ungrouped") : null,
-                  items: ungrouped,
-                });
-              }
-              return blocks.map((block) => (
-                <View key={block.key} style={{ marginBottom: 4 }}>
-                  {block.label ? (
-                    <Text className="text-xs text-muted mb-1.5" style={{ lineHeight: 16 }}>
-                      {block.label}
-                    </Text>
-                  ) : null}
-                  <View style={styles.chipWrap}>
-                    {block.items.map((tag) => {
-                      const active = flavors.includes(tag.name);
-                      return (
-                        <Pressable
-                          key={tag.id}
-                          onPress={() => toggleFlavor(tag.name)}
-                          style={[
-                            styles.chip,
-                            {
-                              backgroundColor: active ? tag.color : colors.surface,
-                              borderColor: active ? tag.color : tag.color + "66",
-                            },
-                          ]}
-                        >
-                          <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
-                            {displayNames(tag.nameEn ?? "", tag.name, lang).primary}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
-              ));
-            })()
-          ) : (
-            <Text className="text-xs text-muted">{t("form.noFlavor")}</Text>
-          )}
+          {(
+            [
+              { key: "taste",   tags: FLAVOR_TASTE_TAGS },
+              { key: "aroma",   tags: FLAVOR_AROMA_TAGS },
+              { key: "texture", tags: FLAVOR_TEXTURE_TAGS },
+            ] as const
+          ).map(({ key, tags }) => (
+            <View key={key} style={{ marginBottom: 6 }}>
+              <Text className="text-xs text-muted mb-1.5" style={{ lineHeight: 16 }}>
+                {lang === "zh" ? FLAVOR_LAYER_LABELS[key].zh : FLAVOR_LAYER_LABELS[key].en}
+              </Text>
+              <View style={styles.chipWrap}>
+                {tags.map((tag) => {
+                  const active = flavors.includes(tag);
+                  const tint = FLAVOR_TAG_DEFAULT_COLORS[tag] ?? "#007AFF";
+                  return (
+                    <Pressable
+                      key={tag}
+                      onPress={() => toggleFlavor(tag)}
+                      style={[
+                        styles.chip,
+                        {
+                          backgroundColor: active ? tint : colors.surface,
+                          borderColor: active ? tint : tint + "66",
+                        },
+                      ]}
+                    >
+                      <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
+                        {lang === "zh" ? tag : (FLAVOR_TAG_EN[tag] ?? tag)}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          ))}
 
           {/* Method */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.method")}</Text>
@@ -1127,97 +1106,6 @@ export default function RecipeFormScreen() {
             style={{ lineHeight: 20 }}
           />
 
-          {/* Card tag order */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1">{lang === "zh" ? "卡片标签" : "Card Tags"}</Text>
-          <Text className="text-xs text-muted mb-2" style={{ lineHeight: 16 }}>
-            {lang === "zh" ? "拖动排序,点击隐藏/显示标签" : "Tap to hide/show, drag to reorder"}
-          </Text>
-          <View className="bg-surface border border-border rounded-xl overflow-hidden">
-            {CARD_TAG_SLOTS.map((slot, idx) => {
-              const visible = cardTagOrder.includes(slot);
-              const pos = cardTagOrder.indexOf(slot);
-              return (
-                <Pressable
-                  key={slot}
-                  onPress={() => {
-                    setCardTagOrder((prev) => {
-                      if (prev.includes(slot)) return prev.filter((s) => s !== slot);
-                      const next = [...prev];
-                      next.splice(Math.min(pos, next.length), 0, slot);
-                      return next;
-                    });
-                  }}
-                  style={({ pressed }) => [
-                    {
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingHorizontal: 14,
-                      paddingVertical: 11,
-                      gap: 10,
-                      borderTopWidth: idx === 0 ? 0 : StyleSheet.hairlineWidth,
-                      borderTopColor: colors.border,
-                      opacity: pressed ? 0.65 : 1,
-                    },
-                  ]}
-                >
-                  <IconSymbol
-                    name={visible ? "checkmark.circle.fill" : "circle"}
-                    size={20}
-                    color={visible ? colors.primary : colors.muted}
-                  />
-                  <Text
-                    className="flex-1 text-sm"
-                    style={{ color: visible ? colors.foreground : colors.muted }}
-                  >
-                    {lang === "zh"
-                      ? CARD_TAG_SLOT_LABELS[slot].zh
-                      : CARD_TAG_SLOT_LABELS[slot].en}
-                  </Text>
-                  {visible && (
-                    <View className="flex-row items-center" style={{ gap: 4 }}>
-                      <Pressable
-                        hitSlop={8}
-                        onPress={() => {
-                          setCardTagOrder((prev) => {
-                            const i = prev.indexOf(slot);
-                            if (i <= 0) return prev;
-                            const next = [...prev];
-                            [next[i - 1], next[i]] = [next[i], next[i - 1]];
-                            return next;
-                          });
-                        }}
-                      >
-                        <IconSymbol name="chevron.up" size={16} color={colors.muted} />
-                      </Pressable>
-                      <Pressable
-                        hitSlop={8}
-                        onPress={() => {
-                          setCardTagOrder((prev) => {
-                            const i = prev.indexOf(slot);
-                            if (i < 0 || i >= prev.length - 1) return prev;
-                            const next = [...prev];
-                            [next[i], next[i + 1]] = [next[i + 1], next[i]];
-                            return next;
-                          });
-                        }}
-                      >
-                        <IconSymbol name="chevron.down" size={16} color={colors.muted} />
-                      </Pressable>
-                    </View>
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-          <Pressable
-            onPress={() => setCardTagOrder([...CARD_TAG_SLOTS])}
-            hitSlop={6}
-            style={{ alignSelf: "flex-start", marginTop: 6 }}
-          >
-            <Text className="text-xs" style={{ color: colors.primary }}>
-              {lang === "zh" ? "恢复默认" : "Reset to default"}
-            </Text>
-          </Pressable>
         </ScrollView>
 
         {/* Save button */}

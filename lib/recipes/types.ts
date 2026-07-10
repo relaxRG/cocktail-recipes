@@ -84,17 +84,68 @@ export function codexFamilyLabel(family: string, lang: string): string {
 
 /** 风味标签(可多选) */
 export const FLAVOR_TAGS = [
-  "草本",
-  "果味",
+  // 基础味觉 (5)
+  "酸",
+  "甜",
+  "苦",
+  "烈",
+  "鲜",
+  // 香气特征 (8)
   "柑橘",
+  "热带",
+  "草本",
   "花香",
-  "甜润",
-  "酸爽",
-  "苦韵",
-  "辛香",
   "烟熏",
-  "咸鲜",
+  "木桶",
+  "香料",
+  "坚果可可",
+  // 口感维度 (4)
+  "清爽",
+  "浓郁",
+  "干爽",
+  "复杂",
 ] as const;
+
+/** 风味标签分层子集 */
+export const FLAVOR_TASTE_TAGS = ["酸", "甜", "苦", "烈", "鲜"] as const;
+export const FLAVOR_AROMA_TAGS = ["柑橘", "热带", "草本", "花香", "烟熏", "木桶", "香料", "坚果可可"] as const;
+export const FLAVOR_TEXTURE_TAGS = ["清爽", "浓郁", "干爽", "复杂"] as const;
+
+/** 风味标签分层标签（中英） */
+export const FLAVOR_LAYER_LABELS = {
+  taste:   { zh: "基础味觉", en: "Taste" },
+  aroma:   { zh: "香气特征", en: "Aroma" },
+  texture: { zh: "口感维度", en: "Texture" },
+} as const;
+
+/** 获取风味标签所属分层 */
+export function flavorTagLayer(tag: string): "taste" | "aroma" | "texture" | null {
+  if ((FLAVOR_TASTE_TAGS as readonly string[]).includes(tag)) return "taste";
+  if ((FLAVOR_AROMA_TAGS as readonly string[]).includes(tag)) return "aroma";
+  if ((FLAVOR_TEXTURE_TAGS as readonly string[]).includes(tag)) return "texture";
+  return null;
+}
+
+/** 17 个精炼风味标签的英文名映射 */
+export const FLAVOR_TAG_EN: Record<string, string> = {
+  酸: "Sour",
+  甜: "Sweet",
+  苦: "Bitter",
+  烈: "Boozy",
+  鲜: "Umami",
+  柑橘: "Citrus",
+  热带: "Tropical",
+  草本: "Herbal",
+  花香: "Floral",
+  烟熏: "Smoky",
+  木桶: "Oaky",
+  香料: "Spiced",
+  坚果可可: "Nutty/Cacao",
+  清爽: "Refreshing",
+  浓郁: "Rich",
+  干爽: "Dry",
+  复杂: "Complex",
+};
 
 /** 卡片标签槽位 */
 export type CardTagSlot = "category" | "codexFamily" | "baseSpirit" | "flavors" | "strength" | "rating" | "cost";
@@ -326,22 +377,34 @@ export const TAG_NAME_DICT: Record<string, string> = {
   红酒杯: "Wine Glass",
   朱莉普杯: "Julep Cup",
   // 风味
-  草本: "Herbal",
-  果味: "Fruity",
+  // 17 个精炼风味标签
+  酸: "Sour",
+  甜: "Sweet",
+  苦: "Bitter",
+  烈: "Boozy",
+  鲜: "Umami",
   柑橘: "Citrus",
+  热带: "Tropical",
+  草本: "Herbal",
   花香: "Floral",
+  烟熏: "Smoky",
+  木桶: "Oaky",
+  香料: "Spiced",
+  坚果可可: "Nutty/Cacao",
+  清爽: "Refreshing",
+  浓郁: "Rich",
+  干爽: "Dry",
+  复杂: "Complex",
+  // 保留旧词条兼容性（旧数据迁移用）
+  草本旧: "Herbal",
+  果味: "Fruity",
   甜润: "Sweet",
   酸爽: "Sour",
   苦韵: "Bitter",
   辛香: "Spicy",
-  烟熏: "Smoky",
   咸鲜: "Savory",
-  清爽: "Refreshing",
-  浓郁: "Rich",
   坚果: "Nutty",
   奶油: "Creamy",
-  干爽: "Dry",
-  热带: "Tropical",
   气泡: "Sparkling",
   焦糖: "Caramel",
   咖啡: "Coffee",
