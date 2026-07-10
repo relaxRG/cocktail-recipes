@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -180,6 +180,11 @@ export default function BookImportScreen() {
 
   const pendingRef = useRef<PendingFile | null>(null);
   const currentBookSectionsRef = useRef<ExtractedBook["sections"]>([]);
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
 
   const ocrMutation = trpc.bookImport.ocr.useMutation();
   const translateMutation = trpc.bookImport.translate.useMutation();
@@ -187,7 +192,7 @@ export default function BookImportScreen() {
 
   const { addRecipe, updateRecipe, recipes } = useRecipeStore();
   const { addPrep, preps, sections, types } = useHomemadeStore();
-  const { addBook, addBookWithHtml } = useBookStore();
+  const { addBook, addBookWithHtml, addBookFromFileSystem } = useBookStore();
 
   const existingNames = useMemo(() => {
     const set = new Set<string>();
@@ -285,6 +290,7 @@ export default function BookImportScreen() {
       };
       loadPlainBookIntoReader(syntheticBook, pending.name, pending.isPdf ? "scanned-pdf" : "scanned-epub");
     } catch (e) {
+      if (!isMountedRef.current) return;
       setLoadError(
         (zh ? "AI 识别失败：" : "AI OCR failed: ") + (e instanceof Error ? e.message : String(e)),
       );
@@ -587,6 +593,7 @@ export default function BookImportScreen() {
             method: r.candidate.parsed.method,
           })),
         });
+        if (!isMountedRef.current) return;
         setReviewItems((prev) =>
           prev.map((r) => {
             const t = res.items.find((it) => it.id === r.candidate.id);
@@ -609,6 +616,7 @@ export default function BookImportScreen() {
         );
       }
     } catch (e) {
+      if (!isMountedRef.current) return;
       setReviewError((zh ? "翻译失败：" : "Translation failed: ") + (e instanceof Error ? e.message : String(e)));
     }
   }, [reviewItems, zh, translateMutation]);
@@ -1576,4 +1584,3 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
   },
 });
-  const { addBook, addBookWithHtml, addBookFromFileSystem } = useBookStore();

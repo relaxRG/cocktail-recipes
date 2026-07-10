@@ -263,7 +263,16 @@ const RETRY_MAX_DELAY_MS = 30_000;
 
 type FetchInit = NonNullable<Parameters<typeof fetch>[1]>;
 
-const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+// Abort-aware sleep: resolves early if the provided signal fires
+const sleep = (ms: number, signal?: AbortSignal) =>
+  new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) { reject(new DOMException("Aborted", "AbortError")); return; }
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener("abort", () => {
+      clearTimeout(timer);
+      reject(new DOMException("Aborted", "AbortError"));
+    }, { once: true });
+  });
 
 const parseRetryAfter = (value: string | null): number | undefined => {
   if (!value) return undefined;
@@ -294,6 +303,11 @@ const fetchWithBackoff = async (url: string, init: FetchInit): Promise<Response>
         return response;
       }
 
+      // 4xx errors are client/input errors — retrying won't help
+      if (response.status >= 400 && response.status < 500) {
+        return response;
+      }
+
       const retryAfterMs = parseRetryAfter(response.headers.get("retry-after"));
       try {
         await response.body?.cancel();
@@ -303,14 +317,16 @@ const fetchWithBackoff = async (url: string, init: FetchInit): Promise<Response>
       console.warn(
         `LLM request retry ${attempt + 1}/${RETRY_MAX_RETRIES} after status ${response.status}`,
       );
-      await sleep(computeBackoffDelay(attempt, retryAfterMs));
+      await sleep(computeBackoffDelay(attempt, retryAfterMs), init.signal as AbortSignal | undefined);
     } catch (error) {
       lastError = error;
       if (attempt === RETRY_MAX_RETRIES) throw error;
+      // Don't retry if the request was intentionally aborted
+      if (error instanceof Error && error.name === "AbortError") throw error;
       console.warn(
         `LLM request retry ${attempt + 1}/${RETRY_MAX_RETRIES} after network error`,
       );
-      await sleep(computeBackoffDelay(attempt));
+      await sleep(computeBackoffDelay(attempt), init.signal as AbortSignal | undefined);
     }
   }
 

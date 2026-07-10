@@ -123,13 +123,21 @@ export type BulkImportItem = z.infer<typeof bulkItemSchema>;
 type LLMContent = Parameters<typeof invokeLLM>[0]["messages"][number]["content"];
 
 async function llmExtract(userContent: LLMContent): Promise<BulkImportItem[]> {
-  const response = await invokeLLM({
-    messages: [
-      { role: "system", content: EXTRACT_SYSTEM_PROMPT },
-      { role: "user", content: userContent },
-    ],
-    response_format: { type: "json_object" },
-  });
+  const signal = AbortSignal.timeout(60_000);
+  let response;
+  try {
+    response = await invokeLLM({
+      messages: [
+        { role: "system", content: EXTRACT_SYSTEM_PROMPT },
+        { role: "user", content: userContent },
+      ],
+      response_format: { type: "json_object" },
+      signal,
+    });
+  } catch (err: unknown) {
+    const isTimeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+    throw new Error(isTimeout ? "AI 提取超时，请缩短文本后重试" : `AI 提取失败: ${err instanceof Error ? err.message : String(err)}`);
+  }
   const raw = response.choices[0]?.message?.content;
   const text = typeof raw === "string" ? raw : "";
   let parsed: unknown = { items: [] };
@@ -164,12 +172,20 @@ const OCR_SYSTEM_PROMPT = `你是一个精准的书页文字转写(OCR)助手。
 - 页面没有文字时输出空字符串`;
 
 async function llmOcr(content: MessageContent[]): Promise<string> {
-  const response = await invokeLLM({
-    messages: [
-      { role: "system", content: OCR_SYSTEM_PROMPT },
-      { role: "user", content },
-    ],
-  });
+  const signal = AbortSignal.timeout(90_000);
+  let response;
+  try {
+    response = await invokeLLM({
+      messages: [
+        { role: "system", content: OCR_SYSTEM_PROMPT },
+        { role: "user", content },
+      ],
+      signal,
+    });
+  } catch (err: unknown) {
+    const isTimeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+    throw new Error(isTimeout ? "OCR 超时，请减少图片数量后重试" : `OCR 失败: ${err instanceof Error ? err.message : String(err)}`);
+  }
   const raw = response.choices[0]?.message?.content;
   return typeof raw === "string" ? raw.trim() : "";
 }
@@ -378,13 +394,21 @@ export const appRouter = router({
         }),
       )
       .mutation(async ({ input }) => {
-        const response = await invokeLLM({
-          messages: [
-            { role: "system", content: TRANSLATE_SYSTEM_PROMPT(input.target) },
-            { role: "user", content: JSON.stringify({ items: input.items }) },
-          ],
-          response_format: { type: "json_object" },
-        });
+        const signal = AbortSignal.timeout(45_000);
+        let response;
+        try {
+          response = await invokeLLM({
+            messages: [
+              { role: "system", content: TRANSLATE_SYSTEM_PROMPT(input.target) },
+              { role: "user", content: JSON.stringify({ items: input.items }) },
+            ],
+            response_format: { type: "json_object" },
+            signal,
+          });
+        } catch (err: unknown) {
+          const isTimeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+          throw new Error(isTimeout ? "翻译超时，请减少批次数量后重试" : `翻译失败: ${err instanceof Error ? err.message : String(err)}`);
+        }
         const raw = response.choices[0]?.message?.content;
         const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
         const arr = Array.isArray((parsed as { items?: unknown[] })?.items)

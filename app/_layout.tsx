@@ -70,6 +70,11 @@ export default function RootLayout() {
             // Retry failed requests once
             retry: 1,
           },
+          mutations: {
+            // AI mutations should not auto-retry — they are expensive and
+            // a timeout/error is usually not transient. Callers handle errors explicitly.
+            retry: 0,
+          },
         },
       }),
   );

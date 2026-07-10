@@ -174,16 +174,27 @@ pre, code { white-space: pre-wrap; font-size: 0.9em; }
     });
     true;
   `;
-  const extractScript = `
+  // Single stable script injected once — always includes tap + debounced selection.
+  // We always inject the combined script so extractMode changes do NOT reload the WebView.
+  // The onMessage handler below decides whether to forward selection events.
+  const combinedScript = `
     (function() {
+      if (window.__rn_injected) return;
+      window.__rn_injected = true;
+      var _selTimer = null;
       document.addEventListener('selectionchange', function() {
-        var text = window.getSelection ? window.getSelection().toString() : '';
-        if (window.ReactNativeWebView) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'selection', text: text }));
-        }
+        if (_selTimer) clearTimeout(_selTimer);
+        _selTimer = setTimeout(function() {
+          var text = window.getSelection ? window.getSelection().toString() : '';
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'selection', text: text }));
+          }
+        }, 300);
       });
       document.addEventListener('click', function() {
-        if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'tap' }));
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'tap' }));
+        }
       });
     })();
     true;
@@ -214,12 +225,13 @@ pre, code { white-space: pre-wrap; font-size: 0.9em; }
       javaScriptEnabled={true}
       domStorageEnabled={false}
       cacheEnabled={false}
-      injectedJavaScript={extractMode ? extractScript : injectedScript}
+      injectedJavaScript={combinedScript}
       onMessage={(event) => {
         try {
           const msg = JSON.parse(event.nativeEvent.data);
           if (msg.type === 'tap' && onTap) onTap();
-          if (msg.type === 'selection' && onSelection) onSelection(msg.text ?? '');
+          // Only forward selection events when in extract mode to avoid unnecessary state updates
+          if (msg.type === 'selection' && extractMode && onSelection) onSelection(msg.text ?? '');
         } catch {}
       }}
       onShouldStartLoadWithRequest={(req) =>

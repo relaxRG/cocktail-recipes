@@ -381,3 +381,9 @@
 - [x] AI 补全服务端超时保护：enrichRecipe/enrichBottle/enrich 接口添加 AbortSignal.timeout(25s)
 - [x] AI 补全客户端防卡死：recipe-form/bottle-form/bottles 添加 isMountedRef，组件卸载后不再 setState
 - [x] 自制品批量 AI 补全：服务端新增 enrichHomemade 接口，homemade.tsx 添加批量 AI 入口（带进度、逐条处理、失败跳过）
+- [x] 书库选区提取配方：WebView 注入稳定脚本（防抖 selectionchange 300ms），extractMode 切换不再触发 WebView 重载
+- [x] 服务端超时全覆盖：llmExtract(60s)、llmOcr(90s)、translate(45s) 均添加 AbortSignal.timeout
+- [x] 修复 recipe-form.tsx handleAiEnrich 函数体被截断的 bug（useEffect 插入导致函数不完整）
+- [x] QueryClient mutations 禁用自动重试（retry:0），避免 AI 请求失败后重复调用
+- [x] 修复 book-import.tsx 模块级 useBookStore() 调用（移至组件内），添加 isMountedRef 防止 OCR/翻译/导入链路卸载后 setState
+- [x] llm.ts 重试循环 4xx 不再重试（直接抛出），sleep 期间响应 abort signal

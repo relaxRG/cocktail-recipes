@@ -204,6 +204,33 @@ export default function RecipeFormScreen() {
     if (!recipeName || aiEnriching) return;
     setAiEnriching(true);
     setAiResult(null);
+    const ingNames = ingredients.map((i) => i.name).filter(Boolean);
+    enrichRecipeMutation.mutate(
+      {
+        name: recipeName,
+        nameEn: nameEn.trim() || undefined,
+        baseSpirit: baseSpirit || undefined,
+        ingredients: ingNames.length > 0 ? ingNames : undefined,
+        source: source.trim() || undefined,
+        story: story.trim() || undefined,
+        flavorDesc: flavorDesc.trim() || undefined,
+        method: method || undefined,
+      },
+      {
+        onSuccess: (result) => {
+          if (!isMountedRef.current) return;
+          setAiResult(result);
+          setAiEnriching(false);
+        },
+        onError: (err: unknown) => {
+          if (!isMountedRef.current) return;
+          setAiEnriching(false);
+          const msg = err instanceof Error ? err.message : "AI 分析失败，请重试";
+          Alert.alert("AI 补全失败", msg);
+        },
+      },
+    );
+  };
   /**
    * 打开表单时自动触发 AI 风味分析（仅一次）。
    * 结果直接点亮风味标签；低置信度时显示警告横幅。
@@ -245,34 +272,6 @@ export default function RecipeFormScreen() {
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 仅挂载时触发一次
-
-    const ingNames = ingredients.map((i) => i.name).filter(Boolean);
-    enrichRecipeMutation.mutate(
-      {
-        name: recipeName,
-        nameEn: nameEn.trim() || undefined,
-        baseSpirit: baseSpirit || undefined,
-        ingredients: ingNames.length > 0 ? ingNames : undefined,
-        source: source.trim() || undefined,
-        story: story.trim() || undefined,
-        flavorDesc: flavorDesc.trim() || undefined,
-        method: method || undefined,
-      },
-      {
-        onSuccess: (result) => {
-          if (!isMountedRef.current) return;
-          setAiResult(result);
-          setAiEnriching(false);
-        },
-        onError: (err: unknown) => {
-          if (!isMountedRef.current) return;
-          setAiEnriching(false);
-          const msg = err instanceof Error ? err.message : "AI 分析失败，请重试";
-          Alert.alert("AI 补全失败", msg);
-        },
-      },
-    );
-  };
 
   const applyAiResult = () => {
     if (!aiResult) return;
