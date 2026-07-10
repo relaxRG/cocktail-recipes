@@ -23,13 +23,15 @@ export default function BooksScreen() {
   const router = useRouter();
   const { lang } = useI18n();
   const zh = lang === "zh";
-  const { books, ready, deleteBook } = useBookStore();
+  const { books, ready, deleteBook, updateBook } = useBookStore();
 
   const [sortBy, setSortBy] = useState<"importedAt" | "title" | "progress">("importedAt");
   const [filterStatus, setFilterStatus] = useState<"all" | "unread" | "reading" | "completed">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [showFavoriteOnly, setShowFavoriteOnly] = useState(false);
+  const [actionBook, setActionBook] = useState<StoredBook | null>(null);
 
   const filteredAndSorted = useMemo(() => {
     let result = [...books];
@@ -49,6 +51,12 @@ export default function BooksScreen() {
     }
 
     // 排序
+    // 收藏过滤
+    if (showFavoriteOnly) {
+      result = result.filter((b) => b.isFavorite);
+    }
+
+    // 排序
     result.sort((a, b) => {
       if (sortBy === "title") {
         return (a.title || a.fileName).localeCompare(b.title || b.fileName);
@@ -60,7 +68,7 @@ export default function BooksScreen() {
     });
 
     return result;
-  }, [books, sortBy, filterStatus, searchQuery]);
+  }, [books, sortBy, filterStatus, searchQuery, showFavoriteOnly]);
 
   const tap = () => {
     if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -92,6 +100,32 @@ export default function BooksScreen() {
     router.push({ pathname: "/book-reader", params: { id: book.id } });
   };
 
+  const handleLongPress = useCallback(
+    (book: StoredBook) => {
+      tap();
+      setActionBook(book);
+    },
+    [],
+  );
+
+  const handleActionMenu = useCallback(
+    (action: "favorite" | "status" | "delete") => {
+      if (!actionBook) return;
+      if (action === "favorite") {
+        updateBook(actionBook.id, { isFavorite: !actionBook.isFavorite });
+      } else if (action === "status") {
+        const next: "unread" | "completed" = actionBook.readingStatus === "completed" ? "unread" : "completed";
+        updateBook(actionBook.id, { readingStatus: next });
+      } else if (action === "delete") {
+        setActionBook(null);
+        handleDelete(actionBook);
+        return;
+      }
+      setActionBook(null);
+    },
+    [actionBook, updateBook, handleDelete],
+  );
+
   const formatDate = (ts: number) => {
     const d = new Date(ts);
     if (lang === "zh") {
@@ -111,6 +145,7 @@ export default function BooksScreen() {
   };
 
   return (
+    <>
     <ScreenContainer>
       {/* Header */}
       <View className="px-5 pt-4 pb-3">
@@ -313,7 +348,7 @@ export default function BooksScreen() {
           renderItem={({ item: book, index }) => (
             <Pressable
               onPress={() => handleOpen(book)}
-              onLongPress={() => handleDelete(book)}
+              onLongPress={() => handleLongPress(book)}
               style={({ pressed }) => [pressed && { opacity: 0.75 }]}
             >
               <View
@@ -335,6 +370,11 @@ export default function BooksScreen() {
                   ]}
                 >
                   <IconSymbol name="book.fill" size={28} color={bookColor(book.id)} />
+                  {book.isFavorite && (
+                    <View style={styles.favBadge}>
+                      <IconSymbol name="heart.fill" size={8} color="#FF3B30" />
+                    </View>
+                  )}
                 </View>
 
                 <View style={{ flex: 1, marginLeft: 14 }}>
@@ -377,6 +417,22 @@ export default function BooksScreen() {
                       </Text>
                     </View>
                   ) : null}
+
+                  {/* Reading status badge */}
+                  {book.readingStatus === "completed" && (
+                    <View style={[styles.statusBadge, { backgroundColor: colors.success + "22" }]}>
+                      <Text style={[styles.statusBadgeText, { color: colors.success }]}>
+                        {zh ? "已读" : "Read"}
+                      </Text>
+                    </View>
+                  )}
+                  {book.readingStatus === "reading" && (
+                    <View style={[styles.statusBadge, { backgroundColor: colors.primary + "18" }]}>
+                      <Text style={[styles.statusBadgeText, { color: colors.primary }]}>
+                        {zh ? "阅读中" : "Reading"}
+                      </Text>
+                    </View>
+                  )}
                 </View>
 
                 <View style={{ justifyContent: "center", paddingLeft: 8 }}>
@@ -403,6 +459,58 @@ export default function BooksScreen() {
         />
       )}
     </ScreenContainer>
+
+    {/* ── 长按操作菜单 ── */}
+    {actionBook && (
+      <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+        <Pressable
+          style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(0,0,0,0.45)" }]}
+          onPress={() => setActionBook(null)}
+        />
+        <View style={[styles.actionSheet, { backgroundColor: colors.background, borderColor: colors.border }]}>
+          <View style={styles.actionSheetHandle} />
+          <Text style={[styles.actionSheetTitle, { color: colors.foreground }]} numberOfLines={2}>
+            {actionBook.title || actionBook.fileName}
+          </Text>
+          <Pressable
+            onPress={() => handleActionMenu("favorite")}
+            style={({ pressed }) => [styles.actionRow, { borderBottomColor: colors.border }, pressed && { opacity: 0.7 }]}
+          >
+            <IconSymbol name={actionBook.isFavorite ? "heart.fill" : "heart"} size={20} color={actionBook.isFavorite ? "#FF3B30" : colors.foreground} />
+            <Text style={[styles.actionRowText, { color: colors.foreground }]}>
+              {actionBook.isFavorite ? (zh ? "取消收藏" : "Remove Favorite") : (zh ? "加入收藏" : "Add to Favorites")}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => handleActionMenu("status")}
+            style={({ pressed }) => [styles.actionRow, { borderBottomColor: colors.border }, pressed && { opacity: 0.7 }]}
+          >
+            <IconSymbol name={actionBook.readingStatus === "completed" ? "book" : "checkmark.circle"} size={20} color={colors.foreground} />
+            <Text style={[styles.actionRowText, { color: colors.foreground }]}>
+              {actionBook.readingStatus === "completed" ? (zh ? "标记为未读" : "Mark as Unread") : (zh ? "标记为已读" : "Mark as Read")}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => handleActionMenu("delete")}
+            style={({ pressed }) => [styles.actionRow, { borderBottomWidth: 0 }, pressed && { opacity: 0.7 }]}
+          >
+            <IconSymbol name="trash" size={20} color={colors.error} />
+            <Text style={[styles.actionRowText, { color: colors.error }]}>
+              {zh ? "删除图书" : "Delete Book"}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setActionBook(null)}
+            style={({ pressed }) => [styles.cancelBtn, { backgroundColor: colors.surface }, pressed && { opacity: 0.7 }]}
+          >
+            <Text style={[styles.cancelBtnText, { color: colors.foreground }]}>
+              {zh ? "取消" : "Cancel"}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    )}
+    </>
   );
 }
 
@@ -541,5 +649,79 @@ const styles = StyleSheet.create({
   separatorLine: {
     height: StyleSheet.hairlineWidth,
     marginLeft: 86,
+  },
+  favBadge: {
+    position: "absolute",
+    bottom: 4,
+    right: 4,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "rgba(255,255,255,0.9)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statusBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 4,
+  },
+  statusBadgeText: {
+    fontSize: 10,
+    fontWeight: "600",
+    lineHeight: 14,
+  },
+  actionSheet: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingBottom: 34,
+  },
+  actionSheetHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "#C7C7CC",
+    alignSelf: "center",
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  actionSheetTitle: {
+    fontSize: 13,
+    fontWeight: "500",
+    textAlign: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    opacity: 0.6,
+  },
+  actionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  actionRowText: {
+    fontSize: 16,
+    fontWeight: "400",
+    lineHeight: 22,
+  },
+  cancelBtn: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  cancelBtnText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

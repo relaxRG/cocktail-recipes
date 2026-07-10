@@ -60,6 +60,12 @@ const MAPPING = {
   "globe": "language",
   "icloud.fill": "cloud",
   "info.circle.fill": "info",
+  "heart": "favorite-border",
+  "heart.fill": "favorite",
+  "trash": "delete-outline",
+  "book": "book",
+  "arrow.up.arrow.down": "swap-vert",
+  "line.3.horizontal.decrease": "filter-list",
 } as IconMapping;
 
 /**

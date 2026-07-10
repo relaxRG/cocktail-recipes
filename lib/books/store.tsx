@@ -45,6 +45,8 @@ export interface StoredBook {
   noteCount?: number;
   /** 高亮数量 */
   highlightCount?: number;
+  /** 已书签的章节索引列表 */
+  bookmarks?: number[];
 }
 
 /** Chapter HTML stored under separate key to avoid bloating the books array */
@@ -61,6 +63,7 @@ interface BookStore {
   loadChapter: (bookId: string, idx: number) => Promise<string | null>;
   deleteBook: (id: string) => void;
   updatePosition: (id: string, position: number, chapter?: number) => void;
+  updateBook: (id: string, patch: Partial<Pick<StoredBook, "isFavorite" | "readingStatus" | "tags" | "bookmarks">>) => void;
 }
 
 const Ctx = createContext<BookStore>({
@@ -71,6 +74,7 @@ const Ctx = createContext<BookStore>({
   loadChapter: async () => null,
   deleteBook: () => {},
   updatePosition: () => {},
+  updateBook: () => {},
 });
 
 export function BookStoreProvider({ children }: { children: React.ReactNode }) {
@@ -184,8 +188,19 @@ export function BookStoreProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const updateBook = useCallback(
+    (id: string, patch: Partial<Pick<StoredBook, "isFavorite" | "readingStatus" | "tags" | "bookmarks">>) => {
+      setBooks((prev) => {
+        const next = prev.map((b) => b.id === id ? { ...b, ...patch } : b);
+        persist(next);
+        return next;
+      });
+    },
+    [],
+  );
+
   return (
-    <Ctx.Provider value={{ books, ready, addBook, addBookWithHtml, loadChapter, deleteBook, updatePosition }}>
+    <Ctx.Provider value={{ books, ready, addBook, addBookWithHtml, loadChapter, deleteBook, updatePosition, updateBook }}>
       {children}
     </Ctx.Provider>
   );
