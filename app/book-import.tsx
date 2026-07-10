@@ -21,7 +21,7 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import {
   batchImagesForOcr,
-  extractEpub,
+  extractEpubForReading,
   extractEpubImages,
   extractPdf,
   renderPdfPagesToImages,
@@ -186,7 +186,7 @@ export default function BookImportScreen() {
 
   const { addRecipe, updateRecipe, recipes } = useRecipeStore();
   const { addPrep, preps, sections, types } = useHomemadeStore();
-  const { addBook } = useBookStore();
+  const { addBook, addBookWithHtml } = useBookStore();
 
   const existingNames = useMemo(() => {
     const set = new Set<string>();
@@ -207,7 +207,7 @@ export default function BookImportScreen() {
 
   // ─── File loading ───────────────────────────────────────────────────────────
 
-  const loadBookIntoReader = useCallback((book: ExtractedBook, fileName: string, format = "epub") => {
+  const loadPlainBookIntoReader = useCallback((book: ExtractedBook, fileName: string, format = "epub") => {
     const title = book.title || fileName.replace(/\.(epub|pdf)$/i, "");
     setBookTitle(title);
     const newBlocks = buildReadingBlocks(book.sections);
@@ -215,13 +215,13 @@ export default function BookImportScreen() {
     setCurrentChapter(0);
     setScanProgress(null);
     setPhase("reading");
-    // Save to persistent book store (fire and forget — reading starts immediately)
     currentBookSectionsRef.current = book.sections;
     addBook({
       title,
       fileName,
       format,
       sectionCount: book.sections.length,
+      hasHtml: false,
       sections: book.sections,
     });
   }, [addBook]);
@@ -282,14 +282,14 @@ export default function BookImportScreen() {
         title: pending.name.replace(/\.(epub|pdf)$/i, ""),
         sections: [{ title: "", text }],
       };
-      loadBookIntoReader(syntheticBook, pending.name, pending.isPdf ? "scanned-pdf" : "scanned-epub");
+      loadPlainBookIntoReader(syntheticBook, pending.name, pending.isPdf ? "scanned-pdf" : "scanned-epub");
     } catch (e) {
       setLoadError(
         (zh ? "AI 识别失败：" : "AI OCR failed: ") + (e instanceof Error ? e.message : String(e)),
       );
       setPhase("idle");
     }
-  }, [zh, ocrMutation, loadBookIntoReader]);
+  }, [zh, ocrMutation, loadPlainBookIntoReader]);
 
   const pickFile = useCallback(async () => {
     tap();
@@ -338,8 +338,19 @@ export default function BookImportScreen() {
       }
 
       setLoadStatus(zh ? "正在解析文件…" : "Parsing file…");
-      const book: ExtractedBook = isEpub ? await extractEpub(buffer) : await extractPdf(buffer);
-      loadBookIntoReader(book, asset.name, isPdf ? "pdf" : "epub");
+      if (isEpub) {
+        const htmlBook = await extractEpubForReading(buffer);
+        const title = htmlBook.title || asset.name.replace(/\.epub$/i, "");
+        setLoadStatus(zh ? "正在保存章节…" : "Saving chapters…");
+        const stored = await addBookWithHtml(
+          { title, fileName: asset.name, format: "epub", sectionCount: htmlBook.chapters.length, css: htmlBook.css },
+          htmlBook.chapters,
+        );
+        router.replace(`/book-reader?id=${stored.id}`);
+      } else {
+        const book = await extractPdf(buffer);
+        loadPlainBookIntoReader(book, asset.name, "pdf");
+      }
     } catch (e) {
       setOcrOffer(true);
       setLoadError(
@@ -349,7 +360,7 @@ export default function BookImportScreen() {
       );
       setPhase("idle");
     }
-  }, [zh, runOcr, loadBookIntoReader]);
+  }, [zh, runOcr, loadPlainBookIntoReader, addBookWithHtml, router]);
 
   // ─── AI scanning during reading ─────────────────────────────────────────────
 

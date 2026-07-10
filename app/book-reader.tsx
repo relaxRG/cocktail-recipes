@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Platform,
@@ -18,6 +18,7 @@ import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { useBookStore } from "@/lib/books/store";
 import { detectRecipesInText, RecipeCandidate } from "@/lib/import/detect";
+import { htmlToText } from "@/lib/import/extract";
 import { ParsedRecipe } from "@/lib/recipes/parser";
 import { genId } from "@/lib/recipes/types";
 import { useRecipeStore } from "@/lib/recipes/store";
@@ -26,15 +27,54 @@ import { classifyPrepGroup, guessPrepType } from "@/lib/homemade/types";
 import { normalizeCodexFamilyDecl } from "@/lib/recipes/lineage";
 import { trpc } from "@/lib/trpc";
 
-interface ReadingBlock {
+/* ─── Reading CSS injected into HTML renderer ─────────────────────────────── */
+
+const READER_CSS = `
+  body { margin: 0; padding: 0; font-family: -apple-system, 'Georgia', serif; line-height: 1.75; }
+  * { box-sizing: border-box; max-width: 100%; }
+  img { display: block; max-width: 100%; height: auto; margin: 12px auto; border-radius: 8px; }
+  h1, h2, h3, h4 { line-height: 1.3; margin-top: 1.5em; margin-bottom: 0.5em; }
+  p { margin: 0 0 0.9em; }
+  ul, ol { padding-left: 1.4em; margin: 0 0 0.9em; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  td, th { border: 1px solid #ddd; padding: 6px 10px; }
+  a { color: inherit; text-decoration: none; }
+  .recipe-highlight { background: rgba(255,149,0,0.12); border-left: 3px solid #FF9500; padding-left: 8px; border-radius: 4px; }
+  .selected-highlight { background: rgba(0,122,255,0.12); border-left: 3px solid #007AFF; padding-left: 8px; border-radius: 4px; }
+`;
+
+/* ─── HTML chapter renderer (web-only) ────────────────────────────────────── */
+
+function HtmlChapter({ html, css, fontSize }: { html: string; css: string; fontSize: number }) {
+  if (Platform.OS !== "web") {
+    // Native fallback: plain text
+    const text = htmlToText(html);
+    return (
+      <Text style={{ fontSize, lineHeight: fontSize * 1.75, color: "#000" }}>
+        {text}
+      </Text>
+    );
+  }
+
+  const fullHtml = `<style>${READER_CSS}\n${css}\nbody { font-size: ${fontSize}px; }</style>${html}`;
+  return (
+    <div
+      style={{ fontSize, lineHeight: 1.75 }}
+      // eslint-disable-next-line react-native/no-inline-styles
+      dangerouslySetInnerHTML={{ __html: fullHtml }}
+    />
+  );
+}
+
+/* ─── Paragraph-range selection state ─────────────────────────────────────── */
+
+interface TextBlock {
   id: string;
-  type: "heading" | "paragraph";
   text: string;
-  sectionTitle: string;
   isCandidate: boolean;
-  candidateConfidence: number;
-  selected: boolean;
+  confidence: number;
   candidate?: RecipeCandidate;
+  selected: boolean;
 }
 
 interface ReviewItem {
@@ -48,50 +88,11 @@ interface ReviewItem {
   showTranslated: boolean;
 }
 
-function buildReadingBlocks(sections: { title: string; text: string }[]): ReadingBlock[] {
-  const blocks: ReadingBlock[] = [];
-  for (const section of sections) {
-    if (section.title && section.title.length < 80) {
-      blocks.push({
-        id: genId(),
-        type: "heading",
-        text: section.title,
-        sectionTitle: section.title,
-        isCandidate: false,
-        candidateConfidence: 0,
-        selected: false,
-      });
-    }
-    const lines = section.text.split(/\n+/).filter((l) => l.trim().length > 0);
-    let buf: string[] = [];
-    const flush = () => {
-      if (buf.length === 0) return;
-      const text = buf.join("\n").trim();
-      if (text.length > 0) {
-        blocks.push({
-          id: genId(),
-          type: "paragraph",
-          text,
-          sectionTitle: section.title,
-          isCandidate: false,
-          candidateConfidence: 0,
-          selected: false,
-        });
-      }
-      buf = [];
-    };
-    for (const line of lines) {
-      buf.push(line);
-      if (buf.join("\n").length >= 280 || line.startsWith("##")) flush();
-    }
-    flush();
-  }
-  return blocks;
-}
-
 const isAscii = (s: string) => /^[\x00-\x7F]+$/.test(s);
 
-type Phase = "reading" | "confirm" | "done";
+type Phase = "reading" | "select" | "confirm" | "done";
+
+/* ─── Main screen ──────────────────────────────────────────────────────────── */
 
 export default function BookReaderScreen() {
   const colors = useColors();
@@ -101,27 +102,135 @@ export default function BookReaderScreen() {
   const zh = lang === "zh";
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const { books, updatePosition } = useBookStore();
+  const { books, loadChapter, updatePosition } = useBookStore();
   const book = books.find((b) => b.id === id);
 
   const { addRecipe, updateRecipe, recipes } = useRecipeStore();
   const { addPrep, preps, sections, types } = useHomemadeStore();
-
   const translateMutation = trpc.bookImport.translate.useMutation();
   const enrichRecipeMutation = trpc.lookup.enrichRecipe.useMutation();
 
-  const [blocks, setBlocks] = useState<ReadingBlock[]>(() =>
-    book ? buildReadingBlocks(book.sections) : [],
-  );
-  const [scanning, setScanning] = useState(false);
-  const [scanProgress, setScanProgress] = useState<{ done: number; total: number } | null>(null);
-  const [scanRange, setScanRange] = useState<{ from: number; to: number } | null>(null);
-  const [showRangePicker, setShowRangePicker] = useState(false);
+  /* Chapter navigation */
+  const [chapterIdx, setChapterIdx] = useState(book?.lastChapter ?? 0);
+  const [chapterHtml, setChapterHtml] = useState<string | null>(null);
+  const [loadingChapter, setLoadingChapter] = useState(false);
+  const [tocOpen, setTocOpen] = useState(false);
+
+  /* Font size */
+  const [fontSize, setFontSize] = useState(16);
+
+  /* Chrome visibility (tap to hide/show) */
+  const [chromeVisible, setChromeVisible] = useState(true);
+  const chromeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* Selection mode */
   const [phase, setPhase] = useState<Phase>("reading");
+  const [blocks, setBlocks] = useState<TextBlock[]>([]);
+  const [scanning, setScanning] = useState(false);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [importResult, setImportResult] = useState<{ recipes: number; preps: number } | null>(null);
   const [reviewError, setReviewError] = useState("");
 
+  const tap = () => {
+    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  /* Load chapter HTML */
+  useEffect(() => {
+    if (!book) return;
+    setLoadingChapter(true);
+    setChapterHtml(null);
+
+    if (book.hasHtml) {
+      loadChapter(book.id, chapterIdx).then((html) => {
+        setChapterHtml(html ?? "<p>(空章节)</p>");
+        setLoadingChapter(false);
+      });
+    } else {
+      // Legacy plain-text book: render as paragraphs
+      const section = book.sections[chapterIdx];
+      setChapterHtml(null);
+      setLoadingChapter(false);
+      if (section) {
+        // Build minimal HTML from plain text
+        const html = section.text
+          .split(/\n+/)
+          .filter((l) => l.trim())
+          .map((l) => `<p>${l.trim()}</p>`)
+          .join("\n");
+        setChapterHtml(html);
+      }
+    }
+  }, [book, chapterIdx, loadChapter]);
+
+  /* Persist position when chapter changes */
+  useEffect(() => {
+    if (book) updatePosition(book.id, 0, chapterIdx);
+  }, [chapterIdx]);
+
+  /* Auto-hide chrome after 4s */
+  const showChrome = useCallback(() => {
+    setChromeVisible(true);
+    if (chromeTimer.current) clearTimeout(chromeTimer.current);
+    chromeTimer.current = setTimeout(() => setChromeVisible(false), 4000);
+  }, []);
+
+  const handleTap = useCallback(() => {
+    if (phase !== "reading") return;
+    showChrome();
+  }, [phase, showChrome]);
+
+  useEffect(() => {
+    showChrome();
+    return () => { if (chromeTimer.current) clearTimeout(chromeTimer.current); };
+  }, []);
+
+  const totalChapters = book?.sections.length ?? 0;
+  const progress = totalChapters > 0 ? (chapterIdx + 1) / totalChapters : 0;
+
+  /* ── Selection mode: build text blocks from current chapter ── */
+  const enterSelectMode = useCallback(() => {
+    tap();
+    const html = chapterHtml ?? "";
+    const text = htmlToText(html);
+    const paras = text.split(/\n+/).filter((l) => l.trim().length > 10);
+    const newBlocks: TextBlock[] = paras.map((p) => ({
+      id: genId(),
+      text: p.trim(),
+      isCandidate: false,
+      confidence: 0,
+      selected: false,
+    }));
+    // Quick local scan
+    const fullText = paras.join("\n\n");
+    const candidates = detectRecipesInText(fullText, book?.sections[chapterIdx]?.title ?? "");
+    for (const cand of candidates) {
+      const rawLower = cand.raw.toLowerCase();
+      let bestIdx = -1, bestScore = 0;
+      for (let i = 0; i < newBlocks.length; i++) {
+        const words = rawLower.split(/\s+/).filter((w) => w.length > 3);
+        let overlap = 0;
+        for (const w of words) if (newBlocks[i].text.toLowerCase().includes(w)) overlap++;
+        const score = words.length > 0 ? overlap / words.length : 0;
+        if (score > bestScore) { bestScore = score; bestIdx = i; }
+      }
+      if (bestIdx >= 0 && bestScore > 0.25) {
+        newBlocks[bestIdx] = { ...newBlocks[bestIdx], isCandidate: true, confidence: cand.confidence, candidate: cand };
+      }
+    }
+    setBlocks(newBlocks);
+    setPhase("select");
+  }, [chapterHtml, book, chapterIdx]);
+
+  const toggleBlock = useCallback((blockId: string) => {
+    tap();
+    setBlocks((prev) => prev.map((b) => b.id === blockId ? { ...b, selected: !b.selected } : b));
+  }, []);
+
+  const selectedCount = blocks.filter((b) => b.selected).length;
+  const candidateCount = blocks.filter((b) => b.isCandidate).length;
+
+  /* ── Confirm phase ── */
   const existingNames = useMemo(() => {
     const set = new Set<string>();
     for (const r of recipes) {
@@ -134,114 +243,18 @@ export default function BookReaderScreen() {
     return set;
   }, [recipes, preps]);
 
-  const tap = () => {
-    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  };
-
-  const candidateCount = blocks.filter((b) => b.isCandidate).length;
-  const selectedCount = blocks.filter((b) => b.selected).length;
-
-  const runLocalScan = useCallback(() => {
-    setBlocks((prev) => {
-      const next = [...prev];
-      const sectionMap = new Map<string, { indices: number[]; text: string }>();
-      for (let i = 0; i < next.length; i++) {
-        const b = next[i];
-        if (b.type === "heading") continue;
-        const key = b.sectionTitle;
-        if (!sectionMap.has(key)) sectionMap.set(key, { indices: [], text: "" });
-        const s = sectionMap.get(key)!;
-        s.indices.push(i);
-        s.text += (s.text ? "\n\n" : "") + b.text;
-      }
-      for (const [title, { indices, text }] of sectionMap) {
-        const candidates = detectRecipesInText(text, title);
-        if (candidates.length === 0) continue;
-        for (const cand of candidates) {
-          const rawLower = cand.raw.toLowerCase();
-          let bestIdx = -1, bestScore = 0;
-          for (const i of indices) {
-            const blockLower = next[i].text.toLowerCase();
-            let overlap = 0;
-            const words = rawLower.split(/\s+/).filter((w) => w.length > 3);
-            for (const w of words) if (blockLower.includes(w)) overlap++;
-            const score = words.length > 0 ? overlap / words.length : 0;
-            if (score > bestScore) { bestScore = score; bestIdx = i; }
-          }
-          if (bestIdx >= 0 && bestScore > 0.25) {
-            next[bestIdx] = { ...next[bestIdx], isCandidate: true, candidateConfidence: cand.confidence, candidate: cand };
-          }
-        }
-      }
-      return next;
-    });
-  }, []);
-
-  const runAiScan = useCallback(async (range?: { from: number; to: number }) => {
-    if (scanning) return;
-    setScanning(true);
-    const allParas = blocks.filter((b) => b.type === "paragraph");
-    const effectiveRange = range ?? scanRange;
-    let paras = allParas;
-    if (effectiveRange) {
-      const headings = blocks.filter((b) => b.type === "heading");
-      const fromSection = headings[Math.max(0, effectiveRange.from - 1)]?.sectionTitle ?? "";
-      const toSection = headings[Math.min(headings.length - 1, effectiveRange.to - 1)]?.sectionTitle ?? "";
-      paras = allParas.filter((b) => b.sectionTitle >= fromSection && b.sectionTitle <= toSection);
-      if (paras.length === 0) paras = allParas;
-    }
-    setScanProgress({ done: 0, total: paras.length });
-    try {
-      const chunkSize = 20;
-      let done = 0;
-      for (let i = 0; i < paras.length; i += chunkSize) {
-        const chunk = paras.slice(i, i + chunkSize);
-        const candidates = detectRecipesInText(chunk.map((b) => b.text).join("\n\n"), "");
-        setBlocks((prev) => {
-          const next = [...prev];
-          for (const cand of candidates) {
-            const rawWords = cand.raw.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
-            for (const b of chunk) {
-              const idx = next.findIndex((nb) => nb.id === b.id);
-              if (idx < 0) continue;
-              const blockLower = next[idx].text.toLowerCase();
-              let overlap = 0;
-              for (const w of rawWords) if (blockLower.includes(w)) overlap++;
-              const score = rawWords.length > 0 ? overlap / rawWords.length : 0;
-              if (score > 0.3 && (!next[idx].isCandidate || cand.confidence > next[idx].candidateConfidence)) {
-                next[idx] = { ...next[idx], isCandidate: true, candidateConfidence: cand.confidence, candidate: cand };
-              }
-            }
-          }
-          return next;
-        });
-        done += chunk.length;
-        setScanProgress({ done, total: paras.length });
-        await new Promise((r) => setTimeout(r, 0));
-      }
-    } finally {
-      setScanning(false);
-      setScanProgress(null);
-    }
-  }, [scanning, blocks, scanRange]);
-
-  const toggleBlock = useCallback((id: string) => {
-    tap();
-    setBlocks((prev) => prev.map((b) => (b.id === id ? { ...b, selected: !b.selected } : b)));
-  }, []);
-
   const proceedToConfirm = useCallback(() => {
     tap();
-    const selected = blocks.filter((b) => b.selected && b.type === "paragraph");
+    const selected = blocks.filter((b) => b.selected);
     if (selected.length === 0) return;
     const items: ReviewItem[] = selected.map((b) => {
       const cand: RecipeCandidate = b.candidate ?? (() => {
-        const detected = detectRecipesInText(b.text, b.sectionTitle);
+        const detected = detectRecipesInText(b.text, "");
         return detected[0] ?? {
           id: genId(), kind: "cocktail" as const,
           name: b.text.split("\n")[0].slice(0, 48).trim(),
           parsed: { name: b.text.split("\n")[0].slice(0, 48).trim(), ingredients: [], steps: b.text, garnish: "", glass: "", method: "", source: "", variantOf: "", codexFamily: "", baseSpirit: "" },
-          raw: b.text, sectionTitle: b.sectionTitle, confidence: 0.5,
+          raw: b.text, sectionTitle: "", confidence: 0.5,
         };
       })();
       const duplicate = !!cand.name && existingNames.has(cand.name.toLowerCase().trim());
@@ -259,8 +272,8 @@ export default function BookReaderScreen() {
 
   const checkedCount = reviewItems.filter((r) => r.checked).length;
   const translating = translateMutation.isPending;
-  const anyTranslated = reviewItems.some((r) => r.translated);
   const untranslatedChecked = reviewItems.some((r) => r.checked && !r.translated);
+  const anyTranslated = reviewItems.some((r) => r.translated);
 
   const doTranslate = useCallback(async () => {
     tap();
@@ -284,13 +297,7 @@ export default function BookReaderScreen() {
           const t = res.items.find((it) => it.id === r.candidate.id);
           if (!t) return r;
           const orig = r.candidate.parsed;
-          const translated: ParsedRecipe = {
-            ...orig, name: t.name || orig.name,
-            ingredients: t.ingredients.length === orig.ingredients.length
-              ? t.ingredients.map((ing, idx) => ({ id: orig.ingredients[idx].id, name: ing.name || orig.ingredients[idx].name, amount: ing.amount || orig.ingredients[idx].amount }))
-              : t.ingredients.map((ing) => ({ id: genId(), ...ing })),
-            steps: t.steps || orig.steps, garnish: t.garnish, glass: t.glass || orig.glass, method: t.method || orig.method,
-          };
+          const translated: ParsedRecipe = { ...orig, name: t.name || orig.name, ingredients: t.ingredients.length === orig.ingredients.length ? t.ingredients.map((ing, idx) => ({ id: orig.ingredients[idx].id, name: ing.name || orig.ingredients[idx].name, amount: ing.amount || orig.ingredients[idx].amount })) : t.ingredients.map((ing) => ({ id: genId(), ...ing })), steps: t.steps || orig.steps, garnish: t.garnish, glass: t.glass || orig.glass, method: t.method || orig.method };
           return { ...r, translated, showTranslated: true };
         }));
       }
@@ -332,6 +339,7 @@ export default function BookReaderScreen() {
     if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, [reviewItems, book, zh, addRecipe, updateRecipe, addPrep, sections, types, enrichRecipeMutation]);
 
+  /* ── Not found ── */
   if (!book) {
     return (
       <ScreenContainer>
@@ -345,81 +353,105 @@ export default function BookReaderScreen() {
     );
   }
 
+  /* ─── Render ─────────────────────────────────────────────────────────────── */
+
+  const chapterTitles = book.sections.map((s) => s.title);
+
   return (
     <ScreenContainer edges={["top", "left", "right"]}>
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border, paddingBottom: phase === "reading" ? 0 : 8 }]}>
-        <Pressable
-          onPress={() => {
-            tap();
-            if (phase === "confirm") { setPhase("reading"); return; }
-            router.back();
-          }}
-          hitSlop={8}
-          style={({ pressed }) => [pressed && { opacity: 0.6 }]}
-        >
-          <IconSymbol name={phase === "confirm" ? "chevron.left" : "chevron.left"} size={20} color={colors.foreground} />
-        </Pressable>
 
-        <View style={{ flex: 1, paddingHorizontal: 12 }}>
-          <Text style={{ fontSize: 15, fontWeight: "600", color: colors.foreground }} numberOfLines={1}>
+      {/* ── Top chrome (auto-hide) ── */}
+      {chromeVisible && phase === "reading" && (
+        <View style={[styles.topBar, { backgroundColor: colors.background + "F0", borderBottomColor: colors.border }]}>
+          <Pressable onPress={() => router.back()} hitSlop={8} style={({ pressed }) => [pressed && { opacity: 0.6 }]}>
+            <IconSymbol name="chevron.left" size={20} color={colors.foreground} />
+          </Pressable>
+          <Text style={[styles.topBarTitle, { color: colors.foreground }]} numberOfLines={1}>
             {book.title || book.fileName}
           </Text>
-          {phase === "reading" && (
-            <Text style={{ fontSize: 12, color: colors.muted, marginTop: 1 }} numberOfLines={1}>
-              {scanning
-                ? scanProgress ? `${zh ? "扫描中" : "Scanning"} ${scanProgress.done}/${scanProgress.total}…` : (zh ? "扫描中…" : "Scanning…")
-                : candidateCount > 0
-                  ? zh ? `${candidateCount} 处候选 · ${selectedCount} 已选` : `${candidateCount} candidates · ${selectedCount} selected`
-                  : zh ? "点击段落选取配方" : "Tap paragraphs to select"}
-            </Text>
-          )}
+          <View style={{ flexDirection: "row", gap: 4 }}>
+            {/* Font size controls */}
+            <Pressable onPress={() => { tap(); setFontSize((f) => Math.max(12, f - 1)); }} hitSlop={8} style={[styles.iconBtn, { backgroundColor: colors.surface }]}>
+              <Text style={{ fontSize: 11, color: colors.muted, fontWeight: "600" }}>A−</Text>
+            </Pressable>
+            <Pressable onPress={() => { tap(); setFontSize((f) => Math.min(24, f + 1)); }} hitSlop={8} style={[styles.iconBtn, { backgroundColor: colors.surface }]}>
+              <Text style={{ fontSize: 14, color: colors.foreground, fontWeight: "600" }}>A+</Text>
+            </Pressable>
+            {/* TOC */}
+            <Pressable onPress={() => { tap(); setTocOpen(true); }} hitSlop={8} style={[styles.iconBtn, { backgroundColor: colors.surface }]}>
+              <IconSymbol name="list.bullet" size={16} color={colors.foreground} />
+            </Pressable>
+          </View>
         </View>
+      )}
 
-        {phase === "reading" && (
-          <Pressable
-            onPress={() => { tap(); setShowRangePicker(true); }}
-            disabled={scanning}
-            hitSlop={8}
-            style={({ pressed }) => [styles.scanBtn, { backgroundColor: scanning ? colors.border : colors.primary + "18", borderColor: colors.primary + "44" }, pressed && { opacity: 0.7 }]}
-          >
-            {scanning ? <ActivityIndicator size="small" color={colors.primary} /> : <IconSymbol name="sparkles" size={14} color={colors.primary} />}
-            <Text style={{ fontSize: 12, fontWeight: "600", color: scanning ? colors.muted : colors.primary }}>
-              {zh ? "AI 扫描" : "AI Scan"}
-            </Text>
-            {scanRange && <Text style={{ fontSize: 10, color: colors.primary }}>{scanRange.from}-{scanRange.to}</Text>}
+      {/* ── Select mode header ── */}
+      {phase === "select" && (
+        <View style={[styles.topBar, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+          <Pressable onPress={() => { tap(); setPhase("reading"); setBlocks([]); }} hitSlop={8} style={({ pressed }) => [pressed && { opacity: 0.6 }]}>
+            <IconSymbol name="xmark" size={20} color={colors.foreground} />
           </Pressable>
-        )}
-        {phase === "confirm" && (
-          <Text style={{ color: colors.muted, fontSize: 13 }}>
+          <Text style={[styles.topBarTitle, { color: colors.foreground }]} numberOfLines={1}>
+            {zh ? "选取配方段落" : "Select recipe paragraphs"}
+          </Text>
+          <Text style={{ fontSize: 12, color: colors.muted }}>
+            {zh ? `已选 ${selectedCount}` : `${selectedCount} selected`}
+          </Text>
+        </View>
+      )}
+
+      {/* ── Confirm phase header ── */}
+      {phase === "confirm" && (
+        <View style={[styles.topBar, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+          <Pressable onPress={() => { tap(); setPhase("select"); }} hitSlop={8} style={({ pressed }) => [pressed && { opacity: 0.6 }]}>
+            <IconSymbol name="chevron.left" size={20} color={colors.foreground} />
+          </Pressable>
+          <Text style={[styles.topBarTitle, { color: colors.foreground }]}>
+            {zh ? "确认导入" : "Review Import"}
+          </Text>
+          <Text style={{ fontSize: 12, color: colors.muted }}>
             {zh ? `已选 ${checkedCount}` : `${checkedCount} selected`}
           </Text>
-        )}
-      </View>
+        </View>
+      )}
 
-      {/* Reading Phase */}
+      {/* ── Reading phase ── */}
       {phase === "reading" && (
-        <>
-          {scanning && scanProgress && (
-            <View style={{ paddingHorizontal: 16, paddingVertical: 4 }}>
-              <View style={{ height: 2, backgroundColor: colors.border, borderRadius: 1, overflow: "hidden" }}>
-                <View style={{ height: 2, backgroundColor: colors.primary, width: `${Math.round((scanProgress.done / Math.max(scanProgress.total, 1)) * 100)}%`, borderRadius: 1 }} />
-              </View>
+        <Pressable style={{ flex: 1 }} onPress={handleTap} accessible={false}>
+          {loadingChapter ? (
+            <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+              <ActivityIndicator color={colors.primary} />
             </View>
+          ) : (
+            <ScrollView
+              contentContainerStyle={{
+                paddingHorizontal: 20,
+                paddingTop: chromeVisible ? 8 : 16,
+                paddingBottom: 100 + insets.bottom,
+              }}
+              showsVerticalScrollIndicator={false}
+            >
+              {chapterHtml ? (
+                <HtmlChapter
+                  html={chapterHtml}
+                  css={book.css ?? ""}
+                  fontSize={fontSize}
+                />
+              ) : (
+                <Text style={{ color: colors.muted, textAlign: "center", marginTop: 40 }}>
+                  {zh ? "章节为空" : "Empty chapter"}
+                </Text>
+              )}
+            </ScrollView>
           )}
+        </Pressable>
+      )}
 
-          <ScrollView
-            contentContainerStyle={{ paddingHorizontal: 22, paddingTop: 16, paddingBottom: 120 + insets.bottom }}
-            showsVerticalScrollIndicator
-          >
+      {/* ── Select phase: paragraph list ── */}
+      {phase === "select" && (
+        <>
+          <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 120 + insets.bottom }}>
             {blocks.map((block) => {
-              if (block.type === "heading") {
-                return (
-                  <Text key={block.id} style={[styles.chapterHeading, { color: colors.foreground, borderBottomColor: colors.border }]}>
-                    {block.text}
-                  </Text>
-                );
-              }
               const isSelected = block.selected;
               const isHint = block.isCandidate && !isSelected;
               return (
@@ -446,7 +478,7 @@ export default function BookReaderScreen() {
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 3, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 5, backgroundColor: "#FF9500" }}>
                           <IconSymbol name="sparkles" size={9} color="#FFF" />
                           <Text style={{ color: "#FFF", fontSize: 10, fontWeight: "600" }}>
-                            {block.candidateConfidence >= 0.7 ? (zh ? "高置信配方" : "Recipe") : block.candidateConfidence >= 0.5 ? (zh ? "疑似配方" : "Possible") : (zh ? "参考" : "Hint")}
+                            {block.confidence >= 0.7 ? (zh ? "高置信配方" : "Recipe") : block.confidence >= 0.5 ? (zh ? "疑似配方" : "Possible") : (zh ? "参考" : "Hint")}
                           </Text>
                         </View>
                       )}
@@ -459,12 +491,10 @@ export default function BookReaderScreen() {
               );
             })}
           </ScrollView>
-
           <View style={[styles.footer, { backgroundColor: colors.background, borderTopColor: colors.border, paddingBottom: Math.max(insets.bottom, 16) }]}>
-            {candidateCount === 0 && !scanning && (
-              <Pressable onPress={() => { tap(); runLocalScan(); }} style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, paddingVertical: 8 }}>
-                <IconSymbol name="magnifyingglass" size={14} color={colors.muted} />
-                <Text style={{ color: colors.muted, fontSize: 12 }}>{zh ? "快速检测配方候选" : "Detect recipe candidates"}</Text>
+            {candidateCount > 0 && selectedCount === 0 && (
+              <Pressable onPress={() => { tap(); setBlocks((prev) => prev.map((b) => b.isCandidate && b.confidence >= 0.5 ? { ...b, selected: true } : b)); }} style={{ alignItems: "center", paddingVertical: 6 }}>
+                <Text style={{ color: colors.primary, fontSize: 13 }}>{zh ? `选中全部 ${candidateCount} 个候选` : `Select all ${candidateCount} candidates`}</Text>
               </Pressable>
             )}
             <Pressable
@@ -477,26 +507,21 @@ export default function BookReaderScreen() {
                 {selectedCount === 0 ? (zh ? "点击段落选取配方" : "Tap paragraphs to select") : zh ? `导入选中（${selectedCount}）` : `Import (${selectedCount})`}
               </Text>
             </Pressable>
-            {candidateCount > 0 && selectedCount === 0 && (
-              <Pressable onPress={() => { tap(); setBlocks((prev) => prev.map((b) => (b.isCandidate && b.candidateConfidence >= 0.5 ? { ...b, selected: true } : b))); }} style={{ alignItems: "center", paddingVertical: 6 }}>
-                <Text style={{ color: colors.primary, fontSize: 13 }}>{zh ? `选中全部 ${candidateCount} 个候选` : `Select all ${candidateCount} candidates`}</Text>
-              </Pressable>
-            )}
           </View>
         </>
       )}
 
-      {/* Confirm Phase */}
+      {/* ── Confirm phase ── */}
       {phase === "confirm" && (
         <>
           <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingBottom: 8, gap: 12 }}>
             <Text style={{ flex: 1, fontSize: 13, color: colors.muted }}>
-              {zh ? `${reviewItems.length} 段内容，已选 ${checkedCount} 个` : `${reviewItems.length} items · ${checkedCount} selected`}
+              {zh ? `${reviewItems.length} 段 · ${checkedCount} 已选` : `${reviewItems.length} items · ${checkedCount} selected`}
             </Text>
             {(untranslatedChecked || anyTranslated) && (
               <Pressable onPress={doTranslate} hitSlop={6} disabled={translating}>
                 <Text style={{ color: translating ? colors.muted : colors.primary, fontSize: 14, fontWeight: "600" }}>
-                  {translating ? (zh ? "翻译中…" : "Translating…") : untranslatedChecked ? (zh ? "AI 翻译" : "AI Translate") : (zh ? "切换原/译文" : "Toggle lang")}
+                  {translating ? (zh ? "翻译中…" : "Translating…") : untranslatedChecked ? (zh ? "AI 翻译" : "AI Translate") : (zh ? "切换原/译文" : "Toggle")}
                 </Text>
               </Pressable>
             )}
@@ -508,7 +533,7 @@ export default function BookReaderScreen() {
           </View>
           {!!reviewError && (
             <View style={{ marginHorizontal: 20, marginBottom: 8, borderRadius: 12, padding: 12, backgroundColor: "#FF3B3015" }}>
-              <Text style={{ color: "#FF3B30", fontSize: 12, lineHeight: 17 }}>{reviewError}</Text>
+              <Text style={{ color: "#FF3B30", fontSize: 12 }}>{reviewError}</Text>
             </View>
           )}
           <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 110 }}>
@@ -580,7 +605,7 @@ export default function BookReaderScreen() {
         </>
       )}
 
-      {/* Done Phase */}
+      {/* ── Done phase ── */}
       {phase === "done" && importResult && (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }}>
           <View style={{ width: 60, height: 60, borderRadius: 16, backgroundColor: "#34C759", alignItems: "center", justifyContent: "center" }}>
@@ -591,7 +616,7 @@ export default function BookReaderScreen() {
             {zh ? `新增 ${importResult.recipes} 个配方、${importResult.preps} 个自制` : `${importResult.recipes} recipes and ${importResult.preps} preps added`}
           </Text>
           <View style={{ flexDirection: "row", marginTop: 24, gap: 12 }}>
-            <Pressable onPress={() => { tap(); setPhase("reading"); setImportResult(null); }} style={({ pressed }) => [{ paddingHorizontal: 20, paddingVertical: 13, borderRadius: 14, borderWidth: 1, borderColor: colors.border }, pressed && { opacity: 0.7 }]}>
+            <Pressable onPress={() => { tap(); setPhase("reading"); setImportResult(null); showChrome(); }} style={({ pressed }) => [{ paddingHorizontal: 20, paddingVertical: 13, borderRadius: 14, borderWidth: 1, borderColor: colors.border }, pressed && { opacity: 0.7 }]}>
               <Text style={{ color: colors.primary, fontSize: 15, fontWeight: "600" }}>{zh ? "继续阅读" : "Keep reading"}</Text>
             </Pressable>
             <Pressable onPress={() => { tap(); router.back(); }} style={({ pressed }) => [styles.primaryBtn, { backgroundColor: colors.primary, marginTop: 0 }, pressed && { opacity: 0.85 }]}>
@@ -601,122 +626,127 @@ export default function BookReaderScreen() {
         </View>
       )}
 
-      {/* Range Picker */}
-      {showRangePicker && (
-        <RangePickerOverlay
-          colors={colors}
-          zh={zh}
-          chapterCount={blocks.filter((b) => b.type === "heading").length}
-          scanRange={scanRange}
-          onConfirm={(range) => {
-            setScanRange(range);
-            setShowRangePicker(false);
-            void runAiScan(range ?? undefined);
-          }}
-          onClose={() => setShowRangePicker(false)}
-        />
+      {/* ── Bottom chrome (auto-hide): chapter nav + extract button ── */}
+      {chromeVisible && phase === "reading" && (
+        <View style={[styles.bottomBar, { backgroundColor: colors.background + "F0", borderTopColor: colors.border, paddingBottom: Math.max(insets.bottom, 12) }]}>
+          {/* Progress bar */}
+          <View style={{ height: 2, backgroundColor: colors.border, borderRadius: 1, marginBottom: 10, overflow: "hidden" }}>
+            <View style={{ height: 2, backgroundColor: colors.primary, width: `${Math.round(progress * 100)}%`, borderRadius: 1 }} />
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Pressable
+              onPress={() => { tap(); setChapterIdx((i) => Math.max(0, i - 1)); }}
+              disabled={chapterIdx === 0}
+              style={[styles.navBtn, { backgroundColor: colors.surface, borderColor: colors.border, opacity: chapterIdx === 0 ? 0.35 : 1 }]}
+            >
+              <IconSymbol name="chevron.left" size={16} color={colors.foreground} />
+            </Pressable>
+            <Text style={{ flex: 1, fontSize: 12, color: colors.muted, textAlign: "center" }} numberOfLines={1}>
+              {book.sections[chapterIdx]?.title || `${zh ? "第" : "Ch."} ${chapterIdx + 1}`}
+              {" "}({chapterIdx + 1}/{totalChapters})
+            </Text>
+            <Pressable
+              onPress={() => { tap(); setChapterIdx((i) => Math.min(totalChapters - 1, i + 1)); }}
+              disabled={chapterIdx >= totalChapters - 1}
+              style={[styles.navBtn, { backgroundColor: colors.surface, borderColor: colors.border, opacity: chapterIdx >= totalChapters - 1 ? 0.35 : 1 }]}
+            >
+              <IconSymbol name="chevron.right" size={16} color={colors.foreground} />
+            </Pressable>
+            <Pressable
+              onPress={enterSelectMode}
+              style={({ pressed }) => [styles.extractBtn, { backgroundColor: colors.primary + "18", borderColor: colors.primary + "44" }, pressed && { opacity: 0.7 }]}
+            >
+              <IconSymbol name="sparkles" size={14} color={colors.primary} />
+              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+                {zh ? "提取配方" : "Extract"}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
+
+      {/* ── TOC drawer ── */}
+      {tocOpen && (
+        <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+          <Pressable style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(0,0,0,0.4)" }]} onPress={() => setTocOpen(false)} />
+          <View style={[styles.tocSheet, { backgroundColor: colors.background, borderColor: colors.border }]}>
+            <Text style={[styles.tocTitle, { color: colors.foreground }]}>{zh ? "目录" : "Table of Contents"}</Text>
+            <ScrollView style={{ flex: 1 }}>
+              {chapterTitles.map((title, i) => (
+                <Pressable
+                  key={i}
+                  onPress={() => { tap(); setChapterIdx(i); setTocOpen(false); showChrome(); }}
+                  style={({ pressed }) => [styles.tocRow, { borderBottomColor: colors.border }, pressed && { opacity: 0.6 }]}
+                >
+                  <Text style={{ fontSize: 14, color: i === chapterIdx ? colors.primary : colors.foreground, fontWeight: i === chapterIdx ? "600" : "400" }} numberOfLines={2}>
+                    {title || `${zh ? "第" : "Chapter"} ${i + 1}`}
+                  </Text>
+                  {i === chapterIdx && <IconSymbol name="checkmark" size={14} color={colors.primary} />}
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
       )}
     </ScreenContainer>
   );
 }
 
-function RangePickerOverlay({
-  colors,
-  zh,
-  chapterCount,
-  scanRange,
-  onConfirm,
-  onClose,
-}: {
-  colors: ReturnType<typeof useColors>;
-  zh: boolean;
-  chapterCount: number;
-  scanRange: { from: number; to: number } | null;
-  onConfirm: (range: { from: number; to: number } | null) => void;
-  onClose: () => void;
-}) {
-  const maxChapters = Math.max(chapterCount, 1);
-  const [from, setFrom] = useState(scanRange?.from ?? 1);
-  const [to, setTo] = useState(scanRange?.to ?? maxChapters);
-  const [mode, setMode] = useState<"all" | "range">(scanRange ? "range" : "all");
-
-  return (
-    <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
-      <Pressable style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(0,0,0,0.4)" }]} onPress={onClose} />
-      <View style={[styles.rangeSheet, { backgroundColor: colors.background, borderColor: colors.border }]}>
-        <Text style={{ fontSize: 17, fontWeight: "700", color: colors.foreground, marginBottom: 16 }}>
-          {zh ? "AI 扫描范围" : "AI Scan Range"}
-        </Text>
-        <View style={{ flexDirection: "row", gap: 8, marginBottom: 16 }}>
-          {(["all", "range"] as const).map((m) => {
-            const active = mode === m;
-            return (
-              <Pressable key={m} onPress={() => setMode(m)} style={[{ flex: 1, height: 38, borderRadius: 10, borderWidth: 1, alignItems: "center", justifyContent: "center" }, { backgroundColor: active ? colors.primary : colors.surface, borderColor: active ? colors.primary : colors.border }]}>
-                <Text style={{ fontSize: 14, fontWeight: "600", color: active ? "#FFF" : colors.muted }}>
-                  {m === "all" ? (zh ? "全部章节" : "All sections") : (zh ? "指定范围" : "Custom range")}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        {mode === "range" && (
-          <View style={{ gap: 12, marginBottom: 16 }}>
-            <Text style={{ fontSize: 13, color: colors.muted }}>{zh ? `共 ${maxChapters} 个章节` : `${maxChapters} sections total`}</Text>
-            {([["from", from, setFrom] as const, ["to", to, setTo] as const]).map(([label, val, setter]) => (
-              <View key={label} style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-                <Text style={{ color: colors.muted, fontSize: 14, width: 50 }}>{label === "from" ? (zh ? "从第" : "From") : (zh ? "到第" : "To")}</Text>
-                <Pressable onPress={() => setter(label === "from" ? Math.max(1, val - 1) : Math.max(from, val - 1))} style={{ width: 36, height: 36, borderRadius: 10, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ fontSize: 18, color: colors.primary }}>−</Text>
-                </Pressable>
-                <Text style={{ fontSize: 17, fontWeight: "700", color: colors.foreground, minWidth: 32, textAlign: "center" }}>{val}</Text>
-                <Pressable onPress={() => setter(label === "from" ? Math.min(to, val + 1) : Math.min(maxChapters, val + 1))} style={{ width: 36, height: 36, borderRadius: 10, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ fontSize: 18, color: colors.primary }}>+</Text>
-                </Pressable>
-                <Text style={{ color: colors.muted, fontSize: 14 }}>{zh ? "章" : ""}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-        <View style={{ flexDirection: "row", gap: 10 }}>
-          <Pressable onPress={onClose} style={{ flex: 1, height: 48, borderRadius: 14, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" }}>
-            <Text style={{ color: colors.muted, fontSize: 15, fontWeight: "600" }}>{zh ? "取消" : "Cancel"}</Text>
-          </Pressable>
-          <Pressable onPress={() => onConfirm(mode === "range" ? { from, to } : null)} style={{ flex: 2, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, height: 48, borderRadius: 14, backgroundColor: colors.primary }}>
-            <IconSymbol name="sparkles" size={15} color="#FFF" />
-            <Text style={{ color: "#FFF", fontSize: 15, fontWeight: "600" }}>{zh ? "开始扫描" : "Scan"}</Text>
-          </Pressable>
-        </View>
-      </View>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  header: {
+  topBar: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingTop: 4,
+    paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    minHeight: 52,
+    gap: 10,
   },
-  scanBtn: {
+  topBarTitle: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  iconBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bottomBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  navBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  extractBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: 8,
     borderWidth: 1,
   },
-  chapterHeading: {
-    fontSize: 17,
-    fontWeight: "700",
-    lineHeight: 24,
-    marginTop: 28,
-    marginBottom: 12,
-    paddingBottom: 8,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   primaryBtn: {
     flexDirection: "row",
@@ -733,30 +763,34 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
   },
-  footer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
   reviewCard: {
     borderRadius: 16,
     borderWidth: 1,
     marginBottom: 12,
     overflow: "hidden",
   },
-  rangeSheet: {
+  tocSheet: {
     position: "absolute",
+    top: 0,
     bottom: 0,
-    left: 0,
     right: 0,
-    borderTopWidth: 1,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 24,
-    paddingBottom: 36,
+    width: "72%",
+    maxWidth: 320,
+    borderLeftWidth: 1,
+    paddingTop: 16,
+  },
+  tocTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    paddingHorizontal: 20,
+    marginBottom: 8,
+  },
+  tocRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });
