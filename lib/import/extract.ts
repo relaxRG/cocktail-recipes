@@ -6,6 +6,18 @@ export interface ExtractedBook {
   sections: { title: string; text: string }[];
 }
 
+/** 供阅读器使用的章节:保留原始 HTML(图片以 data: URI 内联) */
+export interface BookChapter {
+  title: string;
+  html: string;
+}
+
+export interface ExtractedBookForReading {
+  title: string;
+  chapters: BookChapter[];
+  css: string;
+}
+
 /** 把 xhtml/html 转为按行组织的纯文本(块级标签断行,行内标签去壳) */
 export function htmlToText(html: string): string {
   let s = html
@@ -99,14 +111,104 @@ export async function extractEpub(data: ArrayBuffer): Promise<ExtractedBook> {
 }
 
 /**
+ * 解析 EPUB 供阅读器使用:保留原始 HTML 结构,将图片内联为 data: URI。
+ * 单张图片 base64 超过 400KB 时跳过(保留 alt 占位)。
+ */
+export async function extractEpubForReading(data: ArrayBuffer): Promise<ExtractedBookForReading> {
+  const zip = await JSZip.loadAsync(data);
+
+  const containerXml = await zip.file("META-INF/container.xml")?.async("string");
+  if (!containerXml) throw new Error("无效的 EPUB:缺少 container.xml");
+  const opfPath = containerXml.match(/full-path="([^"]+)"/)?.[1];
+  if (!opfPath) throw new Error("无效的 EPUB:找不到 OPF 路径");
+  const opf = await zip.file(opfPath)?.async("string");
+  if (!opf) throw new Error("无效的 EPUB:缺少 OPF 文件");
+  const opfDir = dirOf(opfPath);
+
+  const title = opf.match(/<dc:title[^>]*>([\s\S]*?)<\/dc:title>/i)?.[1]?.trim() ?? "";
+
+  // manifest: id -> { href, mediaType }
+  const manifest = new Map<string, { href: string; mediaType: string }>();
+  for (const m of opf.matchAll(/<item\b[^>]*>/gi)) {
+    const tag = m[0];
+    const id = tag.match(/\bid="([^"]+)"/)?.[1];
+    const href = tag.match(/\bhref="([^"]+)"/)?.[1];
+    const mediaType = tag.match(/media-type="([^"]+)"/)?.[1] ?? "";
+    if (id && href) manifest.set(id, { href, mediaType });
+  }
+
+  // Collect CSS
+  let css = "";
+  for (const [, { href, mediaType }] of manifest) {
+    if (!/css/i.test(mediaType)) continue;
+    const path = resolvePath(opfDir, decodeURIComponent(href));
+    const content = await zip.file(path)?.async("string");
+    if (content) css += content + "\n";
+  }
+
+  // Image cache: epub-relative path -> data URI
+  const imageCache = new Map<string, string>();
+  const loadImage = async (epubPath: string): Promise<string | null> => {
+    if (imageCache.has(epubPath)) return imageCache.get(epubPath)!;
+    const file = zip.file(epubPath);
+    if (!file) return null;
+    const b64 = await file.async("base64");
+    if (b64.length > 400_000) return null;
+    const ext = epubPath.split(".").pop()?.toLowerCase() ?? "jpg";
+    const mime = ext === "png" ? "image/png" : ext === "svg" ? "image/svg+xml" : ext === "webp" ? "image/webp" : "image/jpeg";
+    const uri = `data:${mime};base64,${b64}`;
+    imageCache.set(epubPath, uri);
+    return uri;
+  };
+
+  // spine order
+  const idrefs = [...opf.matchAll(/<itemref\b[^>]*idref="([^"]+)"/gi)].map((m) => m[1]);
+  const spineItems = idrefs
+    .map((id) => manifest.get(id))
+    .filter((x): x is { href: string; mediaType: string } => !!x && /html|xml/i.test(x.mediaType));
+
+  const chapters: BookChapter[] = [];
+  for (const { href } of spineItems) {
+    const path = resolvePath(opfDir, decodeURIComponent(href));
+    const html = await zip.file(path)?.async("string");
+    if (!html) continue;
+
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    let body = bodyMatch ? bodyMatch[1] : html;
+
+    // Inline images
+    const imgDir = dirOf(path);
+    for (const m of [...body.matchAll(/\bsrc="([^"]+)"/gi)]) {
+      const relPath = m[1];
+      if (relPath.startsWith("data:") || relPath.startsWith("http")) continue;
+      const imgPath = resolvePath(imgDir, decodeURIComponent(relPath));
+      const dataUri = await loadImage(imgPath);
+      if (dataUri) body = body.replace(m[0], `src="${dataUri}"`);
+    }
+
+    const heading =
+      html.match(/<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/i)?.[1]?.replace(/<[^>]+>/g, "").trim()
+      ?? html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim()
+      ?? path.split("/").pop()?.replace(/\.x?html?$/i, "") ?? "";
+
+    const textLen = body.replace(/<[^>]+>/g, "").replace(/\s+/g, "").length;
+    if (textLen < 30) continue;
+
+    chapters.push({ title: heading, html: body });
+  }
+
+  if (chapters.length === 0) throw new Error("EPUB 中未找到可读章节");
+  return { title, chapters, css };
+}
+
+/**
  * 解析 PDF:pdfjs 按页取 text items,依据 y 坐标还原行结构。
  * 仅 Web 平台可用(pdfjs 依赖浏览器环境)。
  */
 export async function extractPdf(data: ArrayBuffer): Promise<ExtractedBook> {
-  // pdfjs-dist 仅 web 平台可用(依赖浏览器 canvas/worker)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pdfjs = await (Function('return import("pdfjs-dist/legacy/build/pdf")')() as Promise<any>);
-  try { await (Function('return import("pdfjs-dist/legacy/build/pdf.worker.entry")')() as Promise<any>); } catch { /* ok */ }
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf");
+  // Metro/Web 无独立 worker:加载 entry 使 pdfjs 走主线程 fake worker
+  await import("pdfjs-dist/legacy/build/pdf.worker.entry" as string);
 
   const doc = await pdfjs.getDocument({ data: new Uint8Array(data) }).promise;
   const meta = await doc.getMetadata().catch(() => null);
@@ -159,9 +261,8 @@ export async function renderPdfPagesToImages(
   data: ArrayBuffer,
   opts: { maxPages?: number; scale?: number; onProgress?: (done: number, total: number) => void } = {},
 ): Promise<OcrImage[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pdfjs = await (Function('return import("pdfjs-dist/legacy/build/pdf")')() as Promise<any>);
-  try { await (Function('return import("pdfjs-dist/legacy/build/pdf.worker.entry")')() as Promise<any>); } catch { /* ok */ }
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf");
+  await import("pdfjs-dist/legacy/build/pdf.worker.entry" as string);
 
   const doc = await pdfjs.getDocument({ data: new Uint8Array(data) }).promise;
   const total = Math.min(doc.numPages, opts.maxPages ?? 40);

@@ -36,6 +36,7 @@ const MAPPING = {
   "xmark.circle.fill": "cancel",
   "book.fill": "menu-book",
   "doc.fill": "description",
+  "doc.badge.plus": "note-add",
   "camera.fill": "photo-camera",
   "photo.fill": "photo",
   "circle": "radio-button-unchecked",
@@ -59,9 +60,6 @@ const MAPPING = {
   "globe": "language",
   "icloud.fill": "cloud",
   "info.circle.fill": "info",
-  "doc.badge.plus": "note-add",
-  "arrow.up.doc.fill": "upload-file",
-  "wand.and.stars": "auto-fix-high",
 } as IconMapping;
 
 /**

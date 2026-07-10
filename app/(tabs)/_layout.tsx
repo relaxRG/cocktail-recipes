@@ -58,7 +58,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />,
         }}
       />
-      {/* Hidden – still routable but not shown in tab bar */}
+      {/* Legacy routes kept for deep-link compatibility; hidden from Tab Bar */}
       <Tabs.Screen name="bottles" options={{ href: null }} />
       <Tabs.Screen name="homemade" options={{ href: null }} />
     </Tabs>

@@ -122,7 +122,40 @@ export type BulkImportItem = z.infer<typeof bulkItemSchema>;
 
 type LLMContent = Parameters<typeof invokeLLM>[0]["messages"][number]["content"];
 
-// ─── OCR ──────────────────────────────────────────────────────────────────────
+async function llmExtract(userContent: LLMContent): Promise<BulkImportItem[]> {
+  const response = await invokeLLM({
+    messages: [
+      { role: "system", content: EXTRACT_SYSTEM_PROMPT },
+      { role: "user", content: userContent },
+    ],
+    response_format: { type: "json_object" },
+  });
+  const raw = response.choices[0]?.message?.content;
+  const text = typeof raw === "string" ? raw : "";
+  let parsed: unknown = { items: [] };
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (m) {
+      try {
+        parsed = JSON.parse(m[0]);
+      } catch {
+        parsed = { items: [] };
+      }
+    }
+  }
+  const arr = Array.isArray((parsed as { items?: unknown[] })?.items)
+    ? (parsed as { items: unknown[] }).items
+    : [];
+  const items: BulkImportItem[] = [];
+  for (const it of arr.slice(0, 60)) {
+    const r = bulkItemSchema.safeParse(it);
+    if (r.success && (r.data.nameZh.trim() || r.data.nameEn.trim())) items.push(r.data);
+  }
+  return items;
+}
+
 const OCR_SYSTEM_PROMPT = `你是一个精准的书页文字转写(OCR)助手。用户提供书页图片或扫描版 PDF,请把全部可读文字按原始阅读顺序完整转写为纯文本:
 - 章节标题或配方名称行加 "## " 前缀
 - 配料行保持"名称 用量"格式,一行一条
@@ -132,13 +165,15 @@ const OCR_SYSTEM_PROMPT = `你是一个精准的书页文字转写(OCR)助手。
 
 async function llmOcr(content: MessageContent[]): Promise<string> {
   const response = await invokeLLM({
-    messages: [{ role: "system", content: OCR_SYSTEM_PROMPT }, { role: "user", content }],
+    messages: [
+      { role: "system", content: OCR_SYSTEM_PROMPT },
+      { role: "user", content },
+    ],
   });
   const raw = response.choices[0]?.message?.content;
   return typeof raw === "string" ? raw.trim() : "";
 }
 
-// ─── 翻译 ──────────────────────────────────────────────────────────────────────
 const TRANSLATE_SYSTEM_PROMPT = (target: "zh" | "en") =>
   `你是专业的调酒书籍译者。把用户 JSON 中的每个配方条目翻译成${
     target === "zh" ? "中文" : "英文(English)"
@@ -153,15 +188,17 @@ const TRANSLATE_SYSTEM_PROMPT = (target: "zh" | "en") =>
 const translatedItemSchema = z.object({
   id: z.string().catch(""),
   name: z.string().catch(""),
-  ingredients: z.array(z.object({ name: z.string().catch(""), amount: z.string().catch("") })).catch([]),
+  ingredients: z
+    .array(z.object({ name: z.string().catch(""), amount: z.string().catch("") }))
+    .catch([]),
   steps: z.string().catch(""),
   garnish: z.string().catch(""),
   glass: z.string().catch(""),
   method: z.string().catch(""),
 });
+
 export type TranslatedRecipeItem = z.infer<typeof translatedItemSchema>;
 
-// ─── 联网补全 ──────────────────────────────────────────────────────────────────
 const ENRICH_SYSTEM_PROMPT = `你是一个鸡尾酒/酒类知识专家。用户会给出一个或多个酒、原料或产品的名称(可能含品牌、也可能附照片),它们在用户的私人库中暂无资料。请根据你已有的行业知识,尽力还原每件产品的真实资料,补全为结构化条目。
 
 请输出 JSON:
@@ -198,49 +235,23 @@ const enrichSchema = z.object({
   notes: z.string().catch(""),
   confidence: z.enum(["high", "medium", "low"]).catch("medium"),
 });
+
 export type EnrichedProduct = z.infer<typeof enrichSchema>;
 
 function parseJsonObjectLoose(text: string): unknown {
-  try { return JSON.parse(text); } catch {
-    const m = text.match(/\{[\s\S]*\}/);
-    if (m) { try { return JSON.parse(m[0]); } catch { return {}; } }
-    return {};
-  }
-}
-
-
-async function llmExtract(userContent: LLMContent): Promise<BulkImportItem[]> {
-  const response = await invokeLLM({
-    messages: [
-      { role: "system", content: EXTRACT_SYSTEM_PROMPT },
-      { role: "user", content: userContent },
-    ],
-    response_format: { type: "json_object" },
-  });
-  const raw = response.choices[0]?.message?.content;
-  const text = typeof raw === "string" ? raw : "";
-  let parsed: unknown = { items: [] };
   try {
-    parsed = JSON.parse(text);
+    return JSON.parse(text);
   } catch {
     const m = text.match(/\{[\s\S]*\}/);
     if (m) {
       try {
-        parsed = JSON.parse(m[0]);
+        return JSON.parse(m[0]);
       } catch {
-        parsed = { items: [] };
+        return {};
       }
     }
+    return {};
   }
-  const arr = Array.isArray((parsed as { items?: unknown[] })?.items)
-    ? (parsed as { items: unknown[] }).items
-    : [];
-  const items: BulkImportItem[] = [];
-  for (const it of arr.slice(0, 60)) {
-    const r = bulkItemSchema.safeParse(it);
-    if (r.success && (r.data.nameZh.trim() || r.data.nameEn.trim())) items.push(r.data);
-  }
-  return items;
 }
 
 export const appRouter = router({
@@ -305,8 +316,8 @@ export const appRouter = router({
         }
         const content = (input.text ?? "").trim();
         if (!content) return { items: [] as BulkImportItem[] };
-      return { items: await llmExtract(content.slice(0, 100_000)) };
-    }),
+        return { items: await llmExtract(content.slice(0, 100_000)) };
+      }),
   }),
 
   bookImport: router({
@@ -322,7 +333,7 @@ export const appRouter = router({
         }),
       )
       .mutation(async ({ input }) => {
-        const parts: LLMContent[] = [];
+        const parts: MessageContent[] = [];
         if (input.pdfBase64) {
           parts.push({
             type: "file_url",
@@ -330,17 +341,17 @@ export const appRouter = router({
               url: `data:application/pdf;base64,${input.pdfBase64}`,
               mime_type: "application/pdf",
             },
-          } as LLMContent);
+          });
         }
         for (const img of input.images ?? []) {
           parts.push({
             type: "image_url",
             image_url: { url: `data:${img.mime};base64,${img.base64}` },
-          } as LLMContent);
+          });
         }
         if (parts.length === 0) return { text: "" };
-        parts.push({ type: "text", text: "请完整转写以上书页中的全部文字。" } as LLMContent);
-        return { text: await llmOcr(parts as MessageContent[]) };
+        parts.push({ type: "text", text: "请完整转写以上书页中的全部文字。" });
+        return { text: await llmOcr(parts) };
       }),
 
     /** 配方候选批量翻译(用量单位保留原样) */
@@ -389,6 +400,98 @@ export const appRouter = router({
   }),
 
   lookup: router({
+    /** 鸡尾酒风味/故事/来源联网补全:根据配方名称与配料自动推断 */
+    enrichRecipe: publicProcedure
+      .input(
+        z.object({
+          name: z.string().max(200),
+          nameEn: z.string().max(200).optional(),
+          baseSpirit: z.string().max(100).optional(),
+          method: z.string().max(100).optional(),
+          ingredients: z.array(z.string().max(200)).max(30).optional(),
+          source: z.string().max(500).optional(),
+          story: z.string().max(2000).optional(),
+          flavorDesc: z.string().max(2000).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const prompt = `你是专业调酒知识专家。根据以下鸡尾酒信息补全资料。
+
+配方名称: ${input.name}${input.nameEn ? ` (${input.nameEn})` : ""}
+${input.baseSpirit ? `基酒: ${input.baseSpirit}` : ""}
+${input.method ? `调制方式: ${input.method}` : ""}
+${(input.ingredients ?? []).length > 0 ? `配料: ${(input.ingredients ?? []).join(", ")}` : ""}
+
+请输出 JSON:
+{
+  "flavors": ["草本","果味","柑橘","花香","甜润","酸爽","苦韵","辛香","烟熏","咸鲜","清爽","浓郁","坚果","奶油","干爽","热带","气泡","焦糖","咖啡","巧克力"] 中最合适的2-4个,
+  "story": "${input.story ? "(已有内容,如有更好信息可补充,否则返回空字符串)" : "这款鸡尾酒的历史来历与创作故事(中文,100字内),不清楚则返回空字符串"}",
+  "flavorDesc": "${input.flavorDesc ? "(已有内容,如有更好信息可补充,否则返回空字符串)" : "风味描述:口感特点与风味层次(中文,50字内),不清楚则返回空字符串"}",
+  "source": "${input.source ? "(已有内容,不要修改,返回空字符串)" : "引用来源:如 'IBA Official Cocktail' / 'The Savoy Cocktail Book' / 调酒师名字等,不确定则返回空字符串"}",
+  "confidence": "high"|"medium"|"low"
+}`;
+        const response = await invokeLLM({
+          messages: [
+            { role: "user", content: prompt },
+          ],
+          response_format: { type: "json_object" },
+        });
+        const raw = response.choices[0]?.message?.content;
+        const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
+        const p = parsed as Record<string, unknown>;
+        return {
+          flavors: Array.isArray(p.flavors) ? (p.flavors as string[]).slice(0, 6) : [],
+          story: typeof p.story === "string" ? p.story.trim() : "",
+          flavorDesc: typeof p.flavorDesc === "string" ? p.flavorDesc.trim() : "",
+          source: typeof p.source === "string" ? p.source.trim() : "",
+          confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
+        };
+      }),
+
+    /** 酒款风味/故事/风格联网补全:根据产品名称与已有信息补全风味标签、故事、风格描述 */
+    enrichBottle: publicProcedure
+      .input(
+        z.object({
+          nameZh: z.string().max(200).optional(),
+          nameEn: z.string().max(200).optional(),
+          category: z.string().max(100).optional(),
+          style: z.string().max(100).optional(),
+          brand: z.string().max(200).optional(),
+          origin: z.string().max(200).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const name = [input.nameEn, input.nameZh].filter(Boolean).join(" / ");
+        const prompt = `你是专业的烈酒/饮料知识专家。根据以下产品信息补全风味与介绍。
+
+产品名称: ${name}
+${input.category ? `分类: ${input.category}` : ""}
+${input.style ? `风格: ${input.style}` : ""}
+${input.brand ? `品牌: ${input.brand}` : ""}
+${input.origin ? `产地: ${input.origin}` : ""}
+
+请输出 JSON:
+{
+  "flavorTags": 从 ["草本","果味","柑橘","花香","甜润","酸爽","苦韵","辛香","烟熏","咸鲜","清爽","浓郁","坚果","奶油","干爽","热带","焦糖","咖啡","巧克力","泥煤","蜂蜜","香草","坚硬","辛辣"] 中最合适的2-4个,
+  "story": "产品故事/介绍(中文,80字内,不确定则返回空字符串)",
+  "styleDesc": "风格特点描述(中文,50字内,不确定则返回空字符串)",
+  "confidence": "high"|"medium"|"low"
+}`;
+        const response = await invokeLLM({
+          messages: [{ role: "user", content: prompt }],
+          response_format: { type: "json_object" },
+        });
+        const raw = response.choices[0]?.message?.content;
+        const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
+        const p = parsed as Record<string, unknown>;
+        return {
+          flavorTags: Array.isArray(p.flavorTags) ? (p.flavorTags as string[]).slice(0, 6) : [],
+          story: typeof p.story === "string" ? p.story.trim() : "",
+          styleDesc: typeof p.styleDesc === "string" ? p.styleDesc.trim() : "",
+          confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
+        };
+      }),
+
     /** 联网识别:未知产品名称/照片 → LLM 知识补全为结构化资料 */
     enrich: publicProcedure
       .input(
@@ -401,13 +504,13 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const names = input.names.map((n) => n.trim()).filter(Boolean);
         if (names.length === 0 && !input.imageBase64) return { items: [] as EnrichedProduct[] };
-        const parts: LLMContent[] = [];
+        const parts: MessageContent[] = [];
         if (input.imageBase64) {
           const mime = input.imageMime || "image/jpeg";
           parts.push({
             type: "image_url",
             image_url: { url: `data:${mime};base64,${input.imageBase64}` },
-          } as LLMContent);
+          });
         }
         parts.push({
           type: "text",
@@ -415,11 +518,11 @@ export const appRouter = router({
             names.length > 0
               ? `请补全以下产品的资料:\n${names.map((n) => `- ${n}`).join("\n")}`
               : "请识别照片中的产品并补全资料。",
-        } as LLMContent);
+        });
         const response = await invokeLLM({
           messages: [
             { role: "system", content: ENRICH_SYSTEM_PROMPT },
-            { role: "user", content: parts as MessageContent[] },
+            { role: "user", content: parts },
           ],
           response_format: { type: "json_object" },
         });
@@ -435,70 +538,10 @@ export const appRouter = router({
         }
         return { items };
       }),
-    /** 配方 AI 补全:根据配方名称/配料/基酒补全风味标签、故事、风味描述、来源 */
-    enrichRecipe: publicProcedure
-      .input(
-        z.object({
-          name: z.string().max(200).optional(),
-          nameEn: z.string().max(200).optional(),
-          baseSpirit: z.string().max(100).optional(),
-          ingredients: z.array(z.string().max(200)).max(30).optional(),
-          story: z.string().max(1000).optional(),
-          flavorDesc: z.string().max(500).optional(),
-          source: z.string().max(500).optional(),
-        }),
-      )
-      .mutation(async ({ input }) => {
-        const name = [input.name, input.nameEn].filter(Boolean).join(" / ");
-        const prompt = `你是专业的鸡尾酒知识专家。根据以下配方信息补全风味与介绍。\n配方名称: ${name}\n${input.baseSpirit ? `基酒: ${input.baseSpirit}` : ""}\n${(input.ingredients ?? []).length > 0 ? `配料: ${(input.ingredients ?? []).join(", ")}` : ""}\n请输出 JSON:\n{\n  "flavors": ["草本","果味","柑橘","花香","甜润","酸爽","苦韵","辛香","烟熏","咸鲜","清爽","浓郁","坚果","奶油","干爽","热带","气泡","焦糖","咖啡","巧克力"] 中最合适的2-4个,\n  "story": "这款鸡尾酒的历史来历与创作故事(中文,100字内),不清楚则返回空字符串",\n  "flavorDesc": "风味描述:口感特点与风味层次(中文,50字内),不清楚则返回空字符串",\n  "source": "引用来源:如 IBA Official Cocktail 等,不确定则返回空字符串",\n  "confidence": "high"|"medium"|"low"\n}`;
-        const response = await invokeLLM({
-          messages: [{ role: "user", content: prompt }],
-          response_format: { type: "json_object" },
-        });
-        const raw = response.choices[0]?.message?.content;
-        const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
-        const p = parsed as Record<string, unknown>;
-        return {
-          flavors: Array.isArray(p.flavors) ? (p.flavors as string[]).slice(0, 6) : [],
-          story: typeof p.story === "string" ? p.story.trim() : "",
-          flavorDesc: typeof p.flavorDesc === "string" ? p.flavorDesc.trim() : "",
-          source: typeof p.source === "string" ? p.source.trim() : "",
-          confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
-        };
-      }),
-    /** 酒款风味/故事/风格联网补全 */
-    enrichBottle: publicProcedure
-      .input(
-        z.object({
-          nameZh: z.string().max(200).optional(),
-          nameEn: z.string().max(200).optional(),
-          category: z.string().max(100).optional(),
-          style: z.string().max(100).optional(),
-          brand: z.string().max(200).optional(),
-          origin: z.string().max(200).optional(),
-        }),
-      )
-      .mutation(async ({ input }) => {
-        const name = [input.nameEn, input.nameZh].filter(Boolean).join(" / ");
-        const prompt = `你是专业的烈酒/饮料知识专家。根据以下产品信息补全风味与介绍。\n产品名称: ${name}\n${input.category ? `分类: ${input.category}` : ""}\n${input.style ? `风格: ${input.style}` : ""}\n${input.brand ? `品牌: ${input.brand}` : ""}\n${input.origin ? `产地: ${input.origin}` : ""}\n请输出 JSON:\n{\n  "flavorTags": ["草本","果味","柑橘","花香","甜润","酸爽","苦韵","辛香","烟熏","咸鲜","清爽","浓郁","坚果","奶油","干爽","热带","焦糖","咖啡","巧克力","泥煤","蜂蜜","香草","辛辣"] 中最合适的2-4个,\n  "story": "产品故事/介绍(中文,80字内,不确定则返回空字符串)",\n  "styleDesc": "风格特点描述(中文,50字内,不确定则返回空字符串)",\n  "confidence": "high"|"medium"|"low"\n}`;
-        const response = await invokeLLM({
-          messages: [{ role: "user", content: prompt }],
-          response_format: { type: "json_object" },
-        });
-        const raw = response.choices[0]?.message?.content;
-        const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
-        const p = parsed as Record<string, unknown>;
-        return {
-          flavorTags: Array.isArray(p.flavorTags) ? (p.flavorTags as string[]).slice(0, 6) : [],
-          story: typeof p.story === "string" ? p.story.trim() : "",
-          styleDesc: typeof p.styleDesc === "string" ? p.styleDesc.trim() : "",
-          confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
-        };
-      }),
   }),
 
   sync: router({
-    /** 检查当前登录用户是否有访问权 */
+    /** 检查当前登录用户是否有访问权(是否 owner) */
     access: protectedProcedure.query(async ({ ctx }) => {
       const allowed = await ensureOwner(ctx.user);
       return { allowed } as const;

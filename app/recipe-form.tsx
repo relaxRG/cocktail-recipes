@@ -133,6 +133,7 @@ export default function RecipeFormScreen() {
   const [cardTagOrder, setCardTagOrder] = useState<CardTagSlot[]>(
     editing?.cardTagOrder ?? [...CARD_TAG_SLOTS],
   );
+  /** AI story/source/flavorDesc completion state */
   const [aiEnriching, setAiEnriching] = useState(false);
   const [aiResult, setAiResult] = useState<{
     story?: string;
@@ -145,8 +146,6 @@ export default function RecipeFormScreen() {
   const [focusedIng, setFocusedIng] = useState<string | null>(null);
   /** Rows where user picked/dismissed suggestions — suppress until text changes */
   const [pickedIng, setPickedIng] = useState<Record<string, string>>({});
-
-  const canSave = name.trim().length > 0 || nameEn.trim().length > 0;
 
   const handleAiEnrich = () => {
     const recipeName = name.trim() || nameEn.trim();
@@ -163,6 +162,7 @@ export default function RecipeFormScreen() {
         source: source.trim() || undefined,
         story: story.trim() || undefined,
         flavorDesc: flavorDesc.trim() || undefined,
+        method: method || undefined,
       },
       {
         onSuccess: (result) => {
@@ -175,6 +175,7 @@ export default function RecipeFormScreen() {
       },
     );
   };
+
   const applyAiResult = () => {
     if (!aiResult) return;
     if (aiResult.story && !story.trim()) setStory(aiResult.story);
@@ -185,6 +186,9 @@ export default function RecipeFormScreen() {
     }
     setAiResult(null);
   };
+
+  const canSave = name.trim().length > 0 || nameEn.trim().length > 0;
+
   /** 根据配料与方法自动计算成品 ABV,并推导烈度大类与档位 */
   const abvEstimate = useMemo(
     () => estimateRecipeAbv(ingredients, method, bottles, preps),
@@ -328,6 +332,7 @@ export default function RecipeFormScreen() {
       updateRecipe(editing.id, draft);
     } else {
       const newRecipe = addRecipe(draft);
+      // Auto-tag flavors in background when user didn't manually select any
       if (flavors.length === 0) {
         const ingNames = draft.ingredients.map((i) => i.name).filter(Boolean);
         enrichRecipeMutation.mutate(
@@ -458,6 +463,129 @@ export default function RecipeFormScreen() {
                 style={{ lineHeight: 20 }}
               />
             </>
+          )}
+
+          {/* AI Fill button — prominent, right below name fields */}
+          <Pressable
+            onPress={handleAiEnrich}
+            disabled={aiEnriching || (!name.trim() && !nameEn.trim())}
+            style={({ pressed }) => [
+              {
+                flexDirection: "row" as const,
+                alignItems: "center" as const,
+                justifyContent: "center" as const,
+                gap: 6,
+                marginTop: 12,
+                paddingVertical: 10,
+                paddingHorizontal: 16,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: (!name.trim() && !nameEn.trim()) ? colors.border : colors.primary + "55",
+                backgroundColor: (!name.trim() && !nameEn.trim()) ? colors.surface : colors.primary + "0E",
+                opacity: pressed ? 0.7 : 1,
+              },
+            ]}
+          >
+            {aiEnriching ? (
+              <>
+                <IconSymbol name="sparkles" size={15} color={colors.primary} />
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+                  {lang === "zh" ? "AI 补全中…" : "AI filling…"}
+                </Text>
+              </>
+            ) : (
+              <>
+                <IconSymbol name="sparkles" size={15} color={(!name.trim() && !nameEn.trim()) ? colors.muted : colors.primary} />
+                <Text style={{ fontSize: 14, fontWeight: "600", color: (!name.trim() && !nameEn.trim()) ? colors.muted : colors.primary }}>
+                  {lang === "zh" ? "AI 补全故事与风味" : "AI Fill Story & Flavors"}
+                </Text>
+              </>
+            )}
+          </Pressable>
+          {aiResult && (
+            <View
+              className="rounded-xl border px-3 py-3 mt-2"
+              style={{ borderColor: colors.primary + "44", backgroundColor: colors.primary + "0A", gap: 8 }}
+            >
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center" style={{ gap: 6 }}>
+                  <IconSymbol name="sparkles" size={13} color={colors.primary} />
+                  <Text className="text-xs font-medium" style={{ color: colors.primary }}>
+                    {lang === "zh" ? "AI 建议" : "AI Suggestion"}
+                  </Text>
+                  <View
+                    className="px-1.5 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor:
+                        aiResult.confidence === "high"
+                          ? colors.success + "22"
+                          : aiResult.confidence === "medium"
+                            ? "#FF950022"
+                            : colors.border,
+                    }}
+                  >
+                    <Text
+                      className="text-[10px] font-medium"
+                      style={{
+                        color:
+                          aiResult.confidence === "high"
+                            ? colors.success
+                            : aiResult.confidence === "medium"
+                              ? "#FF9500"
+                              : colors.muted,
+                      }}
+                    >
+                      {aiResult.confidence === "high"
+                        ? (lang === "zh" ? "高可信" : "High")
+                        : aiResult.confidence === "medium"
+                          ? (lang === "zh" ? "中可信" : "Medium")
+                          : (lang === "zh" ? "低可信" : "Low")}
+                    </Text>
+                  </View>
+                </View>
+                <Pressable onPress={() => setAiResult(null)} hitSlop={8}>
+                  <IconSymbol name="xmark" size={14} color={colors.muted} />
+                </Pressable>
+              </View>
+              {aiResult.flavors && aiResult.flavors.length > 0 && flavors.length === 0 && (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "风味标签: " : "Flavors: "}{aiResult.flavors.join(" · ")}
+                </Text>
+              )}
+              {aiResult.story ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "故事: " : "Story: "}{aiResult.story}
+                </Text>
+              ) : null}
+              {aiResult.flavorDesc ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "风味: " : "Flavor desc: "}{aiResult.flavorDesc}
+                </Text>
+              ) : null}
+              {aiResult.source ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "来源: " : "Source: "}{aiResult.source}
+                </Text>
+              ) : null}
+              <Pressable
+                onPress={applyAiResult}
+                style={({ pressed }) => [
+                  {
+                    marginTop: 2,
+                    paddingVertical: 7,
+                    paddingHorizontal: 14,
+                    borderRadius: 8,
+                    alignItems: "center" as const,
+                    backgroundColor: colors.primary,
+                    opacity: pressed ? 0.8 : 1,
+                  },
+                ]}
+              >
+                <Text className="text-xs font-semibold" style={{ color: "#FFFFFF" }}>
+                  {lang === "zh" ? "应用到空白字段" : "Apply to empty fields"}
+                </Text>
+              </Pressable>
+            </View>
           )}
 
           {/* Category */}
@@ -975,115 +1103,8 @@ export default function RecipeFormScreen() {
             style={{ minHeight: 80, textAlignVertical: "top", lineHeight: 22 }}
           />
 
-         {/* Story */}
-          <View className="flex-row items-center justify-between mt-5 mb-1.5">
-            <Text className="text-sm font-medium text-muted">{t("form.story")}</Text>
-            <Pressable
-              onPress={handleAiEnrich}
-              hitSlop={8}
-              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
-            >
-              <View className="flex-row items-center" style={{ gap: 4 }}>
-                {aiEnriching ? (
-                  <Text className="text-xs" style={{ color: colors.primary }}>
-                    {lang === "zh" ? "AI 补全中…" : "AI filling…"}
-                  </Text>
-                ) : (
-                  <>
-                    <IconSymbol name="sparkles" size={13} color={colors.primary} />
-                    <Text className="text-xs" style={{ color: colors.primary }}>
-                      {lang === "zh" ? "AI 补全" : "AI Fill"}
-                    </Text>
-                  </>
-                )}
-              </View>
-            </Pressable>
-          </View>
-          {aiResult && (
-            <View
-              className="rounded-xl border px-3 py-3 mb-2"
-              style={{ borderColor: colors.primary + "44", backgroundColor: colors.primary + "0A", gap: 8 }}
-            >
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center" style={{ gap: 6 }}>
-                  <IconSymbol name="sparkles" size={13} color={colors.primary} />
-                  <Text className="text-xs font-medium" style={{ color: colors.primary }}>
-                    {lang === "zh" ? "AI 建议" : "AI Suggestion"}
-                  </Text>
-                  <View
-                    className="px-1.5 py-0.5 rounded-full"
-                    style={{
-                      backgroundColor:
-                        aiResult.confidence === "high"
-                          ? colors.success + "22"
-                          : aiResult.confidence === "medium"
-                            ? "#FF950022"
-                            : colors.border,
-                    }}
-                  >
-                    <Text
-                      className="text-[10px] font-medium"
-                      style={{
-                        color:
-                          aiResult.confidence === "high"
-                            ? colors.success
-                            : aiResult.confidence === "medium"
-                              ? "#FF9500"
-                              : colors.muted,
-                      }}
-                    >
-                      {aiResult.confidence === "high"
-                        ? (lang === "zh" ? "高可信" : "High")
-                        : aiResult.confidence === "medium"
-                          ? (lang === "zh" ? "中可信" : "Medium")
-                          : (lang === "zh" ? "低可信" : "Low")}
-                    </Text>
-                  </View>
-                </View>
-                <Pressable onPress={() => setAiResult(null)} hitSlop={8}>
-                  <IconSymbol name="xmark" size={14} color={colors.muted} />
-                </Pressable>
-              </View>
-              {aiResult.flavors && aiResult.flavors.length > 0 && flavors.length === 0 && (
-                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
-                  {lang === "zh" ? "风味标签: " : "Flavors: "}{aiResult.flavors.join(" · ")}
-                </Text>
-              )}
-              {aiResult.story ? (
-                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
-                  {lang === "zh" ? "故事: " : "Story: "}{aiResult.story}
-                </Text>
-              ) : null}
-              {aiResult.flavorDesc ? (
-                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
-                  {lang === "zh" ? "风味: " : "Flavor desc: "}{aiResult.flavorDesc}
-                </Text>
-              ) : null}
-              {aiResult.source ? (
-                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
-                  {lang === "zh" ? "来源: " : "Source: "}{aiResult.source}
-                </Text>
-              ) : null}
-              <Pressable
-                onPress={applyAiResult}
-                style={({ pressed }) => [
-                  {
-                    marginTop: 2,
-                    paddingVertical: 7,
-                    paddingHorizontal: 14,
-                    borderRadius: 8,
-                    alignItems: "center" as const,
-                    backgroundColor: colors.primary,
-                    opacity: pressed ? 0.8 : 1,
-                  },
-                ]}
-              >
-                <Text className="text-xs font-semibold" style={{ color: "#FFFFFF" }}>
-                  {lang === "zh" ? "应用到空白字段" : "Apply to empty fields"}
-                </Text>
-              </Pressable>
-            </View>
-          )}
+          {/* Story */}
+          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.story")}</Text>
           <TextInput
             className="bg-surface border border-border rounded-xl px-4 py-3 text-base text-foreground"
             placeholder={t("form.story.placeholder")}
@@ -1105,6 +1126,7 @@ export default function RecipeFormScreen() {
             returnKeyType="done"
             style={{ lineHeight: 20 }}
           />
+
           {/* Card tag order */}
           <Text className="text-sm font-medium text-muted mt-5 mb-1">{lang === "zh" ? "卡片标签" : "Card Tags"}</Text>
           <Text className="text-xs text-muted mb-2" style={{ lineHeight: 16 }}>
@@ -1127,8 +1149,8 @@ export default function RecipeFormScreen() {
                   }}
                   style={({ pressed }) => [
                     {
-                      flexDirection: "row" as const,
-                      alignItems: "center" as const,
+                      flexDirection: "row",
+                      alignItems: "center",
                       paddingHorizontal: 14,
                       paddingVertical: 11,
                       gap: 10,

@@ -68,7 +68,7 @@ export interface RecipeDraft {
   steps: string;
   garnish: string;
   notes: string;
-  /** 卡片标签顺序(null 表示默认顺序) */
+  /** 卡片标签顺序与可见性(null 使用默认全显示) */
   cardTagOrder?: Recipe["cardTagOrder"];
 }
 

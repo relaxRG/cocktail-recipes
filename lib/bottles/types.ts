@@ -229,9 +229,6 @@ export function normalizeBottle(b: Partial<Bottle> & Pick<Bottle, "id" | "nameZh
     abv: 0,
     priceCny: 0,
     notes: "",
-    flavorTags: [],
-    story: "",
-    styleDesc: "",
     builtin: false,
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -245,5 +242,8 @@ export function normalizeBottle(b: Partial<Bottle> & Pick<Bottle, "id" | "nameZh
     Math.round(b.rating) <= 10
       ? { rating: Math.round(b.rating) }
       : { rating: null }),
+    flavorTags: Array.isArray(b.flavorTags) ? b.flavorTags : [],
+    story: b.story ?? "",
+    styleDesc: b.styleDesc ?? "",
   };
 }

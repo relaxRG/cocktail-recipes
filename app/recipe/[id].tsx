@@ -1,7 +1,15 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { ActivityIndicator } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -34,8 +42,8 @@ import {
   matchEnrichedItem,
 } from "@/lib/bottles/enrich";
 import { type Bottle } from "@/lib/bottles/types";
-import { trpc } from "@/lib/trpc";
 import { useHomemadeStore } from "@/lib/homemade/store";
+import { trpc } from "@/lib/trpc";
 import { smartLinkIngredient, smartLinkDisplayName } from "@/lib/recipes/smart-link";
 import { useRecipeStore } from "@/lib/recipes/store";
 import {
@@ -52,10 +60,13 @@ export default function RecipeDetailScreen() {
   const { t, lang } = useI18n();
   const { getRecipe, getCategory, toggleFavorite, toggleMade, setRating, deleteRecipe, tags } =
     useRecipeStore();
-  const { bottles, addBottle } = useBottleStore();
-  const { updateBottle } = useBottleStore();
+  const { bottles, addBottle, updateBottle } = useBottleStore();
   const { preps } = useHomemadeStore();
   const recipe = getRecipe(id);
+
+  // 联网补全:零价空壳条目(多为自动添加)→ LLM 知识补全资料并更新入库
+  const enrichMutation = trpc.lookup.enrich.useMutation();
+  const [enrichMsg, setEnrichMsg] = React.useState<string | null>(null);
 
   // 缺失原材料自动入库:成本估算发现装饰/配料在库中无匹配时,智能归类后即时添加(每配方一次)
   const autoAddedRef = React.useRef<string | null>(null);
@@ -111,8 +122,8 @@ export default function RecipeDetailScreen() {
     ? estimateGarnishCost(recipe.garnish, bottles, preps)
     : null;
   const grandTotal = costEst.total + iceCost.total + (garnishCost?.total ?? 0);
-  const enrichMutation = trpc.lookup.enrich.useMutation();
-  const [enrichMsg, setEnrichMsg] = React.useState<string | null>(null);
+
+  // 本配方链接到的零价酒款(缺失资料,可联网补全)
   const missingBottles: Bottle[] = [];
   {
     const seen = new Set<string>();
@@ -127,6 +138,7 @@ export default function RecipeDetailScreen() {
       for (const g of garnishCost.groups) for (const it of g.items) consider(it.est.link);
     }
   }
+
   const handleEnrichMissing = async () => {
     const targets = missingBottles.slice(0, 8);
     if (targets.length === 0 || enrichMutation.isPending) return;

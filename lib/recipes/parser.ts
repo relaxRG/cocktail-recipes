@@ -29,9 +29,9 @@ const SECTION_KEYS = {
   garnish: "garnish",
 } as const;
 
-/** 行内用量模式:数字+单位(ml/oz/dash/吧勺等)或"适量/少许" */
+/** 行内用量模式:数字+单位(ml/oz/dash/吧勺/克等)或"适量/少许" */
 const AMOUNT_RE =
-  /(\d+(?:\.\d+)?(?:\s*\/\s*\d+)?(?:\s+\d+\s*\/\s*\d+)?|[½¼¾⅓⅔]|\d+\s*[½¼¾⅓⅔])\s*(ml|毫升|cc|oz|盎司|ounces?|cl|dash(?:es)?|抖|滴|drops?|tsp|茶匙|小勺|teaspoons?|tbsp|汤匙|大勺|tablespoons?|bar\s*spoons?|吧勺|shots?|splash(?:es)?|parts?|pinch(?:es)?|slices?|wedges?|sprigs?|lea(?:f|ves)|cubes?|pieces?|片|个|颗|枝|叶|块|条|只|(?<!\d)g(?=[^a-zA-Z]|$)|克|grams?|kg|千克|公斤|kilograms?|(?<!\d)l(?=[^a-zA-Z]|$)|升|liters?|litres?)\b|适量|少许|to\s*taste|top(?:\s*up)?|as\s*needed/i;
+  /(\d+(?:\.\d+)?(?:\s*\/\s*\d+)?(?:\s+\d+\s*\/\s*\d+)?|[½¼¾⅓⅔]|\d+\s*[½¼¾⅓⅔])\s*(ml|毫升|cc|oz|盎司|ounces?|cl|dash(?:es)?|抖|滴|drops?|tsp|茶匙|小勺|teaspoons?|tbsp|汤匙|大勺|tablespoons?|bar\s*spoons?|吧勺|shots?|splash(?:es)?|parts?|pinch(?:es)?|slices?|wedges?|sprigs?|lea(?:f|ves)|cubes?|pieces?|grams?|克|千克|公斤|kg|升|liters?|litres?|cups?|杯|片|个|颗|枝|叶|块|条|只|\bg\b)\b|适量|少许|to\s*taste|top(?:\s*up)?|as\s*needed/i;
 
 /**
  * 杯型关键词(宽松模式:用于显式"杯型:"字段值归一化,英文可省略 glass 后缀)

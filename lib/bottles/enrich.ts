@@ -41,9 +41,9 @@ export function applyEnrichedToBottle(b: Bottle, item: EnrichedProduct): BottleD
     abv: b.abv > 0 ? b.abv : item.abv,
     priceCny: b.priceCny > 0 ? b.priceCny : item.priceCny,
     notes: isAutoAdded || !b.notes ? item.notes || b.notes : b.notes,
-    flavorTags: b.flavorTags?.length ? b.flavorTags : [],
-    story: b.story || "",
-    styleDesc: b.styleDesc || "",
+    flavorTags: [],
+    story: "",
+    styleDesc: "",
     rating: b.rating,
   };
   const changed =
