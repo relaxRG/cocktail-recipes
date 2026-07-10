@@ -95,6 +95,23 @@ function ChipGroup({
 
 export default function RecipeFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const {
+    prefillName,
+    prefillNameEn,
+    prefillGlass,
+    prefillSteps,
+    prefillGarnish,
+    prefillNotes,
+    prefillIngredients,
+  } = useLocalSearchParams<{
+    prefillName?: string;
+    prefillNameEn?: string;
+    prefillGlass?: string;
+    prefillSteps?: string;
+    prefillGarnish?: string;
+    prefillNotes?: string;
+    prefillIngredients?: string;
+  }>();
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
@@ -103,6 +120,11 @@ export default function RecipeFormScreen() {
   const { preps } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const editing = getRecipe(id);
+  // Parse prefill ingredients from JSON string (from book reader extract)
+  const prefillIngredientsArr = useMemo<Ingredient[]>(() => {
+    if (!prefillIngredients) return [];
+    try { return JSON.parse(prefillIngredients) as Ingredient[]; } catch { return []; }
+  }, [prefillIngredients]);
 
   const spiritTags = tagsOf("spirit");
   const glassTags = tagsOf("glass");
@@ -152,6 +174,25 @@ export default function RecipeFormScreen() {
   useEffect(() => {
     isMountedRef.current = true;
     return () => { isMountedRef.current = false; };
+  }, []);
+
+  // Apply prefill data from book reader extract (only when no existing recipe is being edited)
+  useEffect(() => {
+    if (editing) return; // Don't overwrite existing recipe data
+    if (prefillName) setName(prefillName);
+    if (prefillNameEn) setNameEn(prefillNameEn);
+    if (prefillGlass) {
+      const hit = glassNames.find((g) => prefillGlass.includes(g) || g.includes(prefillGlass));
+      setGlass(hit ?? prefillGlass);
+    }
+    if (prefillSteps) setSteps(prefillSteps);
+    if (prefillGarnish) setGarnish(prefillGarnish);
+    if (prefillNotes) setNotes(prefillNotes);
+    if (prefillIngredientsArr.length > 0) setIngredients(prefillIngredientsArr);
+    if (prefillName || prefillNameEn || prefillIngredientsArr.length > 0) {
+      setImportHint(lang === "zh" ? "已从书库提取配方，请核对后保存" : "Recipe extracted from book. Review before saving.");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   /** Which ingredient row is focused (shows live suggestions) */
   const [focusedIng, setFocusedIng] = useState<string | null>(null);

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -28,6 +29,30 @@ import { useHomemadeStore } from "@/lib/homemade/store";
 import { classifyPrepGroup, guessPrepType } from "@/lib/homemade/types";
 import { normalizeCodexFamilyDecl } from "@/lib/recipes/lineage";
 import { trpc } from "@/lib/trpc";
+
+/* ─── Extracted recipe result types ─────────────────────────────────────────── */
+
+interface ExtractedIngredient {
+  text: string;
+  amount: string;
+  unit: string;
+  name: string;
+  confidence: "high" | "medium" | "low";
+}
+
+interface ExtractedRecipe {
+  name: string;
+  nameZh: string;
+  author: string;
+  year: string;
+  ingredients: ExtractedIngredient[];
+  steps: string;
+  garnish: string;
+  glass: string;
+  notes: string;
+  confidence: "high" | "medium" | "low";
+  missingFields: string[];
+}
 
 /* ─── Reading CSS injected into HTML renderer ─────────────────────────────── */
 
@@ -97,7 +122,20 @@ const READER_CSS = `
 
 /* ─── HTML chapter renderer (web-only) ────────────────────────────────────── */
 
-function HtmlChapter({ html, css, fontSize, lineHeight, theme, onTap }: { html: string; css: string; fontSize: number; lineHeight: number; theme: 'light' | 'dark' | 'sepia'; onTap?: () => void; }) {
+function HtmlChapter({
+  html, css, fontSize, lineHeight, theme, onTap,
+  extractMode, onSelection, webViewRef,
+}: {
+  html: string;
+  css: string;
+  fontSize: number;
+  lineHeight: number;
+  theme: 'light' | 'dark' | 'sepia';
+  onTap?: () => void;
+  extractMode?: boolean;
+  onSelection?: (text: string) => void;
+  webViewRef?: React.RefObject<InstanceType<typeof WebView> | null>;
+}) {
   const bgColor = theme === 'dark' ? '#1a1a1a' : theme === 'sepia' ? '#F4ECD8' : '#FFFFFF';
   const textColor = theme === 'dark' ? '#E0E0E0' : theme === 'sepia' ? '#3E3E3E' : '#1a1a1a';
   const linkColor = theme === 'dark' ? '#64B5F6' : '#007AFF';
@@ -136,6 +174,20 @@ pre, code { white-space: pre-wrap; font-size: 0.9em; }
     });
     true;
   `;
+  const extractScript = `
+    (function() {
+      document.addEventListener('selectionchange', function() {
+        var text = window.getSelection ? window.getSelection().toString() : '';
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'selection', text: text }));
+        }
+      });
+      document.addEventListener('click', function() {
+        if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'tap' }));
+      });
+    })();
+    true;
+  `;
 
   if (Platform.OS === "web") {
     return (
@@ -150,6 +202,7 @@ pre, code { white-space: pre-wrap; font-size: 0.9em; }
   // Native: use WebView for full fidelity rendering
   return (
     <WebView
+      ref={webViewRef}
       source={{ html: fullHtml }}
       style={{ flex: 1, backgroundColor: bgColor }}
       scrollEnabled={true}
@@ -161,11 +214,12 @@ pre, code { white-space: pre-wrap; font-size: 0.9em; }
       javaScriptEnabled={true}
       domStorageEnabled={false}
       cacheEnabled={false}
-      injectedJavaScript={injectedScript}
+      injectedJavaScript={extractMode ? extractScript : injectedScript}
       onMessage={(event) => {
         try {
           const msg = JSON.parse(event.nativeEvent.data);
           if (msg.type === 'tap' && onTap) onTap();
+          if (msg.type === 'selection' && onSelection) onSelection(msg.text ?? '');
         } catch {}
       }}
       onShouldStartLoadWithRequest={(req) =>
@@ -218,6 +272,7 @@ export default function BookReaderScreen() {
   const { addPrep, preps, sections, types } = useHomemadeStore();
   const translateMutation = trpc.bookImport.translate.useMutation();
   const enrichRecipeMutation = trpc.lookup.enrichRecipe.useMutation();
+  const extractMutation = trpc.lookup.extractRecipesFromText.useMutation();
 
   /* Chapter navigation */
   const [chapterIdx, setChapterIdx] = useState(book?.lastChapter ?? 0);
@@ -243,6 +298,14 @@ export default function BookReaderScreen() {
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [importResult, setImportResult] = useState<{ recipes: number; preps: number } | null>(null);
   const [reviewError, setReviewError] = useState("");
+
+  /* WebView selection extract mode */
+  const [extractMode, setExtractMode] = useState(false);
+  const [selectedText, setSelectedText] = useState("");
+  const [extractError, setExtractError] = useState("");
+  const [extractResults, setExtractResults] = useState<ExtractedRecipe[]>([]);
+  const [showExtractResults, setShowExtractResults] = useState(false);
+  const webViewRef = useRef<InstanceType<typeof WebView> | null>(null);
 
   /* Auto-save reading position every 30s */
   const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -374,6 +437,47 @@ export default function BookReaderScreen() {
 
   const selectedCount = blocks.filter((b) => b.selected).length;
   const candidateCount = blocks.filter((b) => b.isCandidate).length;
+
+  /* ── WebView selection extract mode ── */
+  const enterExtractMode = useCallback(() => {
+    tap();
+    setExtractMode(true);
+    setSelectedText("");
+    setExtractError("");
+    setExtractResults([]);
+    setShowExtractResults(false);
+    showChrome();
+  }, [showChrome]);
+
+  const exitExtractMode = useCallback(() => {
+    tap();
+    setExtractMode(false);
+    setSelectedText("");
+    setExtractError("");
+    setShowExtractResults(false);
+  }, []);
+
+  const doExtract = useCallback(async () => {
+    const text = selectedText.trim();
+    if (!text) {
+      setExtractError(zh ? "请先长按选取文字" : "Long-press to select text first");
+      return;
+    }
+    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setExtractError("");
+    try {
+      const results = await extractMutation.mutateAsync({ text, lang: zh ? "zh" : "en" });
+      if (!results || results.length === 0) {
+        setExtractError(zh ? "未识别到配方，请重新选取" : "No recipes found. Try selecting different text.");
+        return;
+      }
+      setExtractResults(results as ExtractedRecipe[]);
+      setShowExtractResults(true);
+      if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      setExtractError((zh ? "提取失败：" : "Extract failed: ") + (e instanceof Error ? e.message : String(e)));
+    }
+  }, [selectedText, zh, extractMutation]);
 
   /* ── Confirm phase ── */
   const existingNames = useMemo(() => {
@@ -583,6 +687,9 @@ export default function BookReaderScreen() {
               lineHeight={lineHeight}
               theme={theme}
               onTap={Platform.OS !== "web" ? handleTap : undefined}
+              extractMode={extractMode}
+              onSelection={(text) => setSelectedText(text)}
+              webViewRef={webViewRef}
             />
           ) : (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -806,7 +913,63 @@ export default function BookReaderScreen() {
                 {zh ? "提取配方" : "Extract"}
               </Text>
             </Pressable>
+            <Pressable
+              onPress={enterExtractMode}
+              style={({ pressed }) => [styles.extractBtn, { backgroundColor: "#FF950018", borderColor: "#FF950044" }, pressed && { opacity: 0.7 }]}
+            >
+              <IconSymbol name="text.cursor" size={14} color="#FF9500" />
+              <Text style={{ fontSize: 12, fontWeight: "600", color: "#FF9500" }}>
+                {zh ? "选区提取" : "Select"}
+              </Text>
+            </Pressable>
           </View>
+        </View>
+      )}
+
+      {/* ── Extract mode bottom bar (overlays reading view) ── */}
+      {extractMode && phase === "reading" && (
+        <View style={[styles.extractBar, { backgroundColor: colors.background + "F8", borderTopColor: colors.border, paddingBottom: Math.max(insets.bottom, 12) }]}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground }}>
+                {zh ? "选区提取模式" : "Selection Extract"}
+              </Text>
+              <Text style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>
+                {selectedText.trim().length > 0
+                  ? (zh ? `已选 ${selectedText.trim().length} 字` : `${selectedText.trim().length} chars selected`)
+                  : (zh ? "长按文字选取配方内容" : "Long-press to select recipe text")}
+              </Text>
+            </View>
+            <Pressable
+              onPress={exitExtractMode}
+              hitSlop={8}
+              style={({ pressed }) => [{ paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: colors.border }, pressed && { opacity: 0.6 }]}
+            >
+              <Text style={{ fontSize: 12, color: colors.muted }}>{zh ? "退出" : "Exit"}</Text>
+            </Pressable>
+          </View>
+          {!!extractError && (
+            <View style={{ marginBottom: 8, borderRadius: 8, padding: 8, backgroundColor: "#FF3B3015" }}>
+              <Text style={{ color: "#FF3B30", fontSize: 12 }}>{extractError}</Text>
+            </View>
+          )}
+          <Pressable
+            onPress={doExtract}
+            disabled={extractMutation.isPending || selectedText.trim().length === 0}
+            style={({ pressed }) => [styles.primaryBtn, {
+              backgroundColor: selectedText.trim().length === 0 ? colors.border : colors.primary,
+              marginTop: 0, alignSelf: "stretch",
+            }, pressed && selectedText.trim().length > 0 && { opacity: 0.85 }]}
+          >
+            <IconSymbol name="sparkles" size={17} color="#FFF" />
+            <Text style={styles.primaryBtnText}>
+              {extractMutation.isPending
+                ? (zh ? "AI 分析中…" : "Analyzing…")
+                : selectedText.trim().length === 0
+                  ? (zh ? "请先长按选取文字" : "Long-press to select text")
+                  : (zh ? "AI 提取配方" : "AI Extract")}
+            </Text>
+          </Pressable>
         </View>
       )}
 
@@ -888,6 +1051,120 @@ export default function BookReaderScreen() {
           </View>
         </View>
       )}
+
+      {/* ── Extract results Modal ── */}
+      <Modal
+        visible={showExtractResults}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowExtractResults(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+          {/* Header */}
+          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }}>
+            <Text style={{ flex: 1, fontSize: 17, fontWeight: "700", color: colors.foreground }}>
+              {zh ? `找到 ${extractResults.length} 个配方` : `${extractResults.length} recipe(s) found`}
+            </Text>
+            <Pressable onPress={() => setShowExtractResults(false)} hitSlop={8}>
+              <IconSymbol name="xmark" size={20} color={colors.muted} />
+            </Pressable>
+          </View>
+          {/* Results list */}
+          <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+            {extractResults.map((recipe, idx) => {
+              const confColor = recipe.confidence === "high" ? "#34C759" : recipe.confidence === "medium" ? "#FF9500" : "#FF3B30";
+              return (
+                <View key={idx} style={{ backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, marginBottom: 14, overflow: "hidden" }}>
+                  {/* Card header */}
+                  <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10, gap: 8 }}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 16, fontWeight: "700", color: colors.foreground }} numberOfLines={1}>
+                        {recipe.nameZh || recipe.name || (zh ? "（未识别名称）" : "(unnamed)")}
+                      </Text>
+                      {!!(recipe.name && recipe.nameZh && recipe.name !== recipe.nameZh) && (
+                        <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }} numberOfLines={1}>{recipe.name}</Text>
+                      )}
+                    </View>
+                    <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: confColor + "22" }}>
+                      <Text style={{ fontSize: 11, fontWeight: "600", color: confColor }}>
+                        {recipe.confidence === "high" ? (zh ? "高置信" : "High") : recipe.confidence === "medium" ? (zh ? "中置信" : "Medium") : (zh ? "低置信" : "Low")}
+                      </Text>
+                    </View>
+                  </View>
+                  {/* Ingredients */}
+                  {recipe.ingredients.length > 0 && (
+                    <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
+                      <Text style={{ fontSize: 11, fontWeight: "600", color: colors.muted, marginBottom: 4 }}>{zh ? "配料" : "Ingredients"}</Text>
+                      {recipe.ingredients.slice(0, 5).map((ing, i) => (
+                        <Text key={i} style={{ fontSize: 13, color: colors.foreground, lineHeight: 20 }}>
+                          · {ing.name}{ing.amount ? `  ${ing.amount}${ing.unit ?? ""}` : ""}
+                        </Text>
+                      ))}
+                      {recipe.ingredients.length > 5 && (
+                        <Text style={{ fontSize: 12, color: colors.muted }}>+{recipe.ingredients.length - 5} {zh ? "种" : "more"}</Text>
+                      )}
+                    </View>
+                  )}
+                  {/* Steps preview */}
+                  {!!recipe.steps && (
+                    <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
+                      <Text style={{ fontSize: 11, fontWeight: "600", color: colors.muted, marginBottom: 4 }}>{zh ? "做法" : "Steps"}</Text>
+                      <Text style={{ fontSize: 13, color: colors.foreground, lineHeight: 20 }} numberOfLines={3}>{recipe.steps}</Text>
+                    </View>
+                  )}
+                  {/* Missing fields */}
+                  {recipe.missingFields.length > 0 && (
+                    <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
+                      <Text style={{ fontSize: 11, color: "#FF9500" }}>
+                        {zh ? `待确认：${recipe.missingFields.join("、")}` : `Unconfirmed: ${recipe.missingFields.join(", ")}`}
+                      </Text>
+                    </View>
+                  )}
+                  {/* Import button */}
+                  <Pressable
+                    onPress={() => {
+                      tap();
+                      setShowExtractResults(false);
+                      setExtractMode(false);
+                      // Build prefill params for recipe-form
+                      const params: Record<string, string> = {};
+                      if (recipe.nameZh) params.prefillName = recipe.nameZh;
+                      if (recipe.name && recipe.name !== recipe.nameZh) params.prefillNameEn = recipe.name;
+                      if (recipe.glass) params.prefillGlass = recipe.glass;
+                      if (recipe.steps) params.prefillSteps = recipe.steps;
+                      if (recipe.garnish) params.prefillGarnish = recipe.garnish;
+                      if (recipe.notes) params.prefillNotes = recipe.notes;
+                      if (recipe.ingredients.length > 0) {
+                        params.prefillIngredients = JSON.stringify(recipe.ingredients.map((ing) => ({
+                          id: genId(),
+                          name: ing.name,
+                          amount: ing.amount ? `${ing.amount}${ing.unit ?? ""}` : "",
+                        })));
+                      }
+                      router.push({ pathname: "/recipe-form", params });
+                    }}
+                    style={({ pressed }) => [{
+                      flexDirection: "row" as const,
+                      alignItems: "center" as const,
+                      justifyContent: "center" as const,
+                      gap: 6,
+                      paddingVertical: 12,
+                      borderTopWidth: StyleSheet.hairlineWidth,
+                      borderTopColor: colors.border,
+                      backgroundColor: pressed ? colors.primary + "18" : "transparent",
+                    }]}
+                  >
+                    <IconSymbol name="square.and.arrow.down.fill" size={15} color={colors.primary} />
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+                      {zh ? "导入到配方编辑" : "Import to Recipe"}
+                    </Text>
+                  </Pressable>
+                </View>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </Modal>
     </ScreenContainer>
   );
 }
@@ -949,6 +1226,15 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 8,
     borderWidth: 1,
+  },
+  extractBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   footer: {
     position: "absolute",

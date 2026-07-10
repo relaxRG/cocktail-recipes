@@ -66,6 +66,10 @@ const MAPPING = {
   "book": "book",
   "arrow.up.arrow.down": "swap-vert",
   "line.3.horizontal.decrease": "filter-list",
+  "text.cursor": "text-fields",
+  "list.bullet": "format-list-bulleted",
+  "bookmark": "bookmark-border",
+  "bookmark.fill": "bookmark",
 } as IconMapping;
 
 /**

@@ -617,6 +617,107 @@ ${input.type ? `类型: ${input.type}` : ""}${ingredientList}
           confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
         };
       }),
+    extractRecipesFromText: publicProcedure
+      .input(
+        z.object({
+          text: z.string().max(8000),
+          lang: z.enum(["zh", "en", "auto"]).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const prompt = `你是专业调酒师和配方识别专家。请从以下文字中识别并提取所有鸡尾酒配方。
+
+文字内容：
+"""
+${input.text}
+"""
+
+识别规则：
+1. 每个独立的鸡尾酒（有名称+配料）算一个配方
+2. 配料行通常包含数量（oz/ml/dash/tsp等）+ 材料名
+3. 步骤通常是动词开头的句子（Stir/Shake/Combine等）
+4. 如果文字中没有配方，返回空数组
+
+请输出 JSON（严格格式），包含 recipes 数组：
+{
+  "recipes": [
+    {
+      "name": "配方名称（原文）",
+      "nameZh": "中文名（如能推断，否则空字符串）",
+      "author": "作者/来源（如有，否则空字符串）",
+      "year": "年份（如有，否则空字符串）",
+      "ingredients": [
+        { "text": "2 oz Rye Whiskey", "amount": "2", "unit": "oz", "name": "Rye Whiskey", "confidence": "high" }
+      ],
+      "steps": "完整步骤说明（原文，如无则空字符串）",
+      "garnish": "装饰物（如有，否则空字符串）",
+      "glass": "杯型（如能推断，否则空字符串）",
+      "notes": "备注/说明（如有，否则空字符串）",
+      "confidence": "high|medium|low",
+      "missingFields": []
+    }
+  ]
+}
+
+只输出 JSON，不要任何解释文字。`;
+        const signal = AbortSignal.timeout(30_000);
+        let response;
+        try {
+          response = await invokeLLM({
+            messages: [{ role: "user", content: prompt }],
+            response_format: { type: "json_object" },
+            signal,
+          });
+        } catch (err: unknown) {
+          const isTimeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+          throw new Error(isTimeout ? "AI 分析超时，请稍后重试" : `AI 分析失败: ${err instanceof Error ? err.message : String(err)}`);
+        }
+        const raw = response.choices[0]?.message?.content ?? "";
+        let parsed: unknown;
+        try {
+          const rawStr = typeof raw === "string" ? raw : "";
+          parsed = JSON.parse(rawStr);
+        } catch {
+          const rawStr = typeof raw === "string" ? raw : "";
+          const match = rawStr.match(/\[[\s\S]*\]/);
+          try { parsed = match ? JSON.parse(match[0]) : { recipes: [] }; } catch { parsed = { recipes: [] }; }
+        }
+        const arr: unknown[] = Array.isArray(parsed)
+          ? parsed
+          : Array.isArray((parsed as Record<string, unknown>)?.recipes)
+            ? (parsed as Record<string, unknown>).recipes as unknown[]
+            : [];
+        return arr.slice(0, 10).map((item) => {
+          const r = item as Record<string, unknown>;
+          return {
+            name: typeof r.name === "string" ? r.name.trim() : "",
+            nameZh: typeof r.nameZh === "string" ? r.nameZh.trim() : "",
+            author: typeof r.author === "string" ? r.author.trim() : "",
+            year: typeof r.year === "string" ? r.year.trim() : "",
+            ingredients: Array.isArray(r.ingredients)
+              ? (r.ingredients as Record<string, unknown>[]).map((ing) => ({
+                  text: typeof ing.text === "string" ? ing.text.trim() : "",
+                  amount: typeof ing.amount === "string" ? ing.amount.trim() : "",
+                  unit: typeof ing.unit === "string" ? ing.unit.trim() : "",
+                  name: typeof ing.name === "string" ? ing.name.trim() : "",
+                  confidence: (["high", "medium", "low"] as const).includes(ing.confidence as "high")
+                    ? (ing.confidence as "high" | "medium" | "low")
+                    : "medium",
+                }))
+              : [],
+            steps: typeof r.steps === "string" ? r.steps.trim() : "",
+            garnish: typeof r.garnish === "string" ? r.garnish.trim() : "",
+            glass: typeof r.glass === "string" ? r.glass.trim() : "",
+            notes: typeof r.notes === "string" ? r.notes.trim() : "",
+            confidence: (["high", "medium", "low"] as const).includes(r.confidence as "high")
+              ? (r.confidence as "high" | "medium" | "low")
+              : "medium",
+            missingFields: Array.isArray(r.missingFields)
+              ? r.missingFields.filter((f): f is string => typeof f === "string")
+              : [],
+          };
+        });
+      }),
   }),
 
   sync: router({

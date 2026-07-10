@@ -689,6 +689,25 @@ const dict = {
   "lab.compare.notes": { zh: "品鉴与评分", en: "Tasting & Score" },
   "lab.name.required": { zh: "请填写项目名称", en: "Project name is required" },
   "lab.batch.needIngredient": { zh: "请至少填写一种配料", en: "Add at least one ingredient" },
+  // Book reader extract mode
+  "reader.extract": { zh: "提取配方", en: "Extract" },
+  "reader.extract.mode": { zh: "选区提取模式", en: "Selection Extract" },
+  "reader.extract.hint": { zh: "长按文字选取配方内容，然后点击「AI 提取」", en: "Long-press to select recipe text, then tap \"AI Extract\"" },
+  "reader.extract.selected": { zh: "已选 {n} 字", en: "{n} chars selected" },
+  "reader.extract.btn": { zh: "AI 提取配方", en: "AI Extract" },
+  "reader.extract.extracting": { zh: "AI 分析中…", en: "Analyzing…" },
+  "reader.extract.noText": { zh: "请先长按选取文字", en: "Long-press to select text first" },
+  "reader.extract.noResult": { zh: "未识别到配方，请重新选取", en: "No recipes found. Try selecting different text." },
+  "reader.extract.error": { zh: "提取失败：{msg}", en: "Extract failed: {msg}" },
+  "reader.extract.result": { zh: "找到 {n} 个配方", en: "{n} recipe(s) found" },
+  "reader.extract.confidence.high": { zh: "高置信", en: "High confidence" },
+  "reader.extract.confidence.medium": { zh: "中置信", en: "Medium confidence" },
+  "reader.extract.confidence.low": { zh: "低置信", en: "Low confidence" },
+  "reader.extract.missing": { zh: "待确认", en: "Unconfirmed" },
+  "reader.extract.import": { zh: "导入到配方编辑", en: "Import to Recipe" },
+  "reader.extract.importAll": { zh: "全部导入", en: "Import All" },
+  "reader.extract.cancel": { zh: "取消", en: "Cancel" },
+  "reader.extract.exitMode": { zh: "退出提取模式", en: "Exit Extract Mode" },
 } as const;
 
 export type TranslationKey = keyof typeof dict;
