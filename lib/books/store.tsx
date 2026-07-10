@@ -29,6 +29,22 @@ export interface StoredBook {
   lastChapter: number;
   importedAt: number;
   lastReadAt: number;
+  /** 作者 */
+  author?: string;
+  /** 出版社 */
+  publisher?: string;
+  /** ISBN */
+  isbn?: string;
+  /** 阅读状态: "unread" | "reading" | "completed" */
+  readingStatus?: "unread" | "reading" | "completed";
+  /** 是否收藏 */
+  isFavorite?: boolean;
+  /** 书籍分类标签 */
+  tags?: string[];
+  /** 笔记数量 */
+  noteCount?: number;
+  /** 高亮数量 */
+  highlightCount?: number;
 }
 
 /** Chapter HTML stored under separate key to avoid bloating the books array */
