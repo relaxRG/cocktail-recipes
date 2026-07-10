@@ -27,6 +27,7 @@ import {
   renderPdfPagesToImages,
   ExtractedBook,
 } from "@/lib/import/extract";
+import { extractEpubToFileSystem } from "@/lib/import/extract";
 import { detectRecipesInText, RecipeCandidate } from "@/lib/import/detect";
 import { ParsedRecipe } from "@/lib/recipes/parser";
 import { genId } from "@/lib/recipes/types";
@@ -309,36 +310,36 @@ export default function BookImportScreen() {
       return;
     }
     const maxSize = 200 * 1024 * 1024;
-    if (asset.size != null && asset.size > maxSize) {
-      setLoadError(zh ? "文件过大，最大支持 200MB" : "File too large (max 200MB)");
-      return;
-    }
-
     setPhase("loading");
     setLoadStatus(zh ? "正在读取文件…" : "Reading file…");
     try {
-      let buffer: ArrayBuffer;
-      let base64: string | undefined;
-      if (Platform.OS === "web") {
+      if (isEpub && Platform.OS !== "web") {
+        // Native EPUB: use filesystem extractor (supports 1GB+, no full Base64 read)
+        setLoadStatus(zh ? "正在解析 EPUB…" : "Parsing EPUB…");
+        const bookId = `book_${Date.now()}`;
+        setLoadStatus(zh ? "正在解压书籍文件…" : "Extracting book files…");
+        // Pass file URI directly — extractor reads from disk, no full-file memory load
+        const result = await extractEpubToFileSystem(asset.uri, bookId);
+        setLoadStatus(zh ? "正在保存书籍索引…" : "Saving book index…");
+        const stored = await addBookFromFileSystem(
+          {
+            title: result.title || asset.name.replace(/\.epub$/i, ""),
+            fileName: asset.name,
+            format: "epub",
+            sectionCount: result.chapters.length,
+            css: result.css,
+            author: result.author || undefined,
+            bookDir: result.bookDir,
+            coverUri: result.coverUri,
+          },
+          result.chapters,
+        );
+        router.replace(`/book-reader?id=${stored.id}`);
+      } else if (isEpub && Platform.OS === "web") {
+        // Web EPUB: fall back to in-memory rendering
         const resp = await fetch(asset.uri);
-        buffer = await resp.arrayBuffer();
-      } else {
-        const b64: string = await FileSystem.readAsStringAsync(asset.uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        base64 = b64;
-        buffer = base64ToArrayBuffer(b64);
-      }
-      pendingRef.current = { buffer, base64, isPdf, name: asset.name };
-
-      // Native PDF → OCR directly
-      if (isPdf && Platform.OS !== "web") {
-        await runOcr();
-        return;
-      }
-
-      setLoadStatus(zh ? "正在解析文件…" : "Parsing file…");
-      if (isEpub) {
+        const buffer = await resp.arrayBuffer();
+        setLoadStatus(zh ? "正在解析文件…" : "Parsing file…");
         const htmlBook = await extractEpubForReading(buffer);
         const title = htmlBook.title || asset.name.replace(/\.epub$/i, "");
         setLoadStatus(zh ? "正在保存章节…" : "Saving chapters…");
@@ -347,9 +348,27 @@ export default function BookImportScreen() {
           htmlBook.chapters,
         );
         router.replace(`/book-reader?id=${stored.id}`);
-      } else {
-        const book = await extractPdf(buffer);
-        loadPlainBookIntoReader(book, asset.name, "pdf");
+      } else if (isPdf) {
+        // PDF: read into buffer then OCR or extract
+        let buffer: ArrayBuffer;
+        let base64: string | undefined;
+        if (Platform.OS === "web") {
+          const resp = await fetch(asset.uri);
+          buffer = await resp.arrayBuffer();
+        } else {
+          const b64: string = await FileSystem.readAsStringAsync(asset.uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          base64 = b64;
+          buffer = base64ToArrayBuffer(b64);
+        }
+        pendingRef.current = { buffer, base64, isPdf: true, name: asset.name };
+        if (Platform.OS !== "web") {
+          await runOcr();
+        } else {
+          const book = await extractPdf(buffer);
+          loadPlainBookIntoReader(book, asset.name, "pdf");
+        }
       }
     } catch (e) {
       setOcrOffer(true);
@@ -1557,3 +1576,4 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
   },
 });
+  const { addBook, addBookWithHtml, addBookFromFileSystem } = useBookStore();

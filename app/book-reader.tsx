@@ -8,6 +8,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { WebView } from "react-native-webview";
+import * as FileSystemLegacy from "expo-file-system/legacy";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -30,40 +32,145 @@ import { trpc } from "@/lib/trpc";
 /* ─── Reading CSS injected into HTML renderer ─────────────────────────────── */
 
 const READER_CSS = `
-  body { margin: 0; padding: 0; font-family: -apple-system, 'Georgia', serif; line-height: 1.75; }
-  * { box-sizing: border-box; max-width: 100%; }
-  img { display: block; max-width: 100%; height: auto; margin: 12px auto; border-radius: 8px; }
-  h1, h2, h3, h4 { line-height: 1.3; margin-top: 1.5em; margin-bottom: 0.5em; }
-  p { margin: 0 0 0.9em; }
-  ul, ol { padding-left: 1.4em; margin: 0 0 0.9em; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
-  td, th { border: 1px solid #ddd; padding: 6px 10px; }
-  a { color: inherit; text-decoration: none; }
-  .recipe-highlight { background: rgba(255,149,0,0.12); border-left: 3px solid #FF9500; padding-left: 8px; border-radius: 4px; }
-  .selected-highlight { background: rgba(0,122,255,0.12); border-left: 3px solid #007AFF; padding-left: 8px; border-radius: 4px; }
+  /* Base */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, 'Helvetica Neue', 'Georgia', serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }
+  /* Images */
+  img, svg, video {
+    display: block;
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 1.2em auto;
+    border-radius: 6px;
+  }
+  figure { margin: 1.5em 0; text-align: center; }
+  figcaption { font-size: 0.8em; opacity: 0.6; margin-top: 0.4em; font-style: italic; }
+  /* Headings */
+  h1 { font-size: 1.8em; font-weight: 700; line-height: 1.2; margin: 1.6em 0 0.6em; letter-spacing: -0.02em; }
+  h2 { font-size: 1.4em; font-weight: 700; line-height: 1.25; margin: 1.4em 0 0.5em; }
+  h3 { font-size: 1.15em; font-weight: 600; line-height: 1.3; margin: 1.2em 0 0.4em; }
+  h4, h5, h6 { font-size: 1em; font-weight: 600; line-height: 1.3; margin: 1em 0 0.3em; }
+  /* Paragraphs */
+  p { margin: 0 0 1em; orphans: 2; widows: 2; }
+  /* Lists */
+  ul, ol { padding-left: 1.5em; margin: 0 0 1em; }
+  li { margin-bottom: 0.3em; line-height: 1.6; }
+  li > ul, li > ol { margin-top: 0.3em; margin-bottom: 0; }
+  /* Blockquote */
+  blockquote {
+    margin: 1.2em 0;
+    padding: 0.6em 1em;
+    border-left: 3px solid rgba(128,128,128,0.4);
+    opacity: 0.85;
+    font-style: italic;
+  }
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.9em; }
+  th { font-weight: 600; text-align: left; padding: 8px 10px; border-bottom: 2px solid rgba(128,128,128,0.3); }
+  td { padding: 7px 10px; border-bottom: 1px solid rgba(128,128,128,0.15); }
+  /* Code */
+  pre, code { font-family: 'Menlo', 'Courier New', monospace; font-size: 0.85em; }
+  pre { padding: 12px; border-radius: 8px; background: rgba(128,128,128,0.1); overflow-x: auto; white-space: pre-wrap; }
+  code { background: rgba(128,128,128,0.12); padding: 1px 4px; border-radius: 3px; }
+  /* Links */
+  a { text-decoration: underline; text-underline-offset: 2px; }
+  /* Horizontal rule */
+  hr { border: none; border-top: 1px solid rgba(128,128,128,0.25); margin: 1.5em 0; }
+  /* EPUB-specific: cover images */
+  [epub\\:type="cover"] img, .cover img { border-radius: 0; width: 100% !important; max-width: 100% !important; }
+  /* Suppress empty elements */
+  p:empty { display: none; }
+  /* Custom highlights */
+  .recipe-highlight { background: rgba(255,149,0,0.12); border-left: 3px solid #FF9500; padding: 4px 8px; border-radius: 4px; }
+  .selected-highlight { background: rgba(0,122,255,0.12); border-left: 3px solid #007AFF; padding: 4px 8px; border-radius: 4px; }
 `;
 
 /* ─── HTML chapter renderer (web-only) ────────────────────────────────────── */
 
-function HtmlChapter({ html, css, fontSize, lineHeight, theme }: { html: string; css: string; fontSize: number; lineHeight: number; theme: 'light' | 'dark' | 'sepia' }) {
-  if (Platform.OS !== "web") {
-    // Native fallback: plain text
-    const text = htmlToText(html);
+function HtmlChapter({ html, css, fontSize, lineHeight, theme, onTap }: { html: string; css: string; fontSize: number; lineHeight: number; theme: 'light' | 'dark' | 'sepia'; onTap?: () => void; }) {
+  const bgColor = theme === 'dark' ? '#1a1a1a' : theme === 'sepia' ? '#F4ECD8' : '#FFFFFF';
+  const textColor = theme === 'dark' ? '#E0E0E0' : theme === 'sepia' ? '#3E3E3E' : '#1a1a1a';
+  const linkColor = theme === 'dark' ? '#64B5F6' : '#007AFF';
+
+  const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>
+<style>
+${READER_CSS}
+${css}
+html, body {
+  font-size: ${fontSize}px;
+  line-height: ${lineHeight};
+  background: ${bgColor};
+  color: ${textColor};
+  padding: 0 20px 80px 20px;
+  margin: 0;
+  -webkit-text-size-adjust: none;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+a { color: ${linkColor}; }
+img { max-width: 100% !important; height: auto !important; }
+* { max-width: 100% !important; }
+pre, code { white-space: pre-wrap; font-size: 0.9em; }
+</style>
+</head>
+<body>${html}</body>
+</html>`;
+
+  const injectedScript = `
+    document.addEventListener('click', function() {
+      if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'tap' }));
+    });
+    true;
+  `;
+
+  if (Platform.OS === "web") {
     return (
-            <Text style={{ fontSize, lineHeight: fontSize * lineHeight, color: theme === 'dark' ? '#E0E0E0' : theme === 'sepia' ? '#3E3E3E' : '#000', backgroundColor: theme === 'dark' ? '#1a1a1a' : theme === 'sepia' ? '#F4ECD8' : '#FFFFFF' }}>
-        {text}
-      </Text>
+      <div
+        style={{ fontSize, lineHeight: 1.75 }}
+        // eslint-disable-next-line react-native/no-inline-styles
+        dangerouslySetInnerHTML={{ __html: fullHtml }}
+      />
     );
   }
 
-  const bgColor = theme === 'dark' ? '#1a1a1a' : theme === 'sepia' ? '#F4ECD8' : '#FFFFFF';
-  const textColor = theme === 'dark' ? '#E0E0E0' : theme === 'sepia' ? '#3E3E3E' : '#000';
-  const fullHtml = `<style>${READER_CSS}\n${css}\nbody { font-size: ${fontSize}px; line-height: ${lineHeight}; background: ${bgColor}; color: ${textColor}; }</style>${html}`;
+  // Native: use WebView for full fidelity rendering
   return (
-    <div
-      style={{ fontSize, lineHeight: 1.75 }}
-      // eslint-disable-next-line react-native/no-inline-styles
-      dangerouslySetInnerHTML={{ __html: fullHtml }}
+    <WebView
+      source={{ html: fullHtml }}
+      style={{ flex: 1, backgroundColor: bgColor }}
+      scrollEnabled={true}
+      showsVerticalScrollIndicator={false}
+      originWhitelist={["*"]}
+      allowFileAccess={true}
+      allowUniversalAccessFromFileURLs={true}
+      mixedContentMode="always"
+      javaScriptEnabled={true}
+      domStorageEnabled={false}
+      cacheEnabled={false}
+      injectedJavaScript={injectedScript}
+      onMessage={(event) => {
+        try {
+          const msg = JSON.parse(event.nativeEvent.data);
+          if (msg.type === 'tap' && onTap) onTap();
+        } catch {}
+      }}
+      onShouldStartLoadWithRequest={(req) =>
+        req.url === "about:blank" || req.url.startsWith("data:") || req.url === "about:srcdoc"
+      }
     />
   );
 }
@@ -165,6 +272,25 @@ export default function BookReaderScreen() {
         setChapterHtml(html ?? "<p>(空章节)</p>");
         setLoadingChapter(false);
       });
+    } else if (book.hasFileSystem && book.sections[chapterIdx]?.text) {
+      // File-system book: read HTML from local file
+      const filePath = book.sections[chapterIdx].text; // filePath stored in text field
+      if (Platform.OS !== "web") {
+        FileSystemLegacy.readAsStringAsync(filePath, { encoding: FileSystemLegacy.EncodingType.UTF8 })
+          .then((html) => {
+            // Extract body content
+            const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+            setChapterHtml(bodyMatch ? bodyMatch[1] : html);
+            setLoadingChapter(false);
+          })
+          .catch(() => {
+            setChapterHtml("<p>章节文件读取失败</p>");
+            setLoadingChapter(false);
+          });
+      } else {
+        setChapterHtml("<p>文件系统阅读仅支持 iOS/Android</p>");
+        setLoadingChapter(false);
+      }
     } else {
       // Legacy plain-text book: render as paragraphs
       const section = book.sections[chapterIdx];
@@ -444,36 +570,26 @@ export default function BookReaderScreen() {
 
       {/* ── Reading phase ── */}
       {phase === "reading" && (
-        <Pressable style={{ flex: 1 }} onPress={handleTap} accessible={false}>
+        <View style={{ flex: 1 }}>
           {loadingChapter ? (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
               <ActivityIndicator color={colors.primary} />
             </View>
+          ) : chapterHtml ? (
+            <HtmlChapter
+              html={chapterHtml}
+              css={book.css ?? ""}
+              fontSize={fontSize}
+              lineHeight={lineHeight}
+              theme={theme}
+              onTap={Platform.OS !== "web" ? handleTap : undefined}
+            />
           ) : (
-            <ScrollView
-              contentContainerStyle={{
-                paddingHorizontal: 20,
-                paddingTop: chromeVisible ? 8 : 16,
-                paddingBottom: 100 + insets.bottom,
-              }}
-              showsVerticalScrollIndicator={false}
-            >
-              {chapterHtml ? (
-                <HtmlChapter
-                  html={chapterHtml}
-                  css={book.css ?? ""}
-                  fontSize={fontSize}
-                  lineHeight={lineHeight}
-                  theme={theme}
-                />
-              ) : (
-                <Text style={{ color: colors.muted, textAlign: "center", marginTop: 40 }}>
-                  {zh ? "章节为空" : "Empty chapter"}
-                </Text>
-              )}
-            </ScrollView>
+            <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ color: colors.muted }}>{zh ? "章节为空" : "Empty chapter"}</Text>
+            </View>
           )}
-        </Pressable>
+        </View>
       )}
 
       {/* ── Select phase: paragraph list ── */}
@@ -889,3 +1005,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });
+/* ─── WebView height auto-resize script ────────────────────────────────────── */
+const WEBVIEW_HEIGHT_SCRIPT = `
+  (function() {
+    function sendHeight() {
+      var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+      window.ReactNativeWebView && window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'height', value: h }));
+    }
+    document.addEventListener('DOMContentLoaded', sendHeight);
+    window.addEventListener('load', sendHeight);
+    var obs = new MutationObserver(sendHeight);
+    obs.observe(document.body, { childList: true, subtree: true, attributes: true });
+  })();
+  true;
+`;

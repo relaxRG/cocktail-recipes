@@ -20,6 +20,12 @@ export interface StoredBook {
   sectionCount: number;
   /** True when book was imported with HTML chapters (via extractEpubForReading) */
   hasHtml: boolean;
+  /** True when book was extracted to local filesystem (supports 1GB+ books) */
+  hasFileSystem?: boolean;
+  /** Absolute path to the book's root directory on device filesystem */
+  bookDir?: string;
+  /** Cover image file:// URI */
+  coverUri?: string;
   /** EPUB CSS string (injected into reader) */
   css?: string;
   /** Plain-text sections (legacy / fallback) */
@@ -60,6 +66,10 @@ interface BookStore {
     meta: Omit<StoredBook, "id" | "importedAt" | "lastReadAt" | "lastPosition" | "lastChapter" | "sections" | "hasHtml">,
     chapters: { title: string; html: string }[],
   ) => Promise<StoredBook>;
+  addBookFromFileSystem: (
+    meta: Omit<StoredBook, "id" | "importedAt" | "lastReadAt" | "lastPosition" | "lastChapter" | "sections" | "hasHtml" | "hasFileSystem">,
+    chapters: { title: string; filePath: string }[],
+  ) => Promise<StoredBook>;
   loadChapter: (bookId: string, idx: number) => Promise<string | null>;
   deleteBook: (id: string) => void;
   updatePosition: (id: string, position: number, chapter?: number) => void;
@@ -71,6 +81,7 @@ const Ctx = createContext<BookStore>({
   ready: false,
   addBook: () => { throw new Error("no provider"); },
   addBookWithHtml: async () => { throw new Error("no provider"); },
+  addBookFromFileSystem: async () => { throw new Error("no provider"); },
   loadChapter: async () => null,
   deleteBook: () => {},
   updatePosition: () => {},
@@ -167,6 +178,12 @@ export function BookStoreProvider({ children }: { children: React.ReactNode }) {
             AsyncStorage.removeItem(chapterKey(id, i)).catch(() => {});
           }
         }
+        // Clean up filesystem directory
+        if (book?.hasFileSystem && book.bookDir) {
+          import("expo-file-system/legacy").then((FileSystem) => {
+            FileSystem.deleteAsync(book.bookDir!, { idempotent: true }).catch(() => {});
+          });
+        }
         return next;
       });
     },
@@ -199,8 +216,35 @@ export function BookStoreProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const addBookFromFileSystem = useCallback(
+    async (
+      meta: Omit<StoredBook, "id" | "importedAt" | "lastReadAt" | "lastPosition" | "lastChapter" | "sections" | "hasHtml" | "hasFileSystem">,
+      chapters: { title: string; filePath: string }[],
+    ): Promise<StoredBook> => {
+      const id = genId();
+      const entry: StoredBook = {
+        ...meta,
+        id,
+        hasHtml: false,
+        hasFileSystem: true,
+        sections: chapters.map((ch) => ({ title: ch.title, text: ch.filePath })),
+        importedAt: Date.now(),
+        lastReadAt: Date.now(),
+        lastPosition: 0,
+        lastChapter: 0,
+      };
+      setBooks((prev) => {
+        const next = [entry, ...prev];
+        persist(next);
+        return next;
+      });
+      return entry;
+    },
+    [],
+  );
+
   return (
-    <Ctx.Provider value={{ books, ready, addBook, addBookWithHtml, loadChapter, deleteBook, updatePosition, updateBook }}>
+    <Ctx.Provider value={{ books, ready, addBook, addBookWithHtml, addBookFromFileSystem, loadChapter, deleteBook, updatePosition, updateBook }}>
       {children}
     </Ctx.Provider>
   );
