@@ -45,18 +45,20 @@ const READER_CSS = `
 
 /* ─── HTML chapter renderer (web-only) ────────────────────────────────────── */
 
-function HtmlChapter({ html, css, fontSize }: { html: string; css: string; fontSize: number }) {
+function HtmlChapter({ html, css, fontSize, lineHeight, theme }: { html: string; css: string; fontSize: number; lineHeight: number; theme: 'light' | 'dark' | 'sepia' }) {
   if (Platform.OS !== "web") {
     // Native fallback: plain text
     const text = htmlToText(html);
     return (
-      <Text style={{ fontSize, lineHeight: fontSize * 1.75, color: "#000" }}>
+            <Text style={{ fontSize, lineHeight: fontSize * lineHeight, color: theme === 'dark' ? '#E0E0E0' : theme === 'sepia' ? '#3E3E3E' : '#000', backgroundColor: theme === 'dark' ? '#1a1a1a' : theme === 'sepia' ? '#F4ECD8' : '#FFFFFF' }}>
         {text}
       </Text>
     );
   }
 
-  const fullHtml = `<style>${READER_CSS}\n${css}\nbody { font-size: ${fontSize}px; }</style>${html}`;
+  const bgColor = theme === 'dark' ? '#1a1a1a' : theme === 'sepia' ? '#F4ECD8' : '#FFFFFF';
+  const textColor = theme === 'dark' ? '#E0E0E0' : theme === 'sepia' ? '#3E3E3E' : '#000';
+  const fullHtml = `<style>${READER_CSS}\n${css}\nbody { font-size: ${fontSize}px; line-height: ${lineHeight}; background: ${bgColor}; color: ${textColor}; }</style>${html}`;
   return (
     <div
       style={{ fontSize, lineHeight: 1.75 }}
@@ -116,8 +118,12 @@ export default function BookReaderScreen() {
   const [loadingChapter, setLoadingChapter] = useState(false);
   const [tocOpen, setTocOpen] = useState(false);
 
-  /* Font size */
+  /* Reader settings */
   const [fontSize, setFontSize] = useState(16);
+  const [lineHeight, setLineHeight] = useState(1.75);
+  const [theme, setTheme] = useState<'light' | 'dark' | 'sepia'>('light');
+  const [showReaderSettings, setShowReaderSettings] = useState(false);
+  const [bookmarks, setBookmarks] = useState<number[]>([]);
 
   /* Chrome visibility (tap to hide/show) */
   const [chromeVisible, setChromeVisible] = useState(true);
@@ -130,6 +136,19 @@ export default function BookReaderScreen() {
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [importResult, setImportResult] = useState<{ recipes: number; preps: number } | null>(null);
   const [reviewError, setReviewError] = useState("");
+
+  /* Auto-save reading position every 30s */
+  const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  useEffect(() => {
+    autoSaveTimer.current = setInterval(() => {
+      if (book && phase === 'reading') {
+        updatePosition(book.id, chapterIdx, chapterIdx);
+      }
+    }, 30000);
+    return () => {
+      if (autoSaveTimer.current) clearInterval(autoSaveTimer.current);
+    };
+  }, [book, chapterIdx, phase, updatePosition]);
 
   const tap = () => {
     if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -377,6 +396,14 @@ export default function BookReaderScreen() {
             <Pressable onPress={() => { tap(); setFontSize((f) => Math.min(24, f + 1)); }} hitSlop={8} style={[styles.iconBtn, { backgroundColor: colors.surface }]}>
               <Text style={{ fontSize: 14, color: colors.foreground, fontWeight: "600" }}>A+</Text>
             </Pressable>
+            {/* Reader Settings */}
+            <Pressable onPress={() => { tap(); setShowReaderSettings(true); }} hitSlop={8} style={[styles.iconBtn, { backgroundColor: colors.surface }]}>
+              <IconSymbol name="slider.horizontal.3" size={16} color={colors.foreground} />
+            </Pressable>
+            {/* Bookmark */}
+            <Pressable onPress={() => { tap(); setBookmarks((prev) => prev.includes(chapterIdx) ? prev.filter((b) => b !== chapterIdx) : [...prev, chapterIdx]); }} hitSlop={8} style={[styles.iconBtn, { backgroundColor: bookmarks.includes(chapterIdx) ? colors.primary + "22" : colors.surface }]}>
+              <IconSymbol name={bookmarks.includes(chapterIdx) ? "bookmark.fill" : "bookmark"} size={16} color={bookmarks.includes(chapterIdx) ? colors.primary : colors.foreground} />
+            </Pressable>
             {/* TOC */}
             <Pressable onPress={() => { tap(); setTocOpen(true); }} hitSlop={8} style={[styles.iconBtn, { backgroundColor: colors.surface }]}>
               <IconSymbol name="list.bullet" size={16} color={colors.foreground} />
@@ -436,6 +463,8 @@ export default function BookReaderScreen() {
                   html={chapterHtml}
                   css={book.css ?? ""}
                   fontSize={fontSize}
+                  lineHeight={lineHeight}
+                  theme={theme}
                 />
               ) : (
                 <Text style={{ color: colors.muted, textAlign: "center", marginTop: 40 }}>
@@ -665,6 +694,61 @@ export default function BookReaderScreen() {
         </View>
       )}
 
+      {/* ── Reader Settings Panel ── */}
+      {showReaderSettings && (
+        <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+          <Pressable style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(0,0,0,0.4)" }]} onPress={() => setShowReaderSettings(false)} />
+          <View style={[styles.settingsSheet, { backgroundColor: colors.background, borderColor: colors.border }]}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10 }}>
+              <Text style={[styles.tocTitle, { color: colors.foreground }]}>{zh ? "阅读设置" : "Reader Settings"}</Text>
+              <Pressable onPress={() => setShowReaderSettings(false)} hitSlop={8}>
+                <IconSymbol name="xmark" size={18} color={colors.muted} />
+              </Pressable>
+            </View>
+            <ScrollView style={{ flex: 1 }}>
+              {/* Font Size */}
+              <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }}>
+                <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground, marginBottom: 8 }}>{zh ? "字体大小" : "Font Size"}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Pressable onPress={() => setFontSize((f) => Math.max(12, f - 1))} style={[{ width: 32, height: 32, borderRadius: 8, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: colors.border }]}>
+                    <Text style={{ fontSize: 16, color: colors.foreground }}>−</Text>
+                  </Pressable>
+                  <Text style={{ flex: 1, fontSize: fontSize, textAlign: "center", color: colors.foreground }}>Aa</Text>
+                  <Pressable onPress={() => setFontSize((f) => Math.min(24, f + 1))} style={[{ width: 32, height: 32, borderRadius: 8, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: colors.border }]}>
+                    <Text style={{ fontSize: 16, color: colors.foreground }}>+</Text>
+                  </Pressable>
+                </View>
+                <Text style={{ fontSize: 11, color: colors.muted, marginTop: 6 }}>{fontSize}pt</Text>
+              </View>
+
+              {/* Line Height */}
+              <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }}>
+                <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground, marginBottom: 8 }}>{zh ? "行间距" : "Line Height"}</Text>
+                <View style={{ flexDirection: "row", gap: 6 }}>
+                  {[1.2, 1.5, 1.75, 2.0].map((lh) => (
+                    <Pressable key={lh} onPress={() => setLineHeight(lh)} style={[{ flex: 1, paddingVertical: 8, borderRadius: 6, alignItems: "center", borderWidth: 1 }, lineHeight === lh ? { backgroundColor: colors.primary, borderColor: colors.primary } : { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                      <Text style={{ fontSize: 12, fontWeight: "500", color: lineHeight === lh ? "#FFF" : colors.foreground }}>{lh}x</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+
+              {/* Theme */}
+              <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+                <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground, marginBottom: 8 }}>{zh ? "主题" : "Theme"}</Text>
+                <View style={{ flexDirection: "row", gap: 6 }}>
+                  {(["light", "dark", "sepia"] as const).map((t) => (
+                    <Pressable key={t} onPress={() => setTheme(t)} style={[{ flex: 1, paddingVertical: 8, borderRadius: 6, alignItems: "center", borderWidth: 1 }, theme === t ? { backgroundColor: colors.primary, borderColor: colors.primary } : { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                      <Text style={{ fontSize: 12, fontWeight: "500", color: theme === t ? "#FFF" : colors.foreground }}>{t === "light" ? (zh ? "浅色" : "Light") : t === "dark" ? (zh ? "深色" : "Dark") : (zh ? "护眼" : "Sepia")}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      )}
+
       {/* ── TOC drawer ── */}
       {tocOpen && (
         <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
@@ -699,7 +783,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    gap: 10,
+    gap: 6,
   },
   topBarTitle: {
     flex: 1,
@@ -707,11 +791,22 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   iconBtn: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
+  },
+  settingsSheet: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    maxHeight: "75%",
+    borderTopWidth: 1,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: "hidden",
   },
   bottomBar: {
     position: "absolute",
