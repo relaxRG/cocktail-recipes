@@ -131,55 +131,74 @@ export default function MeScreen() {
             <Pressable
               onPress={() => {
                 tap();
-              router.push("/bulk-import");
-            }}
-            style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
-          >
-            <View style={[styles.iconWrap, { backgroundColor: "#34C759" }]}>
-              <IconSymbol name="square.and.arrow.down.fill" size={18} color="#FFFFFF" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-base font-semibold text-foreground">{t("me.import")}</Text>
-              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                {t("me.import.desc")}
-              </Text>
-            </View>
-            <IconSymbol name="chevron.right" size={18} color={colors.muted} />
-          </Pressable>
-          <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: 62 }} />
-          <Pressable
-            onPress={() => {
-              tap();
-              router.push("/book-import");
-            }}
-            style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
-          >
-            <View style={[styles.iconWrap, { backgroundColor: "#FF9500" }]}>
-              <IconSymbol name="book.fill" size={18} color="#FFFFFF" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-base font-semibold text-foreground">{t("me.bookImport")}</Text>
-              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                {t("me.bookImport.desc")}
-              </Text>
-            </View>
-            <IconSymbol name="chevron.right" size={18} color={colors.muted} />
-          </Pressable>
-          <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: 62 }} />
-          <Pressable
-            onPress={() => {
-              tap();
-              router.push("/ice-settings");
-            }}
-            style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
-          >
-            <View style={[styles.iconWrap, { backgroundColor: "#5AC8FA" }]}>
-              <IconSymbol name="snowflake" size={18} color="#FFFFFF" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-base font-semibold text-foreground">{t("me.ice")}</Text>
-              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
-                {t("me.ice.desc")}
+                router.push("/bulk-import");
+              }}
+              style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+            >
+              <View style={[styles.iconWrap, { backgroundColor: "#34C759" }]}>
+                <IconSymbol name="square.and.arrow.down.fill" size={18} color="#FFFFFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-foreground">{t("me.import")}</Text>
+                <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                  {t("me.import.desc")}
+                </Text>
+              </View>
+              <IconSymbol name="chevron.right" size={18} color={colors.muted} />
+            </Pressable>
+            <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: 62 }} />
+            <Pressable
+              onPress={() => {
+                tap();
+                router.push("/card-tag-settings");
+              }}
+              style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+            >
+              <View style={[styles.iconWrap, { backgroundColor: "#FF9500" }]}>
+                <IconSymbol name="rectangle.3.group.fill" size={18} color="#FFFFFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-foreground">{t("me.cardTags")}</Text>
+                <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                  {t("me.cardTags.desc")}
+                </Text>
+              </View>
+              <IconSymbol name="chevron.right" size={18} color={colors.muted} />
+            </Pressable>
+            <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: 62 }} />
+            <Pressable
+              onPress={() => {
+                tap();
+                router.push("/book-import");
+              }}
+              style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+            >
+              <View style={[styles.iconWrap, { backgroundColor: "#FF9500" }]}>
+                <IconSymbol name="book.fill" size={18} color="#FFFFFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-foreground">{t("me.bookImport")}</Text>
+                <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                  {t("me.bookImport.desc")}
+                </Text>
+              </View>
+              <IconSymbol name="chevron.right" size={18} color={colors.muted} />
+            </Pressable>
+            <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: 62 }} />
+            <Pressable
+              onPress={() => {
+                tap();
+                router.push("/ice-settings");
+              }}
+              style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
+            >
+              <View style={[styles.iconWrap, { backgroundColor: "#5AC8FA" }]}>
+                <IconSymbol name="snowflake" size={18} color="#FFFFFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-foreground">{t("me.ice")}</Text>
+                <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                  {t("me.ice.desc")}
                 </Text>
               </View>
               <IconSymbol name="chevron.right" size={18} color={colors.muted} />

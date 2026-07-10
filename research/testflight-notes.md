@@ -63,3 +63,10 @@
 - iOS 构建需 Apple Developer Program 有效会员资格,若 build 时报 membership 错误需用户确认已付费加入
 - app.config.ts 中 ITSAppUsesNonExemptEncryption: false 已设置,出口合规自动跳过
 - 沙盒内存紧张:构建在 Expo 云端执行,本地只跑 CLI,风险可控
+
+## build 4: 第二轮 GitHub 新功能合并 (2026-07-10)
+- 代码版本: checkpoint b1ec1f12（recipe-card cardTagOrder / recipe-form AI补全 / recipe/[id]联网补全 / bottle-form flavorTags+story+styleDesc / book-import 阅读器模式）
+- build id: 5b9efc1f-8375-477f-bb5f-5606faba9010 (production, buildNumber 8)
+- 日志: https://expo.dev/accounts/rgsh/projects/cocktail-recipes/builds/5b9efc1f-8375-477f-bb5f-5606faba9010
+- 状态: in queue → 构建中（约 10-20 分钟）
+- 构建完成后执行: cd /home/ubuntu/cocktail-recipes && EXPO_TOKEN=AfbUv1il43bbb2n9jHDoPfpTEGyJ9_B3u_985vp4 eas submit --platform ios --latest --non-interactive

@@ -41,6 +41,7 @@ import { BASE_SPIRITS, detectPrepBaseSpirits } from "@/lib/homemade/base-spirit"
 import { groupPrepsByName } from "@/lib/recipes/grouping";
 import { sortPreps, PREP_SORTS, PrepSort } from "@/lib/recipes/sort";
 import { Bottle } from "@/lib/bottles/types";
+import { useCardTagSettings } from "@/lib/settings/card-tags";
 import {
   HomemadePrep,
   PREP_GROUPS,
@@ -1043,6 +1044,7 @@ function PrepRowInner({
   const router = useRouter();
   const { t, lang } = useI18n();
   const { types, togglePrepMade } = useHomemadeStore();
+  const [cardSettings] = useCardTagSettings();
   const names = displayNames(prep.name, prep.nameAlt, lang);
   const cost = useMemo(() => estimatePrepCost(prep, bottles), [prep, bottles]);
   const tech = useMemo(() => primaryTechnique(prep), [prep]);
@@ -1077,6 +1079,8 @@ function PrepRowInner({
               </Text>
             </View>
             <View className="flex-row items-center mt-1.5" style={{ gap: 6, height: 24, overflow: "hidden" }}>
+              {cardSettings.showHomemadeTags && (
+                <>
               <View style={[styles.badge, { backgroundColor: colors.primary + "22" }]}>
                 <Text style={[styles.badgeText, { color: colors.primary }]}>
                   {prepTypeLabelIn(types, prep.type, lang)}
@@ -1089,6 +1093,8 @@ function PrepRowInner({
                   </Text>
                 </View>
               ) : null}
+                </>
+              )}
               {prep.shelfLife ? (
                 <Text className="text-xs text-muted" numberOfLines={1}>
                   {prep.shelfLife}

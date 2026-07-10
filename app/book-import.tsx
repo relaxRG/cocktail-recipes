@@ -35,6 +35,7 @@ import { useHomemadeStore } from "@/lib/homemade/store";
 import { classifyPrepGroup, guessPrepType } from "@/lib/homemade/types";
 import { normalizeCodexFamilyDecl } from "@/lib/recipes/lineage";
 import { trpc } from "@/lib/trpc";
+import { useBookStore } from "@/lib/books/store";
 
 type Phase = "idle" | "loading" | "reading" | "confirm" | "done";
 
@@ -167,6 +168,9 @@ export default function BookImportScreen() {
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState<{ done: number; total: number } | null>(null);
   const [currentChapter, setCurrentChapter] = useState(0);
+  // AI scan range: null = all pages
+  const [scanRange, setScanRange] = useState<{ from: number; to: number } | null>(null);
+  const [showRangePicker, setShowRangePicker] = useState(false);
 
   // Confirm/import phase
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
@@ -174,6 +178,7 @@ export default function BookImportScreen() {
   const [reviewError, setReviewError] = useState("");
 
   const pendingRef = useRef<PendingFile | null>(null);
+  const currentBookSectionsRef = useRef<ExtractedBook["sections"]>([]);
 
   const ocrMutation = trpc.bookImport.ocr.useMutation();
   const translateMutation = trpc.bookImport.translate.useMutation();
@@ -181,6 +186,7 @@ export default function BookImportScreen() {
 
   const { addRecipe, updateRecipe, recipes } = useRecipeStore();
   const { addPrep, preps, sections, types } = useHomemadeStore();
+  const { addBook } = useBookStore();
 
   const existingNames = useMemo(() => {
     const set = new Set<string>();
@@ -201,7 +207,7 @@ export default function BookImportScreen() {
 
   // ─── File loading ───────────────────────────────────────────────────────────
 
-  const loadBookIntoReader = useCallback((book: ExtractedBook, fileName: string) => {
+  const loadBookIntoReader = useCallback((book: ExtractedBook, fileName: string, format = "epub") => {
     const title = book.title || fileName.replace(/\.(epub|pdf)$/i, "");
     setBookTitle(title);
     const newBlocks = buildReadingBlocks(book.sections);
@@ -209,7 +215,16 @@ export default function BookImportScreen() {
     setCurrentChapter(0);
     setScanProgress(null);
     setPhase("reading");
-  }, []);
+    // Save to persistent book store (fire and forget — reading starts immediately)
+    currentBookSectionsRef.current = book.sections;
+    addBook({
+      title,
+      fileName,
+      format,
+      sectionCount: book.sections.length,
+      sections: book.sections,
+    });
+  }, [addBook]);
 
   const runOcr = useCallback(async () => {
     const pending = pendingRef.current;
@@ -267,7 +282,7 @@ export default function BookImportScreen() {
         title: pending.name.replace(/\.(epub|pdf)$/i, ""),
         sections: [{ title: "", text }],
       };
-      loadBookIntoReader(syntheticBook, pending.name);
+      loadBookIntoReader(syntheticBook, pending.name, pending.isPdf ? "scanned-pdf" : "scanned-epub");
     } catch (e) {
       setLoadError(
         (zh ? "AI 识别失败：" : "AI OCR failed: ") + (e instanceof Error ? e.message : String(e)),
@@ -324,7 +339,7 @@ export default function BookImportScreen() {
 
       setLoadStatus(zh ? "正在解析文件…" : "Parsing file…");
       const book: ExtractedBook = isEpub ? await extractEpub(buffer) : await extractPdf(buffer);
-      loadBookIntoReader(book, asset.name);
+      loadBookIntoReader(book, asset.name, isPdf ? "pdf" : "epub");
     } catch (e) {
       setOcrOffer(true);
       setLoadError(
@@ -390,17 +405,37 @@ export default function BookImportScreen() {
   }, []);
 
   /** Trigger AI-assisted deep scan via OCR endpoint on current book content */
-  const runAiScan = useCallback(async () => {
+  const runAiScan = useCallback(async (range?: { from: number; to: number }) => {
     if (scanning) return;
     setScanning(true);
-    setScanProgress({ done: 0, total: blocks.length });
+    // Determine which paragraph blocks to scan
+    const allParas = blocks.filter((b) => b.type === "paragraph");
+    const total = allParas.length;
+    const effectiveRange = range ?? scanRange;
+    let paras = allParas;
+    if (effectiveRange) {
+      // Convert 1-indexed section range to block range
+      const headings = blocks.filter((b) => b.type === "heading");
+      const fromIdx = Math.max(0, effectiveRange.from - 1);
+      const toIdx = Math.min(headings.length - 1, effectiveRange.to - 1);
+      const fromSection = headings[fromIdx]?.sectionTitle ?? "";
+      const toSection = headings[toIdx]?.sectionTitle ?? headings[headings.length - 1]?.sectionTitle ?? "";
+      let inRange = false;
+      let past = false;
+      paras = allParas.filter((b) => {
+        if (b.sectionTitle === fromSection) inRange = true;
+        if (inRange && b.sectionTitle === toSection) past = false;
+        if (b.sectionTitle > toSection && toSection) past = true;
+        return inRange && !past;
+      });
+      if (paras.length === 0) paras = allParas; // fallback
+    }
+    setScanProgress({ done: 0, total: paras.length });
     try {
-      // Batch paragraphs into chunks and run detection
-      const paragraphs = blocks.filter((b) => b.type === "paragraph");
       const chunkSize = 20;
       let done = 0;
-      for (let i = 0; i < paragraphs.length; i += chunkSize) {
-        const chunk = paragraphs.slice(i, i + chunkSize);
+      for (let i = 0; i < paras.length; i += chunkSize) {
+        const chunk = paras.slice(i, i + chunkSize);
         const chunkText = chunk.map((b) => b.text).join("\n\n");
         const candidates = detectRecipesInText(chunkText, "");
         setBlocks((prev) => {
@@ -427,15 +462,14 @@ export default function BookImportScreen() {
           return next;
         });
         done += chunk.length;
-        setScanProgress({ done, total: paragraphs.length });
-        // Small yield to allow UI updates
+        setScanProgress({ done, total: paras.length });
         await new Promise((r) => setTimeout(r, 0));
       }
     } finally {
       setScanning(false);
       setScanProgress(null);
     }
-  }, [scanning, blocks]);
+  }, [scanning, blocks, scanRange]);
 
   // ─── Block selection ─────────────────────────────────────────────────────────
 
@@ -688,7 +722,7 @@ export default function BookImportScreen() {
         {phase === "reading" && (
           <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
             <Pressable
-              onPress={() => { tap(); void runAiScan(); }}
+              onPress={() => { tap(); setShowRangePicker(true); }}
               disabled={scanning}
               hitSlop={8}
               style={({ pressed }) => [
@@ -705,6 +739,11 @@ export default function BookImportScreen() {
               <Text style={{ fontSize: 12, fontWeight: "600", color: scanning ? colors.muted : colors.primary }}>
                 {zh ? "AI 扫描" : "AI Scan"}
               </Text>
+              {scanRange && (
+                <Text style={{ fontSize: 10, color: colors.primary, fontWeight: "500" }}>
+                  {scanRange.from}-{scanRange.to}
+                </Text>
+              )}
             </Pressable>
           </View>
         )}
@@ -1170,9 +1209,193 @@ export default function BookImportScreen() {
           </View>
         </View>
       )}
+
+      {/* ── AI Scan Range Picker Modal ── */}
+      {showRangePicker && (
+        <ScanRangePicker
+          colors={colors}
+          zh={zh}
+          chapterCount={blocks.filter((b) => b.type === "heading").length}
+          scanRange={scanRange}
+          onConfirm={(range) => {
+            setScanRange(range);
+            setShowRangePicker(false);
+            void runAiScan(range ?? undefined);
+          }}
+          onClose={() => setShowRangePicker(false)}
+        />
+      )}
     </ScreenContainer>
   );
 }
+
+/** AI Scan page range picker overlay */
+function ScanRangePicker({
+  colors,
+  zh,
+  chapterCount,
+  scanRange,
+  onConfirm,
+  onClose,
+}: {
+  colors: ReturnType<typeof useColors>;
+  zh: boolean;
+  chapterCount: number;
+  scanRange: { from: number; to: number } | null;
+  onConfirm: (range: { from: number; to: number } | null) => void;
+  onClose: () => void;
+}) {
+  const maxChapters = Math.max(chapterCount, 1);
+  const [from, setFrom] = useState(scanRange?.from ?? 1);
+  const [to, setTo] = useState(scanRange?.to ?? maxChapters);
+  const [mode, setMode] = useState<"all" | "range">(scanRange ? "range" : "all");
+
+  return (
+    <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+      <Pressable
+        style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(0,0,0,0.4)" }]}
+        onPress={onClose}
+      />
+      <View
+        style={[
+          rangeStyles.sheet,
+          { backgroundColor: colors.background, borderColor: colors.border },
+        ]}
+      >
+        <Text style={[rangeStyles.title, { color: colors.foreground }]}>
+          {zh ? "AI 扫描范围" : "AI Scan Range"}
+        </Text>
+
+        <View style={{ flexDirection: "row", gap: 8, marginBottom: 16 }}>
+          {(["all", "range"] as const).map((m) => {
+            const active = mode === m;
+            return (
+              <Pressable
+                key={m}
+                onPress={() => setMode(m)}
+                style={[
+                  rangeStyles.modeBtn,
+                  { backgroundColor: active ? colors.primary : colors.surface, borderColor: active ? colors.primary : colors.border },
+                ]}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600", color: active ? "#FFF" : colors.muted }}>
+                  {m === "all" ? (zh ? "全部章节" : "All sections") : (zh ? "指定范围" : "Custom range")}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {mode === "range" && (
+          <View style={{ gap: 12, marginBottom: 16 }}>
+            <Text style={{ fontSize: 13, color: colors.muted }}>
+              {zh ? `共 ${maxChapters} 个章节` : `${maxChapters} section${maxChapters !== 1 ? "s" : ""} total`}
+            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+              <Text style={{ color: colors.muted, fontSize: 14, width: 60 }}>{zh ? "从第" : "From"}</Text>
+              <Pressable
+                onPress={() => setFrom(Math.max(1, from - 1))}
+                style={[rangeStyles.stepper, { borderColor: colors.border, backgroundColor: colors.surface }]}
+              >
+                <Text style={{ fontSize: 18, color: colors.primary }}>−</Text>
+              </Pressable>
+              <Text style={{ fontSize: 17, fontWeight: "700", color: colors.foreground, minWidth: 32, textAlign: "center" }}>{from}</Text>
+              <Pressable
+                onPress={() => setFrom(Math.min(to, from + 1))}
+                style={[rangeStyles.stepper, { borderColor: colors.border, backgroundColor: colors.surface }]}
+              >
+                <Text style={{ fontSize: 18, color: colors.primary }}>+</Text>
+              </Pressable>
+              <Text style={{ color: colors.muted, fontSize: 14 }}>{zh ? "章" : ""}</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+              <Text style={{ color: colors.muted, fontSize: 14, width: 60 }}>{zh ? "到第" : "To"}</Text>
+              <Pressable
+                onPress={() => setTo(Math.max(from, to - 1))}
+                style={[rangeStyles.stepper, { borderColor: colors.border, backgroundColor: colors.surface }]}
+              >
+                <Text style={{ fontSize: 18, color: colors.primary }}>−</Text>
+              </Pressable>
+              <Text style={{ fontSize: 17, fontWeight: "700", color: colors.foreground, minWidth: 32, textAlign: "center" }}>{to}</Text>
+              <Pressable
+                onPress={() => setTo(Math.min(maxChapters, to + 1))}
+                style={[rangeStyles.stepper, { borderColor: colors.border, backgroundColor: colors.surface }]}
+              >
+                <Text style={{ fontSize: 18, color: colors.primary }}>+</Text>
+              </Pressable>
+              <Text style={{ color: colors.muted, fontSize: 14 }}>{zh ? "章" : ""}</Text>
+            </View>
+          </View>
+        )}
+
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <Pressable
+            onPress={onClose}
+            style={[rangeStyles.btn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          >
+            <Text style={{ color: colors.muted, fontSize: 15, fontWeight: "600" }}>
+              {zh ? "取消" : "Cancel"}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => onConfirm(mode === "range" ? { from, to } : null)}
+            style={[rangeStyles.btn, { backgroundColor: colors.primary, borderColor: colors.primary, flex: 2 }]}
+          >
+            <IconSymbol name="sparkles" size={15} color="#FFF" />
+            <Text style={{ color: "#FFF", fontSize: 15, fontWeight: "600" }}>
+              {zh ? "开始扫描" : "Scan"}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const rangeStyles = StyleSheet.create({
+  sheet: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 24,
+    paddingBottom: 36,
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: "700",
+    marginBottom: 16,
+  },
+  modeBtn: {
+    flex: 1,
+    height: 38,
+    borderRadius: 10,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  stepper: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  btn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    height: 48,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+});
 
 const styles = StyleSheet.create({
   header: {

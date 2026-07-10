@@ -2,9 +2,9 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
-  ActivityIndicator,
   Platform,
   Pressable,
   ScrollView,
@@ -32,6 +32,12 @@ import { useColors } from "@/hooks/use-colors";
 import { usePersistedState } from "@/hooks/use-persisted-state";
 import { useI18n } from "@/lib/i18n";
 import { filterBottles, useBottleStore } from "@/lib/bottles/store";
+import {
+  applyEnrichedToBottle,
+  enrichQueryName,
+  matchEnrichedItem,
+} from "@/lib/bottles/enrich";
+import { trpc } from "@/lib/trpc";
 import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
 import { groupFormFamilies, type FormFamily } from "@/lib/bottles/form-family";
 import { sortBottles, BOTTLE_SORTS, BottleSort } from "@/lib/recipes/sort";
@@ -39,14 +45,15 @@ import {
   BOTTLE_GROUPS,
   Bottle,
 } from "@/lib/bottles/types";
-import { trpc } from "@/lib/trpc";
+import { useCardTagSettings } from "@/lib/settings/card-tags";
 
 export default function BottlesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t, lang } = useI18n();
-  const { ready, bottles, reorderBottles, deleteBottles, bulkUpdateBottles } = useBottleStore();
+  const { ready, bottles, reorderBottles, deleteBottles, bulkUpdateBottles, updateBottle } =
+    useBottleStore();
   const {
     categoryLabel,
     stylesOf,
@@ -55,50 +62,6 @@ export default function BottlesScreen() {
   } = useBottleTaxonomy();
   const [query, setQuery] = useState("");
   const [group, setGroup] = useState<"spirits" | "bottles" | "materials">("spirits");
-  // 联网批量补全
-  const enrichMutation = trpc.lookup.enrich.useMutation();
-  const [enrichBusy, setEnrichBusy] = useState(false);
-
-  const handleBulkEnrich = useCallback(async () => {
-    const incomplete = bottles.filter(
-      (b) => groupOf(b.category) === group && (b.abv === 0 || b.priceCny === 0 || !b.origin),
-    ).slice(0, 8);
-    if (incomplete.length === 0) {
-      Alert.alert(
-        lang === "zh" ? "无需补全" : "All good",
-        t("lookup.batch.none"),
-      );
-      return;
-    }
-    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setEnrichBusy(true);
-    try {
-      const names = incomplete.map((b) => [b.nameEn, b.nameZh].filter(Boolean).join(" "));
-      const res = await enrichMutation.mutateAsync({ names });
-      let filled = 0;
-      for (let i = 0; i < incomplete.length; i++) {
-        const item = res.items[i];
-        if (!item?.found) continue;
-        const b = incomplete[i];
-        const patch: Record<string, unknown> = {};
-        if (b.abv === 0 && item.abv > 0) patch.abv = item.abv;
-        if (b.priceCny === 0 && item.priceCny > 0) patch.priceCny = item.priceCny;
-        if (!b.origin && item.origin) patch.origin = item.origin;
-        if (!b.brand && item.brand) patch.brand = item.brand;
-        if (!b.style && item.style) patch.style = item.style;
-        if (Object.keys(patch).length > 0) {
-          bulkUpdateBottles([b.id], patch as Parameters<typeof bulkUpdateBottles>[1]);
-          filled++;
-        }
-      }
-      if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert(lang === "zh" ? "补全完成" : "Done", t("lookup.batch.done", { n: filled }));
-    } catch {
-      Alert.alert(lang === "zh" ? "补全失败" : "Failed", t("smartImport.fail.msg"));
-    } finally {
-      setEnrichBusy(false);
-    }
-  }, [bottles, group, groupOf, enrichMutation, bulkUpdateBottles, lang, t]);
   // 多选模式:批量删除/批量改分类/风格
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -138,6 +101,63 @@ export default function BottlesScreen() {
     () => bottles.filter((b) => groupOf(b.category) === group),
     [bottles, group, groupOf],
   );
+
+  // 联网批量补全:当前分组内零价缺资料条目 → LLM 知识补全并更新入库(每次最多 24 条)
+  const enrichMutation = trpc.lookup.enrich.useMutation();
+  const [enriching, setEnriching] = useState(false);
+  const [enrichMsg, setEnrichMsg] = useState<string | null>(null);
+  const [enrichProgress, setEnrichProgress] = useState<{ done: number; total: number } | null>(null);
+  const [enrichErrors, setEnrichErrors] = useState<string[]>([]);
+  const missingCount = useMemo(
+    () => groupBottles.filter((b) => b.priceCny <= 0).length,
+    [groupBottles],
+  );
+  const handleBatchEnrich = useCallback(async () => {
+    if (enriching) return;
+    const targets = groupBottles.filter((b) => b.priceCny <= 0).slice(0, 24);
+    if (targets.length === 0) return;
+    setEnriching(true);
+    setEnrichMsg(null);
+    setEnrichProgress({ done: 0, total: targets.length });
+    setEnrichErrors([]);
+    let updated = 0;
+    const errors: string[] = [];
+    try {
+      for (let off = 0; off < targets.length; off += 8) {
+        const batch = targets.slice(off, off + 8);
+        const names = batch.map(enrichQueryName);
+        try {
+          const res = await enrichMutation.mutateAsync({ names });
+          batch.forEach((b, i) => {
+            const item = matchEnrichedItem(res.items, names, i);
+            if (!item || !item.found) {
+              errors.push(names[i] || b.nameEn || b.nameZh);
+              return;
+            }
+            const draft = applyEnrichedToBottle(b, item);
+            if (!draft) return;
+            updateBottle(b.id, draft);
+            updated++;
+          });
+        } catch (batchErr) {
+          batch.forEach((b) => errors.push(b.nameEn || b.nameZh));
+        }
+        setEnrichProgress({ done: Math.min(off + 8, targets.length), total: targets.length });
+      }
+      if (updated > 0 && Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      setEnrichErrors(errors);
+      setEnrichMsg(updated > 0 ? t("lookup.batchDone", { n: updated }) : t("lookup.enrichNone"));
+    } catch {
+      setEnrichMsg(
+        updated > 0 ? t("lookup.batchDone", { n: updated }) : t("smartImport.fail.msg"),
+      );
+    } finally {
+      setEnriching(false);
+      setEnrichProgress(null);
+    }
+  }, [enriching, groupBottles, enrichMutation, updateBottle, t]);
 
   // 快捷筛选解析:大分类(类别)与其下细化的风格集合
   const quickCats = Object.keys(quickSel);
@@ -435,33 +455,6 @@ export default function BottlesScreen() {
                   : t("bottles.subtitle", { n: groupBottles.length })}
             </Text>
           </View>
-          <View className="flex-row items-center" style={{ gap: 8 }}>
-          {groupBottles.length > 0 && !selectMode && (
-            <Pressable
-              onPress={handleBulkEnrich}
-              disabled={enrichBusy}
-              style={({ pressed }) => [
-                styles.selectBtn,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 4,
-                },
-                (pressed || enrichBusy) && { opacity: 0.6 },
-              ]}
-            >
-              {enrichBusy ? (
-                <ActivityIndicator size="small" color={colors.primary} />
-              ) : (
-                <IconSymbol name="wand.and.stars" size={14} color={colors.primary} />
-              )}
-              <Text style={[styles.selectBtnText, { color: colors.primary }]}>
-                {lang === "zh" ? "补全" : "Fill"}
-              </Text>
-            </Pressable>
-          )}
           {groupBottles.length > 0 ? (
             <Pressable
               onPress={() => {
@@ -485,7 +478,6 @@ export default function BottlesScreen() {
               </Text>
             </Pressable>
           ) : null}
-          </View>
         </View>
       </View>
 
@@ -505,6 +497,7 @@ export default function BottlesScreen() {
                   setGroup(g.key);
                   setSelCategories([]);
                   setSelStyles([]);
+                  setEnrichMsg(null);
                   if (Platform.OS !== "web") {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   }
@@ -588,6 +581,65 @@ export default function BottlesScreen() {
           }
         />
       </View>
+
+      {/* 联网补全:当前分组内零价缺资料条目一键补全 */}
+      {!selectMode && ready && missingCount > 0 ? (
+        <View className="px-5" style={{ marginTop: 8 }}>
+          <Pressable
+            onPress={handleBatchEnrich}
+            disabled={enriching}
+            style={({ pressed }) => [
+              styles.enrichBanner,
+              { backgroundColor: colors.primary + "14" },
+              (pressed || enriching) && { opacity: 0.6 },
+            ]}
+          >
+            {enriching ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <IconSymbol name="globe" size={14} color={colors.primary} />
+            )}
+            <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+              {t("lookup.enrichMissing")} ({missingCount})
+            </Text>
+          </Pressable>
+          {enrichProgress ? (
+            <View className="mt-2 px-1" style={{ gap: 4 }}>
+              <View className="flex-row items-center justify-between">
+                <Text className="text-xs text-muted">
+                  {lang === "zh"
+                    ? `正在补全 ${enrichProgress.done}/${enrichProgress.total}…`
+                    : `Enriching ${enrichProgress.done}/${enrichProgress.total}…`}
+                </Text>
+              </View>
+              <View
+                className="rounded-full overflow-hidden"
+                style={{ height: 4, backgroundColor: colors.border }}
+              >
+                <View
+                  className="rounded-full"
+                  style={{
+                    height: 4,
+                    backgroundColor: colors.primary,
+                    width: `${Math.round((enrichProgress.done / enrichProgress.total) * 100)}%`,
+                  }}
+                />
+              </View>
+            </View>
+          ) : enrichMsg ? (
+            <View className="mt-1" style={{ gap: 3 }}>
+              <Text className="text-xs text-muted text-center">{enrichMsg}</Text>
+              {enrichErrors.length > 0 && (
+                <Text className="text-xs text-center" style={{ color: colors.error, lineHeight: 16 }}>
+                  {lang === "zh" ? "未识别: " : "Not found: "}
+                  {enrichErrors.slice(0, 5).join(" · ")}
+                  {enrichErrors.length > 5 ? ` +${enrichErrors.length - 5}` : ""}
+                </Text>
+              )}
+            </View>
+          ) : null}
+        </View>
+      ) : null}
 
       {/* 统一筛选与排序面板 */}
       <FilterSortSheet
@@ -943,6 +995,9 @@ function BottleCardInner({
   const router = useRouter();
   const { t, lang } = useI18n();
   const { categoryLabel } = useBottleTaxonomy();
+  const [cardSettings] = useCardTagSettings();
+  const flavorTags = bottle.flavorTags ?? [];
+  const visibleTags = cardSettings.maxTagsPerCard > 0 ? flavorTags.slice(0, cardSettings.maxTagsPerCard) : flavorTags;
   return (
     <Pressable
       onPress={() => router.push({ pathname: "/bottle/[id]", params: { id: bottle.id } })}
@@ -957,7 +1012,7 @@ function BottleCardInner({
       >
         <View className="flex-row items-center">
           <View className="flex-1 pr-2">
-            <View style={{ height: 40, justifyContent: "center" }}>
+            <View style={{ minHeight: 40, justifyContent: "center" }}>
               <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
                 {lang === "en" && bottle.nameEn ? bottle.nameEn : bottle.nameZh}
               </Text>
@@ -965,36 +1020,49 @@ function BottleCardInner({
                 {(lang === "en" ? bottle.nameZh : bottle.nameEn) || " "}
               </Text>
             </View>
-            <View className="flex-row items-center mt-1.5" style={{ gap: 6, height: 24, overflow: "hidden" }}>
-              <View
-                style={[styles.badge, { backgroundColor: colors.primary + "22" }]}
-              >
+            <View className="flex-row items-center mt-1.5 flex-wrap" style={{ gap: 6, minHeight: 24 }}>
+              <View style={[styles.badge, { backgroundColor: colors.primary + "22" }]}>
                 <Text style={[styles.badgeText, { color: colors.primary }]}>
                   {categoryLabel(bottle.category, lang)}
                 </Text>
               </View>
               {badge}
-              {bottle.volume ? (
+              {cardSettings.showBottleVolume && bottle.volume ? (
                 <Text className="text-xs text-muted">{bottle.volume}</Text>
               ) : null}
-              {bottle.style ? (
+              {cardSettings.showBottleStyle && bottle.style ? (
                 <View style={[styles.badge, { backgroundColor: colors.muted + "22" }]}>
                   <Text style={[styles.badgeText, { color: colors.muted }]}>{bottle.style}</Text>
                 </View>
               ) : null}
-              <Text className="text-xs text-muted">{bottle.abv}% vol</Text>
-              {bottle.rating ? (
-                <View
-                  style={[
-                    styles.badge,
-                    { backgroundColor: "#F5A62322", flexDirection: "row", alignItems: "center", gap: 2 },
-                  ]}
-                >
+              {cardSettings.showBottleOrigin && bottle.origin ? (
+                <Text className="text-xs text-muted" numberOfLines={1}>{bottle.origin}</Text>
+              ) : null}
+              {cardSettings.showBottleAbv && bottle.abv > 0 ? (
+                <Text className="text-xs text-muted">{bottle.abv}% vol</Text>
+              ) : null}
+              {cardSettings.showBottleRating && bottle.rating ? (
+                <View style={[styles.badge, { backgroundColor: "#F5A62322", flexDirection: "row", alignItems: "center", gap: 2 }]}>
                   <IconSymbol name="star.fill" size={10} color="#F5A623" />
                   <Text style={[styles.badgeText, { color: "#C77F00" }]}>{bottle.rating}/10</Text>
                 </View>
               ) : null}
             </View>
+            {/* Flavor tags row */}
+            {cardSettings.showBottleFlavorTags && visibleTags.length > 0 && (
+              <View className="flex-row flex-wrap" style={{ gap: 4, marginTop: 5 }}>
+                {visibleTags.map((tag) => (
+                  <View key={tag} style={[styles.flavorTag, { backgroundColor: colors.primary + "12", borderColor: colors.primary + "30" }]}>
+                    <Text style={[styles.flavorTagText, { color: colors.primary }]}>{tag}</Text>
+                  </View>
+                ))}
+                {cardSettings.maxTagsPerCard > 0 && flavorTags.length > cardSettings.maxTagsPerCard && (
+                  <View style={[styles.flavorTag, { backgroundColor: colors.border, borderColor: colors.border }]}>
+                    <Text style={[styles.flavorTagText, { color: colors.muted }]}>+{flavorTags.length - cardSettings.maxTagsPerCard}</Text>
+                  </View>
+                )}
+              </View>
+            )}
           </View>
           <View className="items-end">
             {bottle.priceCny > 0 ? (
@@ -1016,9 +1084,7 @@ function BottleCardInner({
       {!isLast ? (
         <View
           className="bg-surface"
-          style={{
-            height: StyleSheet.hairlineWidth,
-          }}
+          style={{ height: StyleSheet.hairlineWidth }}
         >
           <View
             style={{
@@ -1100,6 +1166,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
   },
+  enrichBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
   badge: {
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -1109,6 +1183,17 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "600",
     lineHeight: 15,
+  },
+  flavorTag: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  flavorTagText: {
+    fontSize: 10,
+    fontWeight: "500",
+    lineHeight: 14,
   },
   fab: {
     position: "absolute",

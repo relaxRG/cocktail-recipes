@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -10,10 +10,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+
 import { ScreenContainer } from "@/components/screen-container";
 import { SmartImportBar } from "@/components/smart-import-bar";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -23,6 +22,7 @@ import { BottleDraft, useBottleStore } from "@/lib/bottles/store";
 import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
 import { trpc } from "@/lib/trpc";
 import type { EnrichedProduct } from "@/server/routers";
+import * as ImagePicker from "expo-image-picker";
 
 export default function BottleFormScreen() {
   const colors = useColors();
@@ -57,101 +57,121 @@ export default function BottleFormScreen() {
     editing && editing.priceCny > 0 ? String(editing.priceCny) : "",
   );
   const [notes, setNotes] = useState(editing?.notes ?? "");
-
-  const canSave = nameZh.trim().length > 0 || nameEn.trim().length > 0;
   const [flavorTags, setFlavorTags] = useState<string[]>(editing?.flavorTags ?? []);
   const [story, setStory] = useState(editing?.story ?? "");
   const [styleDesc, setStyleDesc] = useState(editing?.styleDesc ?? "");
 
-  // ── 联网识别补全 ──────────────────────────────────────────────────────────
+  const canSave = nameZh.trim().length > 0 || nameEn.trim().length > 0;
+
+  // 联网识别 + AI 风味补全:两步串联,合并结果后统一预览
   const enrichMutation = trpc.lookup.enrich.useMutation();
   const enrichBottleMutation = trpc.lookup.enrichBottle.useMutation();
-  const [lookupBusy, setLookupBusy] = useState<"text" | "photo" | "flavor" | null>(null);
-  const [lookupStatus, setLookupStatus] = useState<{ kind: "ok" | "err"; msg: string } | null>(null);
-  const [pendingFlavor, setPendingFlavor] = useState<{
+  const [lookupBusy, setLookupBusy] = useState<"text" | "photo" | null>(null);
+  const [lookupStatus, setLookupStatus] = useState<{ kind: "ok" | "err"; msg: string } | null>(
+    null,
+  );
+
+  type CombinedResult = EnrichedProduct & {
     flavorTags: string[];
     story: string;
     styleDesc: string;
-    confidence: "high" | "medium" | "low";
-  } | null>(null);
+    flavorConfidence: "high" | "medium" | "low";
+  };
+  const [pendingResult, setPendingResult] = useState<CombinedResult | null>(null);
 
-  const applyEnriched = useCallback(
-    (item: EnrichedProduct) => {
-      if (!nameZh.trim() && item.nameZh) setNameZh(item.nameZh);
-      if (!nameEn.trim() && item.nameEn) setNameEn(item.nameEn);
-      if (item.category && taxCategories.some((c) => c.zh === item.category))
-        setCategory(item.category);
-      if (!style.trim() && item.style) setStyle(item.style);
-      if (!brand.trim() && item.brand) setBrand(item.brand);
-      if (!origin.trim() && item.origin) setOrigin(item.origin);
-      if (!volume.trim() && item.volume) setVolume(item.volume);
-      if (!(parseFloat(abv) > 0) && item.abv > 0) setAbv(String(item.abv));
-      if (!(parseFloat(price) > 0) && item.priceCny > 0) setPrice(String(item.priceCny));
-      if (!notes.trim() && item.notes) setNotes(item.notes);
-      if (Platform.OS !== "web")
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setLookupStatus({ kind: "ok", msg: t("lookup.filled") });
-    },
-    [nameZh, nameEn, style, brand, origin, volume, abv, price, notes, taxCategories, t],
-  );
+  /** 串联两步:先识别基本信息,再补全风味/故事 */
+  const runCombinedLookup = async (
+    enrichArgs: Parameters<typeof enrichMutation.mutateAsync>[0],
+  ): Promise<void> => {
+    const res = await enrichMutation.mutateAsync(enrichArgs);
+    const item = res.items.find((i) => i.found);
+    if (!item) {
+      setLookupStatus({ kind: "err", msg: t("lookup.notFound") });
+      return;
+    }
+    // Use info from step-1 to inform step-2 (richer context = better flavor result)
+    const resolvedCategory = item.category && taxCategories.some((c) => c.zh === item.category)
+      ? item.category
+      : category;
+    const flavorRes = await enrichBottleMutation.mutateAsync({
+      nameZh: item.nameZh || nameZh.trim() || undefined,
+      nameEn: item.nameEn || nameEn.trim() || undefined,
+      category: resolvedCategory || undefined,
+      style: item.style || style.trim() || undefined,
+      brand: item.brand || brand.trim() || undefined,
+      origin: item.origin || origin.trim() || undefined,
+    });
+    setPendingResult({
+      ...item,
+      flavorTags: flavorRes.flavorTags,
+      story: flavorRes.story,
+      styleDesc: flavorRes.styleDesc,
+      flavorConfidence: flavorRes.confidence,
+    });
+  };
 
-  const handleLookup = useCallback(async () => {
+  const applyResult = (r: CombinedResult) => {
+    if (!nameZh.trim() && r.nameZh) setNameZh(r.nameZh);
+    if (!nameEn.trim() && r.nameEn) setNameEn(r.nameEn);
+    if (r.category && taxCategories.some((c) => c.zh === r.category)) setCategory(r.category);
+    if (!style.trim() && r.style) setStyle(r.style);
+    if (!brand.trim() && r.brand) setBrand(r.brand);
+    if (!origin.trim() && r.origin) setOrigin(r.origin);
+    if (!volume.trim() && r.volume) setVolume(r.volume);
+    if (!(parseFloat(abv) > 0) && r.abv > 0) setAbv(String(r.abv));
+    if (!(parseFloat(price) > 0) && r.priceCny > 0) setPrice(String(r.priceCny));
+    if (!notes.trim() && r.notes) setNotes(r.notes);
+    if (flavorTags.length === 0 && r.flavorTags.length > 0) setFlavorTags(r.flavorTags);
+    if (!story.trim() && r.story) setStory(r.story);
+    if (!styleDesc.trim() && r.styleDesc) setStyleDesc(r.styleDesc);
+    if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setPendingResult(null);
+    setLookupStatus({ kind: "ok", msg: t("lookup.filled") });
+  };
+
+  const handleLookup = async () => {
     const query = [nameZh.trim(), nameEn.trim(), brand.trim()].filter(Boolean).join(" ");
     if (!query) {
       setLookupStatus({ kind: "err", msg: t("lookup.needName") });
       return;
     }
     setLookupStatus(null);
+    setPendingResult(null);
     setLookupBusy("text");
     try {
-      const res = await enrichMutation.mutateAsync({ names: [query] });
-      const item = res.items.find((i) => i.found);
-      if (!item) {
-        setLookupStatus({ kind: "err", msg: t("lookup.notFound") });
-        return;
-      }
-      applyEnriched(item);
+      await runCombinedLookup({ names: [query] });
     } catch {
       setLookupStatus({ kind: "err", msg: t("smartImport.fail.msg") });
     } finally {
       setLookupBusy(null);
     }
-  }, [nameZh, nameEn, brand, enrichMutation, applyEnriched, t]);
+  };
 
-  const handleLookupPhoto = useCallback(async () => {
+  /** 拍/选一张酒瓶照片,联网识别产品并补全资料 */
+  const handleLookupPhoto = async () => {
     setLookupStatus(null);
+    setPendingResult(null);
     try {
-      const camPerm = await ImagePicker.requestCameraPermissionsAsync();
-      if (!camPerm.granted) {
-        setLookupStatus({ kind: "err", msg: t("smartImport.fail.msg") });
-        return;
-      }
-      const result = await ImagePicker.launchCameraAsync({
+      const picked = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
         quality: 0.7,
         base64: true,
-        allowsEditing: false,
       });
-      if (result.canceled || !result.assets[0]?.base64) return;
+      if (picked.canceled || !picked.assets?.[0]?.base64) return;
       setLookupBusy("photo");
-      const asset = result.assets[0];
-      const res = await enrichMutation.mutateAsync({
-        names: [nameZh.trim(), nameEn.trim()].filter(Boolean),
+      const asset = picked.assets[0];
+      const query = [nameZh.trim(), nameEn.trim(), brand.trim()].filter(Boolean).join(" ");
+      await runCombinedLookup({
+        names: query ? [query] : [],
         imageBase64: asset.base64!,
-        imageMime: asset.mimeType ?? "image/jpeg",
+        imageMime: asset.mimeType || "image/jpeg",
       });
-      const item = res.items.find((i) => i.found);
-      if (!item) {
-        setLookupStatus({ kind: "err", msg: t("lookup.notFound") });
-        return;
-      }
-      applyEnriched(item);
     } catch {
       setLookupStatus({ kind: "err", msg: t("smartImport.fail.msg") });
     } finally {
       setLookupBusy(null);
     }
-  }, [nameZh, nameEn, enrichMutation, applyEnriched, t]);
+  };
 
   const handleSave = () => {
     if (!canSave) return;
@@ -234,7 +254,6 @@ export default function BottleFormScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
           keyboardShouldPersistTaps="handled"
         >
-          {/* 智能批量导入(新建时显示) */}
           {!editing && (
             <SmartImportBar
               targetType="bottle"
@@ -254,61 +273,180 @@ export default function BottleFormScreen() {
               }}
             />
           )}
+          {field(t("bform.nameZh"), nameZh, setNameZh, lang === "en" ? "e.g. 君度橙酒" : "例如:君度橙酒")}
+          {field(t("bform.nameEn"), nameEn, setNameEn, "e.g. Cointreau")}
 
-          {/* 联网识别补全工具栏(新建 & 编辑均可用) */}
-          <View style={styles.lookupRow}>
-            <TouchableOpacity
+          <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
+            <Pressable
               onPress={handleLookup}
-              disabled={!!lookupBusy}
-              style={[
+              disabled={lookupBusy !== null}
+              style={({ pressed }) => [
                 styles.lookupBtn,
-                { backgroundColor: colors.primary + "14", borderColor: colors.primary + "30" },
-                !!lookupBusy && { opacity: 0.5 },
+                { flex: 1, backgroundColor: colors.primary + "14" },
+                (pressed || lookupBusy !== null) && { opacity: 0.6 },
               ]}
             >
               {lookupBusy === "text" ? (
                 <ActivityIndicator size="small" color={colors.primary} />
               ) : (
-                <IconSymbol name="globe" size={14} color={colors.primary} />
+                <IconSymbol name="sparkles" size={15} color={colors.primary} />
               )}
-              <Text style={[styles.lookupBtnText, { color: colors.primary }]}>
-                {t("lookup.btn")}
+              <Text style={{ fontSize: 13, fontWeight: "600", color: colors.primary }}>
+                {lookupBusy === "text"
+                  ? (lang === "zh" ? "识别补全中…" : "Looking up…")
+                  : (lang === "zh" ? "AI 识别补全" : "AI Lookup")}
               </Text>
-            </TouchableOpacity>
-            {Platform.OS !== "web" && (
-              <TouchableOpacity
-                onPress={handleLookupPhoto}
-                disabled={!!lookupBusy}
-                style={[
-                  styles.lookupBtn,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
-                  !!lookupBusy && { opacity: 0.5 },
-                ]}
-              >
-                {lookupBusy === "photo" ? (
-                  <ActivityIndicator size="small" color={colors.muted} />
-                ) : (
-                  <IconSymbol name="camera.fill" size={14} color={colors.muted} />
-                )}
-                <Text style={[styles.lookupBtnText, { color: colors.muted }]}>
-                  {t("lookup.photo")}
-                </Text>
-              </TouchableOpacity>
-            )}
+            </Pressable>
+            <Pressable
+              onPress={handleLookupPhoto}
+              disabled={lookupBusy !== null}
+              style={({ pressed }) => [
+                styles.lookupBtn,
+                { paddingHorizontal: 14, backgroundColor: colors.primary + "14" },
+                (pressed || lookupBusy !== null) && { opacity: 0.6 },
+              ]}
+            >
+              {lookupBusy === "photo" ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <IconSymbol name="photo.fill" size={15} color={colors.primary} />
+              )}
+              <Text style={{ fontSize: 13, fontWeight: "600", color: colors.primary }}>
+                {t("lookup.photo")}
+              </Text>
+            </Pressable>
           </View>
           {lookupStatus && (
             <Text
-              style={[
-                styles.lookupStatus,
-                { color: lookupStatus.kind === "ok" ? colors.success : colors.error },
-              ]}
+              className="text-xs mb-3"
+              style={{ color: lookupStatus.kind === "ok" ? colors.primary : "#DC2626" }}
             >
               {lookupStatus.msg}
             </Text>
           )}
-
-          {field(t("bform.nameZh"), nameZh, setNameZh, lang === "en" ? "e.g. 君度橙酒" : "例如:君度橙酒")}
-          {field(t("bform.nameEn"), nameEn, setNameEn, "e.g. Cointreau")}
+          {pendingResult && (
+            <View
+              className="rounded-xl border px-3 py-3 mb-3"
+              style={{ borderColor: colors.primary + "44", backgroundColor: colors.primary + "0A", gap: 6 }}
+            >
+              {/* Header */}
+              <View className="flex-row items-center justify-between mb-1">
+                <View className="flex-row items-center" style={{ gap: 6 }}>
+                  <IconSymbol name="sparkles" size={13} color={colors.primary} />
+                  <Text className="text-xs font-medium" style={{ color: colors.primary }}>
+                    {lang === "zh" ? "AI 识别结果" : "AI Result"}
+                    {pendingResult.nameEn || pendingResult.nameZh
+                      ? ` · ${pendingResult.nameEn || pendingResult.nameZh}`
+                      : ""}
+                  </Text>
+                  <View
+                    className="px-1.5 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor:
+                        pendingResult.confidence === "high"
+                          ? colors.success + "22"
+                          : pendingResult.confidence === "medium"
+                            ? "#FF950022"
+                            : colors.border,
+                    }}
+                  >
+                    <Text
+                      className="text-[10px] font-medium"
+                      style={{
+                        color:
+                          pendingResult.confidence === "high"
+                            ? colors.success
+                            : pendingResult.confidence === "medium"
+                              ? "#FF9500"
+                              : colors.muted,
+                      }}
+                    >
+                      {pendingResult.confidence === "high"
+                        ? (lang === "zh" ? "高可信" : "High")
+                        : pendingResult.confidence === "medium"
+                          ? (lang === "zh" ? "中可信" : "Medium")
+                          : (lang === "zh" ? "低可信" : "Low")}
+                    </Text>
+                  </View>
+                </View>
+                <Pressable onPress={() => setPendingResult(null)} hitSlop={8}>
+                  <IconSymbol name="xmark" size={14} color={colors.muted} />
+                </Pressable>
+              </View>
+              {/* Basic fields preview */}
+              {[
+                pendingResult.category && { label: lang === "zh" ? "分类" : "Category", val: pendingResult.category },
+                pendingResult.style && { label: lang === "zh" ? "风格" : "Style", val: pendingResult.style },
+                pendingResult.brand && { label: lang === "zh" ? "品牌" : "Brand", val: pendingResult.brand },
+                pendingResult.origin && { label: lang === "zh" ? "产地" : "Origin", val: pendingResult.origin },
+                pendingResult.volume && { label: lang === "zh" ? "规格" : "Volume", val: pendingResult.volume },
+                pendingResult.abv > 0 && { label: "ABV", val: `${pendingResult.abv}%` },
+                pendingResult.priceCny > 0 && { label: lang === "zh" ? "价格" : "Price", val: `¥${pendingResult.priceCny}` },
+                pendingResult.notes && { label: lang === "zh" ? "备注" : "Notes", val: pendingResult.notes },
+              ].filter(Boolean).map((row) => row && (
+                <Text key={row.label} className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  <Text style={{ fontWeight: "500" }}>{row.label}: </Text>{row.val}
+                </Text>
+              ))}
+              {/* Flavor preview */}
+              {pendingResult.flavorTags.length > 0 && (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  <Text style={{ fontWeight: "500" }}>{lang === "zh" ? "风味: " : "Flavors: "}</Text>
+                  {pendingResult.flavorTags.join(" · ")}
+                </Text>
+              )}
+              {pendingResult.story ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  <Text style={{ fontWeight: "500" }}>{lang === "zh" ? "故事: " : "Story: "}</Text>
+                  {pendingResult.story}
+                </Text>
+              ) : null}
+              {pendingResult.styleDesc ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  <Text style={{ fontWeight: "500" }}>{lang === "zh" ? "风格描述: " : "Style desc: "}</Text>
+                  {pendingResult.styleDesc}
+                </Text>
+              ) : null}
+              {/* Apply button */}
+              <View className="flex-row mt-2" style={{ gap: 8 }}>
+                <Pressable
+                  onPress={() => applyResult(pendingResult)}
+                  style={({ pressed }) => [
+                    {
+                      flex: 1,
+                      paddingVertical: 7,
+                      borderRadius: 8,
+                      alignItems: "center" as const,
+                      backgroundColor: colors.primary,
+                      opacity: pressed ? 0.8 : 1,
+                    },
+                  ]}
+                >
+                  <Text className="text-xs font-semibold" style={{ color: "#FFFFFF" }}>
+                    {lang === "zh" ? "应用到空白字段" : "Apply to empty fields"}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setPendingResult(null)}
+                  style={({ pressed }) => [
+                    {
+                      paddingVertical: 7,
+                      paddingHorizontal: 14,
+                      borderRadius: 8,
+                      alignItems: "center" as const,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                      opacity: pressed ? 0.6 : 1,
+                    },
+                  ]}
+                >
+                  <Text className="text-xs" style={{ color: colors.muted }}>
+                    {lang === "zh" ? "忽略" : "Dismiss"}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
 
           <Text className="text-sm font-medium text-foreground mb-1.5">{t("bform.category")}</Text>
           <View className="flex-row flex-wrap mb-4" style={{ gap: 8 }}>
@@ -327,7 +465,10 @@ export default function BottleFormScreen() {
                   ]}
                 >
                   <Text
-                    style={[styles.chipText, { color: active ? "#FFFFFF" : colors.foreground }]}
+                    style={[
+                      styles.chipText,
+                      { color: active ? "#FFFFFF" : colors.foreground },
+                    ]}
                   >
                     {categoryLabel(cat, lang)}
                   </Text>
@@ -358,7 +499,10 @@ export default function BottleFormScreen() {
                       ]}
                     >
                       <Text
-                        style={[styles.chipText, { color: active ? "#FFFFFF" : colors.foreground }]}
+                        style={[
+                          styles.chipText,
+                          { color: active ? "#FFFFFF" : colors.foreground },
+                        ]}
                       >
                         {lang === "zh" && d.zh ? d.zh : s}
                       </Text>
@@ -376,159 +520,12 @@ export default function BottleFormScreen() {
           {field(t("bform.abv"), abv, setAbv, lang === "en" ? "e.g. 40" : "例如:40", { keyboardType: "numeric" })}
           {field(t("bform.price"), price, setPrice, lang === "en" ? "e.g. 170" : "例如:170", { keyboardType: "numeric" })}
           {field(t("bform.notes"), notes, setNotes, lang === "en" ? "Taste, usage, where to buy…" : "口感、用途、购买渠道等", { multiline: true })}
-          {/* Flavor & Story enrichment */}
-          <View className="flex-row items-center justify-between mb-1.5" style={{ marginTop: 4 }}>
-            <Text className="text-sm font-medium text-foreground">
-              {lang === "zh" ? "风味 / 故事" : "Flavor / Story"}
-            </Text>
-            <Pressable
-              onPress={async () => {
-                const n = nameEn.trim() || nameZh.trim();
-                if (!n || lookupBusy) return;
-                setLookupBusy("flavor");
-                setPendingFlavor(null);
-                try {
-                  const result = await enrichBottleMutation.mutateAsync({
-                    nameZh: nameZh.trim() || undefined,
-                    nameEn: nameEn.trim() || undefined,
-                    category: category || undefined,
-                    style: style.trim() || undefined,
-                    brand: brand.trim() || undefined,
-                    origin: origin.trim() || undefined,
-                  });
-                  setPendingFlavor(result);
-                } catch {
-                  // silent fail
-                } finally {
-                  setLookupBusy(null);
-                }
-              }}
-              disabled={lookupBusy !== null || (!nameEn.trim() && !nameZh.trim())}
-              hitSlop={8}
-              style={({ pressed }) => [pressed && { opacity: 0.6 }]}
-            >
-              <View className="flex-row items-center" style={{ gap: 4 }}>
-                {lookupBusy === "flavor" ? (
-                  <Text className="text-xs" style={{ color: colors.primary }}>
-                    {lang === "zh" ? "AI 补全中…" : "AI filling…"}
-                  </Text>
-                ) : (
-                  <>
-                    <IconSymbol name="sparkles" size={13} color={colors.primary} />
-                    <Text className="text-xs" style={{ color: colors.primary }}>
-                      {lang === "zh" ? "AI 补全" : "AI Fill"}
-                    </Text>
-                  </>
-                )}
-              </View>
-            </Pressable>
-          </View>
-          {pendingFlavor && (
-            <View
-              className="rounded-xl border px-3 py-3 mb-3"
-              style={{ borderColor: colors.primary + "44", backgroundColor: colors.primary + "0A", gap: 6 }}
-            >
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center" style={{ gap: 6 }}>
-                  <IconSymbol name="sparkles" size={13} color={colors.primary} />
-                  <Text className="text-xs font-medium" style={{ color: colors.primary }}>
-                    {lang === "zh" ? "AI 建议" : "AI Suggestion"}
-                  </Text>
-                  <View
-                    className="px-1.5 py-0.5 rounded-full"
-                    style={{
-                      backgroundColor:
-                        pendingFlavor.confidence === "high"
-                          ? colors.success + "22"
-                          : pendingFlavor.confidence === "medium"
-                            ? "#FF950022"
-                            : colors.border,
-                    }}
-                  >
-                    <Text
-                      className="text-[10px] font-medium"
-                      style={{
-                        color:
-                          pendingFlavor.confidence === "high"
-                            ? colors.success
-                            : pendingFlavor.confidence === "medium"
-                              ? "#FF9500"
-                              : colors.muted,
-                      }}
-                    >
-                      {pendingFlavor.confidence === "high"
-                        ? (lang === "zh" ? "高可信" : "High")
-                        : pendingFlavor.confidence === "medium"
-                          ? (lang === "zh" ? "中可信" : "Medium")
-                          : (lang === "zh" ? "低可信" : "Low")}
-                    </Text>
-                  </View>
-                </View>
-                <Pressable onPress={() => setPendingFlavor(null)} hitSlop={8}>
-                  <IconSymbol name="xmark" size={14} color={colors.muted} />
-                </Pressable>
-              </View>
-              {pendingFlavor.flavorTags.length > 0 && (
-                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
-                  {lang === "zh" ? "风味标签: " : "Flavors: "}{pendingFlavor.flavorTags.join(" · ")}
-                </Text>
-              )}
-              {pendingFlavor.story ? (
-                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
-                  {lang === "zh" ? "故事: " : "Story: "}{pendingFlavor.story}
-                </Text>
-              ) : null}
-              {pendingFlavor.styleDesc ? (
-                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
-                  {lang === "zh" ? "风格: " : "Style: "}{pendingFlavor.styleDesc}
-                </Text>
-              ) : null}
-              <View className="flex-row mt-2" style={{ gap: 8 }}>
-                <Pressable
-                  onPress={() => {
-                    if (pendingFlavor.flavorTags.length > 0 && flavorTags.length === 0) {
-                      setFlavorTags(pendingFlavor.flavorTags);
-                    }
-                    if (pendingFlavor.story && !story.trim()) setStory(pendingFlavor.story);
-                    if (pendingFlavor.styleDesc && !styleDesc.trim()) setStyleDesc(pendingFlavor.styleDesc);
-                    setPendingFlavor(null);
-                  }}
-                  style={({ pressed }) => [
-                    {
-                      flex: 1,
-                      paddingVertical: 7,
-                      borderRadius: 8,
-                      alignItems: "center" as const,
-                      backgroundColor: colors.primary,
-                      opacity: pressed ? 0.8 : 1,
-                    },
-                  ]}
-                >
-                  <Text className="text-xs font-semibold" style={{ color: "#FFFFFF" }}>
-                    {lang === "zh" ? "应用到空白字段" : "Apply to empty fields"}
-                  </Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => setPendingFlavor(null)}
-                  style={({ pressed }) => [
-                    {
-                      paddingVertical: 7,
-                      paddingHorizontal: 14,
-                      borderRadius: 8,
-                      alignItems: "center" as const,
-                      borderWidth: 1,
-                      borderColor: colors.border,
-                      opacity: pressed ? 0.6 : 1,
-                    },
-                  ]}
-                >
-                  <Text className="text-xs" style={{ color: colors.muted }}>
-                    {lang === "zh" ? "忽略" : "Dismiss"}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          )}
+
+          {/* Flavor & Story */}
+          <Text className="text-sm font-medium text-foreground mb-1.5" style={{ marginTop: 4 }}>
+            {lang === "zh" ? "风味 / 故事" : "Flavor / Story"}
+          </Text>
+          {/* Flavor tags chips */}
           {flavorTags.length > 0 && (
             <View className="flex-row flex-wrap mb-3" style={{ gap: 6 }}>
               {flavorTags.map((tag) => (
@@ -579,28 +576,13 @@ export default function BottleFormScreen() {
 }
 
 const styles = StyleSheet.create({
-  lookupRow: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 10,
-  },
   lookupBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+    justifyContent: "center",
+    gap: 6,
+    height: 40,
     borderRadius: 10,
-    borderWidth: 1,
-  },
-  lookupBtnText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  lookupStatus: {
-    fontSize: 12,
-    marginBottom: 10,
-    marginTop: -4,
   },
   chip: {
     paddingHorizontal: 14,

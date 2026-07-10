@@ -38,17 +38,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="bottles"
+        name="library"
         options={{
-          title: t("tab.bottles"),
+          title: t("tab.library"),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="books.vertical.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="homemade"
+        name="books"
         options={{
-          title: t("tab.homemade"),
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="flask.fill" color={color} />,
+          title: t("tab.books"),
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -58,6 +58,9 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />,
         }}
       />
+      {/* Hidden – still routable but not shown in tab bar */}
+      <Tabs.Screen name="bottles" options={{ href: null }} />
+      <Tabs.Screen name="homemade" options={{ href: null }} />
     </Tabs>
   );
 }
