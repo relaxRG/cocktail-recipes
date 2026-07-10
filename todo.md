@@ -387,3 +387,13 @@
 - [x] QueryClient mutations 禁用自动重试（retry:0），避免 AI 请求失败后重复调用
 - [x] 修复 book-import.tsx 模块级 useBookStore() 调用（移至组件内），添加 isMountedRef 防止 OCR/翻译/导入链路卸载后 setState
 - [x] llm.ts 重试循环 4xx 不再重试（直接抛出），sleep 期间响应 abort signal
+
+## Build 15 – 离线降级提示
+- [x] 新建 useNetwork hook（expo-network，isOnline 布尔值）
+- [x] 新建 OfflineToast 组件（顶部滑入横幅，网络恢复自动隐藏）
+- [x] recipe-form.tsx：handleAiEnrich 离线时弹 Alert，自动 AI 分析离线时跳过
+- [x] bottle-form.tsx：handleLookup / handleLookupPhoto 离线时弹 Alert
+- [x] book-import.tsx：runOcr / doTranslate 离线时弹 Alert
+- [x] book-reader.tsx：doExtract / doTranslate 离线时弹 Alert
+- [x] bulk-import.tsx：runExtract 离线时弹 Alert
+- [x] recipe/[id].tsx：handleEnrichMissing 离线时显示内联提示

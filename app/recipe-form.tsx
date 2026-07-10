@@ -19,6 +19,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { SmartImportBar } from "@/components/smart-import-bar";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useNetwork } from "@/hooks/use-network";
 import { useI18n } from "@/lib/i18n";
 import { suggestPrep } from "@/lib/homemade/match";
 import { smartLinkIngredient, smartLinkDisplayName } from "@/lib/recipes/smart-link";
@@ -117,6 +118,7 @@ export default function RecipeFormScreen() {
   const { t, lang } = useI18n();
   const { getRecipe, addRecipe, updateRecipe, categories, tagsOf } = useRecipeStore();
   const enrichRecipeMutation = trpc.lookup.enrichRecipe.useMutation();
+  const { isOnline } = useNetwork();
   const { preps } = useHomemadeStore();
   const { bottles } = useBottleStore();
   const editing = getRecipe(id);
@@ -202,6 +204,10 @@ export default function RecipeFormScreen() {
   const handleAiEnrich = () => {
     const recipeName = name.trim() || nameEn.trim();
     if (!recipeName || aiEnriching) return;
+    if (!isOnline) {
+      Alert.alert(t("offline.title"), t("offline.aiUnavailable"));
+      return;
+    }
     setAiEnriching(true);
     setAiResult(null);
     const ingNames = ingredients.map((i) => i.name).filter(Boolean);
@@ -239,6 +245,7 @@ export default function RecipeFormScreen() {
     if (autoFlavorDoneRef.current) return;
     const recipeName = name.trim() || nameEn.trim();
     if (!recipeName) return;
+    if (!isOnline) return; // Skip auto AI analysis when offline
     autoFlavorDoneRef.current = true;
     const ingNames = ingredients.map((i) => i.name).filter(Boolean);
     enrichRecipeMutation.mutate(

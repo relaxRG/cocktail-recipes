@@ -19,6 +19,7 @@ import * as Haptics from "expo-haptics";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useNetwork } from "@/hooks/use-network";
 import { useI18n } from "@/lib/i18n";
 import { trpc } from "@/lib/trpc";
 import { useBottleStore } from "@/lib/bottles/store";
@@ -85,6 +86,7 @@ export default function BulkImportScreen() {
   const [importedCount, setImportedCount] = useState<number | null>(null);
 
   const extractMutation = trpc.bulkImport.extract.useMutation();
+  const { isOnline } = useNetwork();
 
   const { addBottle } = useBottleStore();
   const { categories: bottleCategories } = useBottleTaxonomy();
@@ -186,6 +188,11 @@ export default function BulkImportScreen() {
   }, [lang, pickImage, applyImageResult]);
 
   const runExtract = useCallback(async () => {
+    if (!isOnline) {
+      const msg = lang === "zh" ? "AI 识别需要网络连接，请检查后重试" : "AI extraction requires an internet connection.";
+      if (Platform.OS === "web") window.alert(msg); else Alert.alert(lang === "zh" ? "无网络连接" : "No Internet Connection", msg);
+      return;
+    }
     setImportedCount(null);
     try {
       const result = await extractMutation.mutateAsync(

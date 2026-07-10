@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useNetwork } from "@/hooks/use-network";
 import { useI18n } from "@/lib/i18n";
 import {
   batchImagesForOcr,
@@ -185,6 +186,7 @@ export default function BookImportScreen() {
     isMountedRef.current = true;
     return () => { isMountedRef.current = false; };
   }, []);
+  const { isOnline } = useNetwork();
 
   const ocrMutation = trpc.bookImport.ocr.useMutation();
   const translateMutation = trpc.bookImport.translate.useMutation();
@@ -235,6 +237,10 @@ export default function BookImportScreen() {
   const runOcr = useCallback(async () => {
     const pending = pendingRef.current;
     if (!pending) return;
+    if (!isOnline) {
+      Alert.alert(zh ? "无网络连接" : "No Internet Connection", zh ? "AI 识别需要网络连接，请检查后重试" : "AI OCR requires an internet connection.");
+      return;
+    }
     setLoadError("");
     setOcrOffer(false);
     setPhase("loading");
@@ -569,6 +575,10 @@ export default function BookImportScreen() {
 
   const doTranslate = useCallback(async () => {
     tap();
+    if (!isOnline) {
+      Alert.alert(zh ? "无网络连接" : "No Internet Connection", zh ? "翻译需要网络连接，请检查后重试" : "Translation requires an internet connection.");
+      return;
+    }
     setReviewError("");
     const untranslated = reviewItems.filter((r) => r.checked && !r.translated).slice(0, 60);
     if (untranslated.length === 0) {

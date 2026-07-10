@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Modal,
   Platform,
   Pressable,
@@ -18,6 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useNetwork } from "@/hooks/use-network";
 import { useI18n } from "@/lib/i18n";
 import { useBookStore } from "@/lib/books/store";
 import { detectRecipesInText, RecipeCandidate } from "@/lib/import/detect";
@@ -272,7 +274,7 @@ type Phase = "reading" | "select" | "confirm" | "done";
 export default function BookReaderScreen() {
   const colors = useColors();
   const router = useRouter();
-  const { lang } = useI18n();
+  const { lang, t } = useI18n();
   const insets = useSafeAreaInsets();
   const zh = lang === "zh";
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -285,6 +287,7 @@ export default function BookReaderScreen() {
   const translateMutation = trpc.bookImport.translate.useMutation();
   const enrichRecipeMutation = trpc.lookup.enrichRecipe.useMutation();
   const extractMutation = trpc.lookup.extractRecipesFromText.useMutation();
+  const { isOnline } = useNetwork();
 
   /* Chapter navigation */
   const [chapterIdx, setChapterIdx] = useState(book?.lastChapter ?? 0);
@@ -471,6 +474,10 @@ export default function BookReaderScreen() {
 
   const doExtract = useCallback(async () => {
     const text = selectedText.trim();
+    if (!isOnline) {
+      Alert.alert(t("offline.title"), t("offline.aiUnavailable"));
+      return;
+    }
     if (!text) {
       setExtractError(zh ? "请先长按选取文字" : "Long-press to select text first");
       return;
@@ -538,6 +545,10 @@ export default function BookReaderScreen() {
 
   const doTranslate = useCallback(async () => {
     tap();
+    if (!isOnline) {
+      Alert.alert(t("offline.title"), t("offline.aiUnavailable"));
+      return;
+    }
     setReviewError("");
     const untranslated = reviewItems.filter((r) => r.checked && !r.translated).slice(0, 60);
     if (untranslated.length === 0) {

@@ -708,6 +708,10 @@ const dict = {
   "reader.extract.importAll": { zh: "全部导入", en: "Import All" },
   "reader.extract.cancel": { zh: "取消", en: "Cancel" },
   "reader.extract.exitMode": { zh: "退出提取模式", en: "Exit Extract Mode" },
+  // Offline / network error
+  "offline.title": { zh: "无网络连接", en: "No Internet Connection" },
+  "offline.aiUnavailable": { zh: "AI 功能需要网络连接，请检查网络后重试", en: "AI features require an internet connection. Please check your network and try again." },
+  "offline.retryWhenOnline": { zh: "网络恢复后自动可用", en: "Will be available when network is restored" },
 } as const;
 
 export type TranslationKey = keyof typeof dict;

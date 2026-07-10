@@ -17,6 +17,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { StarRating } from "@/components/star-rating";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useNetwork } from "@/hooks/use-network";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
 import { formatAmountAsMl } from "@/lib/bottles/cost";
@@ -66,6 +67,7 @@ export default function RecipeDetailScreen() {
 
   // 联网补全:零价空壳条目(多为自动添加)→ LLM 知识补全资料并更新入库
   const enrichMutation = trpc.lookup.enrich.useMutation();
+  const { isOnline } = useNetwork();
   const [enrichMsg, setEnrichMsg] = React.useState<string | null>(null);
 
   // 缺失原材料自动入库:成本估算发现装饰/配料在库中无匹配时,智能归类后即时添加(每配方一次)
@@ -142,6 +144,10 @@ export default function RecipeDetailScreen() {
   const handleEnrichMissing = async () => {
     const targets = missingBottles.slice(0, 8);
     if (targets.length === 0 || enrichMutation.isPending) return;
+    if (!isOnline) {
+      setEnrichMsg(t("offline.aiUnavailable"));
+      return;
+    }
     setEnrichMsg(null);
     const names = targets.map(enrichQueryName);
     try {

@@ -12,11 +12,13 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { Alert } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { SmartImportBar } from "@/components/smart-import-bar";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useNetwork } from "@/hooks/use-network";
 import { useI18n } from "@/lib/i18n";
 import { BottleDraft, useBottleStore } from "@/lib/bottles/store";
 import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
@@ -44,6 +46,7 @@ export default function BottleFormScreen() {
     isMountedRef.current = true;
     return () => { isMountedRef.current = false; };
   }, []);
+  const { isOnline } = useNetwork();
 
   const [nameZh, setNameZh] = useState(editing?.nameZh ?? prefillNameAlt ?? "");
   const [nameEn, setNameEn] = useState(editing?.nameEn ?? prefillName ?? "");
@@ -140,6 +143,10 @@ export default function BottleFormScreen() {
       setLookupStatus({ kind: "err", msg: t("lookup.needName") });
       return;
     }
+    if (!isOnline) {
+      Alert.alert(t("offline.title"), t("offline.aiUnavailable"));
+      return;
+    }
     setLookupStatus(null);
     setPendingResult(null);
     setLookupBusy("text");
@@ -156,6 +163,10 @@ export default function BottleFormScreen() {
   const handleLookupPhoto = async () => {
     setLookupStatus(null);
     setPendingResult(null);
+    if (!isOnline) {
+      Alert.alert(t("offline.title"), t("offline.aiUnavailable"));
+      return;
+    }
     try {
       const picked = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
