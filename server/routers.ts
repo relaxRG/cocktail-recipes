@@ -415,36 +415,41 @@ export const appRouter = router({
         }),
       )
       .mutation(async ({ input }) => {
-        const prompt = `你是专业调酒知识专家。根据以下鸡尾酒信息补全资料。
+        // 17 个精炼风味标签（与客户端 FLAVOR_TAGS 保持一致）
+        const VALID_FLAVOR_TAGS = ["酸","甜","苦","烈","鲜","柑橘","热带","草本","花香","烟熏","木桶","香料","坚果可可","清爽","浓郁","干爽","复杂"];
+        const prompt = `你是专业调酒知识专家。根据以下鸡尾酒信息，尽可能准确地补全资料。如果你熟悉这款鸡尾酒，请给出高置信度；如果只能从配料推断，请如实标注置信度。
 
 配方名称: ${input.name}${input.nameEn ? ` (${input.nameEn})` : ""}
 ${input.baseSpirit ? `基酒: ${input.baseSpirit}` : ""}
 ${input.method ? `调制方式: ${input.method}` : ""}
 ${(input.ingredients ?? []).length > 0 ? `配料: ${(input.ingredients ?? []).join(", ")}` : ""}
 
-请输出 JSON:
+请输出 JSON（严格按照以下格式）:
 {
-  "flavors": ["草本","果味","柑橘","花香","甜润","酸爽","苦韵","辛香","烟熏","咸鲜","清爽","浓郁","坚果","奶油","干爽","热带","气泡","焦糖","咖啡","巧克力"] 中最合适的2-4个,
+  "flavors": 从 ["酸","甜","苦","烈","鲜","柑橘","热带","草本","花香","烟熏","木桶","香料","坚果可可","清爽","浓郁","干爽","复杂"] 中选出最贴切的2-5个标签（数组，只能从上面列表中选，不能自造），
+  "flavorConfidence": "high"（你对这款鸡尾酒非常熟悉，风味标签有把握）| "medium"（有一定了解，标签较可靠）| "low"（主要靠配料推断，不太确定），
   "story": "${input.story ? "(已有内容,如有更好信息可补充,否则返回空字符串)" : "这款鸡尾酒的历史来历与创作故事(中文,100字内),不清楚则返回空字符串"}",
   "flavorDesc": "${input.flavorDesc ? "(已有内容,如有更好信息可补充,否则返回空字符串)" : "风味描述:口感特点与风味层次(中文,50字内),不清楚则返回空字符串"}",
   "source": "${input.source ? "(已有内容,不要修改,返回空字符串)" : "引用来源:如 'IBA Official Cocktail' / 'The Savoy Cocktail Book' / 调酒师名字等,不确定则返回空字符串"}",
-  "confidence": "high"|"medium"|"low"
+  "confidence": "high"|"medium"|"low"（对整体补全结果的置信度）
 }`;
         const response = await invokeLLM({
-          messages: [
-            { role: "user", content: prompt },
-          ],
+          messages: [{ role: "user", content: prompt }],
           response_format: { type: "json_object" },
         });
         const raw = response.choices[0]?.message?.content;
         const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
         const p = parsed as Record<string, unknown>;
+        // 过滤：只保留合法的 17 个标签
+        const rawFlavors = Array.isArray(p.flavors) ? (p.flavors as string[]) : [];
+        const validFlavors = rawFlavors.filter((f) => VALID_FLAVOR_TAGS.includes(f)).slice(0, 6);
         return {
-          flavors: Array.isArray(p.flavors) ? (p.flavors as string[]).slice(0, 6) : [],
+          flavors: validFlavors,
           story: typeof p.story === "string" ? p.story.trim() : "",
           flavorDesc: typeof p.flavorDesc === "string" ? p.flavorDesc.trim() : "",
           source: typeof p.source === "string" ? p.source.trim() : "",
           confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
+          flavorConfidence: (["high", "medium", "low"] as const).includes(p.flavorConfidence as "high") ? p.flavorConfidence as "high" | "medium" | "low" : "medium",
         };
       }),
 

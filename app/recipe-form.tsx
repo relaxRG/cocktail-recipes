@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -143,6 +143,11 @@ export default function RecipeFormScreen() {
     confidence?: "high" | "medium" | "low";
   } | null>(null);
   /** Which ingredient row is focused (shows live suggestions) */
+  /** 风味标签专属置信度（来自自动 AI 分析） */
+  const [flavorConfidence, setFlavorConfidence] = useState<"high" | "medium" | "low" | null>(null);
+  /** 防止重复触发自动 AI 风味分析 */
+  const autoFlavorDoneRef = useRef(false);
+  /** Which ingredient row is focused (shows live suggestions) */
   const [focusedIng, setFocusedIng] = useState<string | null>(null);
   /** Rows where user picked/dismissed suggestions — suppress until text changes */
   const [pickedIng, setPickedIng] = useState<Record<string, string>>({});
@@ -152,6 +157,41 @@ export default function RecipeFormScreen() {
     if (!recipeName || aiEnriching) return;
     setAiEnriching(true);
     setAiResult(null);
+  /**
+   * 打开表单时自动触发 AI 风味分析（仅一次）。
+   * 结果直接点亮风味标签；低置信度时显示警告横幅。
+   */
+  useEffect(() => {
+    if (autoFlavorDoneRef.current) return;
+    const recipeName = name.trim() || nameEn.trim();
+    if (!recipeName) return;
+    autoFlavorDoneRef.current = true;
+    const ingNames = ingredients.map((i) => i.name).filter(Boolean);
+    enrichRecipeMutation.mutate(
+      {
+        name: recipeName,
+        nameEn: nameEn.trim() || undefined,
+        baseSpirit: baseSpirit || undefined,
+        ingredients: ingNames.length > 0 ? ingNames : undefined,
+        method: method || undefined,
+      },
+      {
+        onSuccess: (result) => {
+          if (result.flavors && result.flavors.length > 0) {
+            setFlavors(result.flavors);
+            const conf = result.flavorConfidence ?? result.confidence ?? "medium";
+            setFlavorConfidence(conf);
+          }
+          // 同时存入 aiResult，供用户按需应用故事/来源等字段
+          if (result.story || result.flavorDesc || result.source) {
+            setAiResult(result);
+          }
+        },
+      },
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 仅挂载时触发一次
+
     const ingNames = ingredients.map((i) => i.name).filter(Boolean);
     enrichRecipeMutation.mutate(
       {
@@ -220,6 +260,7 @@ export default function RecipeFormScreen() {
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
+  // 手动修改标签后，清除 AI 状态指示（但保留低置信度警告，直到用户手动关闭）
 
   /** 将解析结果填充到表单;仅覆盖解析到内容的字段 */
   const applyParsed = (text: string) => {
@@ -545,13 +586,8 @@ export default function RecipeFormScreen() {
                 </View>
                 <Pressable onPress={() => setAiResult(null)} hitSlop={8}>
                   <IconSymbol name="xmark" size={14} color={colors.muted} />
-                </Pressable>
-              </View>
-              {aiResult.flavors && aiResult.flavors.length > 0 && flavors.length === 0 && (
-                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
-                  {lang === "zh" ? "风味标签: " : "Flavors: "}{aiResult.flavors.join(" · ")}
-                </Text>
-              )}
+              </Pressable>
+            </View>
               {aiResult.story ? (
                 <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
                   {lang === "zh" ? "故事: " : "Story: "}{aiResult.story}
@@ -690,7 +726,52 @@ export default function RecipeFormScreen() {
 
           {/* Drink duration (single-select) */}
           {/* Flavor tags */}
-          <Text className="text-sm font-medium text-muted mt-5 mb-1.5">{t("form.flavors.multi")}</Text>
+          <View className="flex-row items-center justify-between mt-5 mb-1.5">
+            <Text className="text-sm font-medium text-muted">{t("form.flavors.multi")}</Text>
+            {enrichRecipeMutation.isPending && (
+              <View className="flex-row items-center" style={{ gap: 4 }}>
+                <IconSymbol name="sparkles" size={12} color={colors.primary} />
+                <Text className="text-xs" style={{ color: colors.primary }}>
+                  {lang === "zh" ? "AI 分析中…" : "Analyzing…"}
+                </Text>
+              </View>
+            )}
+            {!enrichRecipeMutation.isPending && flavorConfidence !== null && (
+              <Pressable
+                onPress={() => {
+                  setFlavors([]);
+                  setFlavorConfidence(null);
+                }}
+                hitSlop={8}
+              >
+                <View className="flex-row items-center" style={{ gap: 4 }}>
+                  <IconSymbol name="sparkles" size={12} color={flavorConfidence === "high" ? colors.success : "#FF9500"} />
+                  <Text className="text-xs" style={{ color: flavorConfidence === "high" ? colors.success : "#FF9500" }}>
+                    {flavorConfidence === "high"
+                      ? (lang === "zh" ? "AI 已标注" : "AI tagged")
+                      : (lang === "zh" ? "AI 已标注（低置信）" : "AI tagged (low conf.)")}
+                  </Text>
+                </View>
+              </Pressable>
+            )}
+          </View>
+          {/* 低置信度警告横幅 */}
+          {flavorConfidence === "low" && (
+            <View
+              className="flex-row items-start rounded-xl px-3 py-2 mb-2"
+              style={{ backgroundColor: "#FF950015", borderWidth: 1, borderColor: "#FF950044", gap: 8 }}
+            >
+              <IconSymbol name="exclamationmark.triangle" size={14} color="#FF9500" style={{ marginTop: 1 }} />
+              <Text className="text-xs flex-1" style={{ color: "#FF9500", lineHeight: 18 }}>
+                {lang === "zh"
+                  ? "AI 置信度较低，标签主要根据配料推断，建议人工确认或调整。"
+                  : "Low AI confidence — tags are inferred from ingredients. Please review and adjust."}
+              </Text>
+              <Pressable onPress={() => setFlavorConfidence("medium")} hitSlop={8}>
+                <IconSymbol name="xmark" size={12} color="#FF9500" />
+              </Pressable>
+            </View>
+          )}
           {(
             [
               { key: "taste",   tags: FLAVOR_TASTE_TAGS },
