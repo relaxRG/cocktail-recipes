@@ -75,7 +75,7 @@ export default function BooksScreen() {
   return (
     <ScreenContainer>
       {/* Header */}
-      <View className="px-5 pt-2 pb-3">
+      <View className="px-5 pt-4 pb-3">
         <View className="flex-row items-end justify-between">
           <View>
             <Text className="text-3xl font-bold text-foreground">
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   separator: {
-    height: StyleSheet.hairlineWidth,
+    height: 1,
   },
   separatorLine: {
     height: StyleSheet.hairlineWidth,

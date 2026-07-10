@@ -90,8 +90,8 @@ const styles = StyleSheet.create({
   },
   seg: {
     flex: 1,
-    height: 34,
-    borderRadius: 9,
+    height: 32,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
   },

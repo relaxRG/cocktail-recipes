@@ -443,7 +443,7 @@ export default function BottlesScreen() {
 
   return (
     <ScreenContainer>
-      <View className="px-5 pt-2 pb-1">
+      <View className="px-5 pt-4 pb-1">
         <View className="flex-row items-end justify-between">
           <View>
             <Text className="text-3xl font-bold text-foreground">{t("bottles.title")}</Text>
@@ -1176,8 +1176,8 @@ const styles = StyleSheet.create({
   },
   badge: {
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
   },
   badgeText: {
     fontSize: 11,

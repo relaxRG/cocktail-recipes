@@ -104,8 +104,8 @@ export function RecipeCard({
           hitSlop={4}
           style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
         >
-          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: color + "22" }}>
-            <Text style={{ fontSize: 11, fontWeight: "600", color }}>
+          <View style={[styles.pill, { backgroundColor: color + "22" }]}>
+            <Text style={[styles.pillText, { fontWeight: "600", color }]}>
               {localizedTagName(category.name, category.nameEn, lang)}
             </Text>
           </View>
@@ -123,8 +123,8 @@ export function RecipeCard({
           hitSlop={4}
           style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
         >
-          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, borderWidth: 1, borderColor: color + "66", backgroundColor: color + "12" }}>
-            <Text style={{ fontSize: 11, color }}>
+          <View style={[styles.pill, styles.pillBorder, { borderColor: color + "66", backgroundColor: color + "12" }]}>
+            <Text style={[styles.pillText, { color }]}>
               {codexFamilyLabel(recipe.codexFamily, lang)}
             </Text>
           </View>
@@ -142,8 +142,8 @@ export function RecipeCard({
             hitSlop={4}
             style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
           >
-            <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: color + "22" }}>
-              <Text style={{ fontSize: 11, color }}>{localizedTagName(recipe.baseSpirit, "", lang)}</Text>
+            <View style={[styles.pill, { backgroundColor: color + "22" }]}>
+              <Text style={[styles.pillText, { color }]}>{localizedTagName(recipe.baseSpirit, "", lang)}</Text>
             </View>
           </Pressable>
         );
@@ -155,8 +155,8 @@ export function RecipeCard({
           hitSlop={4}
           style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
         >
-          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}>
-            <Text style={{ fontSize: 11, color: colors.muted }}>{localizedTagName(recipe.baseSpirit, "", lang)}</Text>
+          <View style={[styles.pill, styles.pillBorder, { backgroundColor: colors.background, borderColor: colors.border }]}>
+            <Text style={[styles.pillText, { color: colors.muted }]}>{localizedTagName(recipe.baseSpirit, "", lang)}</Text>
           </View>
         </Pressable>
       );
@@ -178,8 +178,8 @@ export function RecipeCard({
                 hitSlop={4}
                 style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
               >
-                <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: tagColor + "22" }}>
-                  <Text style={{ fontSize: 11, fontWeight: "500", color: tagColor }}>{f}</Text>
+                <View style={[styles.pill, { backgroundColor: tagColor + "22" }]}>
+                  <Text style={[styles.pillText, { fontWeight: "500", color: tagColor }]}>{f}</Text>
                 </View>
               </Pressable>
             );
@@ -192,8 +192,8 @@ export function RecipeCard({
       const color = customColors.strength;
       if (color) {
         return (
-          <View key="strength" style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: color + "22" }}>
-            <Text style={{ fontSize: 11, color }}>
+          <View key="strength" style={[styles.pill, { backgroundColor: color + "22" }]}>
+            <Text style={[styles.pillText, { color }]}>
               {lang === "en" ? t(`strength.${recipe.strength}`) : STRENGTH_LABELS[recipe.strength]}
             </Text>
           </View>
@@ -206,8 +206,8 @@ export function RecipeCard({
           hitSlop={4}
           style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
         >
-          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}>
-            <Text style={{ fontSize: 11, color: colors.muted }}>
+          <View style={[styles.pill, styles.pillBorder, { backgroundColor: colors.background, borderColor: colors.border }]}>
+            <Text style={[styles.pillText, { color: colors.muted }]}>
               {lang === "en" ? t(`strength.${recipe.strength}`) : STRENGTH_LABELS[recipe.strength]}
             </Text>
           </View>
@@ -221,10 +221,10 @@ export function RecipeCard({
       return (
         <View
           key="rating"
-          style={{ flexDirection: "row", alignItems: "center", gap: 2, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}
+          style={[styles.pill, styles.pillBorder, { flexDirection: "row", alignItems: "center", gap: 2, backgroundColor: colors.background, borderColor: colors.border }]}
         >
           <IconSymbol name="star.fill" size={11} color={color} />
-          <Text style={{ fontSize: 11, color: colors.muted }}>{recipe.rating}/10</Text>
+          <Text style={[styles.pillText, { color: colors.muted }]}>{recipe.rating}/10</Text>
         </View>
       );
     }
@@ -234,14 +234,14 @@ export function RecipeCard({
       const color = customColors.cost;
       if (color) {
         return (
-          <View key="cost" style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: color + "22" }}>
-            <Text style={{ fontSize: 11, color }}>≈¥{costTotal.toFixed(1)}</Text>
+          <View key="cost" style={[styles.pill, { backgroundColor: color + "22" }]}>
+            <Text style={[styles.pillText, { color }]}>≈¥{costTotal.toFixed(1)}</Text>
           </View>
         );
       }
       return (
-        <View key="cost" style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}>
-          <Text style={{ fontSize: 11, color: colors.muted }}>≈¥{costTotal.toFixed(1)}</Text>
+        <View key="cost" style={[styles.pill, styles.pillBorder, { backgroundColor: colors.background, borderColor: colors.border }]}>
+          <Text style={[styles.pillText, { color: colors.muted }]}>≈¥{costTotal.toFixed(1)}</Text>
         </View>
       );
     }
@@ -340,5 +340,17 @@ export function RecipeCard({
 const styles = StyleSheet.create({
   pressable: {
     marginBottom: 0,
+  },
+  pill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
+  pillBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  pillText: {
+    fontSize: 11,
+    lineHeight: 15,
   },
 });

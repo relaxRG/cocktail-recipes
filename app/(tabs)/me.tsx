@@ -60,7 +60,7 @@ export default function MeScreen() {
   return (
     <ScreenContainer>
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="px-5 pt-2 pb-4">
+        <View className="px-5 pt-4 pb-4">
           <Text className="text-3xl font-bold text-foreground">{t("me.title")}</Text>
           <Text className="text-sm text-muted mt-1">{t("me.subtitle")}</Text>
         </View>
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 34,
     height: 34,
-    borderRadius: 8,
+    borderRadius: 9,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 2,

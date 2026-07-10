@@ -395,7 +395,7 @@ export default function RecipesScreen() {
 
   return (
     <ScreenContainer>
-      <View className="px-5 pt-2 pb-3 flex-row items-end justify-between">
+      <View className="px-5 pt-4 pb-3 flex-row items-end justify-between">
         <View>
           <Text className="text-3xl font-bold text-foreground">{t("home.title")}</Text>
           <Text className="text-sm text-muted mt-1">
