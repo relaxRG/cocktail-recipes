@@ -66,6 +66,8 @@ export type InvokeParams = {
   model?: string;
   thinking?: Record<string, unknown>;
   reasoning?: Record<string, unknown>;
+  /** Optional AbortSignal for timeout/cancellation control */
+  signal?: AbortSignal;
 };
 
 export type ToolCall = {
@@ -334,6 +336,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     reasoning,
     maxTokens,
     max_tokens,
+    signal,
   } = params;
 
   const payload: Record<string, unknown> = {
@@ -383,6 +386,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
       authorization: `Bearer ${ENV.forgeApiKey}`,
     },
     body: JSON.stringify(payload),
+    ...(signal ? { signal } : {}),
   });
 
   if (!response.ok) {

@@ -376,3 +376,8 @@
 - [ ] 保存检查点
 - [ ] 提交 TestFlight Build 7
 - [x] 编辑/新建配方时自动触发 AI 风味标签联网分析：高置信度直接点亮标签，低置信度点亮并显示橙色警告横幅，用户可手动修改
+- [x] 卡片标签两排显示：第一排5个优先级标签（分类→典藏系→基酒→长短饮→场合→烈度→评分→成本），第二排3个（风味+制作方法），颜色语义化
+- [x] 配方列表风味筛选改为使用 17 个精炼 FLAVOR_TAGS 常量（替换旧的用户自定义标签库）
+- [x] AI 补全服务端超时保护：enrichRecipe/enrichBottle/enrich 接口添加 AbortSignal.timeout(25s)
+- [x] AI 补全客户端防卡死：recipe-form/bottle-form/bottles 添加 isMountedRef，组件卸载后不再 setState
+- [x] 自制品批量 AI 补全：服务端新增 enrichHomemade 接口，homemade.tsx 添加批量 AI 入口（带进度、逐条处理、失败跳过）

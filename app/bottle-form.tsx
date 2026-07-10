@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -39,6 +39,11 @@ export default function BottleFormScreen() {
   const { getBottle, addBottle, updateBottle } = useBottleStore();
   const { categories: taxCategories, categoryLabel, stylesOf } = useBottleTaxonomy();
   const editing = getBottle(id);
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
 
   const [nameZh, setNameZh] = useState(editing?.nameZh ?? prefillNameAlt ?? "");
   const [nameEn, setNameEn] = useState(editing?.nameEn ?? prefillName ?? "");
@@ -86,7 +91,7 @@ export default function BottleFormScreen() {
     const res = await enrichMutation.mutateAsync(enrichArgs);
     const item = res.items.find((i) => i.found);
     if (!item) {
-      setLookupStatus({ kind: "err", msg: t("lookup.notFound") });
+      if (isMountedRef.current) setLookupStatus({ kind: "err", msg: t("lookup.notFound") });
       return;
     }
     // Use info from step-1 to inform step-2 (richer context = better flavor result)
@@ -101,7 +106,7 @@ export default function BottleFormScreen() {
       brand: item.brand || brand.trim() || undefined,
       origin: item.origin || origin.trim() || undefined,
     });
-    setPendingResult({
+    if (isMountedRef.current) setPendingResult({
       ...item,
       flavorTags: flavorRes.flavorTags,
       story: flavorRes.story,

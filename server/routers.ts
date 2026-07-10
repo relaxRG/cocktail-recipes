@@ -433,10 +433,19 @@ ${(input.ingredients ?? []).length > 0 ? `配料: ${(input.ingredients ?? []).jo
   "source": "${input.source ? "(已有内容,不要修改,返回空字符串)" : "引用来源:如 'IBA Official Cocktail' / 'The Savoy Cocktail Book' / 调酒师名字等,不确定则返回空字符串"}",
   "confidence": "high"|"medium"|"low"（对整体补全结果的置信度）
 }`;
-        const response = await invokeLLM({
-          messages: [{ role: "user", content: prompt }],
-          response_format: { type: "json_object" },
-        });
+        // 25s timeout to prevent hang
+        const signal = AbortSignal.timeout(25_000);
+        let response;
+        try {
+          response = await invokeLLM({
+            messages: [{ role: "user", content: prompt }],
+            response_format: { type: "json_object" },
+            signal,
+          });
+        } catch (err: unknown) {
+          const isTimeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+          throw new Error(isTimeout ? "AI 分析超时，请稍后重试" : `AI 分析失败: ${err instanceof Error ? err.message : String(err)}`);
+        }
         const raw = response.choices[0]?.message?.content;
         const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
         const p = parsed as Record<string, unknown>;
@@ -482,10 +491,18 @@ ${input.origin ? `产地: ${input.origin}` : ""}
   "styleDesc": "风格特点描述(中文,50字内,不确定则返回空字符串)",
   "confidence": "high"|"medium"|"low"
 }`;
-        const response = await invokeLLM({
-          messages: [{ role: "user", content: prompt }],
-          response_format: { type: "json_object" },
-        });
+        const signal = AbortSignal.timeout(25_000);
+        let response;
+        try {
+          response = await invokeLLM({
+            messages: [{ role: "user", content: prompt }],
+            response_format: { type: "json_object" },
+            signal,
+          });
+        } catch (err: unknown) {
+          const isTimeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+          throw new Error(isTimeout ? "AI 分析超时，请稍后重试" : `AI 分析失败: ${err instanceof Error ? err.message : String(err)}`);
+        }
         const raw = response.choices[0]?.message?.content;
         const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
         const p = parsed as Record<string, unknown>;
@@ -524,13 +541,21 @@ ${input.origin ? `产地: ${input.origin}` : ""}
               ? `请补全以下产品的资料:\n${names.map((n) => `- ${n}`).join("\n")}`
               : "请识别照片中的产品并补全资料。",
         });
-        const response = await invokeLLM({
-          messages: [
-            { role: "system", content: ENRICH_SYSTEM_PROMPT },
-            { role: "user", content: parts },
-          ],
-          response_format: { type: "json_object" },
-        });
+        const enrichSignal = AbortSignal.timeout(30_000);
+        let response;
+        try {
+          response = await invokeLLM({
+            messages: [
+              { role: "system", content: ENRICH_SYSTEM_PROMPT },
+              { role: "user", content: parts },
+            ],
+            response_format: { type: "json_object" },
+            signal: enrichSignal,
+          });
+        } catch (err: unknown) {
+          const isTimeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+          throw new Error(isTimeout ? "AI 识别超时，请稍后重试" : `AI 识别失败: ${err instanceof Error ? err.message : String(err)}`);
+        }
         const raw = response.choices[0]?.message?.content;
         const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
         const arr = Array.isArray((parsed as { items?: unknown[] })?.items)
@@ -542,6 +567,55 @@ ${input.origin ? `产地: ${input.origin}` : ""}
           if (r.success) items.push(r.data);
         }
         return { items };
+      }),
+    enrichHomemade: publicProcedure
+      .input(
+        z.object({
+          name: z.string().max(200),
+          nameAlt: z.string().max(200).optional(),
+          type: z.string().max(100).optional(),
+          ingredients: z.array(z.string().max(200)).max(20).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const displayName = [input.name, input.nameAlt].filter(Boolean).join(" / ");
+        const ingredientList = input.ingredients?.length
+          ? `\n配方原料: ${input.ingredients.join(", ")}`
+          : "";
+        const prompt = `你是专业的调酒师和自制饮品专家。根据以下自制品信息，补全风味描述、制作故事和储存说明。
+自制品名称: ${displayName}
+${input.type ? `类型: ${input.type}` : ""}${ingredientList}
+
+请输出 JSON:
+{
+  "story": "自制品介绍/故事(中文,80字内,描述风味特点和用途,不确定则返回空字符串)",
+  "styleDesc": "风格/口感描述(中文,40字内,不确定则返回空字符串)",
+  "shelfLife": "建议保质期(如'冷藏2周'或'密封常温1个月',不确定则返回空字符串)",
+  "storage": "储存建议(如'冷藏密封保存,使用前摇匀',不确定则返回空字符串)",
+  "confidence": "high"|"medium"|"low"
+}`;
+        const signal = AbortSignal.timeout(25_000);
+        let response;
+        try {
+          response = await invokeLLM({
+            messages: [{ role: "user", content: prompt }],
+            response_format: { type: "json_object" },
+            signal,
+          });
+        } catch (err: unknown) {
+          const isTimeout = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+          throw new Error(isTimeout ? "AI 分析超时，请稍后重试" : `AI 分析失败: ${err instanceof Error ? err.message : String(err)}`);
+        }
+        const raw = response.choices[0]?.message?.content;
+        const parsed = parseJsonObjectLoose(typeof raw === "string" ? raw : "");
+        const p = parsed as Record<string, unknown>;
+        return {
+          story: typeof p.story === "string" ? p.story.trim() : "",
+          styleDesc: typeof p.styleDesc === "string" ? p.styleDesc.trim() : "",
+          shelfLife: typeof p.shelfLife === "string" ? p.shelfLife.trim() : "",
+          storage: typeof p.storage === "string" ? p.storage.trim() : "",
+          confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
+        };
       }),
   }),
 

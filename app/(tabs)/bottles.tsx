@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -103,6 +103,12 @@ export default function BottlesScreen() {
   );
 
   // 联网批量补全:当前分组内零价缺资料条目 → LLM 知识补全并更新入库(每次最多 24 条)
+  // Prevent setState after unmount (batch AI may run async)
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
   const enrichMutation = trpc.lookup.enrich.useMutation();
   const [enriching, setEnriching] = useState(false);
   const [enrichMsg, setEnrichMsg] = useState<string | null>(null);
@@ -142,20 +148,24 @@ export default function BottlesScreen() {
         } catch (batchErr) {
           batch.forEach((b) => errors.push(b.nameEn || b.nameZh));
         }
-        setEnrichProgress({ done: Math.min(off + 8, targets.length), total: targets.length });
+        if (isMountedRef.current) setEnrichProgress({ done: Math.min(off + 8, targets.length), total: targets.length });
       }
+      if (!isMountedRef.current) return;
       if (updated > 0 && Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
       setEnrichErrors(errors);
       setEnrichMsg(updated > 0 ? t("lookup.batchDone", { n: updated }) : t("lookup.enrichNone"));
     } catch {
+      if (!isMountedRef.current) return;
       setEnrichMsg(
         updated > 0 ? t("lookup.batchDone", { n: updated }) : t("smartImport.fail.msg"),
       );
     } finally {
-      setEnriching(false);
-      setEnrichProgress(null);
+      if (isMountedRef.current) {
+        setEnriching(false);
+        setEnrichProgress(null);
+      }
     }
   }, [enriching, groupBottles, enrichMutation, updateBottle, t]);
 

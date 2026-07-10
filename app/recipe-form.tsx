@@ -147,6 +147,12 @@ export default function RecipeFormScreen() {
   const [flavorConfidence, setFlavorConfidence] = useState<"high" | "medium" | "low" | null>(null);
   /** 防止重复触发自动 AI 风味分析 */
   const autoFlavorDoneRef = useRef(false);
+  // Track mount state to prevent setState after unmount
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
   /** Which ingredient row is focused (shows live suggestions) */
   const [focusedIng, setFocusedIng] = useState<string | null>(null);
   /** Rows where user picked/dismissed suggestions — suppress until text changes */
@@ -177,6 +183,7 @@ export default function RecipeFormScreen() {
       },
       {
         onSuccess: (result) => {
+          if (!isMountedRef.current) return;
           if (result.flavors && result.flavors.length > 0) {
             setFlavors(result.flavors);
             const conf = result.flavorConfidence ?? result.confidence ?? "medium";
@@ -186,6 +193,12 @@ export default function RecipeFormScreen() {
           if (result.story || result.flavorDesc || result.source) {
             setAiResult(result);
           }
+        },
+        onError: (err: unknown) => {
+          if (!isMountedRef.current) return;
+          const msg = err instanceof Error ? err.message : "AI 分析失败";
+          // Silently ignore auto-trigger errors (non-blocking)
+          console.warn("[AutoFlavor] AI enrich failed:", msg);
         },
       },
     );
@@ -206,11 +219,15 @@ export default function RecipeFormScreen() {
       },
       {
         onSuccess: (result) => {
+          if (!isMountedRef.current) return;
           setAiResult(result);
           setAiEnriching(false);
         },
-        onError: () => {
+        onError: (err: unknown) => {
+          if (!isMountedRef.current) return;
           setAiEnriching(false);
+          const msg = err instanceof Error ? err.message : "AI 分析失败，请重试";
+          Alert.alert("AI 补全失败", msg);
         },
       },
     );

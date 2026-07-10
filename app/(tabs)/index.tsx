@@ -50,6 +50,8 @@ import {
   codexFamilyLabel,
   localizedTagName,
 } from "@/lib/recipes/types";
+import { FLAVOR_TAGS, FLAVOR_TAG_EN } from "@/lib/recipes/types";
+import { FLAVOR_TAG_DEFAULT_COLORS } from "@/lib/settings/card-tags";
 
 type Filter = { type: "all" } | { type: "favorites" };
 
@@ -282,10 +284,10 @@ export default function RecipesScreen() {
     {
       key: "flavor",
       title: t("fs.dim.flavor"),
-      options: flavorTags.map((tag) => ({
-        value: tag.name,
-        label: displayNames(tag.nameEn ?? "", tag.name, lang).primary,
-        color: tag.color,
+      options: FLAVOR_TAGS.map((tag) => ({
+        value: tag,
+        label: lang === "en" ? (FLAVOR_TAG_EN[tag] ?? tag) : tag,
+        color: FLAVOR_TAG_DEFAULT_COLORS[tag] ?? "#FF9500",
       })),
       selected: selFlavors,
       onToggle: (v) =>
@@ -733,10 +735,10 @@ export default function RecipesScreen() {
                     label: displayNames(c.nameEn ?? "", c.name, lang).primary,
                     color: c.color,
                   }))
-                : flavorTags.map((tag) => ({
-                    key: tag.name,
-                    label: displayNames(tag.nameEn ?? "", tag.name, lang).primary,
-                    color: tag.color,
+                : FLAVOR_TAGS.map((tag) => ({
+                    key: tag,
+                    label: lang === "en" ? (FLAVOR_TAG_EN[tag] ?? tag) : tag,
+                    color: FLAVOR_TAG_DEFAULT_COLORS[tag] ?? "#FF9500",
                   }))
             }
             multi={bulkSheet === "flavor"}

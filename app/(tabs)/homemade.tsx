@@ -1,6 +1,6 @@
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { ActivityIndicator } from "react-native";
 import DraggableFlatList, {
   ScaleDecorator,
   RenderItemParams,
@@ -42,6 +43,7 @@ import { groupPrepsByName } from "@/lib/recipes/grouping";
 import { sortPreps, PREP_SORTS, PrepSort } from "@/lib/recipes/sort";
 import { Bottle } from "@/lib/bottles/types";
 import { useCardTagSettings } from "@/lib/settings/card-tags";
+import { trpc } from "@/lib/trpc";
 import {
   HomemadePrep,
   PREP_GROUPS,
@@ -72,6 +74,7 @@ export default function HomemadeScreen() {
     reorderPreps,
     deletePreps,
     bulkUpdatePreps,
+    updatePrep,
   } = useHomemadeStore();
   // 多选模式:批量删除/批量改类型
   const [selectMode, setSelectMode] = useState(false);
@@ -127,6 +130,62 @@ export default function HomemadeScreen() {
     () => preps.filter((p) => prepGroupOf(p, sections, types) === group),
     [preps, sections, types, group],
   );
+  // Batch AI enrich for homemade preps
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
+  const enrichHomemadeMutation = trpc.lookup.enrichHomemade.useMutation();
+  const [enriching, setEnriching] = useState(false);
+  const [enrichMsg, setEnrichMsg] = useState<string | null>(null);
+  const [enrichProgress, setEnrichProgress] = useState<{ done: number; total: number } | null>(null);
+  const [enrichErrors, setEnrichErrors] = useState<string[]>([]);
+  const missingCount = useMemo(
+    () => groupPreps.filter((p) => !p.notes?.trim()).length,
+    [groupPreps],
+  );
+  const handleBatchEnrich = useCallback(async () => {
+    if (enriching) return;
+    const targets = groupPreps.filter((p) => !p.notes?.trim()).slice(0, 20);
+    if (targets.length === 0) return;
+    setEnriching(true);
+    setEnrichMsg(null);
+    setEnrichProgress({ done: 0, total: targets.length });
+    setEnrichErrors([]);
+    let updated = 0;
+    const errors: string[] = [];
+    for (let i = 0; i < targets.length; i++) {
+      const p = targets[i];
+      try {
+        const res = await enrichHomemadeMutation.mutateAsync({
+          name: p.name,
+          nameAlt: p.nameAlt || undefined,
+          type: p.type || undefined,
+          ingredients: p.ingredients?.length ? p.ingredients : undefined,
+        });
+        const patch: Partial<typeof p> = {};
+        if (res.story && !p.notes?.trim()) patch.notes = res.story;
+        if (res.shelfLife && !p.shelfLife?.trim()) patch.shelfLife = res.shelfLife;
+        if (res.storage && !p.storage?.trim()) patch.storage = res.storage;
+        if (Object.keys(patch).length > 0) {
+          updatePrep(p.id, patch);
+          updated++;
+        }
+      } catch {
+        errors.push(p.name || p.nameAlt || `#${i + 1}`);
+      }
+      if (isMountedRef.current) setEnrichProgress({ done: i + 1, total: targets.length });
+    }
+    if (!isMountedRef.current) return;
+    if (updated > 0 && Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    setEnrichErrors(errors);
+    setEnrichMsg(updated > 0 ? `已补全 ${updated} 条自制品` : "暂无需要补全的自制品");
+    setEnriching(false);
+    setEnrichProgress(null);
+  }, [enriching, groupPreps, enrichHomemadeMutation, updatePrep]);
 
   const filtered = useMemo(
     () => {
@@ -536,6 +595,33 @@ export default function HomemadeScreen() {
       </View>
 
       {/* 顶层分组:含酒精 / 无酒精 */}
+      {/* 批量 AI 补全横幅：进度 / 结果 / 入口 */}
+      {enriching && enrichProgress ? (
+        <View className="mx-5 mt-2 px-4 py-2 rounded-xl flex-row items-center" style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, gap: 8 }}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text className="text-sm text-foreground flex-1">AI 补全中… {enrichProgress.done}/{enrichProgress.total}</Text>
+        </View>
+      ) : enrichMsg ? (
+        <View className="mx-5 mt-2 px-4 py-2 rounded-xl flex-row items-center justify-between" style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }}>
+          <Text className="text-sm text-foreground flex-1">{enrichMsg}</Text>
+          {enrichErrors.length > 0 && (
+            <Text className="text-xs text-warning ml-2">失败: {enrichErrors.slice(0, 3).join(", ")}{enrichErrors.length > 3 ? `…+${enrichErrors.length - 3}` : ""}</Text>
+          )}
+          <Pressable onPress={() => setEnrichMsg(null)} style={({ pressed }) => [{ marginLeft: 8, opacity: pressed ? 0.5 : 1 }]}>
+            <Text className="text-sm text-primary">关闭</Text>
+          </Pressable>
+        </View>
+      ) : !selectMode && missingCount > 0 ? (
+        <View className="mx-5 mt-2 flex-row items-center justify-between px-4 py-2 rounded-xl" style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }}>
+          <Text className="text-sm text-muted flex-1">{missingCount} 条自制品待 AI 补全介绍</Text>
+          <Pressable
+            onPress={handleBatchEnrich}
+            style={({ pressed }) => [{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 }]}
+          >
+            <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "600" }}>AI 补全</Text>
+          </Pressable>
+        </View>
+      ) : null}
       <View className="px-5 mt-2">
         <View
           className="flex-row bg-surface border border-border rounded-xl p-1"
