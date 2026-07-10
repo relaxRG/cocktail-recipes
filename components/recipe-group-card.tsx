@@ -25,10 +25,12 @@ export function RecipeGroupCard({
   recipes,
   isFirst = true,
   isLast = true,
+  onTagPress,
 }: {
   recipes: Recipe[];
   isFirst?: boolean;
   isLast?: boolean;
+  onTagPress?: (type: string, value: string) => void;
 }) {
   const colors = useColors();
   const { t, lang } = useI18n();
@@ -37,7 +39,7 @@ export function RecipeGroupCard({
 
   // 单版本直接渲染普通卡片
   if (recipes.length <= 1) {
-    return <SwipeableRecipeRow recipe={recipes[0]} isFirst={isFirst} isLast={isLast} />;
+    return <SwipeableRecipeRow recipe={recipes[0]} isFirst={isFirst} isLast={isLast} onTagPress={onTagPress} />;
   }
 
   const head = recipes[0];
@@ -190,6 +192,7 @@ export function RecipeGroupCard({
               recipe={r}
               isFirst={false}
               isLast={i === recipes.length - 1 && isLast}
+              onTagPress={onTagPress}
             />
           ))}
         </View>

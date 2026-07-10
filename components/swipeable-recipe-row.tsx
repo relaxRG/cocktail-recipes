@@ -16,10 +16,12 @@ export function SwipeableRecipeRow({
   recipe,
   isFirst = true,
   isLast = true,
+  onTagPress,
 }: {
   recipe: Recipe;
   isFirst?: boolean;
   isLast?: boolean;
+  onTagPress?: (type: string, value: string) => void;
 }) {
   const colors = useColors();
   const { t, lang } = useI18n();
@@ -72,7 +74,7 @@ export function SwipeableRecipeRow({
         },
       ]}
     >
-      <RecipeCard recipe={recipe} isFirst={isFirst} isLast={isLast} />
+      <RecipeCard recipe={recipe} isFirst={isFirst} isLast={isLast} onTagPress={onTagPress} />
     </SwipeableRow>
     <RatingSheet
       visible={ratingVisible}

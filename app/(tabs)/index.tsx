@@ -85,6 +85,7 @@ export default function RecipesScreen() {
   const [selStrengths, setSelStrengths] = useState<string[]>([]);
   const [selDurations, setSelDurations] = useState<string[]>([]);
   const [selOccasions, setSelOccasions] = useState<string[]>([]);
+  const [selBaseSpirits, setSelBaseSpirits] = useState<string[]>([]);
   const [sort, setSort] = useState<RecipeSort>("default");
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -111,10 +112,11 @@ export default function RecipesScreen() {
         strengths: selStrengths.length > 0 ? selStrengths : undefined,
         durations: selDurations.length > 0 ? selDurations : undefined,
         occasions: selOccasions.length > 0 ? selOccasions : undefined,
+        baseSpirits: selBaseSpirits.length > 0 ? selBaseSpirits : undefined,
       });
       return base;
     },
-    [recipes, query, filter, quickCategoryIds, quickSpirits, selCategories, selCodex, selFlavors, selStrengths, selDurations, selOccasions],
+    [recipes, query, filter, quickCategoryIds, quickSpirits, selCategories, selCodex, selFlavors, selStrengths, selDurations, selOccasions, selBaseSpirits],
   );
 
   /** 成本函数(排序用),与卡片口径一致 */
@@ -293,7 +295,7 @@ export default function RecipesScreen() {
 
   const activeFilterCount =
     selCategories.length + selCodex.length + selFlavors.length + selStrengths.length +
-    selDurations.length + selOccasions.length;
+    selDurations.length + selOccasions.length + selBaseSpirits.length;
 
   const clearAll = () => {
     setSelCategories([]);
@@ -302,8 +304,21 @@ export default function RecipesScreen() {
     setSelStrengths([]);
     setSelDurations([]);
     setSelOccasions([]);
+    setSelBaseSpirits([]);
     setSort("default");
   };
+
+  /** Called when a tag badge is tapped on a recipe card — adds to active filters */
+  const handleTagPress = useCallback((type: string, value: string) => {
+    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const toggle = <T extends string>(setter: React.Dispatch<React.SetStateAction<T[]>>, v: T) =>
+      setter((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
+    if (type === "flavor") toggle(setSelFlavors, value);
+    else if (type === "baseSpirit") toggle(setSelBaseSpirits, value);
+    else if (type === "codexFamily") toggle(setSelCodex, value);
+    else if (type === "strength") toggle(setSelStrengths, value);
+    else if (type === "category") toggle(setSelCategories, value);
+  }, []);
 
   const handleAdd = () => {
     if (Platform.OS !== "web") {
@@ -579,12 +594,14 @@ export default function RecipesScreen() {
                 recipes={item.items}
                 isFirst={index === 0}
                 isLast={index === grouped.length - 1}
+                onTagPress={handleTagPress}
               />
             ) : (
               <SwipeableRecipeRow
                 recipe={item.items[0]}
                 isFirst={index === 0}
                 isLast={index === grouped.length - 1}
+                onTagPress={handleTagPress}
               />
             )
           )}

@@ -2,11 +2,13 @@ import { Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 
+import { ColorPickerPanel } from "@/components/color-picker";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { useCardTagSettings, DEFAULT_CARD_TAG_SETTINGS, CardTagSettings } from "@/lib/settings/card-tags";
+import { CardTagSlot, CARD_TAG_SLOT_LABELS } from "@/lib/recipes/types";
 
 export default function CardTagSettingsScreen() {
   const colors = useColors();
@@ -33,6 +35,67 @@ export default function CardTagSettingsScreen() {
     tap();
     setSettings(DEFAULT_CARD_TAG_SETTINGS);
   };
+
+  /* ---- Recipe card slot management ---- */
+
+  const order = settings.recipeCardSlotOrder ?? DEFAULT_CARD_TAG_SETTINGS.recipeCardSlotOrder;
+  const hidden = settings.recipeCardSlotHidden ?? [];
+  const customColors = settings.recipeCardColors ?? {};
+
+  const isHidden = (slot: CardTagSlot) => hidden.includes(slot);
+  const allHidden = order.every((s) => hidden.includes(s));
+
+  const toggleSlot = (slot: CardTagSlot) => {
+    tap();
+    setSettings((prev) => {
+      const h = prev.recipeCardSlotHidden ?? [];
+      return {
+        ...prev,
+        recipeCardSlotHidden: h.includes(slot) ? h.filter((x) => x !== slot) : [...h, slot],
+      };
+    });
+  };
+
+  const showAll = () => {
+    tap();
+    setSettings((prev) => ({ ...prev, recipeCardSlotHidden: [] }));
+  };
+
+  const hideAll = () => {
+    tap();
+    setSettings((prev) => ({ ...prev, recipeCardSlotHidden: [...order] }));
+  };
+
+  const moveSlot = (slot: CardTagSlot, dir: -1 | 1) => {
+    tap();
+    setSettings((prev) => {
+      const arr = [...(prev.recipeCardSlotOrder ?? DEFAULT_CARD_TAG_SETTINGS.recipeCardSlotOrder)];
+      const i = arr.indexOf(slot);
+      if (i < 0) return prev;
+      const j = i + dir;
+      if (j < 0 || j >= arr.length) return prev;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+      return { ...prev, recipeCardSlotOrder: arr };
+    });
+  };
+
+  const setSlotColor = (slot: CardTagSlot, hex: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      recipeCardColors: { ...(prev.recipeCardColors ?? {}), [slot]: hex },
+    }));
+  };
+
+  const clearSlotColor = (slot: CardTagSlot) => {
+    tap();
+    setSettings((prev) => {
+      const next = { ...(prev.recipeCardColors ?? {}) };
+      delete next[slot];
+      return { ...prev, recipeCardColors: next };
+    });
+  };
+
+  /* ---- Shared sub-components ---- */
 
   const ROW_H = 50;
 
@@ -77,6 +140,98 @@ export default function CardTagSettingsScreen() {
 
   const MAX_OPTIONS = [1, 2, 3, 4, 5, 0];
 
+  /* ---- Slot row with reorder + toggle + color ---- */
+  const [expandedColorSlot, setExpandedColorSlot] = React.useState<CardTagSlot | null>(null);
+
+  const SlotRow = ({ slot, isFirst, isLast }: { slot: CardTagSlot; isFirst: boolean; isLast: boolean }) => {
+    const label = CARD_TAG_SLOT_LABELS[slot];
+    const name = zh ? label.zh : label.en;
+    const slotHidden = isHidden(slot);
+    const color = customColors[slot];
+    const pickerOpen = expandedColorSlot === slot;
+
+    return (
+      <>
+        <View style={[styles.slotRow, { opacity: slotHidden ? 0.45 : 1 }]}>
+          {/* Reorder arrows */}
+          <View style={styles.arrowCol}>
+            <Pressable
+              onPress={() => moveSlot(slot, -1)}
+              disabled={isFirst}
+              hitSlop={6}
+              style={({ pressed }) => [{ opacity: isFirst ? 0.2 : pressed ? 0.5 : 1 }]}
+            >
+              <IconSymbol name="chevron.up" size={14} color={colors.muted} />
+            </Pressable>
+            <Pressable
+              onPress={() => moveSlot(slot, 1)}
+              disabled={isLast}
+              hitSlop={6}
+              style={({ pressed }) => [{ opacity: isLast ? 0.2 : pressed ? 0.5 : 1 }]}
+            >
+              <IconSymbol name="chevron.down" size={14} color={colors.muted} />
+            </Pressable>
+          </View>
+
+          {/* Slot name */}
+          <Text style={[styles.slotName, { color: slotHidden ? colors.muted : colors.foreground }]}>
+            {name}
+          </Text>
+
+          {/* Color swatch */}
+          <Pressable
+            onPress={() => setExpandedColorSlot(pickerOpen ? null : slot)}
+            hitSlop={6}
+            style={({ pressed }) => [styles.colorSwatch, pressed && { opacity: 0.7 }]}
+          >
+            <View
+              style={[
+                styles.swatchCircle,
+                {
+                  backgroundColor: color ?? colors.border,
+                  borderColor: color ? "transparent" : colors.border,
+                },
+              ]}
+            />
+            {color ? (
+              <Pressable
+                onPress={(e) => { e.stopPropagation(); clearSlotColor(slot); }}
+                hitSlop={6}
+              >
+                <IconSymbol name="xmark.circle.fill" size={14} color={colors.muted} />
+              </Pressable>
+            ) : null}
+          </Pressable>
+
+          {/* Show/hide toggle */}
+          <Pressable
+            onPress={() => toggleSlot(slot)}
+            hitSlop={10}
+            style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, paddingLeft: 8 }]}
+          >
+            <IconSymbol
+              name={slotHidden ? "eye.slash" : "eye"}
+              size={20}
+              color={slotHidden ? colors.muted : colors.primary}
+            />
+          </Pressable>
+        </View>
+
+        {/* Color picker (inline expand) */}
+        {pickerOpen ? (
+          <View style={[styles.colorPickerWrap, { borderTopColor: colors.border, backgroundColor: colors.surface }]}>
+            <ColorPickerPanel
+              value={color ?? "#007AFF"}
+              onChange={(hex) => setSlotColor(slot, hex)}
+            />
+          </View>
+        ) : null}
+
+        {!isLast && <View style={[styles.divider, { backgroundColor: colors.border, marginLeft: 48 }]} />}
+      </>
+    );
+  };
+
   return (
     <ScreenContainer>
       {/* Header */}
@@ -95,6 +250,37 @@ export default function CardTagSettingsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
+
+        {/* ---- Recipe card slots ---- */}
+        <View style={{ marginBottom: 20 }}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={[styles.sectionLabel, { color: colors.muted, marginBottom: 0, flex: 1 }]}>
+              {zh ? "配方卡片标签" : "Recipe Card Tags"}
+            </Text>
+            <Pressable onPress={allHidden ? showAll : hideAll} hitSlop={8}>
+              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+                {allHidden
+                  ? (zh ? "全部显示" : "Show All")
+                  : (zh ? "全部隐藏" : "Hide All")}
+              </Text>
+            </Pressable>
+          </View>
+          <Text style={[styles.hint, { color: colors.muted, marginBottom: 8 }]}>
+            {zh
+              ? "上下调整顺序，点击色块自定义颜色，点击眼睛图标显示/隐藏"
+              : "Drag to reorder, tap swatch to set color, tap eye to show/hide"}
+          </Text>
+          <View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            {order.map((slot, i) => (
+              <SlotRow
+                key={slot}
+                slot={slot}
+                isFirst={i === 0}
+                isLast={i === order.length - 1}
+              />
+            ))}
+          </View>
+        </View>
 
         {/* Bottle card fields */}
         <Section title={zh ? "酒款卡片信息" : "Bottle Card Fields"}>
@@ -145,6 +331,8 @@ export default function CardTagSettingsScreen() {
   );
 }
 
+import React from "react";
+
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
@@ -158,6 +346,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 17,
     fontWeight: "600",
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
   },
   sectionLabel: {
     fontSize: 12,
@@ -201,5 +394,39 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginLeft: 4,
     lineHeight: 17,
+  },
+  slotRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 10,
+  },
+  arrowCol: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+    width: 20,
+  },
+  slotName: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: "400",
+  },
+  colorSwatch: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  swatchCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+  },
+  colorPickerWrap: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
 });

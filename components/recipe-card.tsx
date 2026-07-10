@@ -15,29 +15,47 @@ import { useRecipeStore } from "@/lib/recipes/store";
 import {
   Recipe,
   STRENGTH_LABELS,
-  codexFamilyLabel,
-  localizedTagName,
   CARD_TAG_SLOTS,
   CardTagSlot,
+  codexFamilyLabel,
+  localizedTagName,
 } from "@/lib/recipes/types";
+import { useCardTagSettings, DEFAULT_CARD_TAG_SETTINGS } from "@/lib/settings/card-tags";
 
 export function RecipeCard({
   recipe,
   isFirst = true,
   isLast = true,
+  onTagPress,
 }: {
   recipe: Recipe;
   isFirst?: boolean;
   isLast?: boolean;
+  /** Called when a filterable tag badge is tapped. type = "flavor"|"baseSpirit"|"codexFamily"|"strength"|"category" */
+  onTagPress?: (type: string, value: string) => void;
 }) {
   const colors = useColors();
   const { t, lang } = useI18n();
-  const { toggleFavorite, toggleMade, getCategory } = useRecipeStore();
+  const { toggleFavorite, toggleMade, getCategory, tagsOf } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
+  const [cardTagSettings] = useCardTagSettings();
   const category = getCategory(recipe.categoryId);
+  const flavorTagsData = tagsOf("flavor");
 
-  /** 单杯成本估算(智能五级匹配,酒库+自制库),与详情页口径一致 */
+  /** Resolve visible slots: per-recipe override takes priority, else global settings */
+  const visibleSlots: CardTagSlot[] = useMemo(() => {
+    if (recipe.cardTagOrder) return recipe.cardTagOrder;
+    const order = cardTagSettings.recipeCardSlotOrder?.length
+      ? cardTagSettings.recipeCardSlotOrder
+      : DEFAULT_CARD_TAG_SETTINGS.recipeCardSlotOrder;
+    const hidden = cardTagSettings.recipeCardSlotHidden ?? [];
+    return order.filter((s) => !hidden.includes(s));
+  }, [recipe.cardTagOrder, cardTagSettings]);
+
+  const customColors = cardTagSettings.recipeCardColors ?? {};
+
+  /** Single杯成本估算 */
   const costTotal = useMemo(() => {
     if (recipe.ingredients.length === 0) return null;
     const est = estimateRecipeCostSmart(recipe.ingredients, bottles, preps);
@@ -50,10 +68,12 @@ export function RecipeCard({
     .slice(0, 4)
     .join(" · ");
 
+  const haptic = () => {
+    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
   const handleFavorite = () => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    haptic();
     toggleFavorite(recipe.id);
   };
 
@@ -64,6 +84,169 @@ export function RecipeCard({
       );
     }
     toggleMade(recipe.id);
+  };
+
+  const handleTagPress = (type: string, value: string) => {
+    if (!onTagPress) return;
+    haptic();
+    onTagPress(type, value);
+  };
+
+  /** Render a single slot badge. Returns null if nothing to show. */
+  const renderSlot = (slot: CardTagSlot): React.ReactNode => {
+    if (slot === "category") {
+      if (!category) return null;
+      const color = customColors.category ?? category.color;
+      return (
+        <Pressable
+          key="category"
+          onPress={() => handleTagPress("category", category.id)}
+          hitSlop={4}
+          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+        >
+          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: color + "22" }}>
+            <Text style={{ fontSize: 11, fontWeight: "600", color }}>
+              {localizedTagName(category.name, category.nameEn, lang)}
+            </Text>
+          </View>
+        </Pressable>
+      );
+    }
+
+    if (slot === "codexFamily") {
+      if (!recipe.codexFamily) return null;
+      const color = customColors.codexFamily ?? colors.primary;
+      return (
+        <Pressable
+          key="codexFamily"
+          onPress={() => handleTagPress("codexFamily", recipe.codexFamily)}
+          hitSlop={4}
+          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+        >
+          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, borderWidth: 1, borderColor: color + "66", backgroundColor: color + "12" }}>
+            <Text style={{ fontSize: 11, color }}>
+              {codexFamilyLabel(recipe.codexFamily, lang)}
+            </Text>
+          </View>
+        </Pressable>
+      );
+    }
+
+    if (slot === "baseSpirit") {
+      const color = customColors.baseSpirit;
+      if (color) {
+        return (
+          <Pressable
+            key="baseSpirit"
+            onPress={() => handleTagPress("baseSpirit", recipe.baseSpirit)}
+            hitSlop={4}
+            style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+          >
+            <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: color + "22" }}>
+              <Text style={{ fontSize: 11, color }}>{localizedTagName(recipe.baseSpirit, "", lang)}</Text>
+            </View>
+          </Pressable>
+        );
+      }
+      return (
+        <Pressable
+          key="baseSpirit"
+          onPress={() => handleTagPress("baseSpirit", recipe.baseSpirit)}
+          hitSlop={4}
+          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+        >
+          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}>
+            <Text style={{ fontSize: 11, color: colors.muted }}>{localizedTagName(recipe.baseSpirit, "", lang)}</Text>
+          </View>
+        </Pressable>
+      );
+    }
+
+    if (slot === "flavors") {
+      if (recipe.flavors.length === 0) return null;
+      const maxFlavors = cardTagSettings.maxTagsPerCard > 0 ? cardTagSettings.maxTagsPerCard : 3;
+      const visible = recipe.flavors.slice(0, Math.min(maxFlavors, 3));
+      const slotColorOverride = customColors.flavors;
+      return (
+        <React.Fragment key="flavors">
+          {visible.map((f) => {
+            const tagColor = slotColorOverride ?? (flavorTagsData.find((tg) => tg.name === f)?.color ?? "#FF9500");
+            return (
+              <Pressable
+                key={f}
+                onPress={() => handleTagPress("flavor", f)}
+                hitSlop={4}
+                style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+              >
+                <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: tagColor + "22" }}>
+                  <Text style={{ fontSize: 11, fontWeight: "500", color: tagColor }}>{f}</Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </React.Fragment>
+      );
+    }
+
+    if (slot === "strength") {
+      const color = customColors.strength;
+      if (color) {
+        return (
+          <View key="strength" style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: color + "22" }}>
+            <Text style={{ fontSize: 11, color }}>
+              {lang === "en" ? t(`strength.${recipe.strength}`) : STRENGTH_LABELS[recipe.strength]}
+            </Text>
+          </View>
+        );
+      }
+      return (
+        <Pressable
+          key="strength"
+          onPress={() => handleTagPress("strength", recipe.strength)}
+          hitSlop={4}
+          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+        >
+          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}>
+            <Text style={{ fontSize: 11, color: colors.muted }}>
+              {lang === "en" ? t(`strength.${recipe.strength}`) : STRENGTH_LABELS[recipe.strength]}
+            </Text>
+          </View>
+        </Pressable>
+      );
+    }
+
+    if (slot === "rating") {
+      if (!recipe.rating) return null;
+      const color = customColors.rating ?? "#F5A623";
+      return (
+        <View
+          key="rating"
+          style={{ flexDirection: "row", alignItems: "center", gap: 2, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}
+        >
+          <IconSymbol name="star.fill" size={11} color={color} />
+          <Text style={{ fontSize: 11, color: colors.muted }}>{recipe.rating}/10</Text>
+        </View>
+      );
+    }
+
+    if (slot === "cost") {
+      if (costTotal === null) return null;
+      const color = customColors.cost;
+      if (color) {
+        return (
+          <View key="cost" style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: color + "22" }}>
+            <Text style={{ fontSize: 11, color }}>≈¥{costTotal.toFixed(1)}</Text>
+          </View>
+        );
+      }
+      return (
+        <View key="cost" style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}>
+          <Text style={{ fontSize: 11, color: colors.muted }}>≈¥{costTotal.toFixed(1)}</Text>
+        </View>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -100,7 +283,6 @@ export function RecipeCard({
                 </ScrollView>
               );
             })()}
-            {/* Variant of / 经典原方:纯文字次要标注,与主名左对齐(Apple HIG 副标题式) */}
             <View className="mt-0.5">
               <VariantBadge recipe={recipe} mode="compact" />
             </View>
@@ -111,76 +293,7 @@ export function RecipeCard({
               style={{ height: 24 }}
               contentContainerStyle={{ alignItems: "center", gap: 6 }}
             >
-              {(recipe.cardTagOrder ?? CARD_TAG_SLOTS).map((slot: CardTagSlot) => {
-                if (slot === "category") {
-                  if (!category) return null;
-                  return (
-                    <View
-                      key="category"
-                      className="px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: category.color + "22" }}
-                    >
-                      <Text className="text-xs font-medium" style={{ color: category.color }}>
-                        {localizedTagName(category.name, category.nameEn, lang)}
-                      </Text>
-                    </View>
-                  );
-                }
-                if (slot === "codexFamily") {
-                  if (!recipe.codexFamily) return null;
-                  return (
-                    <View
-                      key="codexFamily"
-                      className="px-2 py-0.5 rounded-full border"
-                      style={{ borderColor: colors.primary + "66", backgroundColor: colors.primary + "12" }}
-                    >
-                      <Text className="text-xs" style={{ color: colors.primary }}>
-                        {codexFamilyLabel(recipe.codexFamily, lang)}
-                      </Text>
-                    </View>
-                  );
-                }
-                if (slot === "baseSpirit") {
-                  return (
-                    <View key="baseSpirit" className="px-2 py-0.5 rounded-full bg-background border border-border">
-                      <Text className="text-xs text-muted">
-                        {localizedTagName(recipe.baseSpirit, "", lang)}
-                      </Text>
-                    </View>
-                  );
-                }
-                if (slot === "strength") {
-                  return (
-                    <View key="strength" className="px-2 py-0.5 rounded-full bg-background border border-border">
-                      <Text className="text-xs text-muted">
-                        {lang === "en" ? t(`strength.${recipe.strength}`) : STRENGTH_LABELS[recipe.strength]}
-                      </Text>
-                    </View>
-                  );
-                }
-                if (slot === "rating") {
-                  if (!recipe.rating) return null;
-                  return (
-                    <View
-                      key="rating"
-                      className="flex-row items-center px-2 py-0.5 rounded-full bg-background border border-border"
-                      style={{ gap: 2 }}
-                    >
-                      <IconSymbol name="star.fill" size={11} color="#F5A623" />
-                      <Text className="text-xs text-muted">{recipe.rating}/10</Text>
-                    </View>
-                  );
-                }
-                if (slot === "cost") {
-                  if (costTotal === null) return null;
-                  return (
-                    <View key="cost" className="px-2 py-0.5 rounded-full bg-background border border-border">
-                      <Text className="text-xs text-muted">≈¥{costTotal.toFixed(1)}</Text>
-                    </View>
-                  );
-                }
-                return null;
-              })}
+              {visibleSlots.map((slot) => renderSlot(slot))}
             </ScrollView>
           </View>
           <View className="flex-row items-center" style={{ gap: 14 }}>
