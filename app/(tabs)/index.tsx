@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -10,6 +10,7 @@ import {
   Text,
   TextInput,
   View,
+  ActivityIndicator,
 } from "react-native";
 import * as Haptics from "expo-haptics";
 import DraggableFlatList, {
@@ -41,6 +42,7 @@ import { estimateRecipeCostSmart } from "@/lib/recipes/smart-cost";
 import { useBottleStore } from "@/lib/bottles/store";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
+import { trpc } from "@/lib/trpc";
 import {
   CODEX_FAMILIES,
   BASE_SPIRITS,
@@ -68,6 +70,7 @@ export default function RecipesScreen() {
     reorderRecipes,
     deleteRecipes,
     bulkUpdateRecipes,
+    updateRecipe,
   } = useRecipeStore();
   const { bottles } = useBottleStore();
   const { preps } = useHomemadeStore();
@@ -78,6 +81,16 @@ export default function RecipesScreen() {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkSheet, setBulkSheet] = useState<"category" | "flavor" | null>(null);
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
+  const enrichRecipeMutation = trpc.lookup.enrichRecipe.useMutation();
+  const [enrichingRecipes, setEnrichingRecipes] = useState(false);
+  const [enrichRecipeMsg, setEnrichRecipeMsg] = useState<string | null>(null);
+  const [enrichRecipeProgress, setEnrichRecipeProgress] = useState<{ done: number; total: number } | null>(null);
+  const [enrichRecipeErrors, setEnrichRecipeErrors] = useState<string[]>([]);
   // 快捷筛选(独立于 Filter 面板,持久化保留):分类 → 基酒子分类
   const [quickSel, setQuickSel] = usePersistedState<QuickSelection>("quick.recipes.v1", {});
   // Filter 面板多选筛选状态(与快捷筛选相互独立)
@@ -381,6 +394,54 @@ export default function RecipesScreen() {
     },
     [bulkSheet, selectedIds, bulkUpdateRecipes, exitSelectMode],
   );
+
+  const handleBatchEnrichSelected = useCallback(async () => {
+    if (enrichingRecipes || selectedIds.length === 0) return;
+    const targets = recipes.filter((r) => selectedIds.includes(r.id)).slice(0, 20);
+    if (targets.length === 0) return;
+    setEnrichingRecipes(true);
+    setEnrichRecipeMsg(null);
+    setEnrichRecipeProgress({ done: 0, total: targets.length });
+    setEnrichRecipeErrors([]);
+    let updated = 0;
+    const errors: string[] = [];
+    for (let i = 0; i < targets.length; i++) {
+      const r = targets[i];
+      try {
+        const ingNames = (r.ingredients ?? []).map((ing) => ing.name).filter(Boolean);
+        const res = await enrichRecipeMutation.mutateAsync({
+          name: r.name,
+          nameEn: r.nameEn || undefined,
+          baseSpirit: r.baseSpirit || undefined,
+          ingredients: ingNames.length > 0 ? ingNames : undefined,
+          method: r.method || undefined,
+          story: r.story || undefined,
+          flavorDesc: r.flavorDesc || undefined,
+        });
+        const patch: Partial<{ story: string; flavorDesc: string; flavors: string[] }> = {};
+        if (res.story && !r.story?.trim()) patch.story = res.story;
+        if (res.flavorDesc && !r.flavorDesc?.trim()) patch.flavorDesc = res.flavorDesc;
+        if (res.flavors && res.flavors.length > 0 && (!r.flavors || r.flavors.length === 0)) {
+          patch.flavors = res.flavors;
+        }
+        if (Object.keys(patch).length > 0) {
+          updateRecipe(r.id, { ...r, ...patch } as Parameters<typeof updateRecipe>[1]);
+          updated++;
+        }
+      } catch {
+        errors.push(r.name || r.nameEn || `#${i + 1}`);
+      }
+      if (isMountedRef.current) setEnrichRecipeProgress({ done: i + 1, total: targets.length });
+    }
+    if (!isMountedRef.current) return;
+    if (updated > 0 && Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    setEnrichRecipeErrors(errors);
+    setEnrichRecipeMsg(updated > 0 ? t("lookup.batchDone", { n: updated }) : t("lookup.enrichNone"));
+    setEnrichingRecipes(false);
+    setEnrichRecipeProgress(null);
+  }, [enrichingRecipes, selectedIds, recipes, enrichRecipeMutation, updateRecipe, t]);
 
   const chipStyle = (active: boolean) => [
     styles.chip,
@@ -712,6 +773,13 @@ export default function RecipesScreen() {
                 onPress: () => setBulkSheet("flavor"),
               },
               {
+                key: "aiEnrich",
+                label: enrichingRecipes ? "…" : t("sel.aiEnrich"),
+                icon: "globe",
+                disabled: enrichingRecipes || selectedIds.length === 0,
+                onPress: handleBatchEnrichSelected,
+              },
+              {
                 key: "delete",
                 label: t("sel.delete"),
                 icon: "trash.fill",
@@ -747,6 +815,22 @@ export default function RecipesScreen() {
             onApply={handleBulkApply}
             onClose={() => setBulkSheet(null)}
           />
+          {enrichingRecipes && enrichRecipeProgress ? (
+            <View style={{ marginHorizontal: 16, marginBottom: 8, padding: 10, borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={{ fontSize: 13, color: colors.foreground, flex: 1 }}>AI 补全中… {enrichRecipeProgress.done}/{enrichRecipeProgress.total}</Text>
+            </View>
+          ) : enrichRecipeMsg ? (
+            <View style={{ marginHorizontal: 16, marginBottom: 8, padding: 10, borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <Text style={{ fontSize: 13, color: colors.foreground, flex: 1 }}>{enrichRecipeMsg}</Text>
+              {enrichRecipeErrors.length > 0 && (
+                <Text style={{ fontSize: 11, color: colors.warning }}>失败: {enrichRecipeErrors.slice(0, 3).join(", ")}{enrichRecipeErrors.length > 3 ? `…+${enrichRecipeErrors.length - 3}` : ""}</Text>
+              )}
+              <Pressable onPress={() => setEnrichRecipeMsg(null)} hitSlop={8}>
+                <Text style={{ fontSize: 13, color: colors.primary }}>关闭</Text>
+              </Pressable>
+            </View>
+          ) : null}
         </>
       )}
     </ScreenContainer>

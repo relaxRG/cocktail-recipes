@@ -114,6 +114,12 @@ export default function BottlesScreen() {
   const [enrichMsg, setEnrichMsg] = useState<string | null>(null);
   const [enrichProgress, setEnrichProgress] = useState<{ done: number; total: number } | null>(null);
   const [enrichErrors, setEnrichErrors] = useState<string[]>([]);
+  // 多选 AI 批量补全(补全 flavorTags/story/styleDesc)
+  const enrichBottleMutation = trpc.lookup.enrichBottle.useMutation();
+  const [enrichingSelected, setEnrichingSelected] = useState(false);
+  const [enrichSelectedMsg, setEnrichSelectedMsg] = useState<string | null>(null);
+  const [enrichSelectedProgress, setEnrichSelectedProgress] = useState<{ done: number; total: number } | null>(null);
+  const [enrichSelectedErrors, setEnrichSelectedErrors] = useState<string[]>([]);
   const missingCount = useMemo(
     () => groupBottles.filter((b) => b.priceCny <= 0).length,
     [groupBottles],
@@ -168,6 +174,52 @@ export default function BottlesScreen() {
       }
     }
   }, [enriching, groupBottles, enrichMutation, updateBottle, t]);
+
+  const handleBatchEnrichSelected = useCallback(async () => {
+    if (enrichingSelected || selectedIds.length === 0) return;
+    const targets = bottles.filter((b) => selectedIds.includes(b.id)).slice(0, 20);
+    if (targets.length === 0) return;
+    setEnrichingSelected(true);
+    setEnrichSelectedMsg(null);
+    setEnrichSelectedProgress({ done: 0, total: targets.length });
+    setEnrichSelectedErrors([]);
+    let updated = 0;
+    const errors: string[] = [];
+    for (let i = 0; i < targets.length; i++) {
+      const b = targets[i];
+      try {
+        const res = await enrichBottleMutation.mutateAsync({
+          nameZh: b.nameZh || undefined,
+          nameEn: b.nameEn || undefined,
+          category: b.category || undefined,
+          style: b.style || undefined,
+          brand: b.brand || undefined,
+          origin: b.origin || undefined,
+        });
+        const patch: Partial<{ flavorTags: string[]; story: string; styleDesc: string }> = {};
+        if (res.flavorTags && res.flavorTags.length > 0 && (!b.flavorTags || b.flavorTags.length === 0)) {
+          patch.flavorTags = res.flavorTags;
+        }
+        if (res.story && !b.story?.trim()) patch.story = res.story;
+        if (res.styleDesc && !b.styleDesc?.trim()) patch.styleDesc = res.styleDesc;
+        if (Object.keys(patch).length > 0) {
+          updateBottle(b.id, { ...b, ...patch } as Parameters<typeof updateBottle>[1]);
+          updated++;
+        }
+      } catch {
+        errors.push(b.nameZh || b.nameEn || `#${i + 1}`);
+      }
+      if (isMountedRef.current) setEnrichSelectedProgress({ done: i + 1, total: targets.length });
+    }
+    if (!isMountedRef.current) return;
+    if (updated > 0 && Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    setEnrichSelectedErrors(errors);
+    setEnrichSelectedMsg(updated > 0 ? t("lookup.batchDone", { n: updated }) : t("lookup.enrichNone"));
+    setEnrichingSelected(false);
+    setEnrichSelectedProgress(null);
+  }, [enrichingSelected, selectedIds, bottles, enrichBottleMutation, updateBottle, t]);
 
   // 快捷筛选解析:大分类(类别)与其下细化的风格集合
   const quickCats = Object.keys(quickSel);
@@ -822,6 +874,13 @@ export default function BottlesScreen() {
                 onPress: () => setBulkSheet("style"),
               },
               {
+                key: "aiEnrich",
+                label: enrichingSelected ? "…" : t("sel.aiEnrich"),
+                icon: "globe",
+                disabled: enrichingSelected || selectedIds.length === 0,
+                onPress: handleBatchEnrichSelected,
+              },
+              {
                 key: "delete",
                 label: t("sel.delete"),
                 icon: "trash.fill",
@@ -853,6 +912,22 @@ export default function BottlesScreen() {
             onApply={handleBulkApply}
             onClose={() => setBulkSheet(null)}
           />
+          {enrichingSelected && enrichSelectedProgress ? (
+            <View style={{ marginHorizontal: 16, marginBottom: 8, padding: 10, borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={{ fontSize: 13, color: colors.foreground, flex: 1 }}>AI 补全中… {enrichSelectedProgress.done}/{enrichSelectedProgress.total}</Text>
+            </View>
+          ) : enrichSelectedMsg ? (
+            <View style={{ marginHorizontal: 16, marginBottom: 8, padding: 10, borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <Text style={{ fontSize: 13, color: colors.foreground, flex: 1 }}>{enrichSelectedMsg}</Text>
+              {enrichSelectedErrors.length > 0 && (
+                <Text style={{ fontSize: 11, color: colors.warning }}>失败: {enrichSelectedErrors.slice(0, 3).join(", ")}{enrichSelectedErrors.length > 3 ? `…+${enrichSelectedErrors.length - 3}` : ""}</Text>
+              )}
+              <Pressable onPress={() => setEnrichSelectedMsg(null)} hitSlop={8}>
+                <Text style={{ fontSize: 13, color: colors.primary }}>关闭</Text>
+              </Pressable>
+            </View>
+          ) : null}
         </>
       )}
     </ScreenContainer>

@@ -141,6 +141,12 @@ export default function HomemadeScreen() {
   const [enrichMsg, setEnrichMsg] = useState<string | null>(null);
   const [enrichProgress, setEnrichProgress] = useState<{ done: number; total: number } | null>(null);
   const [enrichErrors, setEnrichErrors] = useState<string[]>([]);
+  // 多选 AI 批量补全(补全 notes/shelfLife/storage)
+  const enrichSelectedMutation = trpc.lookup.enrichHomemade.useMutation();
+  const [enrichingSelected, setEnrichingSelected] = useState(false);
+  const [enrichSelectedMsg, setEnrichSelectedMsg] = useState<string | null>(null);
+  const [enrichSelectedProgress, setEnrichSelectedProgress] = useState<{ done: number; total: number } | null>(null);
+  const [enrichSelectedErrors, setEnrichSelectedErrors] = useState<string[]>([]);
   const missingCount = useMemo(
     () => groupPreps.filter((p) => !p.notes?.trim()).length,
     [groupPreps],
@@ -186,6 +192,48 @@ export default function HomemadeScreen() {
     setEnriching(false);
     setEnrichProgress(null);
   }, [enriching, groupPreps, enrichHomemadeMutation, updatePrep]);
+
+  const handleBatchEnrichSelected = useCallback(async () => {
+    if (enrichingSelected || selectedIds.length === 0) return;
+    const targets = preps.filter((p) => selectedIds.includes(p.id)).slice(0, 20);
+    if (targets.length === 0) return;
+    setEnrichingSelected(true);
+    setEnrichSelectedMsg(null);
+    setEnrichSelectedProgress({ done: 0, total: targets.length });
+    setEnrichSelectedErrors([]);
+    let updated = 0;
+    const errors: string[] = [];
+    for (let i = 0; i < targets.length; i++) {
+      const p = targets[i];
+      try {
+        const res = await enrichSelectedMutation.mutateAsync({
+          name: p.name,
+          nameAlt: p.nameAlt || undefined,
+          type: p.type || undefined,
+          ingredients: p.ingredients?.length ? p.ingredients : undefined,
+        });
+        const patch: Partial<typeof p> = {};
+        if (res.story && !p.notes?.trim()) patch.notes = res.story;
+        if (res.shelfLife && !p.shelfLife?.trim()) patch.shelfLife = res.shelfLife;
+        if (res.storage && !p.storage?.trim()) patch.storage = res.storage;
+        if (Object.keys(patch).length > 0) {
+          updatePrep(p.id, patch);
+          updated++;
+        }
+      } catch {
+        errors.push(p.name || p.nameAlt || `#${i + 1}`);
+      }
+      if (isMountedRef.current) setEnrichSelectedProgress({ done: i + 1, total: targets.length });
+    }
+    if (!isMountedRef.current) return;
+    if (updated > 0 && Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    setEnrichSelectedErrors(errors);
+    setEnrichSelectedMsg(updated > 0 ? t("lookup.batchDone", { n: updated }) : t("lookup.enrichNone"));
+    setEnrichingSelected(false);
+    setEnrichSelectedProgress(null);
+  }, [enrichingSelected, selectedIds, preps, enrichSelectedMutation, updatePrep, t]);
 
   const filtered = useMemo(
     () => {
@@ -901,6 +949,13 @@ export default function HomemadeScreen() {
                 onPress: () => setBulkSheet("type"),
               },
               {
+                key: "aiEnrich",
+                label: enrichingSelected ? "…" : t("sel.aiEnrich"),
+                icon: "globe",
+                disabled: enrichingSelected || selectedIds.length === 0,
+                onPress: handleBatchEnrichSelected,
+              },
+              {
                 key: "delete",
                 label: t("sel.delete"),
                 icon: "trash.fill",
@@ -919,6 +974,22 @@ export default function HomemadeScreen() {
             onApply={handleBulkApply}
             onClose={() => setBulkSheet(null)}
           />
+          {enrichingSelected && enrichSelectedProgress ? (
+            <View style={{ marginHorizontal: 16, marginBottom: 8, padding: 10, borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={{ fontSize: 13, color: colors.foreground, flex: 1 }}>AI 补全中… {enrichSelectedProgress.done}/{enrichSelectedProgress.total}</Text>
+            </View>
+          ) : enrichSelectedMsg ? (
+            <View style={{ marginHorizontal: 16, marginBottom: 8, padding: 10, borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <Text style={{ fontSize: 13, color: colors.foreground, flex: 1 }}>{enrichSelectedMsg}</Text>
+              {enrichSelectedErrors.length > 0 && (
+                <Text style={{ fontSize: 11, color: colors.warning }}>失败: {enrichSelectedErrors.slice(0, 3).join(", ")}{enrichSelectedErrors.length > 3 ? `…+${enrichSelectedErrors.length - 3}` : ""}</Text>
+              )}
+              <Pressable onPress={() => setEnrichSelectedMsg(null)} hitSlop={8}>
+                <Text style={{ fontSize: 13, color: colors.primary }}>关闭</Text>
+              </Pressable>
+            </View>
+          ) : null}
         </>
       )}
     </ScreenContainer>

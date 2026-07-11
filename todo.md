@@ -405,3 +405,10 @@
 - [x] recipe-card.tsx：标签按两排分组（第一排=身份标签 category/codexFamily/baseSpirit，第二排=体验标签 strength/rating/cost/flavors/method）
 - [x] card-tag-settings.tsx：设置页新增两排分组管理 UI（在两排之间移动槽位，支持显示/隐藏、顺序、颜色统一管理）
 - [x] icon-symbol.tsx：新增 arrow.down.to.line / arrow.up.to.line 图标映射
+- [x] icon-symbol.tsx：新增 arrow.down.to.line / arrow.up.to.line 图标映射
+## Build 16 – 多选 AI 批量补全
+- [x] index.tsx（酒单页）：多选模式 BulkActionBar 新增"AI 补全"按钮，批量补全选中配方的 story/flavorDesc/flavors
+- [x] bottles.tsx（基酒库/酒款库/原材料库）：多选模式 BulkActionBar 新增"AI 补全"按钮，批量补全选中酒款的 flavorTags/story/styleDesc
+- [x] homemade.tsx（自制品库）：多选模式 BulkActionBar 新增"AI 补全"按钮，批量补全选中自制品的 notes/shelfLife/storage
+- [x] i18n translations.ts：新增 sel.aiEnrich 翻译键（中文"AI 补全"，英文"AI Fill"）
+- [x] 三个页面均添加补全进度条和结果横幅（成功/失败/关闭）

@@ -107,6 +107,7 @@ const dict = {
   "sel.sheet.title": { zh: "批量修改", en: "Bulk Edit" },
   "sel.sheet.apply": { zh: "应用到 {n} 项", en: "Apply to {n} items" },
   "sel.sheet.clearField": { zh: "清除该字段", en: "Clear this field" },
+  "sel.aiEnrich": { zh: "AI 补全", en: "AI Fill" },
   // Color picker
   "color.hexHint": { zh: "输入 HEX 色值后回车", en: "Type HEX and press enter" },
   "color.hue": { zh: "色相", en: "Hue" },
