@@ -479,3 +479,13 @@
 - [x] bottles.tsx：移除大标题区域，ScreenContainer 改为 edges=[]，多选按钮移到三分组切换器右侧
 - [x] homemade.tsx：移除大标题区域，ScreenContainer 改为 edges=[]，多选按钮移到含酒精/无酒精切换器右侧
 - [x] 二级分组切换器统一为轻量 pill 风格（白色 pill 选中，灰色背景容器），视觉权重低于主切换器
+
+## Build 24 - 酒单 Tab 重构 + 门店酒单
+- [x] 酒单 Tab 界面统一：大标题 + iOS pill 主切换器（酒单/研发/门店酒单），与酒库 Tab 风格一致
+- [x] 原酒单列表提取为 recipes.tsx（移除大标题，edges=[]）
+- [x] 研发页面添加 embedded prop 支持嵌入模式（隐藏返回按钮和大标题）
+- [x] 新建门店酒单数据层 lib/menu/store.tsx（分组、配方引用、售价、可用状态、AsyncStorage 持久化）
+- [x] 新建门店酒单页面 menu.tsx（分组折叠、添加配方、售价管理、可用/下架切换）
+- [x] 配方详情页新增"加入门店酒单"按钮（storefront 图标）+ 分组选择 Modal
+- [x] MenuProvider 注册到 _layout.tsx
+- [x] icon-symbol.tsx 新增 storefront.fill 图标映射

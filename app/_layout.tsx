@@ -27,6 +27,7 @@ import { HomemadeProvider } from "@/lib/homemade/store";
 import { IceSettingsProvider } from "@/lib/ice/store";
 import { LabProvider } from "@/lib/lab/store";
 import { BookStoreProvider } from "@/lib/books/store";
+import { MenuProvider } from "@/lib/menu/store";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -106,6 +107,7 @@ export default function RootLayout() {
           <IceSettingsProvider>
           <LabProvider>
           <BookStoreProvider>
+          <MenuProvider>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="recipe/[id]" />
@@ -134,6 +136,7 @@ export default function RootLayout() {
               <Stack.Screen name="card-tag-settings" options={{ presentation: "modal" }} />
             </Stack>
             <StatusBar style="auto" />
+          </MenuProvider>
           </BookStoreProvider>
           </LabProvider>
           </IceSettingsProvider>

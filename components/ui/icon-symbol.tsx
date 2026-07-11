@@ -72,6 +72,20 @@ const MAPPING = {
   "list.bullet": "format-list-bulleted",
   "bookmark": "bookmark-border",
   "bookmark.fill": "bookmark",
+  "storefront.fill": "storefront",
+  "storefront": "storefront",
+  "tag": "sell",
+  "checkmark.square.fill": "check-box",
+  "square": "check-box-outline-blank",
+  "ellipsis": "more-horiz",
+  "ellipsis.circle": "more-horiz",
+  "arrow.right.arrow.left": "swap-horiz",
+  "folder.badge.plus": "create-new-folder",
+  "eye": "visibility",
+  "eye.slash": "visibility-off",
+  "dollarsign.circle.fill": "monetization-on",
+  "cart.fill": "shopping-cart",
+  "list.dash": "reorder",
 } as IconMapping;
 
 /**

@@ -713,6 +713,32 @@ const dict = {
   "offline.title": { zh: "无网络连接", en: "No Internet Connection" },
   "offline.aiUnavailable": { zh: "AI 功能需要网络连接，请检查网络后重试", en: "AI features require an internet connection. Please check your network and try again." },
   "offline.retryWhenOnline": { zh: "网络恢复后自动可用", en: "Will be available when network is restored" },
+  // 酒单 Tab 主切换器
+  "tab.myRecipes": { zh: "酒单", en: "Recipes" },
+  "tab.labSection": { zh: "研发", en: "R&D" },
+  "tab.menuSection": { zh: "门店酒单", en: "Menu" },
+  // 门店酒单页面
+  "menu.title": { zh: "门店酒单", en: "Store Menu" },
+  "menu.subtitle.empty": { zh: "为门店创建酒单分组", en: "Create menu groups for your bar" },
+  "menu.subtitle.count": { zh: "{n} 款酒 · {g} 个分组", en: "{n} drinks · {g} groups" },
+  "menu.addGroup": { zh: "新建分组", en: "New Group" },
+  "menu.addGroup.placeholder": { zh: "分组名称（如：经典鸡尾酒）", en: "Group name (e.g. Classics)" },
+  "menu.addGroup.confirm": { zh: "创建", en: "Create" },
+  "menu.group.rename": { zh: "重命名", en: "Rename" },
+  "menu.group.delete": { zh: "删除分组", en: "Delete Group" },
+  "menu.group.delete.confirm": { zh: "删除后分组内配方引用将一并移除（配方本身不受影响）", en: "Entries in this group will be removed (recipes are not deleted)" },
+  "menu.group.empty": { zh: "点击 + 从酒单添加配方", en: "Tap + to add recipes from your list" },
+  "menu.entry.setPrice": { zh: "设置售价", en: "Set Price" },
+  "menu.entry.price.placeholder": { zh: "售价（元）", en: "Price (¥)" },
+  "menu.entry.available": { zh: "今日供应", en: "Available" },
+  "menu.entry.unavailable": { zh: "暂停供应", en: "Unavailable" },
+  "menu.entry.remove": { zh: "从分组移除", en: "Remove" },
+  "menu.empty.title": { zh: "门店酒单为空", en: "Menu is empty" },
+  "menu.empty.desc": { zh: "新建分组，然后从酒单中添加配方", en: "Create a group, then add recipes from your list" },
+  "menu.addRecipe": { zh: "添加到门店酒单", en: "Add to Menu" },
+  "menu.addRecipe.selectGroup": { zh: "选择分组", en: "Select Group" },
+  "menu.addRecipe.added": { zh: "已在门店酒单中", en: "In menu" },
+  "menu.addRecipe.success": { zh: "已加入\"{g}\"", en: "Added to \"{g}\"" },
 } as const;
 
 export type TranslationKey = keyof typeof dict;

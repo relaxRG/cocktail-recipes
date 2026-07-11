@@ -32,7 +32,7 @@ type Row =
   | { kind: "header"; status: LabProjectStatus; count: number }
   | { kind: "project"; project: LabProject };
 
-export default function LabIndexScreen() {
+export function LabIndexScreen({ embedded = false }: { embedded?: boolean }) {
   const colors = useColors();
   const router = useRouter();
   const { t, lang } = useI18n();
@@ -69,8 +69,9 @@ export default function LabIndexScreen() {
   }, [projects]);
 
   return (
-    <ScreenContainer edges={["top", "left", "right", "bottom"]}>
+    <ScreenContainer edges={embedded ? [] : ["top", "left", "right", "bottom"]}>
       {/* Header */}
+      {!embedded && (
       <View className="px-5 pt-2 pb-3 flex-row items-end justify-between">
         <View className="flex-1">
           <View className="flex-row items-center" style={{ gap: 8 }}>
@@ -106,6 +107,7 @@ export default function LabIndexScreen() {
           </Text>
         </Pressable>
       </View>
+      )}
 
       {projects.length === 0 ? (
         <View className="flex-1 items-center justify-center px-10" style={{ gap: 10 }}>
@@ -338,3 +340,5 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 });
+
+export default LabIndexScreen;

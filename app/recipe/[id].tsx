@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
+  Modal,
   ActivityIndicator,
   Alert,
   Platform,
@@ -47,6 +48,7 @@ import { useHomemadeStore } from "@/lib/homemade/store";
 import { trpc } from "@/lib/trpc";
 import { smartLinkIngredient, smartLinkDisplayName } from "@/lib/recipes/smart-link";
 import { useRecipeStore } from "@/lib/recipes/store";
+import { useMenuStore } from "@/lib/menu/store";
 import {
   STRENGTH_LABELS,
   STRENGTH_BAND_LABELS,
@@ -64,6 +66,8 @@ export default function RecipeDetailScreen() {
   const { bottles, addBottle, updateBottle } = useBottleStore();
   const { preps } = useHomemadeStore();
   const recipe = getRecipe(id);
+  const { groups, addEntry } = useMenuStore();
+  const [menuModalVisible, setMenuModalVisible] = React.useState(false);
 
   // 联网补全:零价空壳条目(多为自动添加)→ LLM 知识补全资料并更新入库
   const enrichMutation = trpc.lookup.enrich.useMutation();
@@ -228,6 +232,7 @@ export default function RecipeDetailScreen() {
   ];
 
   return (
+    <>
     <ScreenContainer>
       {/* Header bar */}
       <View className="flex-row items-center justify-between px-4 py-1">
@@ -249,6 +254,16 @@ export default function RecipeDetailScreen() {
               size={24}
               color={recipe.made ? colors.success : colors.muted}
             />
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setMenuModalVisible(true);
+            }}
+            hitSlop={8}
+            style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+          >
+            <IconSymbol name="storefront.fill" size={22} color={colors.muted} />
           </Pressable>
           <Pressable
             onPress={handleFavorite}
@@ -815,6 +830,86 @@ export default function RecipeDetailScreen() {
         ) : null}
       </ScrollView>
     </ScreenContainer>
+    {/* 门店酒单分组选择 Modal */}
+      {menuModalVisible && (
+        <Modal
+          transparent
+          animationType="slide"
+          visible={menuModalVisible}
+          onRequestClose={() => setMenuModalVisible(false)}
+        >
+          <Pressable
+            style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)" }}
+            onPress={() => setMenuModalVisible(false)}
+          />
+          <View
+            style={{
+              backgroundColor: colors.background,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              paddingBottom: insets.bottom + 16,
+              paddingTop: 16,
+              paddingHorizontal: 20,
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              maxHeight: 420,
+            }}
+          >
+            <Text style={{ fontSize: 17, fontWeight: "600", color: colors.foreground, marginBottom: 4 }}>
+              {lang === "en" ? "Add to Store Menu" : "加入门店酒单"}
+            </Text>
+            <Text style={{ fontSize: 13, color: colors.muted, marginBottom: 16 }}>
+              {lang === "en" ? "Select a group" : "选择分组"}
+            </Text>
+            {groups.length === 0 ? (
+              <Text style={{ fontSize: 14, color: colors.muted, textAlign: "center", marginTop: 20 }}>
+                {lang === "en" ? "No groups yet. Create one in Store Menu." : "暂无分组，请先在门店酒单中创建分组。"}
+              </Text>
+            ) : (
+              <ScrollView style={{ maxHeight: 280 }}>
+                {groups.map((g) => {
+                  const alreadyIn = g.entries.some((e) => e.recipeId === recipe.id);
+                  return (
+                    <Pressable
+                      key={g.id}
+                      onPress={() => {
+                        if (alreadyIn) return;
+                        addEntry(g.id, recipe.id);
+                        if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                        setMenuModalVisible(false);
+                      }}
+                      style={({ pressed }) => ({
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        paddingVertical: 14,
+                        borderBottomWidth: StyleSheet.hairlineWidth,
+                        borderBottomColor: colors.border,
+                        opacity: pressed ? 0.6 : 1,
+                      })}
+                    >
+                      <View>
+                        <Text style={{ fontSize: 15, color: colors.foreground }}>{g.name}</Text>
+                        <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                          {g.entries.length} {lang === "en" ? "drinks" : "款"}
+                        </Text>
+                      </View>
+                      {alreadyIn ? (
+                        <IconSymbol name="checkmark.circle.fill" size={20} color={colors.success} />
+                      ) : (
+                        <IconSymbol name="plus.circle" size={20} color={colors.primary} />
+                      )}
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            )}
+          </View>
+        </Modal>
+      )}
+    </>
   );
 }
 
