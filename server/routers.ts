@@ -436,17 +436,24 @@ export const appRouter = router({
           source: z.string().max(500).optional(),
           story: z.string().max(2000).optional(),
           flavorDesc: z.string().max(2000).optional(),
+          existingSpirits: z.array(z.string().max(100)).max(50).optional(),
+          existingGlasses: z.array(z.string().max(100)).max(50).optional(),
         }),
       )
       .mutation(async ({ input }) => {
         // 17 个精炼风味标签（与客户端 FLAVOR_TAGS 保持一致）
         const VALID_FLAVOR_TAGS = ["酸","甜","苦","烈","鲜","柑橘","热带","草本","花香","烟熏","木桶","香料","坚果可可","清爽","浓郁","干爽","复杂"];
+        const spiritList = (input.existingSpirits ?? []).join("、") || "金酒、朗姆、伏特加、威士忌、龙舌兰、白兰地、利口酒、无酒精、其他";
+        const glassList = (input.existingGlasses ?? []).join("、") || "马天尼杯、古典杯、高球杯、柯林杯、库佩杯、飓风杯、子弹杯、其他";
         const prompt = `你是专业调酒知识专家。根据以下鸡尾酒信息，尽可能准确地补全资料。如果你熟悉这款鸡尾酒，请给出高置信度；如果只能从配料推断，请如实标注置信度。
 
 配方名称: ${input.name}${input.nameEn ? ` (${input.nameEn})` : ""}
 ${input.baseSpirit ? `基酒: ${input.baseSpirit}` : ""}
 ${input.method ? `调制方式: ${input.method}` : ""}
 ${(input.ingredients ?? []).length > 0 ? `配料: ${(input.ingredients ?? []).join(", ")}` : ""}
+
+可选基酒列表（优先从此列表中选择）: ${spiritList}
+可选杯型列表（优先从此列表中选择）: ${glassList}
 
 请输出 JSON（严格按照以下格式）:
 {
@@ -455,7 +462,13 @@ ${(input.ingredients ?? []).length > 0 ? `配料: ${(input.ingredients ?? []).jo
   "story": "${input.story ? "(已有内容,如有更好信息可补充,否则返回空字符串)" : "这款鸡尾酒的历史来历与创作故事(中文,100字内),不清楚则返回空字符串"}",
   "flavorDesc": "${input.flavorDesc ? "(已有内容,如有更好信息可补充,否则返回空字符串)" : "风味描述:口感特点与风味层次(中文,50字内),不清楚则返回空字符串"}",
   "source": "${input.source ? "(已有内容,不要修改,返回空字符串)" : "引用来源:如 'IBA Official Cocktail' / 'The Savoy Cocktail Book' / 调酒师名字等,不确定则返回空字符串"}",
-  "confidence": "high"|"medium"|"low"（对整体补全结果的置信度）
+  "confidence": "high"|"medium"|"low"（对整体补全结果的置信度）,
+  "suggestedBaseSpirit": "${input.baseSpirit ? "(已有基酒,返回空字符串)" : "推荐基酒（优先从可选基酒列表中选，若列表中没有合适的可自由填写，不确定则返回空字符串）"}",
+  "suggestedBaseSpiritConfidence": "high"|"medium"|"low",
+  "suggestedGlass": "推荐杯型（优先从可选杯型列表中选，若列表中没有合适的可自由填写，不确定则返回空字符串）",
+  "suggestedGlassConfidence": "high"|"medium"|"low",
+  "suggestedIce": "推荐冰块类型（如：大方冰/碎冰/球冰/标准方冰/长条冰/无冰，不确定则返回空字符串）",
+  "suggestedIceConfidence": "high"|"medium"|"low"
 }`;
         // 25s timeout to prevent hang
         const signal = AbortSignal.timeout(25_000);
@@ -476,13 +489,21 @@ ${(input.ingredients ?? []).length > 0 ? `配料: ${(input.ingredients ?? []).jo
         // 过滤：只保留合法的 17 个标签
         const rawFlavors = Array.isArray(p.flavors) ? (p.flavors as string[]) : [];
         const validFlavors = rawFlavors.filter((f) => VALID_FLAVOR_TAGS.includes(f)).slice(0, 6);
+        const validConf = (v: unknown): "high" | "medium" | "low" =>
+          (["high", "medium", "low"] as const).includes(v as "high") ? v as "high" | "medium" | "low" : "medium";
         return {
           flavors: validFlavors,
           story: typeof p.story === "string" ? p.story.trim() : "",
           flavorDesc: typeof p.flavorDesc === "string" ? p.flavorDesc.trim() : "",
           source: typeof p.source === "string" ? p.source.trim() : "",
-          confidence: (["high", "medium", "low"] as const).includes(p.confidence as "high") ? p.confidence as "high" | "medium" | "low" : "medium",
-          flavorConfidence: (["high", "medium", "low"] as const).includes(p.flavorConfidence as "high") ? p.flavorConfidence as "high" | "medium" | "low" : "medium",
+          confidence: validConf(p.confidence),
+          flavorConfidence: validConf(p.flavorConfidence),
+          suggestedBaseSpirit: typeof p.suggestedBaseSpirit === "string" ? p.suggestedBaseSpirit.trim() : "",
+          suggestedBaseSpiritConfidence: validConf(p.suggestedBaseSpiritConfidence),
+          suggestedGlass: typeof p.suggestedGlass === "string" ? p.suggestedGlass.trim() : "",
+          suggestedGlassConfidence: validConf(p.suggestedGlassConfidence),
+          suggestedIce: typeof p.suggestedIce === "string" ? p.suggestedIce.trim() : "",
+          suggestedIceConfidence: validConf(p.suggestedIceConfidence),
         };
       }),
 

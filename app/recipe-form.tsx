@@ -34,6 +34,7 @@ import { parseRecipeText } from "@/lib/recipes/parser";
 import { estimateRecipeAbv } from "@/lib/recipes/abv";
 import {
   CODEX_FAMILIES,
+  CATEGORY_COLORS,
   Ingredient,
   METHODS,
   ICE_TYPES,
@@ -57,12 +58,14 @@ function ChipGroup({
   value,
   onChange,
   colorsMap,
+  newTags,
   labelOf,
 }: {
   options: readonly string[];
   value: string;
   onChange: (v: string) => void;
   colorsMap?: Record<string, string>;
+  newTags?: readonly string[];
   /** 可选:将选项值映射为本地化显示文本(值本身仍作为存储主键) */
   labelOf?: (v: string) => string;
 }) {
@@ -72,22 +75,44 @@ function ChipGroup({
       {options.map((opt) => {
         const active = value === opt;
         const tint = colorsMap?.[opt];
+        const isNew = newTags?.includes(opt) ?? false;
         return (
-          <Pressable
-            key={opt}
-            onPress={() => onChange(opt)}
-            style={[
-              styles.chip,
-              {
-                backgroundColor: active ? (tint ?? colors.primary) : colors.surface,
-                borderColor: active ? (tint ?? colors.primary) : (tint ? tint + "66" : colors.border),
-              },
-            ]}
-          >
-            <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
-              {labelOf ? labelOf(opt) : opt}
-            </Text>
-          </Pressable>
+          <View key={opt} style={{ position: "relative" }}>
+            <Pressable
+              onPress={() => onChange(opt)}
+              style={[
+                styles.chip,
+                {
+                  backgroundColor: active ? (tint ?? colors.primary) : colors.surface,
+                  borderColor: active
+                    ? (tint ?? colors.primary)
+                    : isNew
+                      ? "#FF9500"
+                      : (tint ? tint + "66" : colors.border),
+                  borderWidth: isNew && !active ? 1.5 : 1,
+                },
+              ]}
+            >
+              <Text style={[styles.chipText, { color: active ? "#FFFFFF" : colors.muted }]}>
+                {labelOf ? labelOf(opt) : opt}
+              </Text>
+            </Pressable>
+            {isNew ? (
+              <View
+                style={{
+                  position: "absolute",
+                  top: -5,
+                  right: -3,
+                  backgroundColor: "#FF9500",
+                  borderRadius: 6,
+                  paddingHorizontal: 4,
+                  paddingVertical: 1,
+                }}
+              >
+                <Text style={{ fontSize: 9, lineHeight: 11, fontWeight: "700", color: "#FFFFFF" }}>新</Text>
+              </View>
+            ) : null}
+          </View>
         );
       })}
     </View>
@@ -99,6 +124,7 @@ export default function RecipeFormScreen() {
   const {
     prefillName,
     prefillNameEn,
+    prefillBaseSpirit,
     prefillGlass,
     prefillSteps,
     prefillGarnish,
@@ -107,6 +133,7 @@ export default function RecipeFormScreen() {
   } = useLocalSearchParams<{
     prefillName?: string;
     prefillNameEn?: string;
+    prefillBaseSpirit?: string;
     prefillGlass?: string;
     prefillSteps?: string;
     prefillGarnish?: string;
@@ -116,7 +143,7 @@ export default function RecipeFormScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
-  const { getRecipe, addRecipe, updateRecipe, categories, tagsOf } = useRecipeStore();
+  const { getRecipe, addRecipe, updateRecipe, categories, tagsOf, addTag } = useRecipeStore();
   const enrichRecipeMutation = trpc.lookup.enrichRecipe.useMutation();
   const { isOnline } = useNetwork();
   const { preps } = useHomemadeStore();
@@ -138,7 +165,7 @@ export default function RecipeFormScreen() {
   const [name, setName] = useState(editing?.name ?? "");
   const [nameEn, setNameEn] = useState(editing?.nameEn ?? "");
   const [categoryId, setCategoryId] = useState<string | null>(editing?.categoryId ?? null);
-  const [baseSpirit, setBaseSpirit] = useState(editing?.baseSpirit ?? (spiritNames[0] ?? ""));
+  const [baseSpirit, setBaseSpirit] = useState(editing?.baseSpirit ?? "");
   const [glass, setGlass] = useState(editing?.glass ?? "");
   const [method, setMethod] = useState(editing?.method ?? "摇和");
   const [ice, setIce] = useState(editing?.ice ?? "");
@@ -165,10 +192,18 @@ export default function RecipeFormScreen() {
     source?: string;
     flavors?: string[];
     confidence?: "high" | "medium" | "low";
+    suggestedBaseSpirit?: string;
+    suggestedBaseSpiritConfidence?: "high" | "medium" | "low";
+    suggestedGlass?: string;
+    suggestedGlassConfidence?: "high" | "medium" | "low";
+    suggestedIce?: string;
+    suggestedIceConfidence?: "high" | "medium" | "low";
   } | null>(null);
   /** Which ingredient row is focused (shows live suggestions) */
   /** 风味标签专属置信度（来自自动 AI 分析） */
   const [flavorConfidence, setFlavorConfidence] = useState<"high" | "medium" | "low" | null>(null);
+  const [newSpiritTags, setNewSpiritTags] = useState<string[]>([]);
+  const [newGlassTags, setNewGlassTags] = useState<string[]>([]);
   /** 防止重复触发自动 AI 风味分析 */
   const autoFlavorDoneRef = useRef(false);
   // Track mount state to prevent setState after unmount
@@ -183,9 +218,31 @@ export default function RecipeFormScreen() {
     if (editing) return; // Don't overwrite existing recipe data
     if (prefillName) setName(prefillName);
     if (prefillNameEn) setNameEn(prefillNameEn);
+    if (prefillBaseSpirit) {
+      const hit = spiritNames.find((s) => prefillBaseSpirit.includes(s) || s.includes(prefillBaseSpirit));
+      if (hit) {
+        setBaseSpirit(hit);
+      } else {
+        const created = addTag("spirit", prefillBaseSpirit, CATEGORY_COLORS[0]);
+        const nextName = created?.name ?? prefillBaseSpirit.trim();
+        if (nextName) {
+          setBaseSpirit(nextName);
+          setNewSpiritTags((prev) => (prev.includes(nextName) ? prev : [...prev, nextName]));
+        }
+      }
+    }
     if (prefillGlass) {
       const hit = glassNames.find((g) => prefillGlass.includes(g) || g.includes(prefillGlass));
-      setGlass(hit ?? prefillGlass);
+      if (hit) {
+        setGlass(hit);
+      } else {
+        const created = addTag("glass", prefillGlass, CATEGORY_COLORS[3]);
+        const nextName = created?.name ?? prefillGlass.trim();
+        if (nextName) {
+          setGlass(nextName);
+          setNewGlassTags((prev) => (prev.includes(nextName) ? prev : [...prev, nextName]));
+        }
+      }
     }
     if (prefillSteps) setSteps(prefillSteps);
     if (prefillGarnish) setGarnish(prefillGarnish);
@@ -201,6 +258,31 @@ export default function RecipeFormScreen() {
   /** Rows where user picked/dismissed suggestions — suppress until text changes */
   const [pickedIng, setPickedIng] = useState<Record<string, string>>({});
 
+  const ensureSpiritName = (raw: string) => {
+    const cleaned = raw.trim();
+    if (!cleaned) return "";
+    const hit = spiritNames.find((s) => cleaned.includes(s) || s.includes(cleaned));
+    if (hit) return hit;
+    const created = addTag("spirit", cleaned, CATEGORY_COLORS[0]);
+    const nextName = created?.name ?? cleaned;
+    setNewSpiritTags((prev) => (prev.includes(nextName) ? prev : [...prev, nextName]));
+    return nextName;
+  };
+  const ensureGlassName = (raw: string) => {
+    const cleaned = raw.trim();
+    if (!cleaned) return "";
+    const hit = glassNames.find((g) => cleaned.includes(g) || g.includes(cleaned));
+    if (hit) return hit;
+    const created = addTag("glass", cleaned, CATEGORY_COLORS[3]);
+    const nextName = created?.name ?? cleaned;
+    setNewGlassTags((prev) => (prev.includes(nextName) ? prev : [...prev, nextName]));
+    return nextName;
+  };
+  const normalizeIceName = (raw: string) => {
+    const cleaned = raw.trim();
+    if (!cleaned) return "";
+    return ICE_TYPES.find((it) => cleaned.includes(it) || it.includes(cleaned)) ?? cleaned;
+  };
   const handleAiEnrich = () => {
     const recipeName = name.trim() || nameEn.trim();
     if (!recipeName || aiEnriching) return;
@@ -221,10 +303,24 @@ export default function RecipeFormScreen() {
         story: story.trim() || undefined,
         flavorDesc: flavorDesc.trim() || undefined,
         method: method || undefined,
+        existingSpirits: spiritNames,
+        existingGlasses: glassNames,
       },
       {
         onSuccess: (result) => {
           if (!isMountedRef.current) return;
+          if (!baseSpirit && result.suggestedBaseSpirit && result.suggestedBaseSpiritConfidence === "high") {
+            const nextName = ensureSpiritName(result.suggestedBaseSpirit);
+            if (nextName) setBaseSpirit(nextName);
+          }
+          if (!glass && result.suggestedGlass && result.suggestedGlassConfidence === "high") {
+            const nextName = ensureGlassName(result.suggestedGlass);
+            if (nextName) setGlass(nextName);
+          }
+          if (!ice && result.suggestedIce && result.suggestedIceConfidence === "high") {
+            const nextName = normalizeIceName(result.suggestedIce);
+            if ((ICE_TYPES as readonly string[]).includes(nextName)) setIce(nextName);
+          }
           setAiResult(result);
           setAiEnriching(false);
         },
@@ -255,6 +351,8 @@ export default function RecipeFormScreen() {
         baseSpirit: baseSpirit || undefined,
         ingredients: ingNames.length > 0 ? ingNames : undefined,
         method: method || undefined,
+        existingSpirits: spiritNames,
+        existingGlasses: glassNames,
       },
       {
         onSuccess: (result) => {
@@ -264,8 +362,27 @@ export default function RecipeFormScreen() {
             const conf = result.flavorConfidence ?? result.confidence ?? "medium";
             setFlavorConfidence(conf);
           }
+          if (!baseSpirit && result.suggestedBaseSpirit && result.suggestedBaseSpiritConfidence === "high") {
+            const nextName = ensureSpiritName(result.suggestedBaseSpirit);
+            if (nextName) setBaseSpirit(nextName);
+          }
+          if (!glass && result.suggestedGlass && result.suggestedGlassConfidence === "high") {
+            const nextName = ensureGlassName(result.suggestedGlass);
+            if (nextName) setGlass(nextName);
+          }
+          if (!ice && result.suggestedIce && result.suggestedIceConfidence === "high") {
+            const nextName = normalizeIceName(result.suggestedIce);
+            if ((ICE_TYPES as readonly string[]).includes(nextName)) setIce(nextName);
+          }
           // 同时存入 aiResult，供用户按需应用故事/来源等字段
-          if (result.story || result.flavorDesc || result.source) {
+          if (
+            result.story ||
+            result.flavorDesc ||
+            result.source ||
+            result.suggestedBaseSpirit ||
+            result.suggestedGlass ||
+            result.suggestedIce
+          ) {
             setAiResult(result);
           }
         },
@@ -287,6 +404,18 @@ export default function RecipeFormScreen() {
     if (aiResult.source && !source.trim()) setSource(aiResult.source);
     if (aiResult.flavors && aiResult.flavors.length > 0 && flavors.length === 0) {
       setFlavors(aiResult.flavors);
+    }
+    if (!baseSpirit && aiResult.suggestedBaseSpirit) {
+      const nextName = ensureSpiritName(aiResult.suggestedBaseSpirit);
+      if (nextName) setBaseSpirit(nextName);
+    }
+    if (!glass && aiResult.suggestedGlass) {
+      const nextName = ensureGlassName(aiResult.suggestedGlass);
+      if (nextName) setGlass(nextName);
+    }
+    if (!ice && aiResult.suggestedIce) {
+      const nextName = normalizeIceName(aiResult.suggestedIce);
+      if ((ICE_TYPES as readonly string[]).includes(nextName)) setIce(nextName);
     }
     setAiResult(null);
   };
@@ -357,13 +486,13 @@ export default function RecipeFormScreen() {
     if (p.codexFamily && !codexFamily) setCodexFamily(p.codexFamily);
     // 杯型/基酒:仅当解析结果能对应到已有标签时才选中,否则原样填入
     if (p.glass) {
-      const hit = glassNames.find((g) => p.glass.includes(g) || g.includes(p.glass));
-      setGlass(hit ?? p.glass);
+      const nextName = ensureGlassName(p.glass);
+      if (nextName) setGlass(nextName);
     }
     if (p.method && (METHODS as readonly string[]).includes(p.method)) setMethod(p.method);
     if (p.baseSpirit) {
-      const hit = spiritNames.find((s) => p.baseSpirit.includes(s) || s.includes(p.baseSpirit));
-      if (hit) setBaseSpirit(hit);
+      const nextName = ensureSpiritName(p.baseSpirit);
+      if (nextName) setBaseSpirit(nextName);
     }
     const parts: string[] = [];
     if (p.name) parts.push(t("form.name.label"));
@@ -446,6 +575,8 @@ export default function RecipeFormScreen() {
             nameEn: draft.nameEn || undefined,
             baseSpirit: draft.baseSpirit || undefined,
             ingredients: ingNames.length > 0 ? ingNames : undefined,
+            existingSpirits: spiritNames,
+            existingGlasses: glassNames,
           },
           {
             onSuccess: (result) => {
@@ -496,8 +627,14 @@ export default function RecipeFormScreen() {
                 setName(item.nameZh || item.nameEn);
                 setNameEn(item.nameEn);
               }
-              if (item.baseSpirit) setBaseSpirit(item.baseSpirit);
-              if (item.glass) setGlass(item.glass);
+              if (item.baseSpirit) {
+                const nextName = ensureSpiritName(item.baseSpirit);
+                if (nextName) setBaseSpirit(nextName);
+              }
+              if (item.glass) {
+                const nextName = ensureGlassName(item.glass);
+                if (nextName) setGlass(nextName);
+              }
               if (item.method) setMethod(item.method);
               if (item.ingredients?.length) {
                 setIngredients(
@@ -667,6 +804,27 @@ export default function RecipeFormScreen() {
                   {lang === "zh" ? "来源: " : "Source: "}{aiResult.source}
                 </Text>
               ) : null}
+              {!baseSpirit && aiResult.suggestedBaseSpirit ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "基酒建议: " : "Base spirit: "}
+                  {aiResult.suggestedBaseSpirit}
+                  {aiResult.suggestedBaseSpiritConfidence ? ` · ${aiResult.suggestedBaseSpiritConfidence}` : ""}
+                </Text>
+              ) : null}
+              {!glass && aiResult.suggestedGlass ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "杯型建议: " : "Glass: "}
+                  {aiResult.suggestedGlass}
+                  {aiResult.suggestedGlassConfidence ? ` · ${aiResult.suggestedGlassConfidence}` : ""}
+                </Text>
+              ) : null}
+              {!ice && aiResult.suggestedIce ? (
+                <Text className="text-xs text-muted" style={{ lineHeight: 16 }}>
+                  {lang === "zh" ? "冰块建议: " : "Ice: "}
+                  {aiResult.suggestedIce}
+                  {aiResult.suggestedIceConfidence ? ` · ${aiResult.suggestedIceConfidence}` : ""}
+                </Text>
+              ) : null}
               <Pressable
                 onPress={applyAiResult}
                 style={({ pressed }) => [
@@ -737,6 +895,7 @@ export default function RecipeFormScreen() {
               value={baseSpirit}
               onChange={setBaseSpirit}
               colorsMap={spiritColors}
+              newTags={newSpiritTags}
               labelOf={(v) => {
                 const tag = spiritTags.find((tg) => tg.name === v);
                 return localizedTagName(v, tag?.nameEn, lang);
@@ -921,6 +1080,7 @@ export default function RecipeFormScreen() {
               value={glass}
               onChange={setGlass}
               colorsMap={glassColors}
+              newTags={newGlassTags}
               labelOf={(v) => {
                 const tag = glassTags.find((tg) => tg.name === v);
                 return localizedTagName(v, tag?.nameEn, lang);

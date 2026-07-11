@@ -25,7 +25,7 @@ import { useBookStore } from "@/lib/books/store";
 import { detectRecipesInText, RecipeCandidate } from "@/lib/import/detect";
 import { htmlToText } from "@/lib/import/extract";
 import { ParsedRecipe } from "@/lib/recipes/parser";
-import { genId } from "@/lib/recipes/types";
+import { genId, CATEGORY_COLORS } from "@/lib/recipes/types";
 import { useRecipeStore } from "@/lib/recipes/store";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { classifyPrepGroup, guessPrepType } from "@/lib/homemade/types";
@@ -282,8 +282,28 @@ export default function BookReaderScreen() {
   const { books, loadChapter, updatePosition } = useBookStore();
   const book = books.find((b) => b.id === id);
 
-  const { addRecipe, updateRecipe, recipes } = useRecipeStore();
+  const { addRecipe, updateRecipe, recipes, tagsOf, addTag } = useRecipeStore();
   const { addPrep, preps, sections, types } = useHomemadeStore();
+  const spiritTagsBook = tagsOf("spirit");
+  const glassTagsBook = tagsOf("glass");
+  const spiritNamesBook = spiritTagsBook.map((t) => t.name);
+  const glassNamesBook = glassTagsBook.map((t) => t.name);
+  const ensureSpiritNameBook = (raw: string) => {
+    const cleaned = raw.trim();
+    if (!cleaned) return "";
+    const hit = spiritNamesBook.find((s) => cleaned.includes(s) || s.includes(cleaned));
+    if (hit) return hit;
+    const created = addTag("spirit", cleaned, CATEGORY_COLORS[0]);
+    return created?.name ?? cleaned;
+  };
+  const ensureGlassNameBook = (raw: string) => {
+    const cleaned = raw.trim();
+    if (!cleaned) return "";
+    const hit = glassNamesBook.find((g) => cleaned.includes(g) || g.includes(cleaned));
+    if (hit) return hit;
+    const created = addTag("glass", cleaned, CATEGORY_COLORS[3]);
+    return created?.name ?? cleaned;
+  };
   const translateMutation = trpc.bookImport.translate.useMutation();
   const enrichRecipeMutation = trpc.lookup.enrichRecipe.useMutation();
   const extractMutation = trpc.lookup.extractRecipesFromText.useMutation();
@@ -595,7 +615,7 @@ export default function BookReaderScreen() {
         addPrep({ name, nameAlt: name !== origName ? origName : "", type: prepType, abvGroup: classifyPrepGroup({ name, type: prepType, ingredients: prepIngredients, recipe: p.steps, sections, types }), ingredients: prepIngredients, recipe: p.steps, yield: "", shelfLife: "", storage: "", source, notes: "" });
         prepCount++;
       } else {
-        const draft = { name, nameEn: isAscii(name) ? name : isAscii(origName) && origName ? origName : "", categoryId: null, baseSpirit: p.baseSpirit, glass: p.glass, method: p.method, strength: "medium" as const, variantOf: p.variantOf || "", codexFamily: normalizeCodexFamilyDecl(p.codexFamily || ""), flavors: [], source: p.source || source, story: "", flavorDesc: "", ingredients: p.ingredients, steps: p.steps, garnish: p.garnish, notes: "" };
+        const draft = { name, nameEn: isAscii(name) ? name : isAscii(origName) && origName ? origName : "", categoryId: null, baseSpirit: p.baseSpirit ? ensureSpiritNameBook(p.baseSpirit) : "", glass: p.glass ? ensureGlassNameBook(p.glass) : "", method: p.method, strength: "medium" as const, variantOf: p.variantOf || "", codexFamily: normalizeCodexFamilyDecl(p.codexFamily || ""), flavors: [], source: p.source || source, story: "", flavorDesc: "", ingredients: p.ingredients, steps: p.steps, garnish: p.garnish, notes: "" };
         const newRecipe = addRecipe(draft);
         const ingNames = p.ingredients.map((i) => i.name).filter(Boolean);
         enrichRecipeMutation.mutate(
@@ -609,7 +629,7 @@ export default function BookReaderScreen() {
     setReviewItems([]);
     setPhase("done");
     if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  }, [reviewItems, book, zh, addRecipe, updateRecipe, addPrep, sections, types, enrichRecipeMutation]);
+  }, [reviewItems, book, zh, addRecipe, updateRecipe, addPrep, sections, types, enrichRecipeMutation, addTag, spiritNamesBook, glassNamesBook]);
 
   /* ── Not found ── */
   if (!book) {

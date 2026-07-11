@@ -27,7 +27,7 @@ import { useBottleTaxonomy } from "@/lib/bottles/taxonomy";
 import { useHomemadeStore } from "@/lib/homemade/store";
 import { classifyPrepGroup, guessPrepType } from "@/lib/homemade/types";
 import { useRecipeStore } from "@/lib/recipes/store";
-import { genId } from "@/lib/recipes/types";
+import { genId, CATEGORY_COLORS } from "@/lib/recipes/types";
 import { normalizeCodexFamilyDecl } from "@/lib/recipes/lineage";
 
 type ItemType = "bottle" | "prep" | "recipe";
@@ -91,8 +91,28 @@ export default function BulkImportScreen() {
   const { addBottle } = useBottleStore();
   const { categories: bottleCategories } = useBottleTaxonomy();
   const { addPrep, sections, types } = useHomemadeStore();
-  const { addRecipe, categories: recipeCategories } = useRecipeStore();
+  const { addRecipe, categories: recipeCategories, tagsOf, addTag } = useRecipeStore();
 
+  const spiritTags = tagsOf("spirit");
+  const glassTags = tagsOf("glass");
+  const spiritNames = spiritTags.map((t) => t.name);
+  const glassNames = glassTags.map((t) => t.name);
+  const ensureSpiritName = (raw: string) => {
+    const cleaned = raw.trim();
+    if (!cleaned) return "";
+    const hit = spiritNames.find((s) => cleaned.includes(s) || s.includes(cleaned));
+    if (hit) return hit;
+    const created = addTag("spirit", cleaned, CATEGORY_COLORS[0]);
+    return created?.name ?? cleaned;
+  };
+  const ensureGlassName = (raw: string) => {
+    const cleaned = raw.trim();
+    if (!cleaned) return "";
+    const hit = glassNames.find((g) => cleaned.includes(g) || g.includes(cleaned));
+    if (hit) return hit;
+    const created = addTag("glass", cleaned, CATEGORY_COLORS[3]);
+    return created?.name ?? cleaned;
+  };
   const busy = extractMutation.isPending;
 
   const pickFile = useCallback(async () => {
@@ -331,8 +351,8 @@ export default function BulkImportScreen() {
           name: item.nameZh || item.nameEn,
           nameEn: item.nameEn,
           categoryId: matchRecipeCategory(item),
-          baseSpirit: item.baseSpirit,
-          glass: item.glass,
+          baseSpirit: item.baseSpirit ? ensureSpiritName(item.baseSpirit) : "",
+          glass: item.glass ? ensureGlassName(item.glass) : "",
           method: item.method,
           strength: "medium",
           // 三级优先级:文本明确声明(确认合法后采用)> 引擎自动判定(store 保存时回填)
@@ -362,7 +382,7 @@ export default function BulkImportScreen() {
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-  }, [rows, addBottle, addPrep, addRecipe, matchBottleCategory, matchPrepType, matchRecipeCategory, sections, types]);
+  }, [rows, addBottle, addPrep, addRecipe, addTag, matchBottleCategory, matchPrepType, matchRecipeCategory, sections, types, spiritNames, glassNames]);
 
   const selectedCount = useMemo(() => rows.filter((r) => r.checked).length, [rows]);
   const canExtract = !busy && (Boolean(text.trim()) || Boolean(fileBase64) || Boolean(imageBase64));
