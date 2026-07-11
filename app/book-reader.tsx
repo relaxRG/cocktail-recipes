@@ -135,7 +135,7 @@ const READER_CSS = `
 
 function HtmlChapter({
   html, css, fontSize, lineHeight, theme, onTap,
-  extractMode, onSelection, webViewRef, baseUrl,
+  extractMode, onSelection, webViewRef, baseUrl, pageFlipMode, onPageInfo,
 }: {
   html: string;
   css: string;
@@ -147,6 +147,9 @@ function HtmlChapter({
   onSelection?: (text: string) => void;
   webViewRef?: React.RefObject<InstanceType<typeof WebView> | null>;
   baseUrl?: string;
+  pageFlipMode?: boolean;
+  /** Called with { totalPages } after content loads */
+  onPageInfo?: (info: { totalPages: number }) => void;
 }) {
   const bgColor = theme === 'dark' ? '#1a1a1a' : theme === 'sepia' ? '#F4ECD8' : '#FFFFFF';
   const textColor = theme === 'dark' ? '#E0E0E0' : theme === 'sepia' ? '#3E3E3E' : '#1a1a1a';
@@ -155,8 +158,11 @@ function HtmlChapter({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fullHtml = useMemo(() => {
     // eslint-disable-next-line prefer-template
+    if (pageFlipMode) {
+      return `<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8"/>\n<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>\n<style>\n${READER_CSS}\n${css}\nhtml {\n  overflow: hidden;\n  height: 100vh;\n  width: 100vw;\n}\nbody {\n  font-size: ${fontSize}px;\n  line-height: ${lineHeight};\n  background: ${bgColor};\n  color: ${textColor};\n  margin: 0;\n  padding: 20px 20px 80px 20px;\n  box-sizing: border-box;\n  height: 100vh;\n  overflow: hidden;\n  -webkit-text-size-adjust: none;\n  word-wrap: break-word;\n  overflow-wrap: break-word;\n  columns: 1;\n  column-width: calc(100vw - 40px);\n  column-gap: 40px;\n}\na { color: ${linkColor}; }\nimg { max-width: 100% !important; height: auto !important; break-inside: avoid; max-height: 80vh; }\n* { max-width: 100% !important; }\npre, code { white-space: pre-wrap; font-size: 0.9em; break-inside: avoid; }\nh1,h2,h3,h4,h5,h6 { break-after: avoid; }\n</style>\n</head>\n<body>${html}</body>\n</html>`;
+    }
     return `<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8"/>\n<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>\n<style>\n${READER_CSS}\n${css}\nhtml, body {\n  font-size: ${fontSize}px;\n  line-height: ${lineHeight};\n  background: ${bgColor};\n  color: ${textColor};\n  padding: 0 20px 80px 20px;\n  margin: 0;\n  -webkit-text-size-adjust: none;\n  word-wrap: break-word;\n  overflow-wrap: break-word;\n}\na { color: ${linkColor}; }\nimg { max-width: 100% !important; height: auto !important; }\n* { max-width: 100% !important; }\npre, code { white-space: pre-wrap; font-size: 0.9em; }\n</style>\n</head>\n<body>${html}</body>\n</html>`;
-  }, [html, css, fontSize, lineHeight, bgColor, textColor, linkColor]);
+  }, [html, css, fontSize, lineHeight, bgColor, textColor, linkColor, pageFlipMode]);
 
   const injectedScript = `
     document.addEventListener('click', function() {
@@ -190,6 +196,34 @@ function HtmlChapter({
     true;
   `;
 
+  // Page-flip mode: JS to calculate total pages and expose navigation API
+  const pageFlipScript = pageFlipMode ? `
+    (function() {
+      if (window.__pf_injected) return;
+      window.__pf_injected = true;
+      function calcPages() {
+        var w = window.innerWidth;
+        if (!w) return 1;
+        var sw = document.body.scrollWidth;
+        return Math.max(1, Math.round(sw / w));
+      }
+      function sendPageInfo() {
+        var total = calcPages();
+        window.ReactNativeWebView && window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'pageInfo', totalPages: total }));
+      }
+      window.addEventListener('load', function() { setTimeout(sendPageInfo, 150); });
+      document.addEventListener('DOMContentLoaded', function() { setTimeout(sendPageInfo, 150); });
+      window.__goToPage = function(idx) {
+        window.scrollTo({ left: idx * window.innerWidth, top: 0, behavior: 'smooth' });
+      };
+      window.__getCurrentPage = function() {
+        return Math.round(window.scrollX / window.innerWidth);
+      };
+      window.__getTotalPages = calcPages;
+    })();
+    true;
+  ` : '';
+
   if (Platform.OS === "web") {
     return (
       <div
@@ -206,7 +240,7 @@ function HtmlChapter({
       ref={webViewRef}
       source={baseUrl ? { html: fullHtml, baseUrl } : { html: fullHtml }}
       style={{ flex: 1, backgroundColor: bgColor }}
-      scrollEnabled={true}
+      scrollEnabled={!pageFlipMode}
       showsVerticalScrollIndicator={false}
       originWhitelist={["*"]}
       allowFileAccess={true}
@@ -215,13 +249,14 @@ function HtmlChapter({
       javaScriptEnabled={true}
       domStorageEnabled={false}
       cacheEnabled={false}
-      injectedJavaScript={combinedScript}
+      injectedJavaScript={combinedScript + (pageFlipMode ? pageFlipScript : '')}
       onMessage={(event) => {
         try {
           const msg = JSON.parse(event.nativeEvent.data);
           if (msg.type === 'tap' && onTap) onTap();
           // Only forward selection events when in extract mode to avoid unnecessary state updates
           if (msg.type === 'selection' && extractMode && onSelection) onSelection(msg.text ?? '');
+          if (msg.type === 'pageInfo' && onPageInfo) onPageInfo({ totalPages: msg.totalPages ?? 1 });
         } catch {}
       }}
       onShouldStartLoadWithRequest={(req) =>
@@ -275,7 +310,7 @@ export default function BookReaderScreen() {
   const { books, loadChapter, updatePosition } = useBookStore();
   const book = books.find((b) => b.id === id);
 
-  const { addRecipe, updateRecipe, recipes, tagsOf, addTag } = useRecipeStore();
+  const { addRecipe, updateRecipe, recipes, tagsOf, addTag, addRecipes } = useRecipeStore();
   const { addPrep, preps, sections, types } = useHomemadeStore();
   const spiritTagsBook = tagsOf("spirit");
   const glassTagsBook = tagsOf("glass");
@@ -322,6 +357,11 @@ export default function BookReaderScreen() {
   const swipeAnimStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: swipeTranslateX.value }],
   }));
+
+  /* True page-flip: page index within current chapter */
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
 
   /* Chrome visibility (tap to hide/show) */
   const [chromeVisible, setChromeVisible] = useState(true);
@@ -371,6 +411,8 @@ export default function BookReaderScreen() {
     if (!book) return;
     setLoadingChapter(true);
     setChapterHtml(null);
+    setCurrentPage(0);
+    setTotalPages(1);
 
     if (book.hasHtml) {
       loadChapter(book.id, chapterIdx).then((html) => {
@@ -443,6 +485,29 @@ export default function BookReaderScreen() {
     }
   }, [chapterIdx]);
 
+  /* Navigate within current chapter pages (page-flip mode) */
+  const goNextPage = useCallback(() => {
+    if (currentPage < totalPages - 1) {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      webViewRef.current?.injectJavaScript(`window.__goToPage && window.__goToPage(${nextPage}); true;`);
+      if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } else {
+      goNextChapter();
+    }
+  }, [currentPage, totalPages, goNextChapter]);
+
+  const goPrevPage = useCallback(() => {
+    if (currentPage > 0) {
+      const prevPage = currentPage - 1;
+      setCurrentPage(prevPage);
+      webViewRef.current?.injectJavaScript(`window.__goToPage && window.__goToPage(${prevPage}); true;`);
+      if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } else {
+      goPrevChapter();
+    }
+  }, [currentPage, goPrevChapter]);
+
   const pageFlipGesture = useMemo(() => {
     const disabled = !pageFlipMode || Platform.OS === "web";
     if (disabled) {
@@ -454,8 +519,11 @@ export default function BookReaderScreen() {
       .failOffsetY([-15, 15])
       .onUpdate((e) => {
         // Provide live drag feedback (capped at ±screenWidth/3)
-        const maxDrag = screenWidth / 3;
-        swipeTranslateX.value = Math.max(-maxDrag, Math.min(maxDrag, e.translationX));
+        // Only animate the outer container when single-page chapters (multi-page: WebView handles internal scroll)
+        if (totalPages <= 1) {
+          const maxDrag = screenWidth / 3;
+          swipeTranslateX.value = Math.max(-maxDrag, Math.min(maxDrag, e.translationX));
+        }
       })
       .onEnd((e) => {
         const THRESHOLD = 60;
@@ -464,19 +532,26 @@ export default function BookReaderScreen() {
           Math.abs(e.translationX) > THRESHOLD || Math.abs(e.velocityX) > VELOCITY_THRESHOLD;
         if (shouldFlip) {
           const dir = e.translationX < 0 ? 1 : -1;
-          const targetX = dir * screenWidth;
-          swipeTranslateX.value = withTiming(targetX, { duration: 180 }, () => {
-            swipeTranslateX.value = 0;
-            if (dir > 0) runOnJS(goNextChapter)();
-            else runOnJS(goPrevChapter)();
-          });
+          if (totalPages > 1) {
+            // Page-level navigation within chapter
+            if (dir > 0) runOnJS(goNextPage)();
+            else runOnJS(goPrevPage)();
+          } else {
+            // Chapter-level navigation (single-page chapter)
+            const targetX = dir * screenWidth;
+            swipeTranslateX.value = withTiming(targetX, { duration: 180 }, () => {
+              swipeTranslateX.value = 0;
+              if (dir > 0) runOnJS(goNextChapter)();
+              else runOnJS(goPrevChapter)();
+            });
+          }
         } else {
           // Snap back
           swipeTranslateX.value = withTiming(0, { duration: 150 });
         }
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageFlipMode, screenWidth, goNextChapter, goPrevChapter]);
+  }, [pageFlipMode, screenWidth, totalPages, goNextChapter, goPrevChapter, goNextPage, goPrevPage]);
 
   const showChrome = useCallback(() => {
     setChromeVisible(true);
@@ -565,6 +640,7 @@ export default function BookReaderScreen() {
     setShowExtractResults(false);
     setSelectedExtractIds(new Set());
     setExtractSelectMode(false);
+    setExtractResults([]);
   }, []);
 
   /** Quick-save a single extracted recipe directly to store (no navigation) */
@@ -612,15 +688,16 @@ export default function BookReaderScreen() {
     if (batchImporting || targetIds.size === 0) return;
     setBatchImporting(true);
     const source = book?.title ?? "";
-    let count = 0;
-    const newIds = new Set(importedRecipeIds);
+    // Build all drafts first, then write atomically to avoid async state race
+    const pendingIdxs: number[] = [];
+    const drafts = [];
     for (const idx of targetIds) {
-      if (newIds.has(idx)) continue;
+      if (importedRecipeIds.has(idx)) continue;
       const recipe = extractResults[idx];
       if (!recipe) continue;
       const name = recipe.nameZh || recipe.name || (zh ? "未命名配方" : "Untitled recipe");
       const nameEn = recipe.name && recipe.name !== name ? recipe.name : "";
-      const draft = {
+      drafts.push({
         name,
         nameEn,
         categoryId: null,
@@ -644,19 +721,30 @@ export default function BookReaderScreen() {
         steps: recipe.steps,
         garnish: recipe.garnish,
         notes: recipe.notes,
-      };
-      addRecipe(draft);
-      newIds.add(idx);
-      count++;
+      });
+      pendingIdxs.push(idx);
     }
+    const { added, skippedNames } = addRecipes(drafts);
+    const newIds = new Set(importedRecipeIds);
+    // Mark all pending as imported (even skipped ones, since they already exist)
+    for (const idx of pendingIdxs) newIds.add(idx);
     setImportedRecipeIds(newIds);
     setBatchImporting(false);
+    // Show summary toast
+    const msg = skippedNames.length > 0
+      ? (zh
+          ? `已导入 ${added.length} 个，跳过 ${skippedNames.length} 个重复配方`
+          : `Imported ${added.length}, skipped ${skippedNames.length} duplicates`)
+      : (zh
+          ? `已导入 ${added.length} 个配方`
+          : `Imported ${added.length} recipes`);
+    Alert.alert(zh ? "导入完成" : "Import Complete", msg);
     if (extractSelectMode) {
       setSelectedExtractIds(new Set());
       setExtractSelectMode(false);
     }
     if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  }, [extractResults, importedRecipeIds, batchImporting, extractSelectMode, selectedExtractIds, book, zh, addRecipe, ensureSpiritNameBook, ensureGlassNameBook]);
+  }, [extractResults, importedRecipeIds, batchImporting, extractSelectMode, selectedExtractIds, book, zh, addRecipes, ensureSpiritNameBook, ensureGlassNameBook]);
 
   const doExtract = useCallback(async () => {
     const text = selectedText.trim();
@@ -901,8 +989,21 @@ export default function BookReaderScreen() {
                   extractMode={extractMode}
                   onSelection={(text) => setSelectedText(text)}
                   webViewRef={webViewRef}
+                  pageFlipMode={pageFlipMode && Platform.OS !== "web"}
+                  onPageInfo={(info) => setTotalPages(info.totalPages)}
                   baseUrl={(() => {
-                    if (book.hasFileSystem && book.sections[chapterIdx]?.text) {
+                    if (!book.hasFileSystem) return undefined;
+                    // Use bookDir as EPUB root for stable asset resolution (images, CSS)
+                    if (book.bookDir) {
+                      const docDir = FileSystemLegacy.documentDirectory ?? "";
+                      const booksIdx = book.bookDir.indexOf("/books/");
+                      const resolvedDir = booksIdx >= 0 ? docDir + book.bookDir.slice(booksIdx + 1) : book.bookDir;
+                      // bookDir ends with '/', content dir is bookDir + 'content/'
+                      const base = resolvedDir.endsWith('/') ? resolvedDir + 'content/' : resolvedDir + '/content/';
+                      return base;
+                    }
+                    // Fallback: use chapter file's parent directory
+                    if (book.sections[chapterIdx]?.text) {
                       const rawFp = book.sections[chapterIdx].text;
                       const docDir = FileSystemLegacy.documentDirectory ?? "";
                       const booksIdx = rawFp.indexOf("/books/");
@@ -1118,7 +1219,7 @@ export default function BookReaderScreen() {
             </Pressable>
             <Text style={{ flex: 1, fontSize: 12, color: colors.muted, textAlign: "center" }} numberOfLines={1}>
               {book.sections[chapterIdx]?.title || `${zh ? "第" : "Ch."} ${chapterIdx + 1}`}
-              {" "}({chapterIdx + 1}/{totalChapters})
+              {" "}({chapterIdx + 1}/{totalChapters}){pageFlipMode && totalPages > 1 ? ` · ${zh ? "第" : "p."}${currentPage + 1}/${totalPages}` : ""}
             </Text>
             <Pressable
               onPress={() => { tap(); setChapterIdx((i) => Math.min(totalChapters - 1, i + 1)); }}
@@ -1243,7 +1344,7 @@ export default function BookReaderScreen() {
                 <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground }}>{zh ? "翻页模式" : "Page Flip"}</Text>
-                    <Text style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>{zh ? "左右滑动切换章节" : "Swipe left/right to flip chapters"}</Text>
+                    <Text style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>{zh ? "左右滑动翻页（章节内分页）" : "Swipe left/right to flip pages"}</Text>
                   </View>
                   <Pressable
                     onPress={() => { tap(); setPageFlipMode((v) => !v); }}
@@ -1283,15 +1384,28 @@ export default function BookReaderScreen() {
       )}
 
       {/* ── Extract results Modal ── */}
-      <Modal
-        visible={showExtractResults}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setShowExtractResults(false)}
-      >
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
-          {/* Header */}
-          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingTop: 16, paddingBottom: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border, gap: 8 }}>
+      {/* Extract results overlay (transparent, keeps WebView mounted and scroll position) */}
+      {showExtractResults && (
+        <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+          <Pressable
+            style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(0,0,0,0.45)" }]}
+            onPress={() => setShowExtractResults(false)}
+          />
+          <View style={{
+            position: "absolute" as const,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            maxHeight: "85%",
+            backgroundColor: colors.background,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderColor: colors.border,
+            overflow: "hidden" as const,
+          }}>
+         {/* Header */}
+         <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingTop: 16, paddingBottom: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border, gap: 8 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 17, fontWeight: "700", color: colors.foreground }}>
                 {extractSelectMode
@@ -1603,7 +1717,8 @@ export default function BookReaderScreen() {
             </View>
           )}
         </View>
-      </Modal>
+        </View>
+      )}
     </ScreenContainer>
   );
 }

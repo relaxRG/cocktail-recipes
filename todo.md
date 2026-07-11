@@ -458,3 +458,17 @@
 - [x] RecipeGroupCard：展开箭头改为 chevron.right + Reanimated 旋转动画（0° → 90°）
 - [x] RecipeGroupCard：对比按钮移至版本徽章旁，不再挤占标签行
 - [x] RecipeGroupCard：补全配料摘要行（与普通卡片对齐）
+
+## Build 22 - 阅读器 CSS columns 翻页 + 提取面板修复 + iOS 图片修复
+- [x] 合并两个 useRecipeStore() 调用（addRecipe/updateRecipe/recipes/tagsOf/addTag/addRecipes 统一解构）
+- [x] exitExtractMode 关闭时同步清空 extractResults（避免下次打开残留旧数据）
+- [x] HtmlChapter 新增 pageFlipMode prop：注入 CSS columns + JS 分页脚本（calcPages/goToPage/getCurrentPage）
+- [x] pageFlipMode 开启时 WebView scrollEnabled=false，禁止原生纵向滚动
+- [x] onPageInfo 回调：WebView 加载后通知 React 层 totalPages
+- [x] 新增 currentPage/totalPages 状态，章节切换时自动重置
+- [x] 新增 goNextPage/goPrevPage 函数：章节内页面级导航（injectJavaScript 调用 window.__goToPage）
+- [x] pageFlipGesture 升级：多页章节时手势调用 goNextPage/goPrevPage，单页章节保持原有章节切换动画
+- [x] 底部栏进度文字新增页码显示（第N页/共M页）
+- [x] 阅读设置面板翻页模式描述文字更新（"左右滑动翻页（章节内分页）"）
+- [x] 提取结果面板：Modal presentationStyle="pageSheet" 改为透明 overlay（保持 WebView 挂载，不滚回顶部）
+- [x] iOS 图片修复：baseUrl 改用 book.bookDir + 'content/' 作为 EPUB 根目录（更稳定的资源路径）

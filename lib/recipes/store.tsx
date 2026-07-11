@@ -79,6 +79,7 @@ interface RecipeStore {
   tags: TagItem[];
   tagGroups: TagGroup[];
   addRecipe: (draft: RecipeDraft) => Recipe;
+  addRecipes: (drafts: RecipeDraft[]) => { added: Recipe[]; skippedNames: string[] };
   updateRecipe: (id: string, draft: RecipeDraft) => void;
   deleteRecipe: (id: string) => void;
   deleteRecipes: (ids: string[]) => void;
@@ -303,6 +304,56 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     },
     [persistRecipes],
   );
+
+  const addRecipes = useCallback(
+    (drafts: RecipeDraft[]): { added: Recipe[]; skippedNames: string[] } => {
+      const now = Date.now();
+      const existing = recipesRef.current;
+      const existingNames = new Set(existing.map((r) => r.name.trim().toLowerCase()));
+      const added: Recipe[] = [];
+      const skippedNames: string[] = [];
+      for (const draft of drafts) {
+        const nameKey = (draft.name ?? "").trim().toLowerCase();
+        if (existingNames.has(nameKey)) {
+          skippedNames.push(draft.name ?? "");
+          continue;
+        }
+        const recipe: Recipe = {
+          id: genId(),
+          favorite: false,
+          made: false,
+          rating: null,
+          sortIndex: null,
+          cardTagOrder: null,
+          createdAt: now,
+          updatedAt: now,
+          strengthBand: "",
+          abv: null,
+          nameEn: "",
+          ice: "",
+          drinkDuration: "",
+          occasion: "",
+          ...draft,
+          ...(draft.strengthBand === undefined ? { strengthBand: "" as const } : {}),
+          ...(draft.abv === undefined ? { abv: null } : {}),
+          ...(draft.nameEn === undefined ? { nameEn: "" } : {}),
+          ...(draft.rating === undefined ? { rating: null } : {}),
+        };
+        recipe.drinkDuration = inferDrinkDuration(recipe);
+        recipe.occasion = inferOccasion(recipe);
+        if (!recipe.variantOf) recipe.variantOf = inferVariantOf(recipe);
+        if (!recipe.codexFamily) recipe.codexFamily = inferCodexFamily(recipe);
+        added.push(recipe);
+        existingNames.add(nameKey);
+      }
+      if (added.length > 0) {
+        persistRecipes([...added, ...recipesRef.current]);
+      }
+      return { added, skippedNames };
+    },
+    [persistRecipes],
+  );
+
 
   // keep a ref to latest recipes/categories for stable callbacks
   const recipesRef = useRef(recipes);
@@ -727,6 +778,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       tags,
       tagGroups,
       addRecipe,
+      addRecipes,
       updateRecipe,
       deleteRecipe,
       deleteRecipes,
@@ -766,6 +818,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       tags,
       tagGroups,
       addRecipe,
+      addRecipes,
       updateRecipe,
       deleteRecipe,
       deleteRecipes,
