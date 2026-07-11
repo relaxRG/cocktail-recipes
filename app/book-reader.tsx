@@ -928,21 +928,12 @@ export default function BookReaderScreen() {
               <IconSymbol name="chevron.right" size={16} color={colors.foreground} />
             </Pressable>
             <Pressable
-              onPress={enterSelectMode}
-              style={({ pressed }) => [styles.extractBtn, { backgroundColor: colors.primary + "18", borderColor: colors.primary + "44" }, pressed && { opacity: 0.7 }]}
-            >
-              <IconSymbol name="sparkles" size={14} color={colors.primary} />
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
-                {zh ? "提取配方" : "Extract"}
-              </Text>
-            </Pressable>
-            <Pressable
               onPress={enterExtractMode}
               style={({ pressed }) => [styles.extractBtn, { backgroundColor: "#FF950018", borderColor: "#FF950044" }, pressed && { opacity: 0.7 }]}
             >
               <IconSymbol name="text.cursor" size={14} color="#FF9500" />
               <Text style={{ fontSize: 12, fontWeight: "600", color: "#FF9500" }}>
-                {zh ? "选区提取" : "Select"}
+                {zh ? "AI 选区提取" : "AI Select"}
               </Text>
             </Pressable>
           </View>
