@@ -505,7 +505,7 @@ export default function BottlesScreen() {
 
   return (
     <ScreenContainer>
-      <View className="px-5 pt-4 pb-1">
+      <View className="px-5 pt-3 pb-0">
         <View className="flex-row items-end justify-between">
           <View>
             <Text className="text-3xl font-bold text-foreground">{t("bottles.title")}</Text>
@@ -546,8 +546,7 @@ export default function BottlesScreen() {
       {/* Group segmented control: 基酒库 / 酒款库 / 原材料库 */}
       <View className="px-5 mt-2">
         <View
-          className="flex-row bg-surface border border-border rounded-xl p-1"
-          style={{ gap: 4 }}
+          style={{ flexDirection: "row", backgroundColor: colors.border + "55", borderRadius: 10, padding: 2, gap: 2 }}
         >
           {BOTTLE_GROUPS.map((g) => {
             const active = group === g.key;
@@ -567,13 +566,13 @@ export default function BottlesScreen() {
               }}
                 style={[
                   styles.segment,
-                  active && { backgroundColor: colors.primary },
+                  active && { backgroundColor: colors.surface, shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 2 },
                 ]}
               >
                 <Text
                   style={[
                     styles.segmentText,
-                    { color: active ? "#FFFFFF" : colors.muted },
+                    { color: active ? colors.foreground : colors.muted, fontWeight: active ? "600" : "400" },
                   ]}
                 >
                   {lang === "en" ? g.en : g.zh}
@@ -587,8 +586,7 @@ export default function BottlesScreen() {
       {/* Search */}
       <View className="px-5 mt-2">
         <View
-          className="flex-row items-center bg-surface border border-border rounded-xl px-3"
-          style={{ height: 44 }}
+          style={{ flexDirection: "row", alignItems: "center", backgroundColor: colors.border + "44", borderRadius: 12, paddingHorizontal: 12, height: 42 }}
         >
           <IconSymbol name="magnifyingglass" size={18} color={colors.muted} />
           <TextInput
@@ -652,7 +650,7 @@ export default function BottlesScreen() {
             disabled={enriching}
             style={({ pressed }) => [
               styles.enrichBanner,
-              { backgroundColor: colors.primary + "14" },
+              { backgroundColor: colors.primary + "10", borderWidth: 1, borderColor: colors.primary + "25" },
               (pressed || enriching) && { opacity: 0.6 },
             ]}
           >
@@ -661,7 +659,7 @@ export default function BottlesScreen() {
             ) : (
               <IconSymbol name="globe" size={14} color={colors.primary} />
             )}
-            <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+            <Text style={{ fontSize: 13, fontWeight: "600", color: colors.primary }}>
               {t("lookup.enrichMissing")} ({missingCount})
             </Text>
           </Pressable>
@@ -756,7 +754,7 @@ export default function BottlesScreen() {
           keyExtractor={(row) => (row.kind === "bottle" ? row.bottle.id : `fam-${row.family.key}`)}
           contentContainerStyle={{
             paddingHorizontal: 20,
-            paddingTop: 4,
+            paddingTop: 8,
             paddingBottom: 90 + insets.bottom,
           }}
           renderItem={({ item, index }) =>
@@ -789,7 +787,7 @@ export default function BottlesScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{
             paddingHorizontal: 20,
-            paddingTop: 4,
+            paddingTop: 8,
             paddingBottom: 90 + insets.bottom,
           }}
           renderItem={({ item, index }) => (
@@ -1089,8 +1087,9 @@ function BottleCardInner({
       style={({ pressed }) => [pressed && { opacity: 0.7 }]}
     >
       <View
-        className="bg-surface px-4 py-3"
+        className="bg-surface px-4"
         style={[
+          { paddingVertical: 13 },
           isFirst && { borderTopLeftRadius: 12, borderTopRightRadius: 12 },
           isLast && { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 },
         ]}
@@ -1098,33 +1097,31 @@ function BottleCardInner({
         <View className="flex-row items-center">
           <View className="flex-1 pr-2">
             <View style={{ minHeight: 40, justifyContent: "center" }}>
-              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+              <Text className="text-[16px] font-semibold text-foreground" numberOfLines={1} style={{ lineHeight: 22 }}>
                 {lang === "en" && bottle.nameEn ? bottle.nameEn : bottle.nameZh}
               </Text>
-              <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+              <Text className="text-[12px] mt-0.5" style={{ color: "#8E8E93", lineHeight: 16 }} numberOfLines={1}>
                 {(lang === "en" ? bottle.nameZh : bottle.nameEn) || " "}
               </Text>
             </View>
-            <View className="flex-row items-center mt-1.5 flex-wrap" style={{ gap: 6, minHeight: 24 }}>
-              <View style={[styles.badge, { backgroundColor: colors.primary + "22" }]}>
-                <Text style={[styles.badgeText, { color: colors.primary }]}>
+            <View className="flex-row items-center mt-2 flex-wrap" style={{ gap: 5, minHeight: 22 }}>
+              <View style={{ paddingHorizontal: 7, paddingVertical: 2, borderRadius: 5, backgroundColor: colors.primary + "15", borderWidth: 0.5, borderColor: colors.primary + "50" }}>
+                <Text style={{ fontSize: 11, fontWeight: "600", lineHeight: 15, color: colors.primary }}>
                   {categoryLabel(bottle.category, lang)}
                 </Text>
               </View>
               {badge}
               {cardSettings.showBottleVolume && bottle.volume ? (
-                <Text className="text-xs text-muted">{bottle.volume}</Text>
+                <Text style={{ fontSize: 12, color: "#8E8E93", lineHeight: 16 }}>{bottle.volume}</Text>
               ) : null}
               {cardSettings.showBottleStyle && bottle.style ? (
-                <View style={[styles.badge, { backgroundColor: colors.muted + "22" }]}>
-                  <Text style={[styles.badgeText, { color: colors.muted }]}>{bottle.style}</Text>
-                </View>
+                <Text style={{ fontSize: 11, fontWeight: "500", lineHeight: 15, color: colors.muted, paddingHorizontal: 1 }}>{bottle.style}</Text>
               ) : null}
               {cardSettings.showBottleOrigin && bottle.origin ? (
-                <Text className="text-xs text-muted" numberOfLines={1}>{bottle.origin}</Text>
+                <Text style={{ fontSize: 12, color: "#8E8E93", lineHeight: 16 }} numberOfLines={1}>{bottle.origin}</Text>
               ) : null}
               {cardSettings.showBottleAbv && bottle.abv > 0 ? (
-                <Text className="text-xs text-muted">{bottle.abv}% vol</Text>
+                <Text style={{ fontSize: 12, color: "#8E8E93", lineHeight: 16 }}>{bottle.abv}% vol</Text>
               ) : null}
               {cardSettings.showBottleRating && bottle.rating ? (
                 <View style={[styles.badge, { backgroundColor: "#F5A62322", flexDirection: "row", alignItems: "center", gap: 2 }]}>
@@ -1135,15 +1132,15 @@ function BottleCardInner({
             </View>
             {/* Flavor tags row */}
             {cardSettings.showBottleFlavorTags && visibleTags.length > 0 && (
-              <View className="flex-row flex-wrap" style={{ gap: 4, marginTop: 5 }}>
+              <View className="flex-row flex-wrap" style={{ gap: 4, marginTop: 4 }}>
                 {visibleTags.map((tag) => (
-                  <View key={tag} style={[styles.flavorTag, { backgroundColor: colors.primary + "12", borderColor: colors.primary + "30" }]}>
-                    <Text style={[styles.flavorTagText, { color: colors.primary }]}>{tag}</Text>
+                  <View key={tag} style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, backgroundColor: colors.primary + "10" }}>
+                    <Text style={{ fontSize: 10, fontWeight: "500", lineHeight: 14, color: colors.primary + "CC" }}>{tag}</Text>
                   </View>
                 ))}
                 {cardSettings.maxTagsPerCard > 0 && flavorTags.length > cardSettings.maxTagsPerCard && (
-                  <View style={[styles.flavorTag, { backgroundColor: colors.border, borderColor: colors.border }]}>
-                    <Text style={[styles.flavorTagText, { color: colors.muted }]}>+{flavorTags.length - cardSettings.maxTagsPerCard}</Text>
+                  <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, backgroundColor: colors.border + "60" }}>
+                    <Text style={{ fontSize: 10, fontWeight: "500", lineHeight: 14, color: colors.muted }}>+{flavorTags.length - cardSettings.maxTagsPerCard}</Text>
                   </View>
                 )}
               </View>
@@ -1152,17 +1149,15 @@ function BottleCardInner({
           <View className="items-end">
             {bottle.priceCny > 0 ? (
               <>
-                <Text className="text-lg font-bold text-foreground">
-                  ¥{bottle.priceCny}
-                </Text>
-                <Text className="text-[10px] text-muted">{t("bottles.price.ref")}</Text>
+                <Text style={{ fontSize: 16, fontWeight: "700", color: colors.foreground, lineHeight: 22 }}>¥{bottle.priceCny}</Text>
+                <Text style={{ fontSize: 10, color: colors.muted, lineHeight: 14, marginTop: 1 }}>{t("bottles.price.ref")}</Text>
               </>
             ) : (
-              <Text className="text-xs text-muted">{t("bottles.price.unknown")}</Text>
+              <Text style={{ fontSize: 11, color: colors.muted + "99", lineHeight: 16 }}>{t("bottles.price.unknown")}</Text>
             )}
           </View>
           <View style={{ marginLeft: 8 }}>
-            <IconSymbol name="chevron.right" size={16} color={colors.border} />
+            <IconSymbol name="chevron.right" size={14} color={colors.muted + "60"} />
           </View>
         </View>
       </View>
@@ -1215,7 +1210,7 @@ const styles = StyleSheet.create({
   },
   segment: {
     flex: 1,
-    height: 32,
+    height: 30,
     borderRadius: 9,
     alignItems: "center",
     justifyContent: "center",
