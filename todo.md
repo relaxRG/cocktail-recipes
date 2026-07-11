@@ -439,3 +439,12 @@
 - [x] book-reader.tsx：底部批量操作栏（全选/取消全选 + "导入 N 个"按钮，显示选中数量）
 - [x] book-reader.tsx：batchImportAll 支持选中导入（extractSelectMode 时只导入 selectedExtractIds）
 - [x] book-reader.tsx：exitExtractMode 清理多选状态（selectedExtractIds + extractSelectMode）
+
+## Build 20 – 阅读器空白修复 + 翻页模式 + 2GB 文件限制
+- [x] book-reader.tsx：修复 onShouldStartLoadWithRequest 允许 file:// 本地资源（修复空白页）
+- [x] book-reader.tsx：章节加载时动态重建路径（FileSystem.documentDirectory 替换旧前缀，修复 App 更新后路径失效）
+- [x] book-reader.tsx：新增翻页模式（pageFlipMode 状态 + Reanimated swipeTranslateX + GestureDetector）
+- [x] book-reader.tsx：goNextChapter / goPrevChapter + pageFlipGesture（左滑下一章，右滑上一章，带 haptic）
+- [x] book-reader.tsx：阅读设置面板添加翻页模式开关（iOS toggle 样式）
+- [x] book-reader.tsx：修复 React Compiler 误解析 useMemo template literal（pageFlipGesture 改为显式变量）
+- [x] book-import.tsx：移除无效的 maxSize 变量，更新 UI 文字为 2GB

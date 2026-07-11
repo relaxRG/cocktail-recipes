@@ -8,6 +8,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { WebView } from "react-native-webview";
@@ -15,6 +16,13 @@ import * as FileSystemLegacy from "expo-file-system/legacy";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  runOnJS,
+} from "react-native-reanimated";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -217,7 +225,12 @@ function HtmlChapter({
         } catch {}
       }}
       onShouldStartLoadWithRequest={(req) =>
-        req.url === "about:blank" || req.url.startsWith("data:") || req.url === "about:srcdoc"
+        // Allow local file access and data URIs; block external http/https navigation
+        req.url === "about:blank"
+          || req.url === "about:srcdoc"
+          || req.url.startsWith("data:")
+          || req.url.startsWith("file://")
+          || req.url.startsWith("blob:")
       }
     />
   );
@@ -302,6 +315,14 @@ export default function BookReaderScreen() {
   const [showReaderSettings, setShowReaderSettings] = useState(false);
   const [bookmarks, setBookmarks] = useState<number[]>([]);
 
+  /* Page-flip mode (swipe left/right to change chapter) */
+  const [pageFlipMode, setPageFlipMode] = useState(true);
+  const { width: screenWidth } = useWindowDimensions();
+  const swipeTranslateX = useSharedValue(0);
+  const swipeAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: swipeTranslateX.value }],
+  }));
+
   /* Chrome visibility (tap to hide/show) */
   const [chromeVisible, setChromeVisible] = useState(true);
   const chromeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -358,17 +379,26 @@ export default function BookReaderScreen() {
       });
     } else if (book.hasFileSystem && book.sections[chapterIdx]?.text) {
       // File-system book: read HTML from local file
-      const filePath = book.sections[chapterIdx].text; // filePath stored in text field
+      // Rebuild path using current documentDirectory in case app sandbox UUID changed after update
+      const rawPath = book.sections[chapterIdx].text;
       if (Platform.OS !== "web") {
-        FileSystemLegacy.readAsStringAsync(filePath, { encoding: FileSystemLegacy.EncodingType.UTF8 })
+        const docDir = FileSystemLegacy.documentDirectory ?? "";
+        const booksIdx = rawPath.indexOf("/books/");
+        const resolvedPath = booksIdx >= 0 ? docDir + rawPath.slice(booksIdx + 1) : rawPath;
+        const tryRead = (path: string) =>
+          FileSystemLegacy.readAsStringAsync(path, { encoding: FileSystemLegacy.EncodingType.UTF8 })
+            .then((html) => {
+              const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+              return bodyMatch ? bodyMatch[1] : html;
+            });
+        tryRead(resolvedPath)
+          .catch(() => tryRead(rawPath))
           .then((html) => {
-            // Extract body content
-            const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-            setChapterHtml(bodyMatch ? bodyMatch[1] : html);
+            setChapterHtml(html);
             setLoadingChapter(false);
           })
           .catch(() => {
-            setChapterHtml("<p>章节文件读取失败</p>");
+            setChapterHtml("<p>章节文件读取失败，请重新导入书籍</p>");
             setLoadingChapter(false);
           });
       } else {
@@ -398,6 +428,56 @@ export default function BookReaderScreen() {
   }, [chapterIdx]);
 
   /* Auto-hide chrome after 4s */
+  /* Page-flip gesture (swipe left = next chapter, swipe right = prev chapter) */
+  const goNextChapter = useCallback(() => {
+    if (chapterIdx < (book?.sections.length ?? 1) - 1) {
+      setChapterIdx((i) => i + 1);
+      if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  }, [chapterIdx, book]);
+
+  const goPrevChapter = useCallback(() => {
+    if (chapterIdx > 0) {
+      setChapterIdx((i) => i - 1);
+      if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  }, [chapterIdx]);
+
+  const pageFlipGesture = useMemo(() => {
+    const disabled = !pageFlipMode || Platform.OS === "web";
+    if (disabled) {
+      return Gesture.Pan().enabled(false);
+    }
+    return Gesture.Pan()
+      .runOnJS(true)
+      .activeOffsetX([-20, 20])
+      .failOffsetY([-15, 15])
+      .onUpdate((e) => {
+        // Provide live drag feedback (capped at ±screenWidth/3)
+        const maxDrag = screenWidth / 3;
+        swipeTranslateX.value = Math.max(-maxDrag, Math.min(maxDrag, e.translationX));
+      })
+      .onEnd((e) => {
+        const THRESHOLD = 60;
+        const VELOCITY_THRESHOLD = 300;
+        const shouldFlip =
+          Math.abs(e.translationX) > THRESHOLD || Math.abs(e.velocityX) > VELOCITY_THRESHOLD;
+        if (shouldFlip) {
+          const dir = e.translationX < 0 ? 1 : -1;
+          const targetX = dir * screenWidth;
+          swipeTranslateX.value = withTiming(targetX, { duration: 180 }, () => {
+            swipeTranslateX.value = 0;
+            if (dir > 0) runOnJS(goNextChapter)();
+            else runOnJS(goPrevChapter)();
+          });
+        } else {
+          // Snap back
+          swipeTranslateX.value = withTiming(0, { duration: 150 });
+        }
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageFlipMode, screenWidth, goNextChapter, goPrevChapter]);
+
   const showChrome = useCallback(() => {
     setChromeVisible(true);
     if (chromeTimer.current) clearTimeout(chromeTimer.current);
@@ -803,31 +883,37 @@ export default function BookReaderScreen() {
 
       {/* ── Reading phase ── */}
       {phase === "reading" && (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, overflow: "hidden" }}>
           {loadingChapter ? (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
               <ActivityIndicator color={colors.primary} />
             </View>
           ) : chapterHtml ? (
-            <HtmlChapter
-              html={chapterHtml}
-              css={book.css ?? ""}
-              fontSize={fontSize}
-              lineHeight={lineHeight}
-              theme={theme}
-              onTap={Platform.OS !== "web" ? handleTap : undefined}
-              extractMode={extractMode}
-              onSelection={(text) => setSelectedText(text)}
-              webViewRef={webViewRef}
-              baseUrl={(() => {
-                if (book.hasFileSystem && book.sections[chapterIdx]?.text) {
-                  const fp = book.sections[chapterIdx].text;
-                  const dir = fp.substring(0, fp.lastIndexOf('/') + 1);
-                  return dir;
-                }
-                return undefined;
-              })()}
-            />
+            <GestureDetector gesture={pageFlipGesture}>
+              <Animated.View style={[{ flex: 1 }, swipeAnimStyle]}>
+                <HtmlChapter
+                  html={chapterHtml}
+                  css={book.css ?? ""}
+                  fontSize={fontSize}
+                  lineHeight={lineHeight}
+                  theme={theme}
+                  onTap={Platform.OS !== "web" ? handleTap : undefined}
+                  extractMode={extractMode}
+                  onSelection={(text) => setSelectedText(text)}
+                  webViewRef={webViewRef}
+                  baseUrl={(() => {
+                    if (book.hasFileSystem && book.sections[chapterIdx]?.text) {
+                      const rawFp = book.sections[chapterIdx].text;
+                      const docDir = FileSystemLegacy.documentDirectory ?? "";
+                      const booksIdx = rawFp.indexOf("/books/");
+                      const resolvedFp = booksIdx >= 0 ? docDir + rawFp.slice(booksIdx + 1) : rawFp;
+                      return resolvedFp.substring(0, resolvedFp.lastIndexOf('/') + 1);
+                    }
+                    return undefined;
+                  })()}
+                />
+              </Animated.View>
+            </GestureDetector>
           ) : (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
               <Text style={{ color: colors.muted }}>{zh ? "章节为空" : "Empty chapter"}</Text>
@@ -1151,6 +1237,22 @@ export default function BookReaderScreen() {
                   ))}
                 </View>
               </View>
+
+              {/* Page Flip Mode */}
+              {Platform.OS !== "web" && (
+                <View style={{ paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground }}>{zh ? "翻页模式" : "Page Flip"}</Text>
+                    <Text style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>{zh ? "左右滑动切换章节" : "Swipe left/right to flip chapters"}</Text>
+                  </View>
+                  <Pressable
+                    onPress={() => { tap(); setPageFlipMode((v) => !v); }}
+                    style={[{ width: 50, height: 28, borderRadius: 14, justifyContent: "center", paddingHorizontal: 3 }, pageFlipMode ? { backgroundColor: colors.primary } : { backgroundColor: colors.border }]}
+                  >
+                    <View style={[{ width: 22, height: 22, borderRadius: 11, backgroundColor: "#FFF" }, pageFlipMode ? { alignSelf: "flex-end" } : { alignSelf: "flex-start" }]} />
+                  </Pressable>
+                </View>
+              )}
             </ScrollView>
           </View>
         </View>

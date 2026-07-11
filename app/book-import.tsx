@@ -321,7 +321,6 @@ export default function BookImportScreen() {
       setLoadError(zh ? "仅支持 EPUB 或 PDF 文件" : "Only EPUB or PDF files are supported");
       return;
     }
-    const maxSize = 200 * 1024 * 1024;
     setPhase("loading");
     setLoadStatus(zh ? "正在读取文件…" : "Reading file…");
     try {
@@ -814,8 +813,8 @@ export default function BookImportScreen() {
             </Text>
             <Text className="text-sm text-muted text-center mt-2" style={{ lineHeight: 20 }}>
               {zh
-                ? "选择 EPUB 或 PDF 文件，在阅读器中边读边选取配方，AI 智能标注辅助，导入选中内容。支持最大 200MB 文件。"
-                : "Pick an EPUB or PDF. Read it in our reader, tap paragraphs to select recipes with AI highlighting. Up to 200MB."}
+                ? "选择 EPUB 或 PDF 文件，在阅读器中边读边选取配方，AI 智能标注辅助，导入选中内容。支持最大 2GB 文件。"
+                : "Pick an EPUB or PDF. Read it in our reader, tap paragraphs to select recipes with AI highlighting. Up to 2GB."}
             </Text>
             <Pressable
               onPress={pickFile}
@@ -827,7 +826,7 @@ export default function BookImportScreen() {
             >
               <IconSymbol name="doc.badge.plus" size={18} color="#FFFFFF" />
               <Text style={styles.primaryBtnText}>
-                {zh ? "选择 EPUB / PDF（最大 200MB）" : "Choose EPUB / PDF (up to 200MB)"}
+                {zh ? "选择 EPUB / PDF（最大 2GB）" : "Choose EPUB / PDF (up to 2GB)"}
               </Text>
             </Pressable>
           </View>
