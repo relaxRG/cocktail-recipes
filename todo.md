@@ -448,3 +448,13 @@
 - [x] book-reader.tsx：阅读设置面板添加翻页模式开关（iOS toggle 样式）
 - [x] book-reader.tsx：修复 React Compiler 误解析 useMemo template literal（pageFlipGesture 改为显式变量）
 - [x] book-import.tsx：移除无效的 maxSize 变量，更新 UI 文字为 2GB
+
+## Build 21 - 卡片标签统一重构
+- [x] 新建 lib/recipes/recipe-tag-renderer.tsx：共享 useRecipeTagRows Hook，集中维护标签排序、删减、样式规则
+- [x] RecipeCard 重构：改为调用 useRecipeTagRows，移除重复的 renderSlot/renderFlavorBadge 逻辑
+- [x] RecipeGroupCard 重构：调用 useRecipeTagRows（以组头配方为基准），标签行与普通卡片完全一致
+- [x] RecipeGroupCard：左侧蓝色边框（3px）标识"可展开的组"
+- [x] RecipeGroupCard：版本数实心圆角徽章（蓝底白字）替换原描边标签
+- [x] RecipeGroupCard：展开箭头改为 chevron.right + Reanimated 旋转动画（0° → 90°）
+- [x] RecipeGroupCard：对比按钮移至版本徽章旁，不再挤占标签行
+- [x] RecipeGroupCard：补全配料摘要行（与普通卡片对齐）

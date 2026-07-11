@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React, { useMemo } from "react";
+import React from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import * as Haptics from "expo-haptics";
 
@@ -8,32 +8,9 @@ import { VariantBadge } from "@/components/variant-badge";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
-import { estimateRecipeCostSmart } from "@/lib/recipes/smart-cost";
-import { useBottleStore } from "@/lib/bottles/store";
-import { useHomemadeStore } from "@/lib/homemade/store";
 import { useRecipeStore } from "@/lib/recipes/store";
-import {
-  Recipe,
-  STRENGTH_LABELS,
-  CARD_TAG_SLOTS,
-  CardTagSlot,
-  codexFamilyLabel,
-  localizedTagName,
-} from "@/lib/recipes/types";
-import {
-  useCardTagSettings,
-  DEFAULT_CARD_TAG_SETTINGS,
-  getFlavorTagConfig,
-  FLAVOR_TAG_DEFAULT_COLORS,
-} from "@/lib/settings/card-tags";
-
-const METHOD_LABELS: Record<string, string> = {
-  stirred: "搅拌",
-  shaken: "摇荡",
-  built: "直调",
-  blended: "冰沙",
-  thrown: "抛接",
-};
+import { Recipe } from "@/lib/recipes/types";
+import { useRecipeTagRows } from "@/lib/recipes/recipe-tag-renderer";
 
 export function RecipeCard({
   recipe,
@@ -48,28 +25,10 @@ export function RecipeCard({
   onTagPress?: (type: string, value: string) => void;
 }) {
   const colors = useColors();
-  const { t, lang } = useI18n();
-  const { toggleFavorite, toggleMade, getCategory } = useRecipeStore();
-  const { bottles } = useBottleStore();
-  const { preps } = useHomemadeStore();
-  const [cardTagSettings] = useCardTagSettings();
-  const category = getCategory(recipe.categoryId);
+  const { lang } = useI18n();
+  const { toggleFavorite, toggleMade } = useRecipeStore();
 
-  const customColors = cardTagSettings.recipeCardColors ?? {};
-  const flavorConfigs = cardTagSettings.flavorTagConfigs ?? {};
-  const hidden = cardTagSettings.recipeCardSlotHidden ?? [];
-  const row1Slots: CardTagSlot[] = cardTagSettings.recipeCardRow1Slots ?? DEFAULT_CARD_TAG_SETTINGS.recipeCardRow1Slots;
-  const slotOrder = cardTagSettings.recipeCardSlotOrder ?? DEFAULT_CARD_TAG_SETTINGS.recipeCardSlotOrder;
-  const row2Slots: CardTagSlot[] = slotOrder.filter(
-    (s) => s !== "flavors" && !row1Slots.includes(s) && !hidden.includes(s)
-  );
-
-  /** 单杯成本估算 */
-  const costTotal = useMemo(() => {
-    if (recipe.ingredients.length === 0) return null;
-    const est = estimateRecipeCostSmart(recipe.ingredients, bottles, preps);
-    return est.estimatedCount > 0 ? est.total : null;
-  }, [recipe.ingredients, bottles, preps]);
+  const { row1Nodes, row2Nodes, hasRow2 } = useRecipeTagRows(recipe, onTagPress);
 
   const ingredientSummary = recipe.ingredients
     .map((i) => i.name)
@@ -94,167 +53,6 @@ export function RecipeCard({
     }
     toggleMade(recipe.id);
   };
-
-  const handleTagPress = (type: string, value: string) => {
-    if (!onTagPress) return;
-    haptic();
-    onTagPress(type, value);
-  };
-
-  /** 渲染单个槽位 badge（不含 flavors） */
-  const renderSlot = (slot: CardTagSlot): React.ReactNode => {
-    if (hidden.includes(slot)) return null;
-
-    if (slot === "category") {
-      if (!category) return null;
-      const color = customColors.category ?? category.color;
-      return (
-        <Pressable
-          key="category"
-          onPress={() => handleTagPress("category", category.id)}
-          hitSlop={4}
-          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-        >
-          <View style={[styles.pill, { backgroundColor: color + "22" }]}>
-            <Text style={[styles.pillText, { fontWeight: "600", color }]}>
-              {localizedTagName(category.name, category.nameEn, lang)}
-            </Text>
-          </View>
-        </Pressable>
-      );
-    }
-
-    if (slot === "codexFamily") {
-      if (!recipe.codexFamily) return null;
-      const color = customColors.codexFamily ?? colors.primary;
-      return (
-        <Pressable
-          key="codexFamily"
-          onPress={() => handleTagPress("codexFamily", recipe.codexFamily)}
-          hitSlop={4}
-          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-        >
-          <View style={[styles.pill, styles.pillBorder, { borderColor: color + "66", backgroundColor: color + "12" }]}>
-            <Text style={[styles.pillText, { color }]}>
-              {codexFamilyLabel(recipe.codexFamily, lang)}
-            </Text>
-          </View>
-        </Pressable>
-      );
-    }
-
-    if (slot === "baseSpirit") {
-      if (!recipe.baseSpirit) return null;
-      const color = customColors.baseSpirit;
-      if (color) {
-        return (
-          <Pressable
-            key="baseSpirit"
-            onPress={() => handleTagPress("baseSpirit", recipe.baseSpirit)}
-            hitSlop={4}
-            style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-          >
-            <View style={[styles.pill, { backgroundColor: color + "22" }]}>
-              <Text style={[styles.pillText, { color }]}>{localizedTagName(recipe.baseSpirit, "", lang)}</Text>
-            </View>
-          </Pressable>
-        );
-      }
-      return (
-        <Pressable
-          key="baseSpirit"
-          onPress={() => handleTagPress("baseSpirit", recipe.baseSpirit)}
-          hitSlop={4}
-          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-        >
-          <View style={[styles.pill, styles.pillBorder, { backgroundColor: colors.background, borderColor: colors.border }]}>
-            <Text style={[styles.pillText, { color: colors.muted }]}>{localizedTagName(recipe.baseSpirit, "", lang)}</Text>
-          </View>
-        </Pressable>
-      );
-    }
-
-    if (slot === "strength") {
-      if (!recipe.strength) return null;
-      const color = customColors.strength;
-      const label = lang === "en" ? t(`strength.${recipe.strength}` as "strength.light") : STRENGTH_LABELS[recipe.strength];
-      if (!label) return null;
-      // 语义颜色：轻=绿，中=橙，强=红
-      const semanticColor =
-        color ??
-        (recipe.strength === "light" ? "#34C759" : recipe.strength === "strong" ? "#FF3B30" : "#FF9500");
-      return (
-        <Pressable
-          key="strength"
-          onPress={() => handleTagPress("strength", recipe.strength)}
-          hitSlop={4}
-          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-        >
-          <View style={[styles.pill, { backgroundColor: semanticColor + "20" }]}>
-            <Text style={[styles.pillText, { color: semanticColor }]}>{label}</Text>
-          </View>
-        </Pressable>
-      );
-    }
-
-    if (slot === "rating") {
-      if (!recipe.rating) return null;
-      const color = customColors.rating ?? "#F5A623";
-      return (
-        <View
-          key="rating"
-          style={[styles.pill, styles.pillBorder, { flexDirection: "row", alignItems: "center", gap: 2, backgroundColor: colors.background, borderColor: colors.border }]}
-        >
-          <IconSymbol name="star.fill" size={10} color={color} />
-          <Text style={[styles.pillText, { color: colors.muted }]}>{recipe.rating}/10</Text>
-        </View>
-      );
-    }
-
-    if (slot === "cost") {
-      if (costTotal === null) return null;
-      const color = customColors.cost;
-      if (color) {
-        return (
-          <View key="cost" style={[styles.pill, { backgroundColor: color + "22" }]}>
-            <Text style={[styles.pillText, { color }]}>≈¥{costTotal.toFixed(1)}</Text>
-          </View>
-        );
-      }
-      return (
-        <View key="cost" style={[styles.pill, styles.pillBorder, { backgroundColor: colors.background, borderColor: colors.border }]}>
-          <Text style={[styles.pillText, { color: colors.muted }]}>≈¥{costTotal.toFixed(1)}</Text>
-        </View>
-      );
-    }
-
-    return null;
-  };
-
-  /** 渲染风味标签 badge */
-  const renderFlavorBadge = (f: string, small = false) => {
-    const cfg = getFlavorTagConfig(f, flavorConfigs);
-    const tagColor = customColors.flavors ?? cfg.color ?? FLAVOR_TAG_DEFAULT_COLORS[f] ?? "#FF9500";
-    const pillStyle = small ? styles.pillSmall : styles.pill;
-    const textStyle = small ? styles.pillTextSmall : styles.pillText;
-    return (
-      <Pressable
-        key={`flavor:${f}`}
-        onPress={() => handleTagPress("flavor", f)}
-        hitSlop={4}
-        style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-      >
-        <View style={[pillStyle, { backgroundColor: tagColor + (small ? "18" : "22") }]}>
-          <Text style={[textStyle, { fontWeight: "500", color: tagColor + (small ? "CC" : "") }]}>{f}</Text>
-        </View>
-      </Pressable>
-    );
-  };
-
-  // ── 计算两排内容 ──────────────────────────────────────────────
-  const visibleFlavors = recipe.flavors.filter((f) => getFlavorTagConfig(f, flavorConfigs).visible);
-  const methodLabel = METHOD_LABELS[recipe.method] ?? "";
-  const hasRow2 = row2Slots.length > 0 || visibleFlavors.length > 0 || !!methodLabel;
 
   return (
     <Pressable
@@ -302,15 +100,7 @@ export function RecipeCard({
               style={{ height: 24 }}
               contentContainerStyle={{ alignItems: "center", gap: 6 }}
             >
-              {(() => {
-                const items: React.ReactNode[] = [];
-                for (const slot of row1Slots) {
-                  if (hidden.includes(slot)) continue;
-                  const node = renderSlot(slot);
-                  if (node) items.push(node);
-                }
-                return items;
-              })()}
+              {row1Nodes}
             </ScrollView>
 
             {/* ── 第二排：体验标签（strength/rating/cost）+ 风味标签 + 制作方法 ── */}
@@ -322,24 +112,7 @@ export function RecipeCard({
                 style={{ height: 22 }}
                 contentContainerStyle={{ alignItems: "center", gap: 5 }}
               >
-                {(() => {
-                  const items: React.ReactNode[] = [];
-                  for (const slot of row2Slots) {
-                    const node = renderSlot(slot);
-                    if (node) items.push(node);
-                  }
-                  for (const f of visibleFlavors) {
-                    items.push(renderFlavorBadge(f, true));
-                  }
-                  if (methodLabel) {
-                    items.push(
-                      <View key="method" style={[styles.pillSmall, styles.pillBorder, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                        <Text style={[styles.pillTextSmall, { color: colors.muted }]}>{methodLabel}</Text>
-                      </View>
-                    );
-                  }
-                  return items;
-                })()}
+                {row2Nodes}
               </ScrollView>
             )}
           </View>
@@ -387,26 +160,5 @@ export function RecipeCard({
 const styles = StyleSheet.create({
   pressable: {
     marginBottom: 0,
-  },
-  pill: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 999,
-  },
-  pillBorder: {
-    borderWidth: StyleSheet.hairlineWidth,
-  },
-  pillText: {
-    fontSize: 11,
-    lineHeight: 15,
-  },
-  pillSmall: {
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 999,
-  },
-  pillTextSmall: {
-    fontSize: 10,
-    lineHeight: 14,
   },
 });

@@ -1,25 +1,22 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 
-import { RecipeCard } from "@/components/recipe-card";
 import { SwipeableRecipeRow } from "@/components/swipeable-recipe-row";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useI18n } from "@/lib/i18n";
 import { displayNames } from "@/lib/utils";
-import {
-  Recipe,
-  STRENGTH_LABELS,
-  codexFamilyLabel,
-  localizedTagName,
-} from "@/lib/recipes/types";
-import { useRecipeStore } from "@/lib/recipes/store";
+import { Recipe } from "@/lib/recipes/types";
+import { useRecipeTagRows } from "@/lib/recipes/recipe-tag-renderer";
 
 /**
- * 同名配方折叠组:同一鸡尾酒的多个版本折叠为一个组头,
- * 点击展开查看各版本;组头提供"对比"入口跳转对比分析页。
+ * 同名配方折叠组：同一鸡尾酒的多个版本折叠为一个组头，
+ * 点击展开查看各版本；组头提供"对比"入口跳转对比分析页。
+ *
+ * 标签排序/删减规则与普通 RecipeCard 完全一致，均由 useRecipeTagRows 驱动。
  */
 export function RecipeGroupCard({
   recipes,
@@ -33,36 +30,41 @@ export function RecipeGroupCard({
   onTagPress?: (type: string, value: string) => void;
 }) {
   const colors = useColors();
-  const { t, lang } = useI18n();
+  const { lang } = useI18n();
   const [expanded, setExpanded] = useState(false);
-  const { getCategory } = useRecipeStore();
 
-  // 单版本直接渲染普通卡片
+  // 箭头旋转动画
+  const rotation = useSharedValue(0);
+  const arrowStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }],
+  }));
+
+  // 单版本直接渲染普通卡片（含滑动操作）
   if (recipes.length <= 1) {
-    return <SwipeableRecipeRow recipe={recipes[0]} isFirst={isFirst} isLast={isLast} onTagPress={onTagPress} />;
+    return (
+      <SwipeableRecipeRow
+        recipe={recipes[0]}
+        isFirst={isFirst}
+        isLast={isLast}
+        onTagPress={onTagPress}
+      />
+    );
   }
 
   const head = recipes[0];
   const dn = displayNames(head.nameEn, head.name, lang);
 
-  /** 组内全部版本共同拥有的属性(全部相同才展示) */
-  const allSame = <T,>(get: (r: Recipe) => T): T | null => {
-    const v = get(recipes[0]);
-    return v && recipes.every((r) => get(r) === v) ? v : null;
-  };
-  const commonCategory = (() => {
-    const cid = allSame((r) => r.categoryId);
-    return cid ? getCategory(cid) : null;
-  })();
-  const commonBase = allSame((r) => r.baseSpirit);
-  const commonFamily = allSame((r) => r.codexFamily);
-  const commonStrength = allSame((r) => r.strength);
+  // 调用共享标签 Hook（以组头配方为基准，标签规则与普通卡片完全一致）
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { row1Nodes, row2Nodes, hasRow2 } = useRecipeTagRows(head, onTagPress);
 
   const toggle = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setExpanded((v) => !v);
+    const next = !expanded;
+    rotation.value = withTiming(next ? 90 : 0, { duration: 200 });
+    setExpanded(next);
   };
 
   const goCompare = () => {
@@ -83,11 +85,15 @@ export function RecipeGroupCard({
           className="bg-surface px-4 py-3"
           style={[
             isFirst && { borderTopLeftRadius: 12, borderTopRightRadius: 12 },
-            isLast && !expanded && { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 },
+            !expanded && isLast && { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 },
+            // 左侧蓝色边框标识"可展开的组"
+            styles.groupBorder,
+            { borderLeftColor: colors.primary + "99" },
           ]}
         >
-          <View className="flex-row items-center">
+          <View className="flex-row items-start">
             <View className="flex-1 pr-2">
+              {/* 名称行 */}
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -103,55 +109,19 @@ export function RecipeGroupCard({
                   </Text>
                 ) : null}
               </ScrollView>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                className="mt-1.5"
-                style={{ height: 24 }}
-                contentContainerStyle={{ alignItems: "center", gap: 6 }}
-              >
+
+              {/* 版本数徽章 + 对比按钮（紧跟名称行下方） */}
+              <View className="flex-row items-center mt-0.5" style={{ gap: 6 }}>
                 <View
-                  className="px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: colors.primary + "18" }}
+                  style={[
+                    styles.versionBadge,
+                    { backgroundColor: colors.primary },
+                  ]}
                 >
-                  <Text className="text-xs font-medium" style={{ color: colors.primary }}>
-                    {t("group.versions", { n: recipes.length })}
+                  <Text style={[styles.versionBadgeText, { color: "#fff" }]}>
+                    {recipes.length} 个版本
                   </Text>
                 </View>
-                {commonCategory ? (
-                  <View
-                    className="px-2 py-0.5 rounded-full"
-                    style={{ backgroundColor: commonCategory.color + "22" }}
-                  >
-                    <Text className="text-xs font-medium" style={{ color: commonCategory.color }}>
-                      {localizedTagName(commonCategory.name, commonCategory.nameEn, lang)}
-                    </Text>
-                  </View>
-                ) : null}
-                {commonFamily ? (
-                  <View
-                    className="px-2 py-0.5 rounded-full border"
-                    style={{ borderColor: colors.primary + "66", backgroundColor: colors.primary + "12" }}
-                  >
-                    <Text className="text-xs" style={{ color: colors.primary }}>
-                      {codexFamilyLabel(commonFamily, lang)}
-                    </Text>
-                  </View>
-                ) : null}
-                {commonBase ? (
-                  <View className="px-2 py-0.5 rounded-full bg-background border border-border">
-                    <Text className="text-xs text-muted">
-                      {localizedTagName(commonBase, "", lang)}
-                    </Text>
-                  </View>
-                ) : null}
-                {commonStrength ? (
-                  <View className="px-2 py-0.5 rounded-full bg-background border border-border">
-                    <Text className="text-xs text-muted">
-                      {lang === "en" ? t(`strength.${commonStrength}`) : STRENGTH_LABELS[commonStrength]}
-                    </Text>
-                  </View>
-                ) : null}
                 <Pressable
                   onPress={goCompare}
                   hitSlop={6}
@@ -162,22 +132,51 @@ export function RecipeGroupCard({
                   ]}
                 >
                   <IconSymbol name="rectangle.split.2x1" size={12} color={colors.primary} />
-                  <Text style={[styles.compareBtnText, { color: colors.primary }]}>
-                    {t("group.compare")}
-                  </Text>
+                  <Text style={[styles.compareBtnText, { color: colors.primary }]}>对比</Text>
                 </Pressable>
+              </View>
+
+              {/* ── 第一排标签（与普通卡片完全一致）── */}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                className="mt-1.5"
+                style={{ height: 24 }}
+                contentContainerStyle={{ alignItems: "center", gap: 6 }}
+              >
+                {row1Nodes}
               </ScrollView>
+
+              {/* ── 第二排标签（与普通卡片完全一致）── */}
+              {hasRow2 && (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  className="mt-1"
+                  style={{ height: 22 }}
+                  contentContainerStyle={{ alignItems: "center", gap: 5 }}
+                >
+                  {row2Nodes}
+                </ScrollView>
+              )}
             </View>
-            <IconSymbol
-              name={expanded ? "chevron.up" : "chevron.down"}
-              size={18}
-              color={colors.muted}
-            />
+
+            {/* 展开箭头（旋转动画） */}
+            <View style={{ paddingTop: 2 }}>
+              <Animated.View style={arrowStyle}>
+                <IconSymbol name="chevron.right" size={18} color={colors.muted} />
+              </Animated.View>
+            </View>
           </View>
+
+          {/* 配料摘要行（与普通卡片对齐） */}
+          <Text className="text-sm text-muted mt-2" numberOfLines={1} style={{ height: 20 }}>
+            {head.ingredients.map((i) => i.name).filter(Boolean).slice(0, 4).join(" · ") || " "}
+          </Text>
         </View>
       </Pressable>
 
-      {/* 展开的版本列表(缩进条纹标识) */}
+      {/* 展开的版本列表（左侧蓝色缩进条） */}
       {expanded ? (
         <View
           style={[
@@ -198,10 +197,13 @@ export function RecipeGroupCard({
         </View>
       ) : null}
 
-      {/* 分隔线(未展开且非组尾) */}
+      {/* 分隔线（未展开且非组尾） */}
       {!isLast ? (
         <View className="bg-surface">
-          <View className="bg-border" style={{ height: StyleSheet.hairlineWidth, marginLeft: 16 }} />
+          <View
+            className="bg-border"
+            style={{ height: StyleSheet.hairlineWidth, marginLeft: 16 }}
+          />
         </View>
       ) : null}
     </View>
@@ -209,6 +211,19 @@ export function RecipeGroupCard({
 }
 
 const styles = StyleSheet.create({
+  groupBorder: {
+    borderLeftWidth: 3,
+  },
+  versionBadge: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  versionBadgeText: {
+    fontSize: 11,
+    fontWeight: "600",
+    lineHeight: 15,
+  },
   compareBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -219,9 +234,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   compareBtnText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "500",
-    lineHeight: 16,
+    lineHeight: 15,
   },
   expandWrap: {
     borderLeftWidth: 3,
