@@ -51,6 +51,7 @@ interface ExtractedRecipe {
   steps: string;
   garnish: string;
   glass: string;
+  method: string;
   notes: string;
   confidence: "high" | "medium" | "low";
   missingFields: string[];
@@ -126,7 +127,7 @@ const READER_CSS = `
 
 function HtmlChapter({
   html, css, fontSize, lineHeight, theme, onTap,
-  extractMode, onSelection, webViewRef,
+  extractMode, onSelection, webViewRef, baseUrl,
 }: {
   html: string;
   css: string;
@@ -137,38 +138,17 @@ function HtmlChapter({
   extractMode?: boolean;
   onSelection?: (text: string) => void;
   webViewRef?: React.RefObject<InstanceType<typeof WebView> | null>;
+  baseUrl?: string;
 }) {
   const bgColor = theme === 'dark' ? '#1a1a1a' : theme === 'sepia' ? '#F4ECD8' : '#FFFFFF';
   const textColor = theme === 'dark' ? '#E0E0E0' : theme === 'sepia' ? '#3E3E3E' : '#1a1a1a';
   const linkColor = theme === 'dark' ? '#64B5F6' : '#007AFF';
 
-  const fullHtml = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>
-<style>
-${READER_CSS}
-${css}
-html, body {
-  font-size: ${fontSize}px;
-  line-height: ${lineHeight};
-  background: ${bgColor};
-  color: ${textColor};
-  padding: 0 20px 80px 20px;
-  margin: 0;
-  -webkit-text-size-adjust: none;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-a { color: ${linkColor}; }
-img { max-width: 100% !important; height: auto !important; }
-* { max-width: 100% !important; }
-pre, code { white-space: pre-wrap; font-size: 0.9em; }
-</style>
-</head>
-<body>${html}</body>
-</html>`;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fullHtml = useMemo(() => {
+    // eslint-disable-next-line prefer-template
+    return `<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8"/>\n<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>\n<style>\n${READER_CSS}\n${css}\nhtml, body {\n  font-size: ${fontSize}px;\n  line-height: ${lineHeight};\n  background: ${bgColor};\n  color: ${textColor};\n  padding: 0 20px 80px 20px;\n  margin: 0;\n  -webkit-text-size-adjust: none;\n  word-wrap: break-word;\n  overflow-wrap: break-word;\n}\na { color: ${linkColor}; }\nimg { max-width: 100% !important; height: auto !important; }\n* { max-width: 100% !important; }\npre, code { white-space: pre-wrap; font-size: 0.9em; }\n</style>\n</head>\n<body>${html}</body>\n</html>`;
+  }, [html, css, fontSize, lineHeight, bgColor, textColor, linkColor]);
 
   const injectedScript = `
     document.addEventListener('click', function() {
@@ -216,7 +196,7 @@ pre, code { white-space: pre-wrap; font-size: 0.9em; }
   return (
     <WebView
       ref={webViewRef}
-      source={{ html: fullHtml }}
+      source={baseUrl ? { html: fullHtml, baseUrl } : { html: fullHtml }}
       style={{ flex: 1, backgroundColor: bgColor }}
       scrollEnabled={true}
       showsVerticalScrollIndicator={false}
@@ -336,10 +316,13 @@ export default function BookReaderScreen() {
 
   /* WebView selection extract mode */
   const [extractMode, setExtractMode] = useState(false);
+  const extractModeRef = useRef(false); // Ref to access extractMode in callbacks without re-creating them
   const [selectedText, setSelectedText] = useState("");
   const [extractError, setExtractError] = useState("");
   const [extractResults, setExtractResults] = useState<ExtractedRecipe[]>([]);
   const [showExtractResults, setShowExtractResults] = useState(false);
+  const [importedRecipeIds, setImportedRecipeIds] = useState<Set<number>>(new Set());
+  const [batchImporting, setBatchImporting] = useState(false);
   const webViewRef = useRef<InstanceType<typeof WebView> | null>(null);
 
   /* Auto-save reading position every 30s */
@@ -415,7 +398,10 @@ export default function BookReaderScreen() {
   const showChrome = useCallback(() => {
     setChromeVisible(true);
     if (chromeTimer.current) clearTimeout(chromeTimer.current);
-    chromeTimer.current = setTimeout(() => setChromeVisible(false), 4000);
+    // Don't auto-hide when in extract mode — user needs the extract bar visible
+    if (!extractModeRef.current) {
+      chromeTimer.current = setTimeout(() => setChromeVisible(false), 4000);
+    }
   }, []);
 
   const handleTap = useCallback(() => {
@@ -476,21 +462,108 @@ export default function BookReaderScreen() {
   /* ── WebView selection extract mode ── */
   const enterExtractMode = useCallback(() => {
     tap();
+    extractModeRef.current = true;
     setExtractMode(true);
     setSelectedText("");
     setExtractError("");
     setExtractResults([]);
     setShowExtractResults(false);
-    showChrome();
-  }, [showChrome]);
+    // Do NOT call showChrome() here — it triggers a 4s timer that hides the extract bar
+    // and causes unnecessary state updates that reload the WebView
+    setChromeVisible(true);
+  }, []);
 
   const exitExtractMode = useCallback(() => {
     tap();
+    extractModeRef.current = false;
     setExtractMode(false);
     setSelectedText("");
     setExtractError("");
     setShowExtractResults(false);
   }, []);
+
+  /** Quick-save a single extracted recipe directly to store (no navigation) */
+  const quickSaveRecipe = useCallback((recipe: ExtractedRecipe, idx: number) => {
+    tap();
+    const source = book?.title ?? "";
+    const name = recipe.nameZh || recipe.name || (zh ? "未命名配方" : "Untitled recipe");
+    const nameEn = recipe.name && recipe.name !== name ? recipe.name : "";
+    const draft = {
+      name,
+      nameEn,
+      categoryId: null,
+      baseSpirit: recipe.ingredients.length > 0 ? ensureSpiritNameBook(recipe.ingredients[0]?.name ?? "") : "",
+      glass: recipe.glass ? ensureGlassNameBook(recipe.glass) : "",
+      method: recipe.method || "",
+      strength: "medium" as const,
+      variantOf: "",
+      codexFamily: "",
+      flavors: [],
+      source,
+      story: "",
+      flavorDesc: "",
+      ingredients: recipe.ingredients.map((ing) => ({
+        id: genId(),
+        name: ing.name,
+        amount: ing.amount ? `${ing.amount}${ing.unit ?? ""}` : "",
+        unit: "",
+        notes: "",
+      })),
+      steps: recipe.steps,
+      garnish: recipe.garnish,
+      notes: recipe.notes,
+    };
+    addRecipe(draft);
+    setImportedRecipeIds((prev) => new Set([...prev, idx]));
+    if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  }, [book, zh, addRecipe, ensureSpiritNameBook, ensureGlassNameBook]);
+
+  /** Batch import all extracted recipes at once */
+  const batchImportAll = useCallback(() => {
+    tap();
+    if (batchImporting || extractResults.length === 0) return;
+    setBatchImporting(true);
+    const source = book?.title ?? "";
+    let count = 0;
+    const newIds = new Set(importedRecipeIds);
+    for (let idx = 0; idx < extractResults.length; idx++) {
+      if (newIds.has(idx)) continue; // skip already imported
+      const recipe = extractResults[idx];
+      const name = recipe.nameZh || recipe.name || (zh ? "未命名配方" : "Untitled recipe");
+      const nameEn = recipe.name && recipe.name !== name ? recipe.name : "";
+      const draft = {
+        name,
+        nameEn,
+        categoryId: null,
+        baseSpirit: recipe.ingredients.length > 0 ? ensureSpiritNameBook(recipe.ingredients[0]?.name ?? "") : "",
+        glass: recipe.glass ? ensureGlassNameBook(recipe.glass) : "",
+        method: recipe.method || "",
+        strength: "medium" as const,
+        variantOf: "",
+        codexFamily: "",
+        flavors: [],
+        source,
+        story: "",
+        flavorDesc: "",
+        ingredients: recipe.ingredients.map((ing) => ({
+          id: genId(),
+          name: ing.name,
+          amount: ing.amount ? `${ing.amount}${ing.unit ?? ""}` : "",
+          unit: "",
+          notes: "",
+        })),
+        steps: recipe.steps,
+        garnish: recipe.garnish,
+        notes: recipe.notes,
+      };
+      addRecipe(draft);
+      newIds.add(idx);
+      count++;
+    }
+    setImportedRecipeIds(newIds);
+    setBatchImporting(false);
+    if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  }, [extractResults, importedRecipeIds, batchImporting, book, zh, addRecipe, ensureSpiritNameBook, ensureGlassNameBook]);
 
   const doExtract = useCallback(async () => {
     const text = selectedText.trim();
@@ -615,7 +688,7 @@ export default function BookReaderScreen() {
         addPrep({ name, nameAlt: name !== origName ? origName : "", type: prepType, abvGroup: classifyPrepGroup({ name, type: prepType, ingredients: prepIngredients, recipe: p.steps, sections, types }), ingredients: prepIngredients, recipe: p.steps, yield: "", shelfLife: "", storage: "", source, notes: "" });
         prepCount++;
       } else {
-        const draft = { name, nameEn: isAscii(name) ? name : isAscii(origName) && origName ? origName : "", categoryId: null, baseSpirit: p.baseSpirit ? ensureSpiritNameBook(p.baseSpirit) : "", glass: p.glass ? ensureGlassNameBook(p.glass) : "", method: p.method, strength: "medium" as const, variantOf: p.variantOf || "", codexFamily: normalizeCodexFamilyDecl(p.codexFamily || ""), flavors: [], source: p.source || source, story: "", flavorDesc: "", ingredients: p.ingredients, steps: p.steps, garnish: p.garnish, notes: "" };
+        const draft = { name, nameEn: isAscii(name) ? name : isAscii(origName) && origName ? origName : "", categoryId: null, baseSpirit: p.baseSpirit ? ensureSpiritNameBook(p.baseSpirit) : "", glass: p.glass ? ensureGlassNameBook(p.glass) : "", method: p.method || "", strength: "medium" as const, variantOf: p.variantOf || "", codexFamily: normalizeCodexFamilyDecl(p.codexFamily || ""), flavors: [], source: p.source || source, story: "", flavorDesc: "", ingredients: p.ingredients, steps: p.steps, garnish: p.garnish, notes: "" };
         const newRecipe = addRecipe(draft);
         const ingNames = p.ingredients.map((i) => i.name).filter(Boolean);
         enrichRecipeMutation.mutate(
@@ -733,6 +806,14 @@ export default function BookReaderScreen() {
               extractMode={extractMode}
               onSelection={(text) => setSelectedText(text)}
               webViewRef={webViewRef}
+              baseUrl={(() => {
+                if (book.hasFileSystem && book.sections[chapterIdx]?.text) {
+                  const fp = book.sections[chapterIdx].text;
+                  const dir = fp.substring(0, fp.lastIndexOf('/') + 1);
+                  return dir;
+                }
+                return undefined;
+              })()}
             />
           ) : (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -1095,11 +1176,42 @@ export default function BookReaderScreen() {
       >
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           {/* Header */}
-          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }}>
-            <Text style={{ flex: 1, fontSize: 17, fontWeight: "700", color: colors.foreground }}>
-              {zh ? `找到 ${extractResults.length} 个配方` : `${extractResults.length} recipe(s) found`}
-            </Text>
-            <Pressable onPress={() => setShowExtractResults(false)} hitSlop={8}>
+          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingTop: 16, paddingBottom: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border, gap: 8 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 17, fontWeight: "700", color: colors.foreground }}>
+                {zh ? `找到 ${extractResults.length} 个配方` : `${extractResults.length} recipe(s) found`}
+              </Text>
+              {importedRecipeIds.size > 0 && (
+                <Text style={{ fontSize: 12, color: colors.success || "#34C759", marginTop: 2 }}>
+                  {zh ? `已导入 ${importedRecipeIds.size} 个` : `${importedRecipeIds.size} imported`}
+                </Text>
+              )}
+            </View>
+            {/* Batch import all button */}
+            {extractResults.length > 1 && importedRecipeIds.size < extractResults.length && (
+              <Pressable
+                onPress={batchImportAll}
+                style={({ pressed }) => [{
+                  flexDirection: "row" as const,
+                  alignItems: "center" as const,
+                  gap: 4,
+                  paddingHorizontal: 12,
+                  paddingVertical: 7,
+                  borderRadius: 20,
+                  backgroundColor: pressed ? colors.primary + "dd" : colors.primary,
+                }]}
+              >
+                {batchImporting ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <IconSymbol name="square.and.arrow.down.fill" size={13} color="#fff" />
+                )}
+                <Text style={{ fontSize: 13, fontWeight: "600", color: "#fff" }}>
+                  {zh ? "全部导入" : "Import All"}
+                </Text>
+              </Pressable>
+            )}
+            <Pressable onPress={() => { setShowExtractResults(false); setImportedRecipeIds(new Set()); }} hitSlop={8}>
               <IconSymbol name="xmark" size={20} color={colors.muted} />
             </Pressable>
           </View>
@@ -1154,45 +1266,72 @@ export default function BookReaderScreen() {
                       </Text>
                     </View>
                   )}
-                  {/* Import button */}
-                  <Pressable
-                    onPress={() => {
-                      tap();
-                      setShowExtractResults(false);
-                      setExtractMode(false);
-                      // Build prefill params for recipe-form
-                      const params: Record<string, string> = {};
-                      if (recipe.nameZh) params.prefillName = recipe.nameZh;
-                      if (recipe.name && recipe.name !== recipe.nameZh) params.prefillNameEn = recipe.name;
-                      if (recipe.glass) params.prefillGlass = recipe.glass;
-                      if (recipe.steps) params.prefillSteps = recipe.steps;
-                      if (recipe.garnish) params.prefillGarnish = recipe.garnish;
-                      if (recipe.notes) params.prefillNotes = recipe.notes;
-                      if (recipe.ingredients.length > 0) {
-                        params.prefillIngredients = JSON.stringify(recipe.ingredients.map((ing) => ({
-                          id: genId(),
-                          name: ing.name,
-                          amount: ing.amount ? `${ing.amount}${ing.unit ?? ""}` : "",
-                        })));
-                      }
-                      router.push({ pathname: "/recipe-form", params });
-                    }}
-                    style={({ pressed }) => [{
-                      flexDirection: "row" as const,
-                      alignItems: "center" as const,
-                      justifyContent: "center" as const,
-                      gap: 6,
-                      paddingVertical: 12,
-                      borderTopWidth: StyleSheet.hairlineWidth,
-                      borderTopColor: colors.border,
-                      backgroundColor: pressed ? colors.primary + "18" : "transparent",
-                    }]}
-                  >
-                    <IconSymbol name="square.and.arrow.down.fill" size={15} color={colors.primary} />
-                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
-                      {zh ? "导入到配方编辑" : "Import to Recipe"}
-                    </Text>
-                  </Pressable>
+                  {/* Import buttons row */}
+                  <View style={{ flexDirection: "row", borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}>
+                    {/* Quick save button */}
+                    <Pressable
+                      onPress={() => importedRecipeIds.has(idx) ? undefined : quickSaveRecipe(recipe, idx)}
+                      style={({ pressed }) => [{
+                        flex: 1,
+                        flexDirection: "row" as const,
+                        alignItems: "center" as const,
+                        justifyContent: "center" as const,
+                        gap: 5,
+                        paddingVertical: 12,
+                        backgroundColor: importedRecipeIds.has(idx)
+                          ? "#34C75918"
+                          : pressed ? colors.primary + "18" : "transparent",
+                      }]}
+                    >
+                      <IconSymbol
+                        name={importedRecipeIds.has(idx) ? "checkmark.circle.fill" : "square.and.arrow.down.fill"}
+                        size={15}
+                        color={importedRecipeIds.has(idx) ? "#34C759" : colors.primary}
+                      />
+                      <Text style={{ fontSize: 13, fontWeight: "600", color: importedRecipeIds.has(idx) ? "#34C759" : colors.primary }}>
+                        {importedRecipeIds.has(idx) ? (zh ? "已导入" : "Imported") : (zh ? "快速导入" : "Quick Save")}
+                      </Text>
+                    </Pressable>
+                    <View style={{ width: StyleSheet.hairlineWidth, backgroundColor: colors.border }} />
+                    {/* Edit then import button */}
+                    <Pressable
+                      onPress={() => {
+                        tap();
+                        setShowExtractResults(false);
+                        setExtractMode(false);
+                        extractModeRef.current = false;
+                        const params: Record<string, string> = {};
+                        if (recipe.nameZh) params.prefillName = recipe.nameZh;
+                        if (recipe.name && recipe.name !== recipe.nameZh) params.prefillNameEn = recipe.name;
+                        if (recipe.glass) params.prefillGlass = recipe.glass;
+                        if (recipe.steps) params.prefillSteps = recipe.steps;
+                        if (recipe.garnish) params.prefillGarnish = recipe.garnish;
+                        if (recipe.notes) params.prefillNotes = recipe.notes;
+                        if (recipe.ingredients.length > 0) {
+                          params.prefillIngredients = JSON.stringify(recipe.ingredients.map((ing) => ({
+                            id: genId(),
+                            name: ing.name,
+                            amount: ing.amount ? `${ing.amount}${ing.unit ?? ""}` : "",
+                          })));
+                        }
+                        router.push({ pathname: "/recipe-form", params });
+                      }}
+                      style={({ pressed }) => [{
+                        flex: 1,
+                        flexDirection: "row" as const,
+                        alignItems: "center" as const,
+                        justifyContent: "center" as const,
+                        gap: 5,
+                        paddingVertical: 12,
+                        backgroundColor: pressed ? colors.muted + "18" : "transparent",
+                      }]}
+                    >
+                      <IconSymbol name="pencil" size={14} color={colors.muted} />
+                      <Text style={{ fontSize: 13, fontWeight: "500", color: colors.muted }}>
+                        {zh ? "编辑后导入" : "Edit & Import"}
+                      </Text>
+                    </Pressable>
+                  </View>
                 </View>
               );
             })}

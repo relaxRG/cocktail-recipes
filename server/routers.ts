@@ -697,6 +697,7 @@ ${input.text}
       "steps": "完整步骤说明（原文，如无则空字符串）",
       "garnish": "装饰物（如有，否则空字符串）",
       "glass": "杯型（如能推断，否则空字符串）",
+      "method": "调制法（如 摇和/搅拌/直调，如能推断，否则空字符串）",
       "notes": "备注/说明（如有，否则空字符串）",
       "confidence": "high|medium|low",
       "missingFields": []
@@ -753,6 +754,7 @@ ${input.text}
             steps: typeof r.steps === "string" ? r.steps.trim() : "",
             garnish: typeof r.garnish === "string" ? r.garnish.trim() : "",
             glass: typeof r.glass === "string" ? r.glass.trim() : "",
+            method: typeof r.method === "string" ? r.method.trim() : "",
             notes: typeof r.notes === "string" ? r.notes.trim() : "",
             confidence: (["high", "medium", "low"] as const).includes(r.confidence as "high")
               ? (r.confidence as "high" | "medium" | "low")

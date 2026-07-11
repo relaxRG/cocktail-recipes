@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import {
   Alert,
   FlatList,
+  Image,
   Platform,
   Pressable,
   StyleSheet,
@@ -369,7 +370,15 @@ export default function BooksScreen() {
                     { backgroundColor: bookColor(book.id) + "28" },
                   ]}
                 >
-                  <IconSymbol name="book.fill" size={28} color={bookColor(book.id)} />
+                  {book.coverUri ? (
+                    <Image
+                      source={{ uri: book.coverUri }}
+                      style={styles.coverImage}
+                      onError={() => {/* fallback handled by conditional */}}
+                    />
+                  ) : (
+                    <IconSymbol name="book.fill" size={28} color={bookColor(book.id)} />
+                  )}
                   {book.isFavorite && (
                     <View style={styles.favBadge}>
                       <IconSymbol name="heart.fill" size={8} color="#FF3B30" />
@@ -602,6 +611,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: "center",
     justifyContent: "center",
+  },
+  coverImage: {
+    width: 56,
+    height: 72,
+    borderRadius: 6,
   },
   bookTitle: {
     fontSize: 15,

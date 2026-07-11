@@ -412,3 +412,21 @@
 - [x] homemade.tsx（自制品库）：多选模式 BulkActionBar 新增"AI 补全"按钮，批量补全选中自制品的 notes/shelfLife/storage
 - [x] i18n translations.ts：新增 sel.aiEnrich 翻译键（中文"AI 补全"，英文"AI Fill"）
 - [x] 三个页面均添加补全进度条和结果横幅（成功/失败/关闭）
+
+## Build 17 – 酒库页面设计优化
+- [x] bottles.tsx：分组切换器改为 iOS 原生 segmented 风格（白色选中 pill + 阴影，背景灰色容器）
+- [x] bottles.tsx：搜索栏去掉边框，改为柔和灰色背景（iOS 标准搜索栏样式）
+- [x] bottles.tsx：类别标签改为精致描边样式（outlined chip），风格标签改为纯文字（muted 色）
+- [x] bottles.tsx：价格字号优化，卡片垂直间距增加，chevron 更柔和
+
+## Build 18 – 阅读模块全面修复
+- [x] book-reader.tsx：HtmlChapter 加 React.memo + fullHtml 用 useMemo 缓存，防止 WebView 无谓重载
+- [x] book-reader.tsx：enterExtractMode 不再调用 showChrome()，避免进入提取模式时界面乱跳
+- [x] book-reader.tsx：添加 extractModeRef，chromeTimer 在 extractMode 下不隐藏工具栏（工具栏常驻）
+- [x] book-reader.tsx：HtmlChapter 调用处传入 baseUrl（chapterDir），相对路径图片正确解析显示
+- [x] book-reader.tsx：extractResults 面板标题栏新增"全部导入"按钮（batchImportAll 批量导入）
+- [x] book-reader.tsx：单个配方导入后不再跳转回阅读界面（移除 router.back()）
+- [x] book-reader.tsx：添加 importedRecipeIds 状态追踪已导入配方，已导入显示"已导入"标记
+- [x] book-reader.tsx：新增 quickSaveRecipe 函数，直接保存配方无需跳转表单页
+- [x] books.tsx：BookCard 添加 coverUri 封面图片展示（有封面则显示图片，无则显示书籍图标）
+- [x] server/routers.ts：extractRecipesFromText 接口添加 method 字段（返回值和 prompt 均已更新）
