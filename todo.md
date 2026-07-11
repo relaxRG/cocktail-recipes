@@ -472,3 +472,10 @@
 - [x] 阅读设置面板翻页模式描述文字更新（"左右滑动翻页（章节内分页）"）
 - [x] 提取结果面板：Modal presentationStyle="pageSheet" 改为透明 overlay（保持 WebView 挂载，不滚回顶部）
 - [x] iOS 图片修复：baseUrl 改用 book.bookDir + 'content/' 作为 EPUB 根目录（更稳定的资源路径）
+
+## Build 23 - 酒库 Tab 重构：消除双层割裂感
+- [x] 移除顶部独立的"酒库/自制库"大 Segmented 切换器（原 library.tsx 容器组件）
+- [x] library.tsx 重写：大标题 + 副标题（动态显示数量）+ iOS 原生 pill 风格主切换器（酒库/自制库）
+- [x] bottles.tsx：移除大标题区域，ScreenContainer 改为 edges=[]，多选按钮移到三分组切换器右侧
+- [x] homemade.tsx：移除大标题区域，ScreenContainer 改为 edges=[]，多选按钮移到含酒精/无酒精切换器右侧
+- [x] 二级分组切换器统一为轻量 pill 风格（白色 pill 选中，灰色背景容器），视觉权重低于主切换器

@@ -504,18 +504,43 @@ export default function BottlesScreen() {
   ];
 
   return (
-    <ScreenContainer>
-      <View className="px-5 pt-3 pb-0">
-        <View className="flex-row items-end justify-between">
-          <View>
-            <Text className="text-3xl font-bold text-foreground">{t("bottles.title")}</Text>
-            <Text className="text-sm text-muted mt-1">
-              {group === "materials"
-                ? t("bottles.subtitle.materials", { n: groupBottles.length })
-                : group === "spirits"
-                  ? t("bottles.subtitle.spirits", { n: groupBottles.length })
-                  : t("bottles.subtitle", { n: groupBottles.length })}
-            </Text>
+    <ScreenContainer edges={[]}>
+      {/* 二级分组切换器：基酒库 / 酒款库 / 原材料库 + 多选按钮 */}
+      <View className="px-5 pt-2">
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <View style={{ flex: 1, flexDirection: "row", backgroundColor: colors.border + "55", borderRadius: 10, padding: 2, gap: 2 }}>
+            {BOTTLE_GROUPS.map((g) => {
+              const active = group === g.key;
+              return (
+                <Pressable
+                  key={g.key}
+                  onPress={() => {
+                    if (group !== g.key) {
+                      setGroup(g.key);
+                      setSelCategories([]);
+                      setSelStyles([]);
+                      setEnrichMsg(null);
+                      if (Platform.OS !== "web") {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }
+                    }
+                  }}
+                  style={[
+                    styles.segment,
+                    active && { backgroundColor: colors.surface, shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 2 },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.segmentText,
+                      { color: active ? colors.foreground : colors.muted, fontWeight: active ? "600" : "400" },
+                    ]}
+                  >
+                    {lang === "en" ? g.en : g.zh}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
           {groupBottles.length > 0 ? (
             <Pressable
@@ -533,53 +558,11 @@ export default function BottlesScreen() {
                 pressed && { opacity: 0.7 },
               ]}
             >
-              <Text
-                style={[styles.selectBtnText, { color: selectMode ? "#FFFFFF" : colors.muted }]}
-              >
+              <Text style={[styles.selectBtnText, { color: selectMode ? "#FFFFFF" : colors.muted }]}>
                 {selectMode ? t("sel.exit") : t("sel.enter")}
               </Text>
             </Pressable>
           ) : null}
-        </View>
-      </View>
-
-      {/* Group segmented control: 基酒库 / 酒款库 / 原材料库 */}
-      <View className="px-5 mt-2">
-        <View
-          style={{ flexDirection: "row", backgroundColor: colors.border + "55", borderRadius: 10, padding: 2, gap: 2 }}
-        >
-          {BOTTLE_GROUPS.map((g) => {
-            const active = group === g.key;
-            return (
-            <Pressable
-              key={g.key}
-              onPress={() => {
-                if (group !== g.key) {
-                  setGroup(g.key);
-                  setSelCategories([]);
-                  setSelStyles([]);
-                  setEnrichMsg(null);
-                  if (Platform.OS !== "web") {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  }
-                }
-              }}
-                style={[
-                  styles.segment,
-                  active && { backgroundColor: colors.surface, shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 2 },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.segmentText,
-                    { color: active ? colors.foreground : colors.muted, fontWeight: active ? "600" : "400" },
-                  ]}
-                >
-                  {lang === "en" ? g.en : g.zh}
-                </Text>
-              </Pressable>
-            );
-          })}
         </View>
       </View>
 

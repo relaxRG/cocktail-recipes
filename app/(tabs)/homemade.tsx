@@ -613,36 +613,7 @@ export default function HomemadeScreen() {
   ];
 
   return (
-    <ScreenContainer>
-      <View className="px-5 pt-2 pb-1 flex-row items-end">
-        <View className="flex-1">
-          <Text className="text-3xl font-bold text-foreground">{t("hm.title")}</Text>
-          <Text className="text-sm text-muted mt-1">{t("hm.subtitle", { n: groupPreps.length })}</Text>
-        </View>
-        {groupPreps.length > 0 ? (
-          <Pressable
-            onPress={() => {
-              if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              if (selectMode) exitSelectMode();
-              else setSelectMode(true);
-            }}
-            style={({ pressed }) => [
-              styles.selectBtn,
-              {
-                backgroundColor: selectMode ? colors.primary : colors.surface,
-                borderColor: selectMode ? colors.primary : colors.border,
-              },
-              pressed && { opacity: 0.7 },
-            ]}
-          >
-            <Text style={[styles.selectBtnText, { color: selectMode ? "#FFFFFF" : colors.muted }]}>
-              {selectMode ? t("sel.exit") : t("sel.enter")}
-            </Text>
-          </Pressable>
-        ) : null}
-      </View>
-
-      {/* 顶层分组:含酒精 / 无酒精 */}
+    <ScreenContainer edges={[]}>
       {/* 批量 AI 补全横幅：进度 / 结果 / 入口 */}
       {enriching && enrichProgress ? (
         <View className="mx-5 mt-2 px-4 py-2 rounded-xl flex-row items-center" style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, gap: 8 }}>
@@ -670,42 +641,63 @@ export default function HomemadeScreen() {
           </Pressable>
         </View>
       ) : null}
+      {/* 二级分组切换器：含酒精 / 无酒精 + 多选按钮 */}
       <View className="px-5 mt-2">
-        <View
-          className="flex-row bg-surface border border-border rounded-xl p-1"
-          style={{ gap: 4 }}
-        >
-          {PREP_GROUPS.map((g) => {
-            const active = group === g.key;
-            const count = preps.filter(
-              (p) => prepGroupOf(p, sections, types) === g.key,
-            ).length;
-            return (
-              <Pressable
-                key={g.key}
-                onPress={() => {
-                  setGroup(g.key);
-                  if (Platform.OS !== "web") {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  }
-                }}
-                style={[
-                  styles.groupSeg,
-                  active && { backgroundColor: colors.primary },
-                ]}
-              >
-                <Text
-                  numberOfLines={1}
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <View style={{ flex: 1, flexDirection: "row", backgroundColor: colors.border + "55", borderRadius: 10, padding: 2, gap: 2 }}>
+            {PREP_GROUPS.map((g) => {
+              const active = group === g.key;
+              const count = preps.filter(
+                (p) => prepGroupOf(p, sections, types) === g.key,
+              ).length;
+              return (
+                <Pressable
+                  key={g.key}
+                  onPress={() => {
+                    setGroup(g.key);
+                    if (Platform.OS !== "web") {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }
+                  }}
                   style={[
-                    styles.groupSegText,
-                    { color: active ? "#FFFFFF" : colors.muted },
+                    styles.groupSeg,
+                    active && { backgroundColor: colors.surface, shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 2 },
                   ]}
                 >
-                  {(lang === "en" ? g.en : g.zh) + (count > 0 ? ` ${count}` : "")}
-                </Text>
-              </Pressable>
-            );
-          })}
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      styles.groupSegText,
+                      { color: active ? colors.foreground : colors.muted, fontWeight: active ? "600" : "400" },
+                    ]}
+                  >
+                    {(lang === "en" ? g.en : g.zh) + (count > 0 ? ` ${count}` : "")}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          {groupPreps.length > 0 ? (
+            <Pressable
+              onPress={() => {
+                if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                if (selectMode) exitSelectMode();
+                else setSelectMode(true);
+              }}
+              style={({ pressed }) => [
+                styles.selectBtn,
+                {
+                  backgroundColor: selectMode ? colors.primary : colors.surface,
+                  borderColor: selectMode ? colors.primary : colors.border,
+                },
+                pressed && { opacity: 0.7 },
+              ]}
+            >
+              <Text style={[styles.selectBtnText, { color: selectMode ? "#FFFFFF" : colors.muted }]}>
+                {selectMode ? t("sel.exit") : t("sel.enter")}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       </View>
 
@@ -1380,7 +1372,6 @@ const styles = StyleSheet.create({
   },
   groupSegText: {
     fontSize: 14,
-    fontWeight: "600",
     lineHeight: 18,
   },
   chipText: {
