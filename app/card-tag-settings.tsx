@@ -95,6 +95,21 @@ export default function CardTagSettingsScreen() {
     });
   };
 
+  /** Move slot between row 1 and row 2 */
+  const moveToRow = (slot: CardTagSlot, targetRow: 1 | 2) => {
+    tap();
+    setSettings((prev) => {
+      const r1 = prev.recipeCardRow1Slots ?? DEFAULT_CARD_TAG_SETTINGS.recipeCardRow1Slots;
+      if (targetRow === 1) {
+        return { ...prev, recipeCardRow1Slots: r1.includes(slot) ? r1 : [...r1, slot] };
+      } else {
+        return { ...prev, recipeCardRow1Slots: r1.filter((s) => s !== slot) };
+      }
+    });
+  };
+
+  const row1Slots = settings.recipeCardRow1Slots ?? DEFAULT_CARD_TAG_SETTINGS.recipeCardRow1Slots;
+
   /* ---- Shared sub-components ---- */
 
   const ROW_H = 50;
@@ -143,7 +158,7 @@ export default function CardTagSettingsScreen() {
   /* ---- Slot row with reorder + toggle + color ---- */
   const [expandedColorSlot, setExpandedColorSlot] = React.useState<CardTagSlot | null>(null);
 
-  const SlotRow = ({ slot, isFirst, isLast }: { slot: CardTagSlot; isFirst: boolean; isLast: boolean }) => {
+  const SlotRow = ({ slot, isFirst, isLast, rowNum }: { slot: CardTagSlot; isFirst: boolean; isLast: boolean; rowNum: 1 | 2 }) => {
     const label = CARD_TAG_SLOT_LABELS[slot];
     const name = zh ? label.zh : label.en;
     const slotHidden = isHidden(slot);
@@ -215,6 +230,19 @@ export default function CardTagSettingsScreen() {
               color={slotHidden ? colors.muted : colors.primary}
             />
           </Pressable>
+
+          {/* Move to other row */}
+          <Pressable
+            onPress={() => moveToRow(slot, rowNum === 1 ? 2 : 1)}
+            hitSlop={10}
+            style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, paddingLeft: 8 }]}
+          >
+            <IconSymbol
+              name={rowNum === 1 ? "arrow.down.to.line" : "arrow.up.to.line"}
+              size={18}
+              color={colors.muted}
+            />
+          </Pressable>
         </View>
 
         {/* Color picker (inline expand) */}
@@ -252,7 +280,7 @@ export default function CardTagSettingsScreen() {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 60 }}>
 
         {/* ---- Recipe card slots ---- */}
-        <View style={{ marginBottom: 20 }}>
+        <View style={{ marginBottom: 8 }}>
           <View style={styles.sectionHeaderRow}>
             <Text style={[styles.sectionLabel, { color: colors.muted, marginBottom: 0, flex: 1 }]}>
               {zh ? "配方卡片标签" : "Recipe Card Tags"}
@@ -265,20 +293,54 @@ export default function CardTagSettingsScreen() {
               </Text>
             </Pressable>
           </View>
-          <Text style={[styles.hint, { color: colors.muted, marginBottom: 8 }]}>
+          <Text style={[styles.hint, { color: colors.muted, marginBottom: 10 }]}>
             {zh
-              ? "上下调整顺序，点击色块自定义颜色，点击眼睛图标显示/隐藏"
-              : "Drag to reorder, tap swatch to set color, tap eye to show/hide"}
+              ? "点击 ↓↑ 将标签移到另一排，上下箭头调整排内顺序，色块自定义颜色，眼睛图标显示/隐藏"
+              : "Tap ↓↑ to move between rows, arrows to reorder within row, swatch for color, eye to toggle"}
           </Text>
-          <View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            {order.map((slot, i) => (
-              <SlotRow
-                key={slot}
-                slot={slot}
-                isFirst={i === 0}
-                isLast={i === order.length - 1}
-              />
-            ))}
+
+          {/* Row 1 — Identity tags */}
+          <Text style={[styles.rowGroupLabel, { color: colors.muted }]}>
+            {zh ? "第一排（身份标签）" : "Row 1 — Identity"}
+          </Text>
+          <View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border, marginBottom: 12 }]}>
+            {(() => {
+              const r1 = order.filter((s) => row1Slots.includes(s));
+              if (r1.length === 0) {
+                return (
+                  <View style={{ padding: 16 }}>
+                    <Text style={{ color: colors.muted, fontSize: 13 }}>
+                      {zh ? "暂无标签，点击第二排标签的 ↑ 移入" : "Empty — tap ↑ on a row-2 tag to move here"}
+                    </Text>
+                  </View>
+                );
+              }
+              return r1.map((slot, i) => (
+                <SlotRow key={slot} slot={slot} isFirst={i === 0} isLast={i === r1.length - 1} rowNum={1} />
+              ));
+            })()}
+          </View>
+
+          {/* Row 2 — Experience tags */}
+          <Text style={[styles.rowGroupLabel, { color: colors.muted }]}>
+            {zh ? "第二排（体验标签）" : "Row 2 — Experience"}
+          </Text>
+          <View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border, marginBottom: 20 }]}>
+            {(() => {
+              const r2 = order.filter((s) => s !== "flavors" && !row1Slots.includes(s));
+              if (r2.length === 0) {
+                return (
+                  <View style={{ padding: 16 }}>
+                    <Text style={{ color: colors.muted, fontSize: 13 }}>
+                      {zh ? "暂无标签，点击第一排标签的 ↓ 移入" : "Empty — tap ↓ on a row-1 tag to move here"}
+                    </Text>
+                  </View>
+                );
+              }
+              return r2.map((slot, i) => (
+                <SlotRow key={slot} slot={slot} isFirst={i === 0} isLast={i === r2.length - 1} rowNum={2} />
+              ));
+            })()}
           </View>
         </View>
 
@@ -394,6 +456,14 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginLeft: 4,
     lineHeight: 17,
+  },
+  rowGroupLabel: {
+    fontSize: 11,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    marginBottom: 6,
+    marginLeft: 4,
   },
   slotRow: {
     flexDirection: "row",

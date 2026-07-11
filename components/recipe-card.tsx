@@ -35,16 +35,6 @@ const METHOD_LABELS: Record<string, string> = {
   thrown: "抛接",
 };
 
-/** 第一排优先级槽位顺序（不含 flavors，风味标签单独处理） */
-const ROW1_PRIORITY: CardTagSlot[] = [
-  "category",
-  "codexFamily",
-  "baseSpirit",
-  "strength",
-  "rating",
-  "cost",
-];
-
 export function RecipeCard({
   recipe,
   isFirst = true,
@@ -68,6 +58,11 @@ export function RecipeCard({
   const customColors = cardTagSettings.recipeCardColors ?? {};
   const flavorConfigs = cardTagSettings.flavorTagConfigs ?? {};
   const hidden = cardTagSettings.recipeCardSlotHidden ?? [];
+  const row1Slots: CardTagSlot[] = cardTagSettings.recipeCardRow1Slots ?? DEFAULT_CARD_TAG_SETTINGS.recipeCardRow1Slots;
+  const slotOrder = cardTagSettings.recipeCardSlotOrder ?? DEFAULT_CARD_TAG_SETTINGS.recipeCardSlotOrder;
+  const row2Slots: CardTagSlot[] = slotOrder.filter(
+    (s) => s !== "flavors" && !row1Slots.includes(s) && !hidden.includes(s)
+  );
 
   /** 单杯成本估算 */
   const costTotal = useMemo(() => {
@@ -258,10 +253,8 @@ export function RecipeCard({
 
   // ── 计算两排内容 ──────────────────────────────────────────────
   const visibleFlavors = recipe.flavors.filter((f) => getFlavorTagConfig(f, flavorConfigs).visible);
-  const row1Flavors = visibleFlavors.filter((f) => getFlavorTagConfig(f, flavorConfigs).row === 1);
-  const row2Flavors = visibleFlavors.filter((f) => getFlavorTagConfig(f, flavorConfigs).row === 2);
   const methodLabel = METHOD_LABELS[recipe.method] ?? "";
-  const hasRow2 = row2Flavors.length > 0 || !!methodLabel;
+  const hasRow2 = row2Slots.length > 0 || visibleFlavors.length > 0 || !!methodLabel;
 
   return (
     <Pressable
@@ -301,7 +294,7 @@ export function RecipeCard({
               <VariantBadge recipe={recipe} mode="compact" />
             </View>
 
-            {/* ── 第一排：优先级槽位 + row=1 风味标签（最多5个）── */}
+            {/* ── 第一排：身份标签（category/codexFamily/baseSpirit，用户可配置）── */}
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -311,20 +304,16 @@ export function RecipeCard({
             >
               {(() => {
                 const items: React.ReactNode[] = [];
-                for (const slot of ROW1_PRIORITY) {
-                  if (items.length >= 5) break;
+                for (const slot of row1Slots) {
+                  if (hidden.includes(slot)) continue;
                   const node = renderSlot(slot);
                   if (node) items.push(node);
-                }
-                for (const f of row1Flavors) {
-                  if (items.length >= 5) break;
-                  items.push(renderFlavorBadge(f, false));
                 }
                 return items;
               })()}
             </ScrollView>
 
-            {/* ── 第二排：row=2 风味标签 + 制作方法（最多3个，有内容才显示）── */}
+            {/* ── 第二排：体验标签（strength/rating/cost）+ 风味标签 + 制作方法 ── */}
             {hasRow2 && (
               <ScrollView
                 horizontal
@@ -335,11 +324,14 @@ export function RecipeCard({
               >
                 {(() => {
                   const items: React.ReactNode[] = [];
-                  for (const f of row2Flavors) {
-                    if (items.length >= 3) break;
+                  for (const slot of row2Slots) {
+                    const node = renderSlot(slot);
+                    if (node) items.push(node);
+                  }
+                  for (const f of visibleFlavors) {
                     items.push(renderFlavorBadge(f, true));
                   }
-                  if (items.length < 3 && methodLabel) {
+                  if (methodLabel) {
                     items.push(
                       <View key="method" style={[styles.pillSmall, styles.pillBorder, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                         <Text style={[styles.pillTextSmall, { color: colors.muted }]}>{methodLabel}</Text>

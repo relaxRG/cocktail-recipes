@@ -397,3 +397,11 @@
 - [x] book-reader.tsx：doExtract / doTranslate 离线时弹 Alert
 - [x] bulk-import.tsx：runExtract 离线时弹 Alert
 - [x] recipe/[id].tsx：handleEnrichMissing 离线时显示内联提示
+- [x] recipe/[id].tsx：handleEnrichMissing 离线时显示内联提示
+
+## Build 15b – 标签系统重构
+- [x] 移除旧"提取配方"按钮（先转纯文本再提取），只保留"AI 选区提取"
+- [x] card-tags.ts：新增 recipeCardRow1Slots 字段，支持用户自定义第一排槽位
+- [x] recipe-card.tsx：标签按两排分组（第一排=身份标签 category/codexFamily/baseSpirit，第二排=体验标签 strength/rating/cost/flavors/method）
+- [x] card-tag-settings.tsx：设置页新增两排分组管理 UI（在两排之间移动槽位，支持显示/隐藏、顺序、颜色统一管理）
+- [x] icon-symbol.tsx：新增 arrow.down.to.line / arrow.up.to.line 图标映射

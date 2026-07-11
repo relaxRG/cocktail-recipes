@@ -34,7 +34,7 @@ const dict = {
   "me.bookImport": { zh: "书籍导入", en: "Book Import" },
   "me.bookImport.desc": { zh: "导入 EPUB/PDF，自动识别书中配方并提取", en: "Import EPUB/PDF and auto-detect recipes" },
   "me.cardTags": { zh: "卡片标签显示", en: "Card Tag Display" },
-  "me.cardTags.desc": { zh: "统一设置酒款/自制卡片上的标签显示与排序", en: "Unified tag show/hide and sort for all cards" },
+  "me.cardTags.desc": { zh: "统一管理标签分排、顺序、颜色与显示/隐藏", en: "Manage tag rows, order, color and visibility" },
   "me.ice": { zh: "冰块成本", en: "Ice Cost" },
   "me.ice.desc": { zh: "摇冰、方冰、碎冰等款式与价格,自动计入配方成本", en: "Ice styles & prices, auto-included in recipe costs" },
   "me.language": { zh: "界面语言", en: "Language" },

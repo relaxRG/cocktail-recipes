@@ -33,6 +33,8 @@ export interface CardTagSettings {
   recipeCardSlotOrder: CardTagSlot[];
   /** Recipe card: which slots are hidden */
   recipeCardSlotHidden: CardTagSlot[];
+  /** Recipe card: which slots appear in row 1 (identity row). Remaining visible slots go to row 2. */
+  recipeCardRow1Slots: CardTagSlot[];
   /** Recipe card: custom hex color per slot (empty string = use default) */
   recipeCardColors: Partial<Record<CardTagSlot, string>>;
   /** 风味标签全局配置：每个标签的可见性、行分配、颜色 */
@@ -80,6 +82,7 @@ export const DEFAULT_CARD_TAG_SETTINGS: CardTagSettings = {
   showBottleVolume: true,
   recipeCardSlotOrder: [...CARD_TAG_SLOTS],
   recipeCardSlotHidden: [],
+  recipeCardRow1Slots: ["category", "codexFamily", "baseSpirit"],
   recipeCardColors: {},
   flavorTagConfigs: {},
   flavorTagOrder: [...FLAVOR_TAGS],
