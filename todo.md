@@ -430,3 +430,12 @@
 - [x] book-reader.tsx：新增 quickSaveRecipe 函数，直接保存配方无需跳转表单页
 - [x] books.tsx：BookCard 添加 coverUri 封面图片展示（有封面则显示图片，无则显示书籍图标）
 - [x] server/routers.ts：extractRecipesFromText 接口添加 method 字段（返回值和 prompt 均已更新）
+
+## Build 19 – 选区提取面板多选批量导入
+- [x] book-reader.tsx：单条"快速导入"后不退出提取结果面板（Modal 保持打开）
+- [x] book-reader.tsx："编辑后导入"不再关闭面板，跳转 recipe-form 后返回可继续导入其他配方
+- [x] book-reader.tsx：新增多选模式（顶部"多选"按钮切换，卡片显示 checkbox）
+- [x] book-reader.tsx：多选模式下进入时自动预选所有未导入配方
+- [x] book-reader.tsx：底部批量操作栏（全选/取消全选 + "导入 N 个"按钮，显示选中数量）
+- [x] book-reader.tsx：batchImportAll 支持选中导入（extractSelectMode 时只导入 selectedExtractIds）
+- [x] book-reader.tsx：exitExtractMode 清理多选状态（selectedExtractIds + extractSelectMode）

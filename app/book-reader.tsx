@@ -323,6 +323,9 @@ export default function BookReaderScreen() {
   const [showExtractResults, setShowExtractResults] = useState(false);
   const [importedRecipeIds, setImportedRecipeIds] = useState<Set<number>>(new Set());
   const [batchImporting, setBatchImporting] = useState(false);
+  // Multi-select state for extract results panel
+  const [selectedExtractIds, setSelectedExtractIds] = useState<Set<number>>(new Set());
+  const [extractSelectMode, setExtractSelectMode] = useState(false);
   const webViewRef = useRef<InstanceType<typeof WebView> | null>(null);
 
   /* Auto-save reading position every 30s */
@@ -480,6 +483,8 @@ export default function BookReaderScreen() {
     setSelectedText("");
     setExtractError("");
     setShowExtractResults(false);
+    setSelectedExtractIds(new Set());
+    setExtractSelectMode(false);
   }, []);
 
   /** Quick-save a single extracted recipe directly to store (no navigation) */
@@ -521,14 +526,18 @@ export default function BookReaderScreen() {
   /** Batch import all extracted recipes at once */
   const batchImportAll = useCallback(() => {
     tap();
-    if (batchImporting || extractResults.length === 0) return;
+    const targetIds = extractSelectMode && selectedExtractIds.size > 0
+      ? selectedExtractIds
+      : new Set(extractResults.map((_, i) => i));
+    if (batchImporting || targetIds.size === 0) return;
     setBatchImporting(true);
     const source = book?.title ?? "";
     let count = 0;
     const newIds = new Set(importedRecipeIds);
-    for (let idx = 0; idx < extractResults.length; idx++) {
-      if (newIds.has(idx)) continue; // skip already imported
+    for (const idx of targetIds) {
+      if (newIds.has(idx)) continue;
       const recipe = extractResults[idx];
+      if (!recipe) continue;
       const name = recipe.nameZh || recipe.name || (zh ? "未命名配方" : "Untitled recipe");
       const nameEn = recipe.name && recipe.name !== name ? recipe.name : "";
       const draft = {
@@ -562,8 +571,12 @@ export default function BookReaderScreen() {
     }
     setImportedRecipeIds(newIds);
     setBatchImporting(false);
+    if (extractSelectMode) {
+      setSelectedExtractIds(new Set());
+      setExtractSelectMode(false);
+    }
     if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  }, [extractResults, importedRecipeIds, batchImporting, book, zh, addRecipe, ensureSpiritNameBook, ensureGlassNameBook]);
+  }, [extractResults, importedRecipeIds, batchImporting, extractSelectMode, selectedExtractIds, book, zh, addRecipe, ensureSpiritNameBook, ensureGlassNameBook]);
 
   const doExtract = useCallback(async () => {
     const text = selectedText.trim();
@@ -1179,16 +1192,50 @@ export default function BookReaderScreen() {
           <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingTop: 16, paddingBottom: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border, gap: 8 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 17, fontWeight: "700", color: colors.foreground }}>
-                {zh ? `找到 ${extractResults.length} 个配方` : `${extractResults.length} recipe(s) found`}
+                {extractSelectMode
+                  ? (zh ? `已选 ${selectedExtractIds.size} 个` : `${selectedExtractIds.size} selected`)
+                  : (zh ? `找到 ${extractResults.length} 个配方` : `${extractResults.length} recipe(s) found`)}
               </Text>
-              {importedRecipeIds.size > 0 && (
-                <Text style={{ fontSize: 12, color: colors.success || "#34C759", marginTop: 2 }}>
+              {importedRecipeIds.size > 0 && !extractSelectMode && (
+                <Text style={{ fontSize: 12, color: "#34C759", marginTop: 2 }}>
                   {zh ? `已导入 ${importedRecipeIds.size} 个` : `${importedRecipeIds.size} imported`}
                 </Text>
               )}
             </View>
-            {/* Batch import all button */}
-            {extractResults.length > 1 && importedRecipeIds.size < extractResults.length && (
+            {/* Multi-select toggle (only when >1 recipe) */}
+            {extractResults.length > 1 && (
+              <Pressable
+                onPress={() => {
+                  tap();
+                  if (extractSelectMode) {
+                    setExtractSelectMode(false);
+                    setSelectedExtractIds(new Set());
+                  } else {
+                    setExtractSelectMode(true);
+                    // Pre-select all not yet imported
+                    setSelectedExtractIds(new Set(
+                      extractResults.map((_, i) => i).filter((i) => !importedRecipeIds.has(i))
+                    ));
+                  }
+                }}
+                style={({ pressed }) => [{
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderRadius: 14,
+                  backgroundColor: extractSelectMode
+                    ? colors.primary + "22"
+                    : pressed ? colors.surface : colors.surface,
+                  borderWidth: 1,
+                  borderColor: extractSelectMode ? colors.primary : colors.border,
+                }]}
+              >
+                <Text style={{ fontSize: 13, fontWeight: "600", color: extractSelectMode ? colors.primary : colors.muted }}>
+                  {extractSelectMode ? (zh ? "取消" : "Cancel") : (zh ? "多选" : "Select")}
+                </Text>
+              </Pressable>
+            )}
+            {/* Import button: "Import Selected" in select mode, "Import All" otherwise */}
+            {!extractSelectMode && extractResults.length > 1 && importedRecipeIds.size < extractResults.length && (
               <Pressable
                 onPress={batchImportAll}
                 style={({ pressed }) => [{
@@ -1211,18 +1258,61 @@ export default function BookReaderScreen() {
                 </Text>
               </Pressable>
             )}
-            <Pressable onPress={() => { setShowExtractResults(false); setImportedRecipeIds(new Set()); }} hitSlop={8}>
+            <Pressable
+              onPress={() => {
+                setShowExtractResults(false);
+                setImportedRecipeIds(new Set());
+                setSelectedExtractIds(new Set());
+                setExtractSelectMode(false);
+              }}
+              hitSlop={8}
+            >
               <IconSymbol name="xmark" size={20} color={colors.muted} />
             </Pressable>
           </View>
           {/* Results list */}
-          <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+          <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: extractSelectMode ? 100 : 40 }}>
             {extractResults.map((recipe, idx) => {
               const confColor = recipe.confidence === "high" ? "#34C759" : recipe.confidence === "medium" ? "#FF9500" : "#FF3B30";
+              const isSelected = selectedExtractIds.has(idx);
+              const isImported = importedRecipeIds.has(idx);
               return (
-                <View key={idx} style={{ backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, marginBottom: 14, overflow: "hidden" }}>
+                <Pressable
+                  key={idx}
+                  onPress={extractSelectMode ? () => {
+                    tap();
+                    setSelectedExtractIds((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(idx)) next.delete(idx); else next.add(idx);
+                      return next;
+                    });
+                  } : undefined}
+                  style={({ pressed }) => [{
+                    backgroundColor: colors.surface,
+                    borderRadius: 16,
+                    borderWidth: 1.5,
+                    borderColor: isSelected ? colors.primary : isImported ? "#34C75940" : colors.border,
+                    marginBottom: 14,
+                    overflow: "hidden" as const,
+                    opacity: extractSelectMode && pressed ? 0.75 : 1,
+                  }]}
+                >
                   {/* Card header */}
                   <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10, gap: 8 }}>
+                    {/* Checkbox (select mode) or imported badge */}
+                    {extractSelectMode ? (
+                      <View style={{
+                        width: 22, height: 22, borderRadius: 11,
+                        borderWidth: 2,
+                        borderColor: isSelected ? colors.primary : colors.border,
+                        backgroundColor: isSelected ? colors.primary : "transparent",
+                        alignItems: "center", justifyContent: "center",
+                      }}>
+                        {isSelected && <IconSymbol name="checkmark" size={12} color="#fff" />}
+                      </View>
+                    ) : isImported ? (
+                      <IconSymbol name="checkmark.circle.fill" size={20} color="#34C759" />
+                    ) : null}
                     <View style={{ flex: 1 }}>
                       <Text style={{ fontSize: 16, fontWeight: "700", color: colors.foreground }} numberOfLines={1}>
                         {recipe.nameZh || recipe.name || (zh ? "（未识别名称）" : "(unnamed)")}
@@ -1266,76 +1356,150 @@ export default function BookReaderScreen() {
                       </Text>
                     </View>
                   )}
-                  {/* Import buttons row */}
-                  <View style={{ flexDirection: "row", borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}>
-                    {/* Quick save button */}
-                    <Pressable
-                      onPress={() => importedRecipeIds.has(idx) ? undefined : quickSaveRecipe(recipe, idx)}
-                      style={({ pressed }) => [{
-                        flex: 1,
-                        flexDirection: "row" as const,
-                        alignItems: "center" as const,
-                        justifyContent: "center" as const,
-                        gap: 5,
-                        paddingVertical: 12,
-                        backgroundColor: importedRecipeIds.has(idx)
-                          ? "#34C75918"
-                          : pressed ? colors.primary + "18" : "transparent",
-                      }]}
-                    >
-                      <IconSymbol
-                        name={importedRecipeIds.has(idx) ? "checkmark.circle.fill" : "square.and.arrow.down.fill"}
-                        size={15}
-                        color={importedRecipeIds.has(idx) ? "#34C759" : colors.primary}
-                      />
-                      <Text style={{ fontSize: 13, fontWeight: "600", color: importedRecipeIds.has(idx) ? "#34C759" : colors.primary }}>
-                        {importedRecipeIds.has(idx) ? (zh ? "已导入" : "Imported") : (zh ? "快速导入" : "Quick Save")}
-                      </Text>
-                    </Pressable>
-                    <View style={{ width: StyleSheet.hairlineWidth, backgroundColor: colors.border }} />
-                    {/* Edit then import button */}
-                    <Pressable
-                      onPress={() => {
-                        tap();
-                        setShowExtractResults(false);
-                        setExtractMode(false);
-                        extractModeRef.current = false;
-                        const params: Record<string, string> = {};
-                        if (recipe.nameZh) params.prefillName = recipe.nameZh;
-                        if (recipe.name && recipe.name !== recipe.nameZh) params.prefillNameEn = recipe.name;
-                        if (recipe.glass) params.prefillGlass = recipe.glass;
-                        if (recipe.steps) params.prefillSteps = recipe.steps;
-                        if (recipe.garnish) params.prefillGarnish = recipe.garnish;
-                        if (recipe.notes) params.prefillNotes = recipe.notes;
-                        if (recipe.ingredients.length > 0) {
-                          params.prefillIngredients = JSON.stringify(recipe.ingredients.map((ing) => ({
-                            id: genId(),
-                            name: ing.name,
-                            amount: ing.amount ? `${ing.amount}${ing.unit ?? ""}` : "",
-                          })));
-                        }
-                        router.push({ pathname: "/recipe-form", params });
-                      }}
-                      style={({ pressed }) => [{
-                        flex: 1,
-                        flexDirection: "row" as const,
-                        alignItems: "center" as const,
-                        justifyContent: "center" as const,
-                        gap: 5,
-                        paddingVertical: 12,
-                        backgroundColor: pressed ? colors.muted + "18" : "transparent",
-                      }]}
-                    >
-                      <IconSymbol name="pencil" size={14} color={colors.muted} />
-                      <Text style={{ fontSize: 13, fontWeight: "500", color: colors.muted }}>
-                        {zh ? "编辑后导入" : "Edit & Import"}
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
+                  {/* Import buttons row — hidden in select mode */}
+                  {!extractSelectMode && (
+                    <View style={{ flexDirection: "row", borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}>
+                      {/* Quick save button */}
+                      <Pressable
+                        onPress={() => isImported ? undefined : quickSaveRecipe(recipe, idx)}
+                        style={({ pressed }) => [{
+                          flex: 1,
+                          flexDirection: "row" as const,
+                          alignItems: "center" as const,
+                          justifyContent: "center" as const,
+                          gap: 5,
+                          paddingVertical: 12,
+                          backgroundColor: isImported
+                            ? "#34C75918"
+                            : pressed ? colors.primary + "18" : "transparent",
+                        }]}
+                      >
+                        <IconSymbol
+                          name={isImported ? "checkmark.circle.fill" : "square.and.arrow.down.fill"}
+                          size={15}
+                          color={isImported ? "#34C759" : colors.primary}
+                        />
+                        <Text style={{ fontSize: 13, fontWeight: "600", color: isImported ? "#34C759" : colors.primary }}>
+                          {isImported ? (zh ? "已导入" : "Imported") : (zh ? "快速导入" : "Quick Save")}
+                        </Text>
+                      </Pressable>
+                      <View style={{ width: StyleSheet.hairlineWidth, backgroundColor: colors.border }} />
+                      {/* Edit then import — opens recipe-form but does NOT close this modal */}
+                      <Pressable
+                        onPress={() => {
+                          tap();
+                          // Mark as imported so the card shows "Imported" when user returns
+                          // We do NOT close the modal — user can come back to import more
+                          const params: Record<string, string> = {};
+                          if (recipe.nameZh) params.prefillName = recipe.nameZh;
+                          if (recipe.name && recipe.name !== recipe.nameZh) params.prefillNameEn = recipe.name;
+                          if (recipe.glass) params.prefillGlass = recipe.glass;
+                          if (recipe.steps) params.prefillSteps = recipe.steps;
+                          if (recipe.garnish) params.prefillGarnish = recipe.garnish;
+                          if (recipe.notes) params.prefillNotes = recipe.notes;
+                          if (recipe.method) params.prefillMethod = recipe.method;
+                          if (recipe.ingredients.length > 0) {
+                            params.prefillIngredients = JSON.stringify(recipe.ingredients.map((ing) => ({
+                              id: genId(),
+                              name: ing.name,
+                              amount: ing.amount ? `${ing.amount}${ing.unit ?? ""}` : "",
+                            })));
+                          }
+                          // Mark as "pending edit" so the card shows a different state
+                          setImportedRecipeIds((prev) => new Set([...prev, idx]));
+                          router.push({ pathname: "/recipe-form", params });
+                        }}
+                        style={({ pressed }) => [{
+                          flex: 1,
+                          flexDirection: "row" as const,
+                          alignItems: "center" as const,
+                          justifyContent: "center" as const,
+                          gap: 5,
+                          paddingVertical: 12,
+                          backgroundColor: pressed ? colors.muted + "18" : "transparent",
+                        }]}
+                      >
+                        <IconSymbol name="pencil" size={14} color={colors.muted} />
+                        <Text style={{ fontSize: 13, fontWeight: "500", color: colors.muted }}>
+                          {zh ? "编辑后导入" : "Edit & Import"}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
+                </Pressable>
               );
             })}
           </ScrollView>
+          {/* Bottom action bar in select mode */}
+          {extractSelectMode && (
+            <View style={{
+              position: "absolute" as const,
+              bottom: 0, left: 0, right: 0,
+              backgroundColor: colors.background,
+              borderTopWidth: StyleSheet.hairlineWidth,
+              borderTopColor: colors.border,
+              paddingHorizontal: 16,
+              paddingTop: 12,
+              paddingBottom: 28,
+              flexDirection: "row" as const,
+              alignItems: "center" as const,
+              gap: 10,
+            }}>
+              {/* Select all / deselect all */}
+              <Pressable
+                onPress={() => {
+                  tap();
+                  const allIds = new Set(extractResults.map((_, i) => i).filter((i) => !importedRecipeIds.has(i)));
+                  const allSelected = allIds.size > 0 && [...allIds].every((i) => selectedExtractIds.has(i));
+                  setSelectedExtractIds(allSelected ? new Set() : allIds);
+                }}
+                style={({ pressed }) => [{
+                  paddingHorizontal: 14,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  backgroundColor: pressed ? colors.surface : colors.surface,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }]}
+              >
+                <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground }}>
+                  {(() => {
+                    const allIds = extractResults.map((_, i) => i).filter((i) => !importedRecipeIds.has(i));
+                    return allIds.every((i) => selectedExtractIds.has(i))
+                      ? (zh ? "取消全选" : "Deselect All")
+                      : (zh ? "全选" : "Select All");
+                  })()}
+                </Text>
+              </Pressable>
+              {/* Import selected */}
+              <Pressable
+                onPress={batchImportAll}
+                style={({ pressed }) => [{
+                  flex: 1,
+                  flexDirection: "row" as const,
+                  alignItems: "center" as const,
+                  justifyContent: "center" as const,
+                  gap: 6,
+                  paddingVertical: 12,
+                  borderRadius: 14,
+                  backgroundColor: selectedExtractIds.size === 0
+                    ? colors.muted + "40"
+                    : pressed ? colors.primary + "dd" : colors.primary,
+                }]}
+              >
+                {batchImporting ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <IconSymbol name="square.and.arrow.down.fill" size={15} color="#fff" />
+                )}
+                <Text style={{ fontSize: 15, fontWeight: "700", color: "#fff" }}>
+                  {selectedExtractIds.size === 0
+                    ? (zh ? "导入选中" : "Import Selected")
+                    : (zh ? `导入 ${selectedExtractIds.size} 个` : `Import ${selectedExtractIds.size}`)}
+                </Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       </Modal>
     </ScreenContainer>
