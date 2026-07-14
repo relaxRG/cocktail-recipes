@@ -11,7 +11,7 @@
 import type { Bottle } from "../bottles/types";
 import type { HomemadePrep } from "../homemade/types";
 import type { Ingredient } from "./types";
-import { parseAmountToMl, parseVolumeToMl } from "../bottles/cost";
+import { parseAmountToMl, parseVolumeToMl, resolveAmbiguousUnit, classifyOzContext } from "../bottles/cost";
 import { estimateHomemadeIngredientCost } from "../homemade/cost";
 import { smartLinkIngredient, type SmartLink } from "./smart-link";
 import { formCost, parseFormCount } from "./form-fold";
@@ -36,11 +36,16 @@ export interface SmartRecipeCost {
 }
 
 /** 微量/份数单位估算(ml),parseAmountToMl 解析失败时的兜底 */
-export function parseAmountLoose(amount: string): number | null {
-  const std = parseAmountToMl(amount);
+export function parseAmountLoose(amount: string, ingredientName?: string): number | null {
+  const std = parseAmountToMl(amount, ingredientName);
   if (std !== null) return std;
   const a = amount.trim().toLowerCase();
   if (!a) return null;
+  // 模糊单位智能推断（适量/少许/几滴/一瓶等）
+  if (ingredientName) {
+    const ambiguous = resolveAmbiguousUnit(amount, ingredientName);
+    if (ambiguous !== null) return ambiguous;
+  }
   const numMatch = a.match(/(\d+(?:\.\d+)?|\d+\s*\/\s*\d+)/);
   let n = 1;
   if (numMatch) {
@@ -101,9 +106,23 @@ export function estimateIngredientCostSmart(
   if (!link) {
     return { ingredient: ing, link: null, amountMl: null, cost: null, reason: "no_match" };
   }
-  const amountMl = parseAmountLoose(ing.amount);
+  const amountMl = parseAmountLoose(ing.amount, ing.name);
 
   if (link.kind === "bottle") {
+    // 固体配料重量成本路径：配料名为固体 oz + 酒库有 weightG → 按克重计算
+    const isSolidOz = /\boz\b|盎司|ounce/i.test(ing.amount) && classifyOzContext(ing.name) === "solid";
+    if (isSolidOz && link.bottle.weightG && link.bottle.weightG > 0 && link.bottle.priceCny > 0) {
+      const numMatch = ing.amount.match(/(\d+(?:\.\d+)?|\d+\s*\/\s*\d+)/);
+      let qty = 1;
+      if (numMatch) {
+        const s = numMatch[1].replace(/\s/g, "");
+        if (s.includes("/")) { const [p, q] = s.split("/").map(Number); qty = q ? p / q : 1; }
+        else qty = Number(s);
+      }
+      const usedGrams = qty * 28.35;
+      const pricePerGram = link.bottle.priceCny / link.bottle.weightG;
+      return { ingredient: ing, link, amountMl: null, cost: pricePerGram * usedGrams, reason: null };
+    }
     // 形态折叠:柠檬皮/黄瓜片等 → 母条目单件价 × 形态系数 × 数量
     if (link.form) {
       const count = parseFormCount(ing.amount);

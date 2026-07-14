@@ -215,6 +215,12 @@ export interface Bottle {
   formFactors?: Record<string, number>;
   createdAt: number;
   updatedAt: number;
+  /**
+   * 固体/干料净重(g)：用于固体配料的重量成本计算。
+   * 例如：可可粉 100g 包装填 100，盐 500g 填 500。
+   * 为 0 / undefined 表示未设置（按液体体积路径计算）。
+   */
+  weightG?: number;
 }
 
 /** 兼容处理:为缺字段的酒款补默认值 */
@@ -233,6 +239,7 @@ export function normalizeBottle(b: Partial<Bottle> & Pick<Bottle, "id" | "nameZh
     createdAt: Date.now(),
     updatedAt: Date.now(),
     ...b,
+    weightG: typeof b.weightG === "number" && b.weightG > 0 ? b.weightG : undefined,
     ...(typeof b.sortIndex === "number" && isFinite(b.sortIndex)
       ? { sortIndex: b.sortIndex }
       : { sortIndex: null }),

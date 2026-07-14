@@ -68,6 +68,9 @@ export default function BottleFormScreen() {
   const [flavorTags, setFlavorTags] = useState<string[]>(editing?.flavorTags ?? []);
   const [story, setStory] = useState(editing?.story ?? "");
   const [styleDesc, setStyleDesc] = useState(editing?.styleDesc ?? "");
+  const [weightG, setWeightG] = useState(
+    editing?.weightG && editing.weightG > 0 ? String(editing.weightG) : "",
+  );
 
   const canSave = nameZh.trim().length > 0 || nameEn.trim().length > 0;
 
@@ -205,6 +208,7 @@ export default function BottleFormScreen() {
       flavorTags,
       story: story.trim(),
       styleDesc: styleDesc.trim(),
+      weightG: Math.max(0, parseFloat(weightG) || 0) || undefined,
     };
     if (editing) {
       updateBottle(editing.id, draft);
@@ -535,6 +539,7 @@ export default function BottleFormScreen() {
           {field(t("bform.volume"), volume, setVolume, lang === "en" ? "e.g. 700ml" : "例如:700ml")}
           {field(t("bform.abv"), abv, setAbv, lang === "en" ? "e.g. 40" : "例如:40", { keyboardType: "numeric" })}
           {field(t("bform.price"), price, setPrice, lang === "en" ? "e.g. 170" : "例如:170", { keyboardType: "numeric" })}
+          {field(t("bform.weightG"), weightG, setWeightG, lang === "en" ? "e.g. 100 (cocoa, salt…)" : "例如:100（可可粉、盐等固体配料）", { keyboardType: "numeric" })}
           {field(t("bform.notes"), notes, setNotes, lang === "en" ? "Taste, usage, where to buy…" : "口感、用途、购买渠道等", { multiline: true })}
 
           {/* Flavor & Story */}

@@ -428,6 +428,7 @@ const dict = {
   "bform.abv": { zh: "酒精度(%)", en: "ABV (%)" },
   "bform.price": { zh: "中国参考价(¥)", en: "Price CNY (¥)" },
   "bform.notes": { zh: "备注", en: "Notes" },
+  "bform.weightG": { zh: "净重(g，固体配料)", en: "Weight g (dry/solid)" },
   "bform.category": { zh: "分类", en: "Category" },
   "bform.style": { zh: "风格 Style", en: "Style" },
   "bottle.style": { zh: "风格", en: "Style" },
