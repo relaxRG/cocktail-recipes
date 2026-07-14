@@ -1,6 +1,47 @@
 import { Ingredient } from "../recipes/types";
 import { Bottle } from "./types";
 
+/** 固体/干料配料名关键词 → 判定为重量盎司，不换算 ml */
+const SOLID_INGREDIENT_RE =
+  /cocoa|cacao|可可粉|chocolate\s*powder|sugar(?!\s*syrup)|砂糖|白糖|红糖|冰糖|salt|盐|pepper|胡椒|cinnamon(?!\s*syrup)|nutmeg|肉豆蔻|cloves?|丁香|cardamom(?!\s*syrup)|allspice|五香|anise|八角|cumin|孜然|turmeric|姜黄|flour|面粉|cornstarch|淀粉|matcha|抹茶粉|coffee\s*grounds?|咖啡粉|tea\s*leaves?|茶叶|dried\s*herbs?|干香草|dried\s*fruit/i;
+
+/**
+ * 判断 "oz" 在给定配料名上下文中是液量盎司还是重量盎司。
+ * 固体干料（可可粉、盐、糖等）使用重量盎司(28.35g)，无法换算 ml，返回 "solid"。
+ */
+export function classifyOzContext(ingredientName: string): "liquid" | "solid" {
+  if (SOLID_INGREDIENT_RE.test(ingredientName)) return "solid";
+  return "liquid";
+}
+
+/**
+ * 模糊/特殊单位智能判断：根据用量文本 + 配料名上下文推断实际 ml。
+ * 处理 "适量"、"少许"、"几滴"、"半杯"、"一瓶" 等无法直接换算的写法。
+ * 返回 null 表示无法合理估算。
+ */
+export function resolveAmbiguousUnit(amount: string, ingredientName: string): number | null {
+  const a = amount.trim().toLowerCase();
+  const name = ingredientName.toLowerCase();
+  if (/适量|少许|to\s*taste|as\s*needed|q\.?s\.?/i.test(a)) {
+    if (/bitters|苦精|salt|盐|sugar(?!\s*syrup)|糖(?!浆)|pepper|胡椒|spice|香料|sauce|酱/i.test(name)) return 0.9;
+    if (/soda|tonic|water|juice|汁|水|beer|啤酒|lemonade|柠檬水/i.test(name)) return 60;
+    return null;
+  }
+  if (/一点|a\s*little|a\s*bit/i.test(a)) return 2;
+  if (/几滴|a\s*few\s*drops?/i.test(a)) return 0.15;
+  if (/半杯|half\s*a?\s*pint/i.test(a)) return 236.5;
+  if (/半杯|half\s*a?\s*cup/i.test(a)) return 120;
+  if (/满杯|full\s*(?:cup|glass)/i.test(a)) return 240;
+  if (/一瓶|one\s*bottle|\bbtl\b/i.test(a)) {
+    if (/beer|啤酒/i.test(name)) return 330;
+    if (/wine|葡萄酒|champagne|香槟|prosecco/i.test(name)) return 750;
+    return 700;
+  }
+  return null;
+}
+
+
+
 /** 单项配料的成本估算结果 */
 export interface IngredientCost {
   ingredient: Ingredient;
@@ -56,13 +97,26 @@ const UNIT_TO_ML: [RegExp, number][] = [
   [/(?:tsp|茶匙|小勺)/i, 5],
   [/(?:tbsp|汤匙|大勺)/i, 15],
   [/(?:dessert\s*spoon|甜点匙)/i, 10],           // dessertspoon = 2 tsp = 10 ml
+  // ── 调酒特殊量词 ──────────────────────────────────────────────────
+  [/(?:part)/i, 30],                             // "1 part" 通用比例单位，按 1 oz 估算
+  [/(?:measure)/i, 25],                          // 英式 measure = 25ml（英国标准）
+  [/(?:nip)/i, 30],                              // nip = 1 fl oz（英式小瓶）
+  [/(?:finger)/i, 44],                           // finger ≈ 1.5 oz（手指量）
+  [/(?:squeeze)/i, 15],                          // squeeze（挤压柑橘）≈ 0.5 oz
+  [/(?:pump)/i, 10],                             // pump（泵压糖浆）≈ 10ml
+  [/(?:scoop)/i, 120],                           // scoop（勺）≈ 4 oz
+  [/(?:ladle)/i, 120],                           // ladle（汤勺）≈ 120ml
+  // ── 中文特有量词 ──────────────────────────────────────────────────
+  [/(?:小匙|茶勺|咖啡匙)/i, 5],
+  [/(?:大匙|餐匙)/i, 15],
+  [/(?:酒盅)/i, 30],                             // 中式酒盅 ≈ 30ml
 ];
 
 /**
  * 从用量文本解析出毫升数。
  * 支持:"45ml"、"1.5 oz"、"2 dash"、"1/2 oz"、"1½oz"、"30 毫升" 等
  */
-export function parseAmountToMl(amount: string): number | null {
+export function parseAmountToMl(amount: string, ingredientName?: string): number | null {
   const text = amount.trim();
   if (!text) return null;
 
@@ -89,6 +143,11 @@ export function parseAmountToMl(amount: string): number | null {
     }
   }
   if (value === null || !isFinite(value)) return null;
+
+  // oz 液体/固体智能判断：若配料名指示固体，oz 为重量盎司，不换算 ml
+  if (ingredientName && /\boz\b|盎司|ounce/i.test(normalized)) {
+    if (classifyOzContext(ingredientName) === "solid") return null;
+  }
 
   for (const [re, ml] of UNIT_TO_ML) {
     if (re.test(normalized)) return value * ml;
