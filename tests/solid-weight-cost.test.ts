@@ -30,7 +30,7 @@ function makeBottle(overrides: Partial<Bottle> & { nameZh: string }): Bottle {
 }
 
 function makeIngredient(name: string, amount: string): Ingredient {
-  return { name, amount, unit: "", notes: "" };
+  return { id: `ing-${name}`, name, amount };
 }
 
 describe("parseAmountLoose with ingredientName", () => {
