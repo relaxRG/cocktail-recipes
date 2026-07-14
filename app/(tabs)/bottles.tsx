@@ -649,11 +649,9 @@ export default function BottlesScreen() {
           {enrichProgress ? (
             <View className="mt-2 px-1" style={{ gap: 4 }}>
               <View className="flex-row items-center justify-between">
-                <Text className="text-xs text-muted">
-                  {lang === "zh"
-                    ? `正在补全 ${enrichProgress.done}/${enrichProgress.total}…`
-                    : `Enriching ${enrichProgress.done}/${enrichProgress.total}…`}
-                </Text>
+               <Text className="text-xs text-muted">
+                  {t("enrich.progress", { done: enrichProgress.done, total: enrichProgress.total })}
+               </Text>
               </View>
               <View
                 className="rounded-full overflow-hidden"
@@ -895,18 +893,18 @@ export default function BottlesScreen() {
           />
           {enrichingSelected && enrichSelectedProgress ? (
             <View style={{ marginHorizontal: 16, marginBottom: 8, padding: 10, borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={{ fontSize: 13, color: colors.foreground, flex: 1 }}>AI 补全中… {enrichSelectedProgress.done}/{enrichSelectedProgress.total}</Text>
+             <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={{ fontSize: 13, color: colors.foreground, flex: 1 }}>{t("enrich.running", { done: enrichSelectedProgress.done, total: enrichSelectedProgress.total })}</Text>
             </View>
           ) : enrichSelectedMsg ? (
             <View style={{ marginHorizontal: 16, marginBottom: 8, padding: 10, borderRadius: 10, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, flexDirection: "row", alignItems: "center", gap: 8 }}>
               <Text style={{ fontSize: 13, color: colors.foreground, flex: 1 }}>{enrichSelectedMsg}</Text>
-              {enrichSelectedErrors.length > 0 && (
-                <Text style={{ fontSize: 11, color: colors.warning }}>失败: {enrichSelectedErrors.slice(0, 3).join(", ")}{enrichSelectedErrors.length > 3 ? `…+${enrichSelectedErrors.length - 3}` : ""}</Text>
-              )}
-              <Pressable onPress={() => setEnrichSelectedMsg(null)} hitSlop={8}>
-                <Text style={{ fontSize: 13, color: colors.primary }}>关闭</Text>
-              </Pressable>
+             {enrichSelectedErrors.length > 0 && (
+                <Text style={{ fontSize: 11, color: colors.warning }}>{t("enrich.failed", { list: enrichSelectedErrors.slice(0, 3).join(", ") + (enrichSelectedErrors.length > 3 ? `…+${enrichSelectedErrors.length - 3}` : "") })}</Text>
+             )}
+             <Pressable onPress={() => setEnrichSelectedMsg(null)} hitSlop={8}>
+                <Text style={{ fontSize: 13, color: colors.primary }}>{t("enrich.close")}</Text>
+             </Pressable>
             </View>
           ) : null}
         </>

@@ -577,7 +577,7 @@ describe("recipes data layer", () => {
     const flavors = tags.filter((t) => t.kind === "flavor");
     expect(spirits.length).toBeGreaterThan(0);
     expect(glasses.length).toBeGreaterThan(0);
-    expect(flavors.length).toBe(10);
+    expect(flavors.length).toBe(17);
     // 每个标签都有颜色且 id 唯一
     const ids = new Set(tags.map((t) => t.id));
     expect(ids.size).toBe(tags.length);

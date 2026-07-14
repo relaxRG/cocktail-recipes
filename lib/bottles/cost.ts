@@ -27,18 +27,35 @@ export interface RecipeCostEstimate {
 
 /** 单位 -> 毫升换算表 */
 const UNIT_TO_ML: [RegExp, number][] = [
-  [/(?:ml|毫升|cc)/i, 1],
-  [/(?:oz|盎司|ounce)/i, 30],
-  [/(?:cl)/i, 10],
-  [/(?:dash|抖|滴)/i, 0.9],
+  // ── 公制 ──────────────────────────────────────────────────────────
+  [/(?:ml|毫升|cc|mL)/i, 1],
+  [/(?:cl|厘升)/i, 10],
+  [/(?:dl|分升)/i, 100],
+  [/(?:\bl\b|升|litre|liter)/i, 1000],
+  // ── 美制液量 ──────────────────────────────────────────────────────
+  [/(?:fl\.?\s*oz|fluid\s*ounce)/i, 29.5735],   // 美制液量盎司 ≈ 29.57 ml
+  [/(?:oz|盎司|ounce)/i, 30],                    // 调酒惯用 30 ml 整数
+  [/(?:jigger)/i, 44.36],                        // 标准 jigger = 1.5 fl oz
+  [/(?:pony)/i, 29.5735],                        // pony = 1 fl oz
+  [/(?:shot)/i, 44.36],                          // 标准 shot = 1.5 oz（美式）
+  [/(?:杯)/i, 45],                               // 中文"杯"按调酒惯例 45 ml
+  [/(?:cups?|量杯)/i, 240],
+  [/(?:pint|品脱)/i, 473],
+  [/(?:quart|夸脱)/i, 946],
+  [/(?:gallon|加仑)/i, 3785],
+  [/(?:gill)/i, 118.29],                         // 英制 gill = 4 fl oz
+  // ── 调酒小量单位 ──────────────────────────────────────────────────
+  [/(?:dash|抖振|抖)/i, 0.9],                    // 1 dash ≈ 0.9 ml（Angostura 标准）
+  [/(?:drop|滴)/i, 0.05],                        // 1 drop ≈ 0.05 ml
+  [/(?:rinse|漂洗)/i, 2],                        // rinse（玻璃杯漂洗）≈ 2 ml
+  [/(?:splash|少量)/i, 15],                      // splash 约 0.5 oz = 15 ml
+  [/(?:float|浮层)/i, 15],                       // float 约 0.5 oz
+  [/(?:top\s*up|top|加满)/i, 60],                // top up 约 2 oz
+  // ── 勺类 ──────────────────────────────────────────────────────────
+  [/(?:bar\s*spoon|吧勺|吧匙)/i, 5],             // 1 barspoon = 5 ml（标准）
   [/(?:tsp|茶匙|小勺)/i, 5],
   [/(?:tbsp|汤匙|大勺)/i, 15],
-  [/(?:bar\s*spoon|吧勺)/i, 5],
-  [/(?:shot|杯)/i, 45],
-  [/(?:splash)/i, 5],
-  [/(?:cups?)/i, 240],
-  [/(?:pint)/i, 473],
-  [/(?:quart)/i, 946],
+  [/(?:dessert\s*spoon|甜点匙)/i, 10],           // dessertspoon = 2 tsp = 10 ml
 ];
 
 /**
@@ -110,13 +127,15 @@ export function formatAmountAsMl(amount: string): string {
 export function parseVolumeToMl(volume: string): number | null {
   const text = volume.trim().toLowerCase();
   if (!text) return null;
-  const m = text.match(/(\d+(?:\.\d+)?)\s*(ml|毫升|cl|l|升)?/);
+  const m = text.match(/(\d+(?:\.\d+)?)\s*(ml|毫升|cl|dl|fl\.?\s*oz|l|升)?/i);
   if (!m) return null;
   const value = Number(m[1]);
-  const unit = m[2] ?? "ml";
+  const unit = (m[2] ?? "ml").toLowerCase().replace(/\s/g, "");
   if (unit === "l" || unit === "升") return value * 1000;
+  if (unit === "dl") return value * 100;
   if (unit === "cl") return value * 10;
-  return value;
+  if (unit === "fl.oz" || unit === "floz") return value * 29.5735;
+  return value; // ml / 毫升 / 无单位
 }
 
 /** 中英文配料同义词典:英文配料名 -> 中文等价词(用于匹配酒库) */

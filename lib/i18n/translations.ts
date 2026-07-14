@@ -741,6 +741,22 @@ const dict = {
   "menu.addRecipe.selectGroup": { zh: "选择分组", en: "Select Group" },
   "menu.addRecipe.added": { zh: "已在门店酒单中", en: "In menu" },
   "menu.addRecipe.success": { zh: "已加入\"{g}\"", en: "Added to \"{g}\"" },
+  // AI enrich progress / status (shared by bottles + homemade tabs)
+  "enrich.progress": { zh: "正在补全 {done}/{total}…", en: "Enriching {done}/{total}…" },
+  "enrich.running": { zh: "AI 补全中… {done}/{total}", en: "Enriching… {done}/{total}" },
+  "enrich.failed": { zh: "失败: {list}", en: "Failed: {list}" },
+  "enrich.close": { zh: "关闭", en: "Close" },
+  "enrich.pending": { zh: "{n} 条自制品待 AI 补全介绍", en: "{n} preps pending AI enrichment" },
+  "enrich.action": { zh: "AI 补全", en: "Enrich" },
+  "enrich.done": { zh: "已补全 {n} 条自制品", en: "Enriched {n} preps" },
+  "enrich.noop": { zh: "暂无需要补全的自制品", en: "All preps are up to date" },
+  // menu search
+  "menu.search.placeholder": { zh: "搜索配方…", en: "Search recipes…" },
+  // recipe-form AI
+  "form.ai.error.retry": { zh: "AI 分析失败，请重试", en: "AI analysis failed, please retry" },
+  "form.ai.error": { zh: "AI 分析失败", en: "AI analysis failed" },
+  "form.ai.lowConfidence": { zh: "AI 置信度较低，标签主要根据配料推断，建议人工确认或调整。", en: "Low AI confidence — tags are inferred from ingredients. Please review and adjust." },
+  "form.new.badge": { zh: "新", en: "New" },
 } as const;
 
 export type TranslationKey = keyof typeof dict;
