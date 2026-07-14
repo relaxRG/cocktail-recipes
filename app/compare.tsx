@@ -255,7 +255,7 @@ export default function CompareScreen() {
           {
             label: t("compare.row.strength"),
             values: items.map((r) =>
-              lang === "en" ? t(`strength.${r.strength}`) : STRENGTH_LABELS[r.strength],
+              STRENGTH_LABELS[r.strength][lang],
             ),
           },
           {

@@ -196,10 +196,7 @@ export function useRecipeTagRows(
     if (slot === "strength") {
       if (!recipe.strength) return null;
       const color = customColors.strength;
-      const label =
-        lang === "en"
-          ? t(`strength.${recipe.strength}` as "strength.light")
-          : STRENGTH_LABELS[recipe.strength];
+      const label = STRENGTH_LABELS[recipe.strength][lang];
       if (!label) return null;
       const semanticColor =
         color ??

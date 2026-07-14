@@ -256,7 +256,7 @@ export function RecipesScreen() {
       title: t("fs.dim.strength"),
       options: STRENGTHS.map((s) => ({
         value: s,
-        label: lang === "en" ? t(`strength.${s}` as "strength.light") : STRENGTH_LABELS[s],
+        label: STRENGTH_LABELS[s][lang],
       })),
       selected: selStrengths,
       onToggle: (v) =>

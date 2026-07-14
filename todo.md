@@ -489,3 +489,13 @@
 - [x] 配方详情页新增"加入门店酒单"按钮（storefront 图标）+ 分组选择 Modal
 - [x] MenuProvider 注册到 _layout.tsx
 - [x] icon-symbol.tsx 新增 storefront.fill 图标映射
+
+## Build 25 - 代码审查修复（P0/P1 Bug + P2 功能）
+- [x] Bug1: Rye Whiskey 被错误归类为波本威士忌（INGREDIENT_SYNONYMS 中 rye 规则移至 bourbon 之前）
+- [x] Bug1补充: matchBottle 类别兜底逻辑加入黑麦威士忌（rye whiskey）
+- [x] Bug2: cups/pint/quart 单位缺失（UNIT_TO_ML 补全 cup=240ml、pint=473ml、quart=946ml）
+- [x] Bug3: STRENGTH_LABELS 改为双语对象 { zh, en }，所有调用处统一用 STRENGTH_LABELS[s][lang]
+- [x] Bug4: matchPrep 阈值从 54 调整为 50（避免 4 字中文短词无法匹配）
+- [x] Bug5: extractRecipesFromText 的 lang 参数未被使用，已注入 prompt 语言指令
+- [x] P2: 配方详情页新增"复制配方"按钮（doc.on.doc 图标），duplicateRecipe 函数注册到 store
+- [x] icon-symbol.tsx 新增 doc.on.doc 图标映射（content-copy）

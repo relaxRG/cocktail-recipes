@@ -86,6 +86,7 @@ const MAPPING = {
   "dollarsign.circle.fill": "monetization-on",
   "cart.fill": "shopping-cart",
   "list.dash": "reorder",
+  "doc.on.doc": "content-copy",
 } as IconMapping;
 
 /**

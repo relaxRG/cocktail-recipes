@@ -36,6 +36,9 @@ const UNIT_TO_ML: [RegExp, number][] = [
   [/(?:bar\s*spoon|吧勺)/i, 5],
   [/(?:shot|杯)/i, 45],
   [/(?:splash)/i, 5],
+  [/(?:cups?)/i, 240],
+  [/(?:pint)/i, 473],
+  [/(?:quart)/i, 946],
 ];
 
 /**
@@ -123,7 +126,8 @@ const INGREDIENT_SYNONYMS: [RegExp, string][] = [
   [/dark\s*rum|aged\s*rum/i, "黑朗姆"],
   [/\brum\b/i, "朗姆"],
   [/\bvodka\b/i, "伏特加"],
-  [/bourbon|rye\s*whisk(e)?y/i, "波本威士忌"],
+  [/\brye\s*whisk(e)?y|\brye\b/i, "黑麦威士忌"],
+  [/bourbon/i, "波本威士忌"],
   [/scotch|whisk(e)?y/i, "威士忌"],
   [/blanco\s*tequila|silver\s*tequila|tequila/i, "龙舌兰"],
   [/mezcal/i, "梅斯卡尔"],
@@ -195,7 +199,7 @@ export function matchBottle(ingredientName: string, bottles: Bottle[]): Bottle |
   }
   // 类别兜底:配料名含"金酒/朗姆..."时匹配该分类中最便宜的酒款
   if (!best) {
-    const categories = ["金酒", "朗姆", "伏特加", "威士忌", "龙舌兰", "白兰地", "味美思"];
+    const categories = ["金酒", "朗姆", "伏特加", "黑麦威士忌", "波本威士忌", "威士忌", "龙舌兰", "白兰地", "味美思"];
     const searchName = normalized;
     for (const cat of categories) {
       if (searchName.includes(cat) || name.includes(cat)) {

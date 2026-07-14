@@ -670,19 +670,53 @@ ${input.type ? `类型: ${input.type}` : ""}${ingredientList}
         }),
       )
       .mutation(async ({ input }) => {
-        const prompt = `你是专业调酒师和配方识别专家。请从以下文字中识别并提取所有鸡尾酒配方。
+        const isEn = input.lang === "en";
+        const prompt = isEn
+          ? `You are a professional bartender and recipe recognition expert. Extract all cocktail recipes from the following text.
 
-文字内容：
+Text:
 """
 ${input.text}
 """
 
+Rules:
+1. Each cocktail with a name + ingredients counts as one recipe.
+2. Ingredient lines typically contain quantity (oz/ml/dash/tsp etc.) + ingredient name.
+3. Steps are usually sentences starting with verbs (Stir/Shake/Combine etc.).
+4. If no recipes are found, return an empty array.
+
+Output strict JSON with a recipes array:
+{
+  "recipes": [
+    {
+      "name": "Recipe name (original)",
+      "nameZh": "Chinese name if inferable, else empty string",
+      "author": "Author/source if present, else empty string",
+      "year": "Year if present, else empty string",
+      "ingredients": [
+        { "text": "2 oz Rye Whiskey", "amount": "2", "unit": "oz", "name": "Rye Whiskey", "confidence": "high" }
+      ],
+      "steps": "Full step description (original text, empty if absent)",
+      "garnish": "Garnish if present, else empty string",
+      "glass": "Glass type if inferable, else empty string",
+      "method": "Method (e.g. Shake/Stir/Build) if inferable, else empty string",
+      "notes": "Notes/remarks if present, else empty string",
+      "confidence": "high|medium|low",
+      "missingFields": []
+    }
+  ]
+}
+Output JSON only, no explanations.`
+          : `你是专业调酒师和配方识别专家。请从以下文字中识别并提取所有鸡尾酒配方。
+文字内容：
+"""
+${input.text}
+"""
 识别规则：
 1. 每个独立的鸡尾酒（有名称+配料）算一个配方
 2. 配料行通常包含数量（oz/ml/dash/tsp等）+ 材料名
 3. 步骤通常是动词开头的句子（Stir/Shake/Combine等）
 4. 如果文字中没有配方，返回空数组
-
 请输出 JSON（严格格式），包含 recipes 数组：
 {
   "recipes": [
@@ -704,7 +738,6 @@ ${input.text}
     }
   ]
 }
-
 只输出 JSON，不要任何解释文字。`;
         const signal = AbortSignal.timeout(30_000);
         let response;

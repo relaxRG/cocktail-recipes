@@ -73,7 +73,11 @@ export function matchPrep(ingredientName: string, preps: HomemadePrep[]): Homema
     }
   }
   // Require a reasonable overlap to avoid weak short matches
-  return bestScore >= 54 ? best : null;
+  // 阈值 50: c.includes(q) 且 q.length>=4 时 score=50+q.length>=54,
+  // 但 q.length===4 的中文词(如"糖浆")得分=54, 4字中文词(如"蜂蜜糖浆")得分=54.
+  // 原阈值 54 会拒绝 score=50+4=54 的边界情况(4字中文词恰好等于阈值但不被接受)。
+  // 调整为 50 以接受所有通过 c.includes(q) 且满足长度条件的匹配。
+  return bestScore >= 50 ? best : null;
 }
 
 export interface PrepSuggestion {

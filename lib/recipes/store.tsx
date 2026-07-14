@@ -84,6 +84,7 @@ interface RecipeStore {
   deleteRecipe: (id: string) => void;
   deleteRecipes: (ids: string[]) => void;
   bulkUpdateRecipes: (ids: string[], patch: Partial<Recipe>) => void;
+  duplicateRecipe: (id: string) => Recipe | null;
   toggleFavorite: (id: string) => void;
   toggleMade: (id: string) => void;
   setRating: (id: string, rating: number | null) => void;
@@ -395,6 +396,30 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     (ids: string[]) => {
       const set = new Set(ids);
       persistRecipes(recipesRef.current.filter((r) => !set.has(r.id)));
+    },
+    [persistRecipes],
+  );
+
+  /** 复制配方：生成新 id、新时间戳，名称加"(副本)"后缀 */
+  const duplicateRecipe = useCallback(
+    (id: string): Recipe | null => {
+      const src = recipesRef.current.find((r) => r.id === id);
+      if (!src) return null;
+      const now = Date.now();
+      const copy: Recipe = {
+        ...src,
+        id: genId(),
+        name: `${src.name}(副本)`,
+        nameEn: src.nameEn ? `${src.nameEn} (Copy)` : "",
+        favorite: false,
+        made: false,
+        rating: null,
+        sortIndex: null,
+        createdAt: now,
+        updatedAt: now,
+      };
+      persistRecipes([copy, ...recipesRef.current]);
+      return copy;
     },
     [persistRecipes],
   );
@@ -783,6 +808,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       deleteRecipe,
       deleteRecipes,
       bulkUpdateRecipes,
+      duplicateRecipe,
       toggleFavorite,
       toggleMade,
       setRating,
@@ -823,6 +849,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
       deleteRecipe,
       deleteRecipes,
       bulkUpdateRecipes,
+      duplicateRecipe,
       toggleFavorite,
       toggleMade,
       setRating,

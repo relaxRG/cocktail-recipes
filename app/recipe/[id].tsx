@@ -61,7 +61,7 @@ export default function RecipeDetailScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t, lang } = useI18n();
-  const { getRecipe, getCategory, toggleFavorite, toggleMade, setRating, deleteRecipe, tags } =
+  const { getRecipe, getCategory, toggleFavorite, toggleMade, setRating, deleteRecipe, duplicateRecipe, tags } =
     useRecipeStore();
   const { bottles, addBottle, updateBottle } = useBottleStore();
   const { preps } = useHomemadeStore();
@@ -188,6 +188,18 @@ export default function RecipeDetailScreen() {
     toggleMade(recipe.id);
   };
 
+  const handleDuplicate = () => {
+    const copy = duplicateRecipe(recipe.id);
+    if (!copy) return;
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    const dn = displayNames(copy.nameEn, copy.name, lang).primary;
+    Alert.alert(t("detail.duplicate"), t("detail.duplicate.done", { name: dn }), [
+      { text: t("common.cancel"), style: "cancel" },
+      { text: t("common.edit"), onPress: () => router.replace({ pathname: "/recipe-form", params: { id: copy.id } }) },
+    ]);
+  };
   const confirmDelete = () => {
     const delName = displayNames(recipe.nameEn, recipe.name, lang).primary;
     const doDelete = () => {
@@ -224,10 +236,10 @@ export default function RecipeDetailScreen() {
       label: t("detail.meta.strength"),
       value:
         recipe.abv !== null && recipe.abv !== undefined
-          ? `${STRENGTH_LABELS[recipe.strength]} ≈${recipe.abv}%`
+          ? `${STRENGTH_LABELS[recipe.strength][lang]} ≈${recipe.abv}%`
           : recipe.strengthBand
-            ? `${STRENGTH_LABELS[recipe.strength]} · ${STRENGTH_BAND_LABELS[recipe.strengthBand][lang]}`
-            : STRENGTH_LABELS[recipe.strength],
+            ? `${STRENGTH_LABELS[recipe.strength][lang]} · ${STRENGTH_BAND_LABELS[recipe.strengthBand][lang]}`
+            : STRENGTH_LABELS[recipe.strength][lang],
     },
   ];
 
@@ -282,6 +294,13 @@ export default function RecipeDetailScreen() {
             style={({ pressed }) => [pressed && { opacity: 0.6 }]}
           >
             <IconSymbol name="pencil" size={23} color={colors.foreground} />
+          </Pressable>
+          <Pressable
+            onPress={handleDuplicate}
+            hitSlop={8}
+            style={({ pressed }) => [pressed && { opacity: 0.6 }]}
+          >
+            <IconSymbol name="doc.on.doc" size={21} color={colors.muted} />
           </Pressable>
           <Pressable
             onPress={confirmDelete}

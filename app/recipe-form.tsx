@@ -1051,9 +1051,7 @@ export default function RecipeFormScreen() {
               <>
                 <View className="flex-row items-center" style={{ gap: 8 }}>
                   <Text className="text-base font-semibold text-foreground" style={{ lineHeight: 22 }}>
-                    {lang === "en"
-                      ? t(`strength.${abvEstimate.strength}` as "strength.light")
-                      : STRENGTH_LABELS[abvEstimate.strength]}
+                    {STRENGTH_LABELS[abvEstimate.strength][lang]}
                     {" · "}
                     {STRENGTH_BAND_LABELS[abvEstimate.band][lang]}
                   </Text>

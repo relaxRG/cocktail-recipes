@@ -298,6 +298,8 @@ const dict = {
   "detail.story": { zh: "配方故事", en: "Story" },
   "detail.flavorDesc": { zh: "风味描述", en: "Flavor Description" },
   "detail.variantOf": { zh: "变体来源:{name}", en: "Variant of {name}" },
+  "detail.duplicate": { zh: "复制配方", en: "Duplicate Recipe" },
+  "detail.duplicate.done": { zh: "已复制「{name}」", en: "Duplicated \"{name}\"" },
   "detail.delete.title": { zh: "删除配方", en: "Delete Recipe" },
   "detail.delete.msg": { zh: "确定删除「{name}」吗?此操作无法撤销。", en: "Delete \"{name}\"? This cannot be undone." },
   // Bottle detail

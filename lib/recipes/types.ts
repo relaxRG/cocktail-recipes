@@ -592,10 +592,10 @@ export const GLASSES = [
   "其他",
 ] as const;
 
-export const STRENGTH_LABELS: Record<Strength, string> = {
-  light: "轻盈",
-  medium: "适中",
-  strong: "浓烈",
+export const STRENGTH_LABELS: Record<Strength, { zh: string; en: string }> = {
+  light:  { zh: "轻盈", en: "Light" },
+  medium: { zh: "适中", en: "Medium" },
+  strong: { zh: "浓烈", en: "Strong" },
 };
 
 export const CATEGORY_COLORS = [
